@@ -1,0 +1,11 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+1,Issuer ID,1,4,Numeric,4,9(4),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,Int64,Int64
+2,Program,5,6,Character,2,X(2),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,string,String
+3,Issuer Name,7,106,Character,100,X(100),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,string,String
+4,Issuer Address,107,166,Character,60,X(60),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,string,String
+5,Issuer City,167,196,Character,30,X(30),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,string,String
+6,Issuer State,197,198,Character,2,X(2),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,string,String
+7,Issuer Zip Code,199,207,Numeric,9,9(9),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,Int64,Int64
+8,Issuer Phone Number,208,217,Numeric,10,9(10),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,Int64,Int64
+9,Issuer Status Indicator,218,218,Character,1,X,issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,string,String
+10,Record As-Of Date (CCYYMMDD),219,226,Numeric,8,9(8),issrinfo_GINNIE MAE ISSUER FILE Layout.pdf,,,Int64,Int64

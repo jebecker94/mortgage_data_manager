@@ -1,0 +1,113 @@
+# FHA single-family snapshot county/state corrections.
+#
+# Applied by mortgage_data_manager.fha.utils.standardize_county_names() to
+# align FHA dataset values with the addfips county/FIPS lookup. These reflect
+# quirks of the FHA dataset and are not intended for general reuse.
+#
+# Pipeline order inside standardize_county_names():
+#   1. county column is normalized (null/"nan"/"none" -> ""), then uppercased
+#   2. state_corrections below are applied (county+state -> new state)
+#   3. county_renames below are applied in order (first match wins)
+#   4. As a fallback inside the same step-3 chain, a trailing " COUNTY"
+#      suffix is stripped (lives in code, not this file)
+#   5. "ST " / "STE " prefix transforms are applied (also in code)
+#
+# The state_col and county_col on which these conditions match correspond to
+# the values seen by the function AFTER step 1 (so county is uppercase here).
+# state_corrections uses raw state values — they are NOT pre-uppercased by
+# this function.
+
+# Step 2: state corrections
+# When (county == `county`) AND (state == `from_state`), set state := `to_state`.
+state_corrections:
+  - county: "ANNE ARUNDEL"
+    from_state: "AK"
+    to_state: "MD"
+  - county: "BUNCOMBE"
+    from_state: "AK"
+    to_state: "NC"
+  - county: "EL PASO"
+    from_state: "AK"
+    to_state: "TX"
+
+# Step 3: county renames
+# When (county == `from`) AND (state in `states`), set county := `to`.
+# Order matters only insofar as each entry's condition is checked in sequence;
+# in practice the (county, state) keys here are non-overlapping.
+county_renames:
+  - from: "MATANUSKA SUSITNA"
+    states: ["AK"]
+    to: "MATANUSKA-SUSITNA"
+  - from: "DE KALB"
+    states: ["AL", "IL", "IN"]
+    to: "DEKALB"
+  - from: "DU PAGE"
+    states: ["IL"]
+    to: "DUPAGE"
+  - from: "LA SALLE"
+    states: ["IL", "IN"]
+    to: "LASALLE"
+  - from: "LA PORTE"
+    states: ["IN"]
+    to: "LAPORTE"
+  - from: "ST JOSEPH"
+    states: ["IN"]
+    to: "ST. JOSEPH"
+  - from: "MACON-BIBB COUNTY"
+    states: ["GA"]
+    to: "BIBB"
+  - from: "ST JOHN THE BAPTIST"
+    states: ["LA"]
+    to: "ST. JOHN THE BAPTIST"
+  - from: "STE GENEVIEVE"
+    states: ["MO"]
+    to: "SAINTE GENEVIEVE"
+  - from: "DE SOTO"
+    states: ["FL", "MS"]
+    to: "DESOTO"
+  - from: "BAYAM'N"
+    states: ["PR"]
+    to: "BAYAMON"
+  - from: "LACROSSE"
+    states: ["WI"]
+    to: "LA CROSSE"
+  - from: "LAPLATA"
+    states: ["CO"]
+    to: "LA PLATA"
+  - from: "DEWITT"
+    states: ["IL"]
+    to: "DE WITT"
+  - from: "CAN'VANAS"
+    states: ["PR"]
+    to: "CANOVANAS"
+  - from: "MAYAG'EZ"
+    states: ["PR"]
+    to: "MAYAGUEZ"
+  - from: "RINC'N"
+    states: ["PR"]
+    to: "RINCON"
+  # Louisiana — addfips wants the space (opposite of IL/IN convention)
+  - from: "LASALLE"
+    states: ["LA"]
+    to: "LA SALLE"
+  - from: "DESOTO"
+    states: ["LA"]
+    to: "DE SOTO"
+  # Texas — addfips wants no space (opposite of IL convention)
+  - from: "DE WITT"
+    states: ["TX"]
+    to: "DEWITT"
+  # Alaska — historical census-area names missing the addfips hyphenation convention
+  - from: "VALDEZ CORDOVA"
+    states: ["AK"]
+    to: "VALDEZ-CORDOVA"
+  - from: "YUKON KOYUKUK"
+    states: ["AK"]
+    to: "YUKON-KOYUKUK"
+  - from: "PRINCE OF WALES-HYDE"
+    states: ["AK"]
+    to: "PRINCE OF WALES-HYDER"
+  # Virginia — single-character truncation in raw export
+  - from: "COLONIAL HEIGHTS CIT"
+    states: ["VA"]
+    to: "COLONIAL HEIGHTS"

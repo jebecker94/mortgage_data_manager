@@ -1,0 +1,83 @@
+# UMBS spec-to-file-header alias mappings (hand-curated).
+#
+# The Fannie UMBS glossary (schemas/umbs/mbsglossary.xlsx) is authoritative for
+# field types, but its `Attribute Name` column doesn't always match the literal
+# headers in the disclosure files byte-for-byte: file headers drop the ® mark,
+# capitalize "To" instead of "to" in "Loan-To-Value", collapse double spaces,
+# etc. This file captures every divergence as an explicit alias so the schema
+# builder can map spec dtypes to the names polars sees.
+#
+# Edit this file (not schemas.yaml) when Fannie revises the glossary or the
+# disclosure format. After editing, regenerate schemas.yaml:
+#     python -m mortgage_data_manager.umbs.schemas build
+#
+# Structure:
+#   sheet_aliases:
+#     <sheet-name>:
+#       <spec-name>: <file-header-name>
+#   legacy_inherits_from_spec:
+#     <legacy-file-header>: <current-spec-name>
+#
+# The keys under sheet_aliases match Fannie glossary sheet names verbatim
+# (including any trailing whitespace in the original tab labels).
+
+sheet_aliases:
+  # ---- Loan Level (sheet 7-SC Loan Level) -------------------------------
+  "7-SC Loan Level ":
+    "Alternative Delinquency Resolutions Type": "Alternative Delinquency Resolution"
+    "Classic FICO®": "Classic FICO"
+    "Combined Loan-to-Value (CLTV)": "Combined Loan-To-Value (CLTV)"
+    "Debt-to-Income (DTI)": "Debt-To-Income (DTI)"
+    "Estimated Loan-to-Value (ELTV)": "Estimated Loan-To-Value (ELTV)"
+    "First Time Homebuyer Indicator": "First Time Home Buyer Indicator"
+    "Loan-to-Value (LTV)": "Loan-To-Value (LTV)"
+    # Spec calls it "MBS Margin"; file header is "MBS PC Margin" — Fannie
+    # retained the legacy "PC" (Participation Certificate) label pre-2019.
+    "MBS Margin": "MBS PC Margin"
+    # Spec has a stray double space; file uses a single space.
+    "Origination Amortization  Type": "Origination Amortization Type"
+    "Origination Classic FICO®": "Origination Classic FICO"
+    "Origination Combined Loan-to-Value (CLTV)": "Origination Combined Loan-To-Value (CLTV)"
+    "Origination Debt-to-Income Ratio": "Origination Debt-To-Income Ratio"
+    "Origination Loan-to-Value (LTV)": "Origination Loan-To-Value (LTV)"
+    "Origination VantageScore® 4.0": "Origination VS4"
+    "Updated Classic FICO®": "Updated Classic FICO"
+    "Updated VantageScore® 4.0": "Updated VS4"
+    "VantageScore® 4.0": "VS4"
+
+  # ---- Security Level (sheet 8-SC Security Level) -----------------------
+  "8-SC Security Level":
+    # Double-space in spec → single-space in file headers.
+    "Involuntary Loan Removal  (Loan Count)": "Involuntary Loan Removal (Loan Count)"
+    "Involuntary Loan Removal  (Prior Month UPB)": "Involuntary Loan Removal (Prior Month UPB)"
+    "WA Classic FICO®": "WA Classic FICO"
+    "WA Combined Loan-to-Value (CLTV)": "WA Combined Loan-To-Value (CLTV)"
+    "WA Debt-to-Income (DTI)": "WA Debt-To-Income (DTI)"
+    "WA Estimated Loan-to-Value (ELTV)": "WA Estimated Loan-To-Value (ELTV)"
+    "WA Loan-to-Value (LTV)": "WA Loan-To-Value (LTV)"
+    "WA MBS Margin": "WA MBS PC Margin"
+    "WA Origination Classic FICO®": "WA Origination Classic FICO"
+    "WA Origination Combined Loan-to-Value (CLTV)": "WA Origination Combined Loan-To-Value (CLTV)"
+    "WA Origination Debt-to-Income (DTI)": "WA Origination Debt-To-Income (DTI)"
+    "WA Origination Loan-to-Value (LTV)": "WA Origination Loan-To-Value (LTV)"
+    "WA Origination VantageScore® 4.0": "WA Origination VS4"
+    "WA Updated Classic FICO®": "WA Updated Classic FICO"
+    "WA Updated VantageScore® 4.0": "WA Updated VS4"
+    "WA VantageScore® 4.0": "WA VS4"
+
+# Columns that appear in older bronze files but were renamed in the current
+# Fannie spec. The legacy file header (key) inherits its dtype from the
+# current spec field name (value). Lets the spec drive dtypes even for
+# historical column labels in pre-2021 vintages.
+legacy_inherits_from_spec:
+  # Loan Level — Credit Score → Classic FICO rename (pre-2021 → current).
+  "Borrower Credit Score": "Classic FICO®"
+  "Origination Credit Score": "Origination Classic FICO®"
+  "Updated Credit Score": "Updated Classic FICO®"
+  # Security Level — same rename, WA-prefixed.
+  "WA Borrower Credit Score": "WA Classic FICO®"
+  "WA Origination Credit Score": "WA Origination Classic FICO®"
+  # Double-space typo in some FHLMC file headers — same field as the
+  # canonical "WA Origination Credit Score".
+  "WA  Origination Credit Score": "WA Origination Classic FICO®"
+  "WA Updated Credit Score": "WA Updated Classic FICO®"

@@ -1,0 +1,2425 @@
+# UMBS bronze layer column schemas.
+#
+# AUTO-GENERATED — DO NOT EDIT BY HAND. To regenerate, run:
+#     python -m mortgage_data_manager.umbs.schemas build
+#
+# Source of truth: Fannie Mae UMBS Disclosure Guide
+# (schemas/umbs/mbsglossary.xlsx). The Single Security Initiative (2019)
+# harmonized Fannie and Freddie UMBS disclosure formats, so this single
+# spec governs both GSEs' files.
+#
+# Hand-curated overrides (cosmetic glossary-vs-file-header drift, legacy
+# column renames, sheet-to-folder mapping) live in spec_aliases.yaml.
+#
+# Shape: gse → folder → column → polars dtype name ("String"|"Int64"|"Float64").
+# Loaded by umbs.schemas._load_bronze_schemas() with lru_cache and
+# consumed by import_bronze.py to pin polars dtypes at scan time.
+
+FHLMC:
+  AC:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Initial Step Fixed-Rate Period: String
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Months to Amortization: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    VS4: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Loan Term: Int64
+    Property Valuation Method: String
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Classic FICO: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Number of Borrowers: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  AR:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Notes Ongoing: String
+    Filler_duplicated_0: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    Mission Density Score: Float64
+    WA Negative Amortization Limit: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    Mission Index Version: String
+    WA Origination Loan-To-Value (LTV): Int64
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    Mission Criteria Share: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Involuntary Loan Removal (Loan Count): Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    Maturity Date: Int64
+    WA Issuance Remaining Months to Maturity: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  AU:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Initial Step Fixed-Rate Period: String
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Months to Amortization: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    VS4: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Loan Term: Int64
+    Property Valuation Method: String
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Classic FICO: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Number of Borrowers: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  CG:
+    CUSIP: String
+    Interest Rate: Float64
+    Trust Identifier: String
+    Security Factor: Float64
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Component Identifier: String
+  DC:
+    Interest Rate: Float64
+    CUSIP: String
+    Interest Rate Effective Date: Int64
+    Trust Identifier: String
+    Next Payment Date: Int64
+    Class Identifier: String
+  DR:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  FD:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Notes Ongoing: String
+    Filler_duplicated_0: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    Mission Density Score: Float64
+    WA Negative Amortization Limit: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    Mission Index Version: String
+    WA Origination Loan-To-Value (LTV): Int64
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    Mission Criteria Share: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Involuntary Loan Removal (Loan Count): Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    Maturity Date: Int64
+    WA Issuance Remaining Months to Maturity: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  FRE_DPR_Fctr:
+    Cohort WA Current Loan Age: Int64
+    ? 'Cumulative CPR                                                                                                                            '
+    : Float64
+    WA Net Interest Rate: Float64
+    Year: String
+    Principal Reduction Amount: Float64
+    Cumulative Principal Reduction Amount: Float64
+    Type of Security: String
+    Cohort WA Current Interest Rate: Float64
+    SMM: Float64
+    Unscheduled Principal Reduction Amount: Float64
+    Factor Date: Int64
+    Cohort Current UPB: Float64
+    CPR: Float64
+    Cumulative Unscheduled Principal Reduction Amount: Float64
+    Date: Int64
+    Cumulative SMM: Float64
+    Cohort WA Current Remaining Months to Maturity: Int64
+  FRE_ILLD:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Borrower Credit Score: Int64
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Initial Step Fixed-Rate Period: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Updated Credit Score: Int64
+    Months to Amortization: Int64
+    Origination Credit Score: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Filler_duplicated_4: String
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    Loan Term: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Property Valuation Method: String
+    VS4: Int64
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Number of Borrowers: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Classic FICO: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Filler_duplicated_3: String
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Filler_duplicated_5: String
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  FRE_IS:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Filler_duplicated_0: String
+    Notes Ongoing: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    WA Negative Amortization Limit: Float64
+    Mission Density Score: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    WA Origination Loan-To-Value (LTV): Int64
+    Mission Index Version: String
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    Filler_duplicated_2: String
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    Delinquent Loans Purchased (Loan Count): String
+    Mission Criteria Share: Float64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    Social Density Score: Float64
+    WA Net Life Interest Rate Ceiling: Float64
+    WA Borrower Credit Score: Int64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Maturity Date: Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    WA Issuance Remaining Months to Maturity: Int64
+    Involuntary Loan Removal (Loan Count): Int64
+    WA Origination Credit Score: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Social Criteria Share: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    Delinquent Loans Purchased (Prior Month UPB): String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Updated Credit Score: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  FRE_RILLD:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Initial Step Fixed-Rate Period: String
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Months to Amortization: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    VS4: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Loan Term: Int64
+    Property Valuation Method: String
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Classic FICO: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Number of Borrowers: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  FRE_RIS:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Filler_duplicated_0: String
+    Notes Ongoing: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    WA Negative Amortization Limit: Float64
+    Mission Density Score: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    WA Origination Loan-To-Value (LTV): Int64
+    Mission Index Version: String
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    Filler_duplicated_2: String
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    Delinquent Loans Purchased (Loan Count): String
+    Mission Criteria Share: Float64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    Social Density Score: Float64
+    WA Net Life Interest Rate Ceiling: Float64
+    WA Borrower Credit Score: Int64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Maturity Date: Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    WA Issuance Remaining Months to Maturity: Int64
+    Involuntary Loan Removal (Loan Count): Int64
+    WA Origination Credit Score: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Social Criteria Share: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    Delinquent Loans Purchased (Prior Month UPB): String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Updated Credit Score: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  FT:
+    Principal Paydown Factor: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  FU:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Borrower Credit Score: Int64
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Initial Step Fixed-Rate Period: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Updated Credit Score: Int64
+    Months to Amortization: Int64
+    Origination Credit Score: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Filler_duplicated_4: String
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    Loan Term: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Property Valuation Method: String
+    VS4: Int64
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Number of Borrowers: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Classic FICO: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Filler_duplicated_3: String
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Filler_duplicated_5: String
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  GT:
+    Principal Paydown Factor: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  ID:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  IR:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  IS:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  MD:
+    Principal Paydown Factor: Float64
+    Yield Maintenance Premium/Penalty Amount: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Inssuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  MI:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Filler_duplicated_0: String
+    Notes Ongoing: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    WA Negative Amortization Limit: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    WA Origination Loan-To-Value (LTV): Int64
+    WA Debt Service Coverage Ratio (DSCR): Float64
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Remaining Amortization Term: Float64
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Original Interest Only Term: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    Filler_duplicated_2: String
+    Unconverted WA Net Interest Rate: Float64
+    WA Current Interest Rate: Float64
+    WA  Origination Credit Score: Int64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    WA Original Balloon Term: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    Converted WA Net Interest Rate: Float64
+    Prepayment Penalty Provision: String
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    WA Borrower Credit Score: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Involuntary Loan Removal (Loan Count): Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    Maturity Date: Int64
+    WA Issuance Remaining Months to Maturity: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    Issuer: String
+    Security Description: String
+    Security Factor: Float64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Interest Accrual Method: String
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Updated Credit Score: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Green Advantage: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  MR:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  MT:
+    Principal Paydown Factor: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  MW:
+    Third Party Origination UPB Percent: Float64
+    Filler_duplicated_0: String
+    Notes Ongoing: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    WA Debt Service Coverage Ratio (DSCR): Float64
+    Updated Longest Maturity Date: Int64
+    Filler: String
+    CUSIP: String
+    Reduced Minimum Servicing Indicator: String
+    WA Current Interest Rate: Float64
+    WA  Origination Credit Score: Int64
+    Eligible for Resecuritization: String
+    WA Life Interest Rate Ceiling: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    Converted WA Net Interest Rate: Float64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Notes: String
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    WA Loan Age: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Current Investor Security UPB: Float64
+    Involuntary Loan Removal (Loan Count): Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Payment Lookback: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Issuer: String
+    Security Description: String
+    Security Factor: Float64
+    WA Mortgage Loan Amount: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Updated Credit Score: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    Negative Amortization Indicator: String
+    WA Net Accrual Interest Rate: Float64
+    Security Notification Indicator: String
+    Initial Step Fixed-Rate Period: String
+    Prefix: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Origination Loan-To-Value (LTV): Int64
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    WA Remaining Amortization Term: Float64
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Original Interest Only Term: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    Filler_duplicated_2: String
+    Unconverted WA Net Interest Rate: Float64
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    Initial Interest Rate Cap Up %: Float64
+    WA Original Balloon Term: Float64
+    Prepayment Penalty Provision: String
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    WA Origination Mortgage Loan Amount: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    Subtype: String
+    WA Borrower Credit Score: Int64
+    Issue Date: Int64
+    Maturity Date: Int64
+    WA Issuance Remaining Months to Maturity: Int64
+    WA Debt-To-Income (DTI): Int64
+    Interest Only Security Indicator: String
+    WA Net Life Interest Rate Floor: Float64
+    Payment Adjustment Frequency: Int64
+    Filler_duplicated_1: String
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    Interest Accrual Method: String
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    First Rate Adjustment Date: Int64
+    WA Origination Loan Term: Int64
+    Green Advantage: String
+    WA Origination Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    WA Negative Amortization Limit: Float64
+  OP:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  RD:
+    Interest Rate: Float64
+    CUSIP: String
+    Interest Rate Effective Date: Int64
+    Trust Identifier: String
+    Next Payment Date: Int64
+    Class Identifier: String
+  SF:
+    Principal Paydown Factor: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  SX:
+    Principal Paydown Factor: Float64
+    Yield Maintenance Premium/Penalty Amount: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    ' Accretion Factor': Float64
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  TB:
+    Principal Paydown Factor: Float64
+    Yield Maintenance Premium/Penalty Amount: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Inssuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  TQ:
+    Principal Paydown Factor: Float64
+    Yield Maintenance Premium/Penalty Amount: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Inssuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  TV:
+    Principal Paydown Factor: Float64
+    Yield Maintenance Premium/Penalty Amount: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Inssuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  WJ:
+    Principal Paydown Factor: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  WL:
+    CUSIP: String
+    Interest Rate: Float64
+    Trust Identifier: String
+    Security Factor: Float64
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Component Identifier: String
+  XF:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Notes Ongoing: String
+    Filler_duplicated_0: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    Mission Density Score: Float64
+    WA Negative Amortization Limit: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    Mission Index Version: Int64
+    WA Origination Loan-To-Value (LTV): Int64
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    Mission Criteria Share: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Involuntary Loan Removal (Loan Count): Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    Maturity Date: Int64
+    WA Issuance Remaining Months to Maturity: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+FNMA:
+  FNM_DPR_FCTR:
+    Cumulative Principal Reduction Amount: Float64
+    WA Net Interest Rate: Float64
+    WA Interest Rate: Float64
+    Year: String
+    Unscheduled Principal Reduction Amount: Float64
+    Factor Date: Int64
+    Current Scheduled UPB: Float64
+    WA Remaining Months to Maturity: Int64
+    Principal Reduction Amount: Float64
+    Cumulative Unscheduled Principal Reduction Amount: Float64
+    Date: Int64
+    WA Loan Age: Int64
+    Type of Security: String
+  FNM_ESF_MS:
+    WA Classic FICO: Int64
+    Third Party Origination UPB Percent: Float64
+    WA Current Interest Rate with excess contribution percent: Float64
+    WA Loan Age with excess contribution percent: Int64
+    Filler_duplicated_0: String
+    WA Classic FICO with excess contribution percent: Int64
+    WA VS4 with excess contribution percent: Int64
+    WA Loan Age: Int64
+    Loan Count: Int64
+    Trust Identifier: String
+    WA Current Remaining Months to Maturity: Int64
+    WA Loan-To-Value (LTV) with excess contribution percent: Int64
+    Current Investor Security UPB with Excess Contribution Percent: Float64
+    WA Combined Loan-To-Value (CLTV) with excess contribution percent: Int64
+    Maturity Date: Int64
+    Current Investor Security UPB: Float64
+    Issue Date: Int64
+    WA Issuance Remaining Months to Maturity: Int64
+    Involuntary Loan Removal (Loan Count): Int64
+    Updated Longest Maturity Date: Int64
+    WA Debt-To-Income (DTI): Int64
+    Filler: String
+    CUSIP: String
+    WA Excess Strip Percent: Float64
+    WA Net Interest Rate with excess contribution percent: Float64
+    Security Factor Date: Int64
+    WA Issuance Interest Rate: Float64
+    Security Identifier: String
+    Seller Name: String
+    Issuer: String
+    WA Net Interest Rate: Float64
+    WA Debt-To-Income (DTI) with excess contribution percent: Int64
+    WA VS4: Int64
+    WA Current Remaining Months to Maturity with excess contribution percent: Int64
+    WA Issuance Remaining Months to Maturity with excess contribution percent: Int64
+    WA Current Interest Rate: Float64
+    WA Mortgage Loan Amount: Float64
+    Class Identifier: String
+    Servicer Name: String
+    Issuance Investor Security UPB: Float64
+    Average Mortgage Loan Amount: Float64
+    WA Class Identifier: String
+    WA Issuance Interest Rate with excess contribution percent: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    WA Loan Term with excess contribution percent: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Issuance Investor Security UPB with Excess Contribution Percent: Float64
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Mortgage Loan Amount with excess contribution percent: Float64
+  FNM_GN_MEGA:
+    Scheduled Distribution Date: Int64
+    Issuance Investor  Security UPB: Float64
+    WA Net Interest Rate: Float64
+    Security Factor: Float64
+    Product: String
+    CUSIP: String
+    WA Loan Age: Int64
+    WA Current Remaining Months to Maturity: Int64
+    WA Current Interest Rate: Float64
+    Issue Date: Int64
+    WA Issuance Interest Rate: Float64
+    Prefix: String
+    Security Identifier: String
+    WA Issuance Remaining Months to Maturity: Int64
+    Maturity Date: Int64
+  FNM_ILLD:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Borrower Credit Score: Int64
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Initial Step Fixed-Rate Period: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Updated Credit Score: Int64
+    Months to Amortization: Int64
+    Origination Credit Score: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Filler_duplicated_4: String
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    Loan Term: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Property Valuation Method: String
+    VS4: Int64
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Number of Borrowers: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Classic FICO: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Filler_duplicated_3: String
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Filler_duplicated_5: String
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  FNM_IS:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Filler_duplicated_0: String
+    Notes Ongoing: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    WA Negative Amortization Limit: Float64
+    Mission Density Score: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    WA Origination Loan-To-Value (LTV): Int64
+    Mission Index Version: String
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    Filler_duplicated_2: String
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    Delinquent Loans Purchased (Loan Count): String
+    Mission Criteria Share: Float64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    WA Borrower Credit Score: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Social Density Score: Float64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Maturity Date: Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    WA Issuance Remaining Months to Maturity: Int64
+    Involuntary Loan Removal (Loan Count): Int64
+    WA Origination Credit Score: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Social Criteria Share: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    Delinquent Loans Purchased (Prior Month UPB): String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Updated Credit Score: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  FNM_MF:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Notes Ongoing: String
+    Filler_duplicated_0: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    Mission Density Score: Float64
+    WA Negative Amortization Limit: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    Mission Index Version: String
+    WA Origination Loan-To-Value (LTV): Int64
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    Mission Criteria Share: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Involuntary Loan Removal (Loan Count): Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    Maturity Date: Int64
+    WA Issuance Remaining Months to Maturity: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  FNM_MLLD:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Borrower Credit Score: Int64
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Initial Step Fixed-Rate Period: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Updated Credit Score: Int64
+    Months to Amortization: Int64
+    Origination Credit Score: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Filler_duplicated_4: String
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    Loan Term: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Property Valuation Method: String
+    VS4: Int64
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Number of Borrowers: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Classic FICO: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Filler_duplicated_3: String
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Filler_duplicated_5: String
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  FNM_REMIC:
+    Principal Paydown Factor: Float64
+    Accretion Factor: String
+    '03272026': String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    '03312026': String
+    Trust Identifier: String
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    '04302026': String
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String
+  FNM_REMIC_COMPONENT:
+    CUSIP: String
+    Interest Rate: Float64
+    Trust Identifier: String
+    Security Factor: Float64
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Component Identifier: String
+  FNM_REMIC_SHORT:
+    CUSIP: String
+    Trust Identifier: String
+    Current Shortfall Amount: Float64
+    Class Identifier: String
+    Cumulative Shortfall Amount: Float64
+  FNM_RESET_D:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  FNM_RESET_D_RATES:
+    Interest Rate: Float64
+    CUSIP: String
+    Interest Rate Effective Date: Int64
+    Trust Identifier: String
+    Next Payment Date: Int64
+    Class Identifier: String
+  FNM_RESET_ND:
+    Current Month Payment Indicator: String
+    Index: String
+    Index Description: String
+    Index Value: Float64
+  FNM_RESET_ND_RATES:
+    Interest Rate: Float64
+    CUSIP: String
+    Interest Rate Effective Date: Int64
+    Trust Identifier: String
+    Next Payment Date: Int64
+    Class Identifier: String
+  FNM_RILLD:
+    Mortgage Margin: Float64
+    Initial Interest Rate Cap Up Percent: Float64
+    Filler_duplicated_0: String
+    Loan Age As Of Modification: Int64
+    Step Rate Adjustment Frequency: Int64
+    Prepayment Penalty Total Term: String
+    Issuance Net Interest Rate: Float64
+    Initial Step Fixed-Rate Period: String
+    Estimated Loan-To-Value (ELTV): Int64
+    Prepayment Penalty Indicator: String
+    Prefix: String
+    Convertibility Indicator: String
+    Current Interest Rate: Float64
+    Loan Purpose: String
+    Months to Amortization: Int64
+    Remaining Months to Maturity: Int64
+    Mortgage Loan Amount: Float64
+    Initial Fixed Rate Period: String
+    Origination Loan Purpose: String
+    Mortgage Insurance Cancellation Indicator: String
+    Interest Rate Adjustment Frequency: Int64
+    Alternative Delinquency Resolution: String
+    Servicer State: String
+    Filler: String
+    Months to Next Interest Rate Adjustment Date: Int64
+    Days Delinquent: Int64
+    CUSIP: String
+    Interest Rate Lookback: Int64
+    Months to Next Step Rate Adjustment Date: Int64
+    Current Investor Loan UPB: Float64
+    Seller Name: String
+    Updated Classic FICO: Int64
+    Total Deferral Amount: Float64
+    Number of Remaining Steps: Int64
+    Assumability Indicator: String
+    MBS PC Margin: Float64
+    Periodic Interest Rate Cap Down Percent: Float64
+    Filler_duplicated_2: String
+    Original Interest Rate: Float64
+    Government Insured Guarantee: String
+    Mortgage Insurance Percent: String
+    Number of Units: Int64
+    First Payment Date: Int64
+    Seller City: String
+    Loan-To-Value (LTV): Int64
+    Number of Modifications: Int64
+    Interest Bearing Mortgage Loan Amount: Float64
+    Life Ceiling Interest Rate: Float64
+    Life Ceiling Net Interest Rate: Float64
+    Property Type: String
+    Original Deferred Amount: Float64
+    Periodic Step Cap Up Percent: Float64
+    Origination Debt-To-Income Ratio: Int64
+    Special Eligibility Program: String
+    Loan Identifier: String
+    VS4: Int64
+    First Time Home Buyer Indicator: String
+    Issuance Interest Rate: Float64
+    Loan Age: Int64
+    Loan Term: Int64
+    Property Valuation Method: String
+    Interest Rate Rounding Method Percent: String
+    Origination Channel: String
+    Loan Correction Indicator: String
+    Loan Participation Percent: Float64
+    Origination Loan Term: Int64
+    Channel: String
+    Occupancy Status: String
+    Terminal Step Date: Int64
+    Origination Interest Rate: Float64
+    Classic FICO: Int64
+    Amortization Type: String
+    Origination First Payment Date: Int64
+    Number of Borrowers: Int64
+    Maturity Date: Int64
+    Updated VS4: Int64
+    Periodic Interest Rate Cap Up Percent: Float64
+    Origination VS4: Int64
+    Interest Only First Principal and Interest Payment Date: Int64
+    Current Deferred UPB: Float64
+    Terminal Step Rate: Float64
+    Seller State: String
+    Debt-To-Income (DTI): Int64
+    Interest Rate Step Indicator: String
+    Total Number of Steps: Int64
+    Servicer City: String
+    Next Step Rate: Float64
+    Security Identifier: String
+    Combined Loan-To-Value (CLTV): Int64
+    Filler_duplicated_1: String
+    Interest Only Loan Indicator: String
+    Borrower Assistance Plan: String
+    Total Capitalized Amount: Float64
+    Current Net Interest Rate: Float64
+    Next Interest Rate Adjustment Date: Int64
+    Initial Interest Rate Cap Down Percent: Float64
+    Origination Classic FICO: Int64
+    Index: String
+    Life Floor Net Interest Rate: Float64
+    Origination Loan-To-Value (LTV): Int64
+    Modification Type: String
+    Servicer Name: String
+    Life Floor Interest Rate: Float64
+    Origination Occupancy Status: String
+    Modification Program: String
+    Next Step Rate Adjustment Date: Int64
+    Interest Rate Rounding Method: String
+    Loan Performance History: String
+    Origination Interest Only Loan Indicator: String
+    Origination Amortization Type: String
+    Origination Combined Loan-To-Value (CLTV): Int64
+    Property State: String
+    Issuance Investor Loan UPB: Float64
+    Origination Mortgage Loan Amount: Float64
+    Origination Maturity Date: Int64
+    Number of Alternative Delinquency Resolutions: Int64
+  FNM_RIS:
+    Security Notification Indicator: String
+    Third Party Origination UPB Percent: Float64
+    Filler_duplicated_0: String
+    Notes Ongoing: String
+    Green Indicator: String
+    Step Rate Adjustment Frequency: Int64
+    Initial Step Fixed-Rate Period: String
+    WA Negative Amortization Limit: Float64
+    Mission Density Score: Float64
+    Prepayment Penalty Indicator: String
+    Loan Count: Int64
+    Convertibility Indicator: String
+    WA Current Remaining Months to Maturity: Int64
+    WA Origination Loan-To-Value (LTV): Int64
+    Mission Index Version: String
+    Initial Fixed Rate Period: String
+    Negative Amortization Factor: Float64
+    Updated Longest Maturity Date: Int64
+    Average Origination Mortgage Loan Amount: Float64
+    Servicer State: String
+    Interest Rate Adjustment Frequency: Int64
+    Filler: String
+    CUSIP: String
+    WA MBS PC Margin: Float64
+    Interest Rate Lookback: Int64
+    WA Months to Amortization: Int64
+    Reduced Minimum Servicing Indicator: String
+    WA Issuance Interest Rate: Float64
+    Seller Name: String
+    WA Net Interest Rate: Float64
+    WA Months to Next Rate Adjustment Date: Int64
+    Filler_duplicated_2: String
+    WA Current Interest Rate: Float64
+    Initial Interest Rate Cap Down %: Float64
+    Eligible for Resecuritization: String
+    Issuance Investor Security UPB: Float64
+    Seller City: String
+    WA Life Interest Rate Ceiling: Float64
+    Initial Interest Rate Cap Up %: Float64
+    Involuntary Loan Removal (Prior Month UPB): Float64
+    First Payment Adjustment Date: Int64
+    Payment Delay Days: Int64
+    WA Combined Loan-To-Value (CLTV): Int64
+    Security Data Correction Indicator: String
+    WA Loan-To-Value (LTV): Int64
+    WA Loan Term: Int64
+    Notes: String
+    WA Origination Mortgage Loan Amount: Float64
+    WA Months to Next Step Rate Adjustment: Int64
+    Delinquent Loans Purchased (Loan Count): String
+    Mission Criteria Share: Float64
+    WA Classic FICO: Int64
+    Periodic Interest Rate Cap Up %: Float64
+    Periodic Interest Rate Cap Down %: Float64
+    WA Updated Classic FICO: Int64
+    WA Origination VS4: Int64
+    WA Estimated Loan-To-Value (ELTV): Int64
+    Subtype: String
+    WA Loan Age: Int64
+    WA Borrower Credit Score: Int64
+    WA Net Life Interest Rate Ceiling: Float64
+    Social Density Score: Float64
+    Issue Date: Int64
+    Current Investor Security UPB: Float64
+    Maturity Date: Int64
+    Security Status Indicator: String
+    WA Mortgage Margin: Float64
+    WA Issuance Remaining Months to Maturity: Int64
+    Involuntary Loan Removal (Loan Count): Int64
+    WA Origination Credit Score: Int64
+    WA Debt-To-Income (DTI): Int64
+    Seller State: String
+    Origination Third Party Origination UPB Percent: Float64
+    Interest Only Security Indicator: String
+    Payment Lookback: Int64
+    WA Net Life Interest Rate Floor: Float64
+    Social Criteria Share: Float64
+    Payment Adjustment Frequency: Int64
+    Security Factor Date: Int64
+    Servicer City: String
+    Security Identifier: String
+    Filler_duplicated_1: String
+    WA Origination Classic FICO: Int64
+    Issuer: String
+    Security Description: String
+    Delinquent Loans Purchased (Prior Month UPB): String
+    WA VS4: Int64
+    Security Factor: Float64
+    WA Updated VS4: Int64
+    Index: String
+    WA Origination Debt-To-Income (DTI): Int64
+    WA Mortgage Loan Amount: Float64
+    Servicer Name: String
+    WA Life Interest Rate Floor: Float64
+    Average Mortgage Loan Amount: Float64
+    Next Step Rate Adjustment Date: Int64
+    WA Updated Credit Score: Int64
+    WA Origination Combined Loan-To-Value (CLTV): Int64
+    Periodic Step Rate Cap Up %: Float64
+    First Rate Adjustment Date: Int64
+    Negative Amortization Indicator: String
+    WA Origination Loan Term: Int64
+    Social Indicator: String
+    WA Origination Interest Rate: Float64
+    WA Net Accrual Interest Rate: Float64
+    Prefix: String
+  FNM_SMBS:
+    Principal Paydown Factor: Float64
+    Accretion Factor: String
+    Interest Paid: Float64
+    Security Factor: Float64
+    Class Current Investor Security UPB: Float64
+    Interest Rate: Float64
+    Trust Identifier: String
+    Class Identifier: String
+    Class Issuance Investor Security UPB: Float64
+    Maturity Date: Int64
+    Scheduled Distribution Date: Int64
+    Yield Maintenance Premium/ Penalty Amount: Float64
+    Principal Paydown Amount: Float64
+    Interest Factor: Float64
+    Accretion Amount: String
+    CUSIP: String
+    Notes: String

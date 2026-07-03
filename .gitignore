@@ -1,0 +1,116 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Linting / Type checking
+.ruff_cache/
+.mypy_cache/
+
+# Schema PDFs (large binary files)
+schemas/fhfa/**/*.pdf
+schemas/fhfa/**/*.PDF
+schemas/gnma/**/*.pdf
+schemas/gnma/**/*.PDF
+schemas/umbs/**/*.pdf
+schemas/umbs/**/*.PDF
+schemas/umbs/**/*.xlsx
+
+# Data (gitignored - large files, symlinked to external storage)
+data/
+data
+
+# Crosswalk outputs (selected workflows tracked via Git LFS)
+!crosswalk/
+crosswalk/*
+!crosswalk/mbs_umbs/
+!crosswalk/fhfa_hmda/
+!crosswalk/mbs_fhfa/
+
+# Output files (generated visualizations, reports)
+/output/
+/output
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment
+.env
+.env.local
+
+# Proprietary / non-public data root (default location; should be overridden to
+# an external path via MORTGAGE_PRIVATE_DATA_DIR). Never commit proprietary data.
+private/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Local scripts and vendor references (not documentation)
+scripts/
+references/
+
+# Agent guidance is private/local-only — not published. Conventions live in the
+# workspace-level CLAUDE.md (one dir up), which Claude Code loads when working here.
+CLAUDE.md
+
+.git-backup
+
+# Investigation files
+investigation/
+investigations/
+
+# Deprecated code (kept for reference but not tracked)
+**/deprecated/
+*.log
+
+# Planning folder
+planning/
+
+# Outputs folder
+outputs/
+output/

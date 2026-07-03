@@ -1,0 +1,241 @@
+Field #,Field Width,Field Name,year
+1,1,Enterprise Flag,2010
+2,7,Record Number,2010
+3,1,2000 Census Tract - Percent Minority,2010
+4,1,Tract Income Ratio,2010
+5,1,Borrower Income Ratio,2010
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2010
+7,1,Purpose of Loan,2010
+8,1,Federal Guarantee,2010
+9,1,Credit Score,2010
+10,1,Product Type,2010
+11,9,Purchase Price,2010
+12,2,Interest Rate at Origination,2010
+13,1,Term of Mortgage at Origination,2010
+14,1,Amortization Term,2010
+15,1,Portfolio Flag,2010
+16,6,Percent Repurchased,2010
+1,1,Enterprise Flag,2011
+2,7,Record Number,2011
+3,1,2000 Census Tract - Percent Minority,2011
+4,1,Tract Income Ratio,2011
+5,1,Borrower Income Ratio,2011
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2011
+7,1,Purpose of Loan,2011
+8,1,Federal Guarantee,2011
+9,1,Credit Score,2011
+10,1,Product Type,2011
+11,9,Purchase Price,2011
+12,2,Interest Rate at Origination,2011
+13,1,Term of Mortgage at Origination,2011
+14,1,Amortization Term,2011
+15,1,Portfolio Flag,2011
+16,6,Percent Repurchased,2011
+1,1,Enterprise Flag,2012
+2,7,Record Number,2012
+3,1,2010 Census Tract - Percent Minority,2012
+4,1,Tract Income Ratio,2012
+5,1,Borrower Income Ratio,2012
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2012
+7,1,Purpose of Loan,2012
+8,1,Federal Guarantee,2012
+9,1,Credit Score,2012
+10,1,Product Type,2012
+11,9,Purchase Price,2012
+12,2,Interest Rate at Origination,2012
+13,1,Term of Mortgage at Origination,2012
+14,1,Amortization Term,2012
+15,1,Portfolio Flag,2012
+16,6,Percent Repurchased,2012
+1,1,Enterprise Flag,2013
+2,7,Record Number,2013
+3,1,2010 Census Tract - Percent Minority,2013
+4,1,Tract Income Ratio,2013
+5,1,Borrower Income Ratio,2013
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2013
+7,1,Purpose of Loan,2013
+8,1,Federal Guarantee,2013
+9,1,Credit Score,2013
+10,1,Product Type,2013
+11,9,Purchase Price,2013
+12,2,Interest Rate at Origination,2013
+13,1,Term of Mortgage at Origination,2013
+14,1,Amortization Term,2013
+15,1,Portfolio Flag,2013
+16,6,Percent Repurchased,2013
+1,1,Enterprise Flag,2014
+2,7,Record Number,2014
+3,1,2010 Census Tract - Percent Minority,2014
+4,1,Tract Income Ratio,2014
+5,1,Borrower Income Ratio,2014
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2014
+7,1,Purpose of Loan,2014
+8,1,Federal Guarantee,2014
+9,1,Credit Score,2014
+10,1,Product Type,2014
+11,9,Purchase Price,2014
+12,2,Interest Rate at Origination,2014
+13,1,Term of Mortgage at Origination,2014
+14,1,Amortization Term,2014
+15,1,Portfolio Flag,2014
+16,6,Percent Repurchased,2014
+1,1,Enterprise Flag,2015
+2,7,Record Number,2015
+3,1,2010 Census Tract - Percent Minority,2015
+4,1,Tract Income Ratio,2015
+5,1,Borrower Income Ratio,2015
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2015
+7,1,Purpose of Loan,2015
+8,1,Federal Guarantee,2015
+9,1,Credit Score,2015
+10,1,Product Type,2015
+11,9,Purchase Price,2015
+12,2,Interest Rate at Origination,2015
+13,1,Term of Mortgage at Origination,2015
+14,1,Amortization Term,2015
+15,1,Portfolio Flag,2015
+16,6,Percent Repurchased,2015
+1,1,Enterprise Flag,2016
+2,7,Record Number,2016
+3,1,2010 Census Tract - Percent Minority,2016
+4,1,Tract Income Ratio,2016
+5,1,Borrower Income Ratio,2016
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2016
+7,1,Purpose of Loan,2016
+8,1,Federal Guarantee,2016
+9,1,Credit Score,2016
+10,1,Product Type,2016
+11,9,Purchase Price,2016
+12,2,Interest Rate at Origination,2016
+13,1,Term of Mortgage at Origination,2016
+14,1,Amortization Term,2016
+15,1,Portfolio Flag,2016
+16,6,Percent Repurchased,2016
+1,1,Enterprise Flag,2017
+2,7,Record Number,2017
+3,1,2010 Census Tract - Percent Minority,2017
+4,1,Tract Income Ratio,2017
+5,1,Borrower Income Ratio,2017
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",2017
+7,1,Purpose of Loan,2017
+8,1,Federal Guarantee,2017
+9,1,Credit Score,2017
+10,1,Product Type,2017
+11,9,Purchase Price,2017
+12,2,Interest Rate at Origination,2017
+13,1,Term of Mortgage at Origination,2017
+14,1,Amortization Term,2017
+15,1,Portfolio Flag,2017
+16,6,Percent Repurchased,2017
+1,1,Enterprise Flag,2018
+2,7,Record Number,2018
+3,1,2010 Census Tract - Percent Minority,2018
+4,1,Tract Income Ratio,2018
+5,1,Borrower Income Ratio,2018
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",2018
+7,1,Purpose of Loan,2018
+8,1,Federal Guarantee,2018
+9,1,Credit Score,2018
+10,1,Product Type,2018
+11,9,Purchase Price,2018
+12,2,Interest Rate at Origination,2018
+13,1,Term of Mortgage at Origination,2018
+14,1,Amortization Term,2018
+15,1,Portfolio Flag,2018
+16,6,Percent Repurchased,2018
+1,1,Enterprise Flag,2019
+2,7,Record Number,2019
+3,1,2010 Census Tract - Percent Minority,2019
+4,1,Tract Income Ratio,2019
+5,1,Borrower Income Ratio,2019
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",2019
+7,1,Purpose of Loan,2019
+8,1,Federal Guarantee,2019
+9,1,Credit Score,2019
+10,1,Product Type,2019
+11,9,Purchase Price,2019
+12,2,Interest Rate at Origination,2019
+13,1,Term of Mortgage at Origination,2019
+14,1,Amortization Term,2019
+15,1,Portfolio Flag,2019
+16,6,Percent Repurchased,2019
+1,1,Enterprise Flag,2020
+2,7,Record Number,2020
+3,1,2010 Census Tract - Percent Minority,2020
+4,1,Tract Income Ratio,2020
+5,1,Borrower Income Ratio,2020
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",2020
+7,1,Purpose of Loan,2020
+8,1,Federal Guarantee,2020
+9,1,Credit Score,2020
+10,1,Product Type,2020
+11,9,Purchase Price,2020
+12,2,Interest Rate at Origination,2020
+13,1,Term of Mortgage at Origination,2020
+14,1,Amortization Term,2020
+15,1,Portfolio Flag,2020
+16,6,Percent Repurchased,2020
+1,1,Enterprise Flag,2021
+2,7,Record Number,2021
+3,1,2010 Census Tract - Percent Minority,2021
+4,1,Tract Income Ratio,2021
+5,1,Borrower Income Ratio,2021
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",2021
+7,1,Purpose of Loan,2021
+8,1,Federal Guarantee,2021
+9,1,Credit Score,2021
+10,1,Product Type,2021
+11,9,Purchase Price,2021
+12,2,Interest Rate at Origination,2021
+13,1,Term of Mortgage at Origination,2021
+14,1,Amortization Term,2021
+15,1,Portfolio Flag,2021
+16,6,Percent Repurchased,2021
+1,1,Enterprise Flag,2022
+2,7,Record Number,2022
+3,1,2020 Census Tract - Percent Minority,2022
+4,1,Tract Income Ratio,2022
+5,1,Borrower Income Ratio,2022
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",2022
+7,1,Purpose of Loan,2022
+8,1,Federal Guarantee,2022
+9,1,Credit Score,2022
+10,1,Product Type,2022
+11,9,Purchase Price,2022
+12,2,Interest Rate at Origination,2022
+13,1,Term of Mortgage at Origination,2022
+14,1,Amortization Term,2022
+15,1,Portfolio Flag,2022
+16,6,Percent Repurchased,2022
+1,1,Enterprise Flag,2023
+2,7,Record Number,2023
+3,1,2020 Census Tract - Percent Minority,2023
+4,1,Tract Income Ratio,2023
+5,1,Borrower Income Ratio,2023
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",2023
+7,1,Purpose of Loan,2023
+8,1,Federal Guarantee,2023
+9,1,Credit Score,2023
+10,1,Product Type,2023
+11,9,Purchase Price,2023
+12,2,Interest Rate at Origination,2023
+13,1,Term of Mortgage at Origination,2023
+14,1,Amortization Term,2023
+15,1,Portfolio Flag,2023
+16,6,Percent Repurchased,2023
+1,1,Enterprise Flag,2024
+2,8,Record Number,2024
+3,1,2020 Census Tract - Percent Minority,2024
+4,1,Tract Income Ratio,2024
+5,1,Borrower Income Ratio,2024
+6,1,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",2024
+7,1,Purpose of Loan,2024
+8,1,Federal Guarantee,2024
+9,1,Credit Score,2024
+10,1,Product Type,2024
+11,9,Purchase Price,2024
+12,2,Interest Rate at Origination,2024
+13,1,Term of Mortgage at Origination,2024
+14,1,Amortization Term,2024
+15,1,Portfolio Flag,2024
+16,6,Percent Repurchased,2024

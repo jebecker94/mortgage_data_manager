@@ -1,0 +1,733 @@
+Item,Data Element,Type,Max Length,Format,Description,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+01,Record Type = HP,Character,2,,,File Header Record,hnissuesPS_layout.pdf,,,HP,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,hnissuesPS_layout.pdf,,,HP,,
+03,Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,hnissuesPS_layout.pdf,,,HP,,
+01,Record Type = PS,Character,2,,,HMBS Pool/Security Detail Record,hnissuesPS_layout.pdf,,,PS,,
+02,CUSIP Number,Character,9,Col4,,The unique identification number permanently assigned by the Committee on Uniform Securities Identification Procedures (CUSIP).,hnissuesPS_layout.pdf,,,PS,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is
+assigned by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,PS,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is H.,hnissuesPS_layout.pdf,,,PS,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,PS,,
+06,Index Type,Character,5,,,"The type of ARM index being used. It will be either CMT
+(Constant Maturity Treasury), LIBOR (London Interbank
+Offered Rate), or SOFR (Secured Overnight Financing Rate).
+(SOFR implementation TBD).",hnissuesPS_layout.pdf,,,PS,,
+07,Pool Issue Date,Date,8,YYYYMMDD,,The date the pool was issued.,hnissuesPS_layout.pdf,,,PS,,
+08,Pool Maturity Date,Date,8,YYYYMMDD,,"The date on which the final payment for the Security is
+scheduled to be paid.",hnissuesPS_layout.pdf,,,PS,,
+09,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer responsible
+for the pool.",hnissuesPS_layout.pdf,,,PS,,
+10,Issuer Name,Character,40,,,The name of the Issuer currently responsible for the pool.,hnissuesPS_layout.pdf,,,PS,,
+11,Original Aggregate Amount,Numeric,16,13.2,,"The aggregate principal amount (UPB at issuance) of the
+participations in the pool at pool issuance.",hnissuesPS_layout.pdf,,,PS,,
+12,Pool Unpaid Principal Balance,Numeric,16,13.2,,"Sum of the UPB amounts of the active participations in the
+pool.",hnissuesPS_layout.pdf,,,PS,,
+13,Security RPB,Numeric,16,13.2,,The remaining principal balance for the Security.,hnissuesPS_layout.pdf,,,PS,,
+14,RPB Factor,Numeric,10,1.8,,"The decimal value of the Security’s Remaining Principal
+Balance divided by the Original Aggregate Amount. The
+factor is 1 at issuance, and zero in the period of final
+payment.",hnissuesPS_layout.pdf,,,PS,,
+15,Number of Participations in pool.,Numeric,5,,,The current total number of participations in the pool.,hnissuesPS_layout.pdf,,,PS,,
+16,Number of Participations with Payments this Period,Numeric,5,,,"Count of the Participations which had a full or partial
+payment this period.",hnissuesPS_layout.pdf,,,PS,,
+17,Unpaid Principal Balance of Participations with Payments,Numeric,14,11.2,,"The sum of the ending Participation UPB values of the
+Participations which had payments this period.",hnissuesPS_layout.pdf,,,PS,,
+18,Percent of UPB Paid Off,Numeric,6,3.2,,The total Pool Payments amount divided by the sum of total Pool Payments amount and the total ending Pool UPB amount.,hnissuesPS_layout.pdf,,,PS,,
+19,Average Original Participation Size (AOPS),Numeric,9,6.2,,"Simple average of the participation Original Principal
+Balance (OPB) values, for all the current participations in the
+pool.",hnissuesPS_layout.pdf,,,PS,,
+20,Current Period Average Balance,Numeric,14,11.2,,"Average Participation Size. The sum of the participation
+UPBs divided by the number of participations.",hnissuesPS_layout.pdf,,,PS,,
+21,Original Security Interest Rate (WAC),Numeric,6,2.3,,"The interest rate of the Ginnie Mae Security when it was
+issued.",hnissuesPS_layout.pdf,,,PS,,
+22,Current Security Interest Rate (WAC),Numeric,6,2.3,,"The interest rate of the Ginnie Mae Security. This is the rate
+in effect for the report period.",hnissuesPS_layout.pdf,,,PS,,
+23,Prospective Security Interest Rate,Numeric,6,2.3,,"The prospective WAC of the pool. This is the rate that will be
+in effect for the next report period.",hnissuesPS_layout.pdf,,,PS,,
+24,Ratio: Pool Outstanding Balance to Max Claim Amount of HECM Loans,Numeric,6,3.2,,"The total ending Pool UPB amount divided by the sum of the
+Max Claim Amount of the HECM loans.",hnissuesPS_layout.pdf,,,PS,,
+25,Ratio: Pool Outstanding Balance to Principal Limit of HECM Loans,Numeric,6,3.2,,"The total ending Pool UPB amount divided by the sum of the
+Principal Limit of the HECM loans",hnissuesPS_layout.pdf,,,PS,,
+26,WA Loan Age (WALA) of the Participations,Numeric,3,9(3),,"The average Loan age (based on HECM Loan Origination
+date) for all the participations in a pool, weighted by the UPB
+of each participation that is in the pool.",hnissuesPS_layout.pdf,,,PS,Int64,Int64
+27,WA Expected Mortgage Interest Rate,Numeric,6,2.3,,"Weighted Average of Expected Average Mortgage Interest
+Rate for each loan represented by a participation in the pool.
+The Expected Average Mortgage Interest Rate is the original
+expected average mortgage interest.",hnissuesPS_layout.pdf,,,PS,,
+28,WA Servicing Fee Set Aside,Numeric,14,11.2,,"Weighted Average of Servicing Fee Set Aside Amount for
+each loan represented by a participation in the pool. The
+Servicing Fee Set Aside Amount is an amount initially set
+aside from the Principal Limit as reported by the issuer",hnissuesPS_layout.pdf,,,PS,,
+29,WA Original Funding Age,Numeric,3,9(3),,"Weighted Average of Original Funding Age for each loan
+represented by a participation in the pool. The Original
+Funding Age for each loan is calculated based on the HECM
+Original Funding Date value and the Reporting Period of the",hnissuesPS_layout.pdf,,,PS,Int64,Int64
+30,WA Property Valuation Amount,Numeric,14,11.2,,"Weighted Average of Property Valuation Amount for each
+loan represented by a participation in the pool. The Property
+Valuation Amount is as reported by the issuer at pool
+issuance",hnissuesPS_layout.pdf,,,PS,,
+31,WA Original Term of Payments,Numeric,3,9(3),,"Weighted Average of Original Term of Payments for each
+loan represented by a participation in the pool. The Original
+Term of Payments is the original number of monthly
+payments on a term or modified term loan, as of the
+Origination Date",hnissuesPS_layout.pdf,,,PS,Int64,Int64
+32,WA Property Charges Set Aside,Numeric,14,11.2,,"Weighted Average of Property Charges Set Aside Amount
+for each loan represented by a participation in the pool. The
+Property Charges Set Aside Amount is an amount that a
+borrower sets aside at closing to cover property charges such
+as taxes, insurance, ground rents, homeowner’s association
+fees, as reported by the issuer.",hnissuesPS_layout.pdf,,,PS,,
+33,WA Property Repair Set Aside,Numeric,14,11.2,,"Weighted Average of Property Repair Set Aside Amount for
+each loan represented by a participation in the pool. The
+Property Repair Set Aside Amount is an amount that a
+borrower sets aside at closing to cover property repairs, as
+reported by the issuer.",hnissuesPS_layout.pdf,,,PS,,
+34,WA Original Available Line of Credit,Numeric,14,11.2,,"Weighted Average of Original Line of Credit Amount for
+each loan represented by a participation in the pool.",hnissuesPS_layout.pdf,,,PS,,
+35,WA Original Draw Amount,Numeric,14,11.2,,"Weighted Average of Original Draw Amount for each loan
+represented by a participation in the pool. The Original Draw
+Amount is the original amount drawn on a line of credit loan.",hnissuesPS_layout.pdf,,,PS,,
+36,WA Mortgage Margin,Numeric,6,2.3,,"Weighted Average of Mortgage Margin for each loan
+represented by a participation in the pool. The Mortgage
+Margin is the percentage points added to the index rate to
+determine an ARM's interest rate.",hnissuesPS_layout.pdf,,,PS,,
+37,WA Lifetime Floor Rate,Numeric,6,2.3,,"Weighted Average of Lifetime Floor Rate for each loan
+represented by a participation in the pool. The Lifetime
+Floor Rate is the minimum interest rate that can be applied
+during the loan term.",hnissuesPS_layout.pdf,,,PS,,
+38,WA Remaining Available Line of Credit,Numeric,14,11.2,,"Weighted Average of Remaining Line of Credit Amount for each loan represented by a participation in the pool. The Remaining Line of Credit reflects the remaining cash available to the borrower (net of any tenure or term set asides as well as any tax, maintenance, insurance or servicing set asides",hnissuesPS_layout.pdf,,,PS,,
+39,WA Monthly Scheduled Payment,Numeric,14,11.2,,"Weighted Average of Monthly Scheduled Payment for each
+loan represented by a participation in the pool. The Monthly
+Scheduled Payment is the scheduled amount that is payable
+to the borrower on a monthly basis.",hnissuesPS_layout.pdf,,,PS,,
+40,WA Remaining Term of Payments,Numeric,3,9(3),,"Weighted Average of Remaining Term of Payments for each
+loan represented by a participation in the pool. The
+Remaining Term of Payments is the remaining number of
+monthly payments on a term or modified term loan.",hnissuesPS_layout.pdf,,,PS,Int64,Int64
+41,WA Credit Line Set Aside,Numeric,14,11.2,,"Weighted Average of Credit Line Set Aside Amount for each
+loan represented by a participation in the pool. The Credit
+Line Set Aside Amount is the specified amount set aside at
+Pool Issue Date for a line of credit.",hnissuesPS_layout.pdf,,,PS,,
+42,WA Lifetime Interest Rate Change Cap,Numeric,2,9(2),,"Weighted Average of Lifetime Interest Rate Change Cap for
+each loan represented by a participation in the pool. The
+Lifetime Interest Rate Change Cap limits the interest rate
+increase over the life of the loan. The value is “5” for 1-Year
+adjusting loans; this field is required only for annual
+adjusting loans.",hnissuesPS_layout.pdf,,,PS,Int64,Int64
+43,WA Annual Interest Rate Change Cap,Numeric,2,9(2),,"Weighted Average of Annual Interest Rate Change Cap for
+each loan represented by a participation in the pool. The
+Annual Interest Rate Change Cap limits the interest rate
+increase over the life of the loan. The value is “2” for 1-Year
+adjusting loans; this field is required only for annual
+adjusting loans.",hnissuesPS_layout.pdf,,,PS,Int64,Int64
+44,WA Maximum Interest Rate,Numeric,6,2.3,,"Weighted Average of Maximum Interest Rate for each loan
+represented by a participation in the pool. The Maximum
+Interest Rate is the maximum interest rate on the note. This
+field is required only for monthly adjusting loans.",hnissuesPS_layout.pdf,,,PS,,
+45,WA Eligible Non- borrowing Spouse Age,Numeric,3,9(3),,"Weighted Average of the Eligible Non-borrowing Spouse
+Age(s) for each loan represented by a participation in the",hnissuesPS_layout.pdf,,,PS,Int64,Int64
+46,WA Initial Remaining Available Line of Credit,Numeric,14,11.2,,"Weighted Average of the aggregate line of credit available
+during the first twelve-month disbursement period to
+borrowers under certain payment plans; for each loan
+represented by a participation in the pool",hnissuesPS_layout.pdf,,,PS,,
+47,WA Initial Monthly Scheduled Payment Amount,Numeric,14,11.2,,"Weighted Average of the aggregate monthly amount that is
+payable to HECM borrowers in a given month under certain
+types of payment plans during the first twelve-month
+disbursement period, for each loan represented by a
+participation in the pool.",hnissuesPS_layout.pdf,,,PS,,
+01,Record Type = TP,Character,2,,,File Trailer Record,hnissuesPS_layout.pdf,,,TP,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,hnissuesPS_layout.pdf,,,TP,,
+03,File Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,hnissuesPS_layout.pdf,,,TP,,
+04,Detail Record Count,Numeric,8,,,"Control total of the total number of records with Record Type =
+“PS” in the file.",hnissuesPS_layout.pdf,,,TP,,
+01,Record Type = HS,Character,2,,,File Header Record,hnissuesPS_layout.pdf,,,HS,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,hnissuesPS_layout.pdf,,,HS,,
+03,Create Date,Date,8,"YYYYMM
+DD",,The date that the file is produced.,hnissuesPS_layout.pdf,,,HS,,
+01,Record Type = 01,Character,2,,,Quartiles Record,hnissuesPS_layout.pdf,,,01,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,01,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,01,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is H.,hnissuesPS_layout.pdf,,,01,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,01,,
+06,Quartiles,Character,1,,,"Values are:
+4 = Maximum (100%) Quartile
+3 = 75th Percentage Quartile",hnissuesPS_layout.pdf,,,01,,
+07,Participation Original Principal Balance (OPB),Numeric,9,6.2,,"The principal balance of the Participation when it was
+originated.",hnissuesPS_layout.pdf,,,01,,
+08,Participation UPB,Numeric,9,6.2,,The current principal balance of the Participation.,hnissuesPS_layout.pdf,,,01,,
+09,Participation Original Interest Rate,Numeric,6,2.3,,"The interest rate of the HMBS Participation when it was
+issued.",hnissuesPS_layout.pdf,,,01,,
+10,Participation Current Interest Rate,Numeric,6,2.3,,"The interest rate of the HMBS Participation. This is the rate in
+effect for the report period.",hnissuesPS_layout.pdf,,,01,,
+11,Participation Prospective Interest Rate,Numeric,6,2.3,,"The prospective HMBS Participation interest rate. This is the
+rate that will be in effect for the next report period.",hnissuesPS_layout.pdf,,,01,,
+12,HECM Loan Age,Numeric,3,9(3),,"This is the age of the loan associated with a participation in
+months from the loan issuance date to the current reporting
+period.",hnissuesPS_layout.pdf,,,01,Int64,Int64
+13,Ratio: Participation UPB/HECM Loan Maximum Claim Amount,Numeric,6,3.2,,"The current Participation UPB divided by the associated
+HECM Loan’s Maximum Claim Amount.",hnissuesPS_layout.pdf,,,01,,
+14,Expected Average Mortgage Interest Rate,Numeric,6,2.3,,"The Expected Average Mortgage Interest Rate is the original
+expected average mortgage interest. It is fixed throughout the
+life of the loan and is used to determine payments to the
+borrower.",hnissuesPS_layout.pdf,,,01,,
+15,Servicing Fee Set Aside,Numeric,14,11.2,,"The Servicing Fee Set Aside Amount is an amount initially set
+aside from the Principal Limit as reported by the issuer.",hnissuesPS_layout.pdf,,,01,,
+16,Original Funding Age,Numeric,3,9(3),,"The Original Funding Age for each loan is calculated based on
+the HECM Original Funding Date value and the Reporting
+Period of the data. The Original Funding Date is the date the
+loan was first funded.",hnissuesPS_layout.pdf,,,01,Int64,Int64
+17,Property Valuation Amount,Numeric,14,11.2,,"The Property Valuation Amount is as reported by the issuer at
+pool issuance.",hnissuesPS_layout.pdf,,,01,,
+18,Original Term of Payments,Numeric,3,9(3),,"The Original Term of Payments is the original number of
+monthly payments on a term or modified term loan, as of the
+Origination Date.",hnissuesPS_layout.pdf,,,01,Int64,Int64
+19,Property Charges Set Aside Amount,Numeric,14,11.2,,"The Property Charges Set Aside Amount is an amount that a
+borrower sets aside at closing to cover property charges such
+as taxes, insurance, ground rents, homeowner’s association
+fees, as reported by the issuer.",hnissuesPS_layout.pdf,,,01,,
+20,Property Repair Set Aside Amount,Numeric,14,11.2,,"The Property Repair Set Aside Amount is an amount that a borrower sets aside at closing to cover property repairs, as reported by the issuer.",hnissuesPS_layout.pdf,,,01,,
+21,Original Available Line of Credit,Numeric,14,11.2,,The original available line of credit amount for the loan.,hnissuesPS_layout.pdf,,,01,,
+22,Original Draw Amount,Numeric,14,11.2,,"The Original Draw Amount is the original amount drawn on a
+line of credit loan.",hnissuesPS_layout.pdf,,,01,,
+23,Mortgage Margin,Numeric,6,2.3,,"The Mortgage Margin is the percentage points added to the
+index rate to determine an ARM's interest rate. The margin is
+reported by the issuer at pool issuance.",hnissuesPS_layout.pdf,,,01,,
+24,Lifetime Floor Rate,Numeric,6,2.3,,"The Lifetime Floor Rate is the minimum interest rate that can
+be applied during the loan term.",hnissuesPS_layout.pdf,,,01,,
+25,Remaining Available Line of Credit,Numeric,14,11.2,,"The Remaining Line of Credit reflects the remaining cash
+available to the borrower (net of any tenure or term set asides
+as well as any tax, maintenance, insurance or servicing set
+asides.",hnissuesPS_layout.pdf,,,01,,
+26,Monthly Scheduled Payment Amount,Numeric,14,11.2,,"The Monthly Scheduled Payment is the scheduled amount that
+is payable to the borrower on a monthly basis.",hnissuesPS_layout.pdf,,,01,,
+27,Remaining Term of Payments,Numeric,3,9(3),,"The Remaining Term of Payments is the remaining number of
+monthly payments on a term or modified term loan.",hnissuesPS_layout.pdf,,,01,Int64,Int64
+28,Credit Line Set Aside Amount,Numeric,14,11.2,,"The Credit Line Set Aside Amount is the specified amount set
+aside at Pool Issue Date for a line of credit.",hnissuesPS_layout.pdf,,,01,,
+29,Lifetime Interest Rate Change Cap,Numeric,2,9(2),,"The Lifetime Interest Rate Change Cap limits the interest rate
+increase over the life of the loan. The value is “5” for 1-Year
+adjusting loans; this field is required only for annual adjusting
+loans.",hnissuesPS_layout.pdf,,,01,Int64,Int64
+30,Annual Interest Rate Change Cap,Numeric,2,9(2),,"The Annual Interest Rate Change Cap limits the interest rate
+increase over the life of the loan. The value is “2” for 1-Year
+adjusting loans; this field is required only for annual adjusting
+loans.",hnissuesPS_layout.pdf,,,01,Int64,Int64
+31,Maximum Interest Rate,Numeric,6,2.3,,"The Maximum Interest Rate is the maximum interest rate on
+the note. This field is required only for monthly adjusting
+loans.",hnissuesPS_layout.pdf,,,01,,
+32,Eligible Non-borrowing Spouse Age,Numeric,3,9(3),,"There are up to 3 eligible non-borrowing spouses that can be
+associated with each loan. The age is computed using the
+Eligible Non-borrowing Spouse’s date of birth and the current
+reporting period.",hnissuesPS_layout.pdf,,,01,Int64,Int64
+33,Initial Remaining Available Line of Credit,Numeric,14,11.2,,"The aggregate line of credit available during the first twelve- month disbursement period to borrowers under certain payment plans. The Initial Remaining Available Line of Credit Amount does not include set asides for the Monthly Servicing Fee, if any, property charges (such as taxes, hazard insurance, ground rents or assessments) or repairs, if any.",hnissuesPS_layout.pdf,,,01,,
+34,Initial Monthly Scheduled Payment Amount,Numeric,14,11.2,,"The Initial Monthly Scheduled Payment Amount is the
+aggregate monthly amount that is payable to HECM
+borrowers in a given month under certain types of payment
+plans during the first twelve-month disbursement period.",hnissuesPS_layout.pdf,,,01,,
+01,Record Type = 02,Character,2,,,Various Record,hnissuesPS_layout.pdf,,,02,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,02,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,02,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,02,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,02,,
+06,Eligible Non-Borrowing Spouse Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has one or more Eligible Non-Borrowing Spouses.",hnissuesPS_layout.pdf,,,02,,
+07,Eligible Non-Borrowing Spouse UPB of Participations,Numeric,14,11.2,,The total Unpaid Principal Balance (UPB) of the participations in the pool associated with a loan that has one or more Eligible Non-Borrowing Spouses.,hnissuesPS_layout.pdf,,,02,,
+08,Eligible Non-Borrowing Spouse UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has one or more Eligible Non-Borrowing Spouses,
+expressed as a percentage of the Pool’s UPB. This UPB
+percentage is calculated by dividing the total participation
+UPB of the given condition (Eligible Non-Borrowing Spouse)
+by the Pool’s UPB.",hnissuesPS_layout.pdf,,,02,,
+09,Remaining Property Charges Set Aside Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has a non-zero Remaining Property Charges Set
+Aside amount.",hnissuesPS_layout.pdf,,,02,,
+10,Remaining Property Charges Set Aside UPB of Participations,Numeric,14,11.2,,"Total UPB of the participations in the pool associated with a
+loan that has a non-zero Remaining Property Charges Set
+Aside amount.",hnissuesPS_layout.pdf,,,02,,
+11,Remaining Property Charges Set Aside UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has a non-zero Remaining Property Charges Set
+Aside amount, expressed as a percentage of the Pool’s UPB.
+This UPB percentage is calculated by dividing the total
+participation UPB of the given condition (Remaining Property
+Charges Set Aside) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,02,,
+01,Record Type = 03,Character,2,,,Payment Option Stratification,hnissuesPS_layout.pdf,,,03,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,03,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,03,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,03,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,03,,
+06,Payment Option,Numeric,1,,,"The method to receive payment(s) that was selected by the
+borrower associated with the HECM loan as of the Pool Issue
+Date:
+1 = tenure
+2 = term
+3 = line of credit
+4 = modified term
+5 = modified tenure
+6 = single disbursement lump sum (for fixed rate HECMs with
+an FHA case number assigned on or after September 30, 2013)
+9 = Not Available",hnissuesPS_layout.pdf,,,03,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has the Payment Option value.",hnissuesPS_layout.pdf,,,03,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+Payment Option value.",hnissuesPS_layout.pdf,,,03,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a loan that has the Payment Option value, expressed as a percentage of the Pool’s UPB. This UPB percentage is calculated by dividing the total participation UPB of the given condition (Payment Option) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,03,,
+10,UPB of Participations as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Payment Option value, expressed as a
+percentage of the total Principal Limit of the associated
+HECM Loans. This UPB percentage is calculated by dividing
+the total participation UPB of the given condition (Payment
+Option) by the total of the HECM Principal Limits for all the
+loans associated with those Participations.",hnissuesPS_layout.pdf,,,03,,
+11,UPB of Participations as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Payment Option value, expressed as a
+percentage of the total Maximum Claim Amount (MCA) of
+the associated HECM Loans. This UPB percentage is
+calculated by dividing the total participation UPB of the given
+condition (Payment Option) by the total of the HECM MCAs
+for all the loans associated with those Participations.",hnissuesPS_layout.pdf,,,03,,
+12,HECM Loans UPB as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have the Payment Option
+value and are associated with a pool’s participations,
+expressed as a percentage of the total Principal Limit of the
+same HECM Loans. This UPB percentage is calculated by
+dividing the total HECM Loan UPB for loans having a given
+condition (Payment Option) that are associated with a pool’s
+participations by the total of the HECM Loan Principal Limits
+for those same HECM loans.",hnissuesPS_layout.pdf,,,03,,
+13,HECM Loans UPB as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have the Payment Option
+value and are associated with a pool’s participations,
+expressed as a percentage of the total Maximum Claim
+Amount (MCA) of the same HECM Loans. This UPB
+percentage is calculated by dividing the total HECM Loan
+UPB for loans having a given condition (Payment Option) that
+are associated with a pool’s participations by the total of the
+HECM MCAs for those same HECM loans.",hnissuesPS_layout.pdf,,,03,,
+01,Record Type = 04,Character,2,,,Property Type Stratification,hnissuesPS_layout.pdf,,,04,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,04,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,04,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,04,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,04,,
+06,Property Type,Numeric,1,,,"The type of property:
+1 = Single Family
+2 = Condominium
+3 = Manufactured Housing
+4 = Planned Unit Development
+9 = Not Available",hnissuesPS_layout.pdf,,,04,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has the Property Type value.",hnissuesPS_layout.pdf,,,04,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+Property Type value.",hnissuesPS_layout.pdf,,,04,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Property Type value, expressed as a
+percentage of the Pool’s UPB. This UPB percentage is
+calculated by dividing the total participation UPB of the given
+condition (Property Type) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,04,,
+10,UPB of Participations as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Property Type value, expressed as a
+percentage of the total Principal Limit of the associated
+HECM Loans. This UPB percentage is calculated by dividing
+the total participation UPB of the given condition (Property
+Type) by the total of the HECM Principal Limits for all the
+loans associated with those Participations.",hnissuesPS_layout.pdf,,,04,,
+11,UPB of Participations as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a loan that has the Property Type value, expressed as a percentage of the total Maximum Claim Amount (MCA) of the associated HECM Loans. This UPB percentage is calculated by dividing the total participation UPB of the given condition (Property Type) by the total of the HECM MCAs for all the loans associated with those Participations.",hnissuesPS_layout.pdf,,,04,,
+12,HECM Loans UPB as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have the Property Type
+value and are associated with a pool’s participations,
+expressed as a percentage of the total Principal Limit of the
+same HECM Loans. This UPB percentage is calculated by
+dividing the total HECM Loan UPB for loans having a given
+condition (Property Type) that are associated with a pool’s
+participations by the total of the HECM Loan Principal Limits
+for those same HECM loans.",hnissuesPS_layout.pdf,,,04,,
+13,HECM Loans UPB as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have the Property Type
+value and are associated with a pool’s participations,
+expressed as a percentage of the total Maximum Claim
+Amount (MCA) of the same HECM Loans. This UPB
+percentage is calculated by dividing the total HECM Loan
+UPB for loans having a given condition (Property Type) that
+are associated with a pool’s participations by the total of the
+HECM MCAs for those same HECM loans.",hnissuesPS_layout.pdf,,,04,,
+01,Record Type = 05,Character,2,,,Age of Youngest Borrower/Co-borrower Stratification,hnissuesPS_layout.pdf,,,05,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,05,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,05,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,05,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,05,,
+06,Age of Youngest Borrower/Co- borrower,Numeric,2,,,"Age is computed from Birth Date, and is the age of the
+youngest Borrower/Co-borrower who is at least 62 years old:
+1 = Age is 62-65
+2 = Age is 66-70
+3 = Age is 71-75
+4 = Age is 76-80
+5 = Age is 81-85
+6 = Age is 86-90
+7 = Age is 91-95
+8 = Age is 96-100
+9 = Age is 100 +
+10 = Not Available",hnissuesPS_layout.pdf,,,05,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has a youngest borrower/co-borrower with an age in
+the borrower/co-borrower grouping.",hnissuesPS_layout.pdf,,,05,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has a
+youngest borrower/co-borrower with an age in the
+borrower/co-borrower grouping.",hnissuesPS_layout.pdf,,,05,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a loan that has a youngest borrower/co-borrower with an age in the borrower/co-borrower grouping, expressed as a percentage of the Pool’s UPB. This UPB percentage is calculated by dividing the total participation UPB of the given condition (youngest borrower/co-borrower age group) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,05,,
+10,UPB of Participations as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has a youngest borrower/co-borrower with an age in
+the borrower/co-borrower grouping, expressed as a percentage
+of the total Principal Limit of the associated HECM Loans.
+This UPB percentage is calculated by dividing the total
+participation UPB of the given condition (youngest
+borrower/co-borrower age group) by the total of the HECM
+Principal Limits for all the loans associated with those
+Participations.",hnissuesPS_layout.pdf,,,05,,
+11,UPB of Participations as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has a youngest borrower/co-borrower with an age in
+the borrower/co-borrower grouping, expressed as a percentage
+of the total Maximum Claim Amount (MCA) of the associated
+HECM Loans. This UPB percentage is calculated by dividing
+the total participation UPB of the given condition (youngest
+borrower/co-borrower age group) by the total of the HECM
+MCAs for all the loans associated with those Participations.",hnissuesPS_layout.pdf,,,05,,
+12,HECM Loans UPB as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have a youngest
+borrower/co-borrower with an age in the borrower/co-
+borrower grouping and are associated with a pool’s
+participations, expressed as a percentage of the total Principal
+Limit of the same HECM Loans. This UPB percentage is
+calculated by dividing the total HECM Loan UPB for loans
+having a given condition (youngest borrower/co-borrower age
+group) that are associated with a pool’s participations by the
+total of the HECM Loan Principal Limits for those same
+HECM loans.",hnissuesPS_layout.pdf,,,05,,
+13,HECM Loans UPB as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have a youngest
+borrower/co-borrower with an age in the borrower/co-",hnissuesPS_layout.pdf,,,05,,
+01,Record Type = 06,Character,2,,,"Age of Youngest Eligible Non-Borrowing Spouse
+Stratification",hnissuesPS_layout.pdf,,,06,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,06,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,06,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,06,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,06,,
+06,Age of Youngest Eligible Non- Borrowing Spouse,Numeric,2,,,"Age is computed from Birth Date and is the age of the
+youngest eligible Non-Borrowing Spouse (if any):
+1 = Age is under 40
+2 = Age is 40-49
+3 = Age is 50-59
+4 = Age is 60-69
+5 = Age is 70-79
+6 = Age is 80+
+9 = Not Available",hnissuesPS_layout.pdf,,,06,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has an eligible non-borrowing spouse with an age in
+the eligible non-borrowing spouse age grouping.",hnissuesPS_layout.pdf,,,06,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan where the
+youngest eligible non-borrowing spouse has an age in the
+eligible non-borrowing spouse age grouping.",hnissuesPS_layout.pdf,,,06,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan where the youngest eligible non-borrowing spouse has an
+age in the eligible non-borrowing spouse age grouping,
+expressed as a percentage of the Pool’s UPB. This UPB
+percentage is calculated by dividing the total participation",hnissuesPS_layout.pdf,,,06,,
+10,UPB of Participations as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan where the youngest eligible non-borrowing spouse has an
+age in the eligible non-borrowing spouse age grouping,
+expressed as a percentage of the total Principal Limit of the
+associated HECM Loans. This UPB percentage is calculated
+by dividing the total participation UPB of the given condition
+(youngest eligible non-borrowing spouse age group) by the
+total of the HECM Principal Limits for all the loans associated
+with those Participations.",hnissuesPS_layout.pdf,,,06,,
+11,UPB of Participations as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan where the youngest eligible non-borrowing spouse has an
+age in the eligible non-borrowing spouse age grouping,
+expressed as a percentage of the total Maximum Claim
+Amount (MCA) of the associated HECM Loans. This UPB
+percentage is calculated by dividing the total participation
+UPB of the given condition (youngest eligible non-borrowing
+spouse age group) by the total of the HECM MCAs for all the
+loans associated with those Participations.",hnissuesPS_layout.pdf,,,06,,
+12,HECM Loans UPB as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans where the youngest eligible
+non-borrowing spouse has an age in the eligible non-
+borrowing spouse age grouping and are associated with a
+pool’s participations, expressed as a percentage of the total
+Principal Limit of the same HECM Loans. This UPB
+percentage is calculated by dividing the total HECM Loan
+UPB for loans having a given condition (youngest eligible
+non-borrowing spouse age group) that are associated with a
+pool’s participations by the total of the HECM Loan Principal
+Limits for those same HECM loans.",hnissuesPS_layout.pdf,,,06,,
+13,HECM Loans UPB as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans where the youngest eligible
+non-borrowing spouse has an age in the eligible non-
+borrowing spouse age grouping and are associated with a
+pool’s participations, expressed as a percentage of the total
+Maximum Claim Amount (MCA) of the same HECM Loans.
+This UPB percentage is calculated by dividing the total",hnissuesPS_layout.pdf,,,06,,
+01,Record Type = 07,Character,2,,,"Metropolitan Statistical Area (MSA) Stratification for each
+MSA applicable to the pool.",hnissuesPS_layout.pdf,,,07,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,07,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,07,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,07,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,07,,
+06,MSA,Numeric,5,,,"The MSA values and the MSA Not Available are provided.
+Values are:
+• the MSA value
+• 99999 = MSA Not Available",hnissuesPS_layout.pdf,,,07,,
+07,Number of Participations,Numeric,5,,,The number of participations in the pool for the MSA Value.,hnissuesPS_layout.pdf,,,07,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Balance (UPB) of the participations in the
+pool for the MSA Value.",hnissuesPS_layout.pdf,,,07,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool for the MSA value,
+expressed as a percentage of the Pool’s UPB. This UPB",hnissuesPS_layout.pdf,,,07,,
+01,Record Type = 08,Character,2,,,Property State Stratification,hnissuesPS_layout.pdf,,,08,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,08,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,08,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Values is H.,hnissuesPS_layout.pdf,,,08,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,08,,
+06,State Code,Character,2,,,"The abbreviation of the state or territory where the loan
+property exists. See Appendix 2 for a listing of state codes.",hnissuesPS_layout.pdf,,,08,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool for the State Code
+value.",hnissuesPS_layout.pdf,,,08,,
+08,Number of Participations for State as a % of Pool’s total Participation count,Numeric,6,3.2,,"The total number of Participations for the state expressed as a
+percentage of the pool’s total participation count.",hnissuesPS_layout.pdf,,,08,,
+09,Original Principal Balance of Participations,Numeric,14,11.2,,"The sum of the Participation Original Principal Balance
+amounts for all Participations in the pool associated with the
+given State.",hnissuesPS_layout.pdf,,,08,,
+10,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Balance (UPB) of the participations in the
+pool for the State Code value.",hnissuesPS_layout.pdf,,,08,,
+11,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool for the State Code
+value, expressed as a percentage of the Pool’s UPB. This UPB
+percentage is calculated by dividing the total participation
+UPB of the given condition (State Code value) by the Pool’s
+UPB.",hnissuesPS_layout.pdf,,,08,,
+01,Record Type = 09,Character,2,,,Loan Purpose Stratification,hnissuesPS_layout.pdf,,,09,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,09,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,09,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,09,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,09,,
+06,Loan Purpose,Numeric,1,,,"Loan Purpose:
+1 = HECM Traditional
+2 = HECM Refinance
+3 = HECM Purchase
+9 = Not Available",hnissuesPS_layout.pdf,,,09,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has the Loan Purpose value.",hnissuesPS_layout.pdf,,,09,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+Loan Purpose value.",hnissuesPS_layout.pdf,,,09,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Loan Purpose value, expressed as a",hnissuesPS_layout.pdf,,,09,,
+01,Record Type = 10,Character,2,,,HECM Saver Stratification,hnissuesPS_layout.pdf,,,10,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,10,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,10,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,10,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,10,,
+06,HECM Saver,Character,1,,,"HECM Saver:
+Y = Saver
+N = Standard",hnissuesPS_layout.pdf,,,10,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has the HECM Saver value.",hnissuesPS_layout.pdf,,,10,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+HECM Saver value.",hnissuesPS_layout.pdf,,,10,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the HECM Saver value, expressed as a
+percentage of the Pool’s UPB. This UPB percentage is
+calculated by dividing the total participation UPB of the given
+condition (HECM Saver) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,10,,
+01,Record Type = 11,Character,2,,,"Low and Moderate Borrower Income Stratification. Pools
+with Low and Moderate Borrower Income characteristics
+based on Federal Financial Institutions Examination Council
+(FFIEC) data. This record includes participations in pools
+issued January 2012 and thereafter. Not populated/provided
+for new issuance disclosures.",hnissuesPS_layout.pdf,,,11,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,11,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,11,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,11,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,11,,
+06,Low and Moderate Borrower Income,Character,1,,,"Values are:
+Y = Borrower Income is Less than 80% of the FFIEC Median
+Family Income (MFI)
+N = Borrower Income is Greater than or Equal to 80% of the
+FFIEC Median Family Income (MFI)
+9 = Not available",hnissuesPS_layout.pdf,,,11,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has the Low and Moderate Borrower Income value.",hnissuesPS_layout.pdf,,,11,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+Low and Moderate Borrower Income value.",hnissuesPS_layout.pdf,,,11,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Low and Moderate Borrower Income value,
+expressed as a percentage of the Pool’s UPB. This UPB
+percentage is calculated by dividing the total participation
+UPB of the given condition (Low and Moderate Borrower
+Income) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,11,,
+01,Record Type = 12,Character,2,,,Not Available Stratification,hnissuesPS_layout.pdf,,,12,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,12,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,12,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Values is H.,hnissuesPS_layout.pdf,,,12,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,12,,
+06,Not Available,Numeric,2,,,"Values are:
+1 = Expected Average Mortgage Interest Rate
+2 = Servicing Fee Set Aside
+3 = Original Funding Age
+4 = Property Valuation Amount
+5 = Original Term of Payments
+6 = Property Charges Set Aside Amount
+7 = Property Repair Set Aside Amount
+8 = Original Available Line of Credit Amount
+9 = Original Draw Amount
+10 = Mortgage Margin
+11 = Lifetime Floor Rate
+12 = Remaining Available Line of Credit
+13 = Monthly Scheduled Payment Amount
+14 = Remaining Term of Payments
+15 = Credit Line Set Aside Amount",hnissuesPS_layout.pdf,,,12,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has the Not Available Value.",hnissuesPS_layout.pdf,,,12,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+Not Available Value.",hnissuesPS_layout.pdf,,,12,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Not Available Value.",hnissuesPS_layout.pdf,,,12,,
+01,Record Type = 13,Character,2,,,"Joint-Single Loan Indicator / Youngest Borrower or Co-
+borrower Sex Stratification",hnissuesPS_layout.pdf,,,13,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,13,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,13,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is H.,hnissuesPS_layout.pdf,,,13,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,13,,
+06,Joint/Single Loan Indicator,Numeric,1,,,"Joint/Single Loan Indicator. Values are:
+1 = Single
+2 = Joint",hnissuesPS_layout.pdf,,,13,,
+07,Youngest Borrower/Co-borrower Sex,Character,1,,,"Sex of the youngest borrower/co-borrower. Values are:
+F = Female
+M = Male
+9 = Not Available",hnissuesPS_layout.pdf,,,13,,
+08,Number of Participations,Numeric,5,,,"The number of participations associated with a loan in the
+pool that has the Joint-Single Loan Indicator value/Sex value
+combination.",hnissuesPS_layout.pdf,,,13,,
+09,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+Joint-Single Loan Indicator value/Sex value combination.",hnissuesPS_layout.pdf,,,13,,
+10,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Joint-Single Loan Indicator value/Sex value
+combination, expressed as a percentage of the Pool’s UPB.
+This UPB percentage is calculated by dividing the total
+participation UPB of the given combination (Joint-Single
+Loan Indicator value/Sex value) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,13,,
+11,UPB of Participations as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Joint-Single Loan Indicator value/Sex value
+combination, expressed as a percentage of the total Principal",hnissuesPS_layout.pdf,,,13,,
+12,UPB of Participations as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Joint-Single Loan Indicator value/Sex value
+combination, expressed as a percentage of the total Maximum
+Claim Amount (MCA) of the associated HECM Loans. This
+UPB percentage is calculated by dividing the total
+participation UPB of the given combination (Joint-Single
+Loan Indicator value/Sex value) by the total of the HECM
+MCAs for all the loans associated with those Participations.",hnissuesPS_layout.pdf,,,13,,
+13,HECM Loans UPB as % of Principal Limit of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have the Joint-Single
+Loan Indicator value/Sex value combination and are
+associated with a pool’s participations, expressed as a
+percentage of the total Principal Limit of the same HECM
+Loans. This UPB percentage is calculated by dividing the
+total HECM Loan UPB for loans having the given
+combination (Joint-Single Loan Indicator value/Sex value)
+that are associated with a pool’s participations by the total of
+the HECM Loan Principal Limits for those same HECM
+loans.",hnissuesPS_layout.pdf,,,13,,
+14,HECM Loans UPB as % of MCA of HECM Loans,Numeric,6,3.2,,"Total UPB of all HECM Loans that have the Joint-Single
+Loan Indicator value/Sex value combination and are
+associated with a pool’s participations, expressed as a
+percentage of the total Maximum Claim Amount of the same
+HECM Loans. This UPB percentage is calculated by dividing
+the total HECM Loan UPB for loans having the given
+combination (Joint-Single Loan Indicator value/Sex value)
+that are associated with a pool’s participations by the total of
+the HECM Loan Maximum Claim Amount for those same
+HECM loans.",hnissuesPS_layout.pdf,,,13,,
+01,Record Type = 14,Character,2,,,"Rural Area Stratification. Pools with participations that are
+associated with loans identified as being in rural areas based
+on Rural Urban Commuting Area (RUCA) areas (US
+Department of Agriculture Rural Urban Commuting Area
+Codes). Not populated/provided for new issuance disclosures.",hnissuesPS_layout.pdf,,,14,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",hnissuesPS_layout.pdf,,,14,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",hnissuesPS_layout.pdf,,,14,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Value is “H”.,hnissuesPS_layout.pdf,,,14,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing
+of pool types.",hnissuesPS_layout.pdf,,,14,,
+06,Rural Area,Character,1,,,"Values are:
+Y = Rural Area (RUCA Code 4-10)
+N = Not Rural Area (RUCA Code 1-3)
+9 = Not Available",hnissuesPS_layout.pdf,,,14,,
+07,Number of Participations,Numeric,5,,,"The number of participations in the pool associated with a
+loan that has the Rural Area value.",hnissuesPS_layout.pdf,,,14,,
+08,UPB of Participations,Numeric,14,11.2,,"The total Unpaid Principal Balance (UPB) of the
+participations in the pool associated with a loan that has the
+Rural Area value.",hnissuesPS_layout.pdf,,,14,,
+09,UPB of Participations as % of Pool UPB,Numeric,6,3.2,,"Total UPB of the participations in the pool associated with a
+loan that has the Rural Area value, expressed as a percentage
+of the Pool’s UPB. This UPB percentage is calculated by
+dividing the total participation UPB of the given condition
+(Rural Area value) by the Pool’s UPB.",hnissuesPS_layout.pdf,,,14,,
+01,Record Type = TS,Character,2,,,File Trailer Record,hnissuesPS_layout.pdf,,,TS,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,hnissuesPS_layout.pdf,,,TS,,
+03,File Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,hnissuesPS_layout.pdf,,,TS,,
+04,Detail Record Count,Numeric,12,,,"Control total of the total number of HMBS Pool
+Supplemental records in the file. This count will not
+include HS or TS records.",hnissuesPS_layout.pdf,,,TS,,

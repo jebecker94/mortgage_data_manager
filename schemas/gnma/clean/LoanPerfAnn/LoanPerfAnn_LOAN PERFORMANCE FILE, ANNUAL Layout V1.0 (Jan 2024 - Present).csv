@@ -1,0 +1,181 @@
+Item,Data Element,Type,Max Length,Format,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+HH-01,Record Type = HH,Character,2,,File Header Record,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,HH,,
+HH-02,Report Period,Numeric,6,YYYYMM,"Reporting Period of the data in the file (the “as of”
+month and year)","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,HH,,
+HH-03,File Frequency,Numeric,1,,"The quarterly or annual indicator. Values are:
+Q = Quarterly file
+A = Annual file","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,HH,,
+HH-04,Date File Generated,Numeric,8,YYYYMMDD,The Date the file was created,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,HH,,
+LP-01,Record Type = LP,Character,2,,Loan Performance Record,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-02,CUSIP Number,Character,9,,"The CUSIP is a unique identification number
+permanently assigned by the Committee on Uniform
+Securities Identification Procedures (CUSIP) to each
+publicly traded security at the time of issuance.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-03,Pool ID,Character,6,,The Pool identifier assigned by Ginnie Mae at pooling.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-04,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or
+M","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-05,Pool Type,Character,2,,"Two-character pool type for the pool (see Ginnie Mae
+Guide, Chapter 1)","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-06,Pool Issue Date,Numeric,8,YYYYMMDD,The date the pool was issued,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-07,Disclosure Sequence Number,Numeric,10,,"A number used for each loan to identify it distinctly for
+data disclosures","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-08,Issuer ID (including for loan packages in MIP pool),Numeric,4,,"The four-digit identifier for the current issuer
+responsible for the loan","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-09,"Agency (Agency Loan Type FHA, VA, RD, NA)",Character,1,,"Identifier of the government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American
+9 = Not Available","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-10,Loan Purpose,Numeric,1,,"Purpose of the loan. Values are:
+1 = Purchase
+2 = Refinance
+3 = Loan Modification (HAMP)
+4 = Loan Modification (non-HAMP)
+5 = Re-Performing
+9 = Not Available","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-11,Refinance Type,Numeric,1,,"The type of refinance of the loan. Applies to Loan
+Purpose = 2 loans only. Values are:
+1 = Not Streamlined, Not Cash Out
+2 = Cash Out
+3 = Streamlined","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-12,First Payment Date (First Scheduled Installment),Numeric,8,CCYYMMDD,"The date in which the first monthly installment
+payment was due in accordance with the
+mortgage/note.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-13,Maturity Date of Loan (Last Scheduled Installment),Numeric,8,CCYYMMDD,"The maturity date of this loan in accordance with
+mortgage/note.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-14,Loan Interest Rate (current interest rate),Numeric,5,3.2,The interest rate of the loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-15,Original Principal Balance (OPB at pool issuance),Numeric,15,13.2,The Original Principal Balance of the loan at pool issuance. The value is truncated to the thousandths place.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-16,UPB at Issuance (UPB of the loan at pool issuance),Numeric,15,13.2,"The Unpaid Principal Balance (UPB) of the loan as of
+the reporting period. This field will be blank if the loan
+is removed within 6 months of pool issuance.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-17,Unpaid Principal Balance (UPB of the loan),Numeric,15,13.2,"The unscheduled remaining principal of the loan as of
+the reporting period. The disclosed value for this field
+will be blank for the first six months that a loan is in a
+pool. Disclosure for this field will begin it the seventh
+month.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-18,"Original Loan Term, in Months",Numeric,3,,The calculated value of original term of the loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-19,"Loan Age, in Months",Numeric,3,,The calculated value of the age of the loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-20,"Remaining Loan Term (Remaining Maturity), in Months",Numeric,3,,The calculated value of Remaining Term of the Loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-21,"Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",Numeric,1,,The number of months the loan is delinquent.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-22,"Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid)",Numeric,1,,The number of months the loan is Pre-Paid.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-23,Loan Gross Margin (ARM Loans only),Numeric,4,1.3,"The rate on an ARM loan added to the index to reach
+the new mortgage interest rate.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-24,Loan To Value (LTV),Numeric,5,3.2,The Original Loan To Value (LTV) of the loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-25,Combined LTV (CLTV),Numeric,5,3.2,The Original Combined LTV (CLTV) of the loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-26,Total Debt Expense Ratio Percent,Numeric,5,3.2,"The ratio of all debts of the borrowers to the
+borrower’s qualifying income as defined by the
+mortgage insurer or guarantor.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-27,Credit Score,Numeric,3,Col4,The credit score of the borrower.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-28,Down Payment Assistance (Yes or No),Character,1,,"An indicator of whether the borrower received gift
+funds for the loan Down Payment.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-29,Buy Down Status (Loan Status) (Yes or No),Character,1,,Buy Down Status of the loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-30,Upfront MIP (insurance premium rate),Numeric,5,2.3,"The upfront mortgage insurance premium percentage
+rate that institutions charge to insure FHA loans.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-31,Annual MIP (insurance premium rate),Numeric,5,2.3,"The annual mortgage insurance premium percentage
+rate that institutions charge to insure FHA loans.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-32,Number of Borrowers,Numeric,1,,Number of Borrowers on the loan.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-33,First Time Home Buyer (Yes or No),Character,1,,"An indicator for purchase loans of whether the
+borrower qualifies as a First Time Home Buyer.
+Values are:
+Y = Yes
+N = No","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-34,Property Type (Number of Living Units),Numeric,1,,Number of Living Units of the property.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-35,State (2 character State Code),Character,2,,The 2-character State Code,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-36,MSA,Numeric,5,,"Code for the Metropolitan Statistical Area or
+Micropolitan Statistical Area where the property is
+located. Value is derived from the Census tract
+associated with the borrower address.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-37,Third-Party Origination Type,Numeric,1,,"Identifies the type of third party that originated the
+loan. Values are:
+1 = Broker
+2 = Correspondent
+3 = Retail","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-38,Current Month Liquidation Flag (Yes or No),Character,1,,"An indicator of whether the given loan was liquidated
+in this reporting month. Values are:
+Y = Yes","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-39,Removal Reason,Numeric,1,,"Reason for removal of the loan. Values are:
+1 = Mortgagor Payoff
+2 = Repurchase of Delinquent Loan
+3 = Foreclosure with Claim Payment
+4 = Loss Mitigation
+5 = Substitution
+6 = Other Removal","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-40,As of Date,Numeric,6,CCYYMM,Reporting period for the data.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-41,Loan Origination Date,Numeric,8,CCYYMMDD,The date of loan origination.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-42,Seller Issuer ID,Numeric,4,,The four digit identifier for the Issuer selling the pool.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-43,Index Type,Character,5,,"The type of ARM index being used for the ARM loan.
+Values are:
+CMT = for Constant Maturity Treasury
+LIBOR = for London Interbank Offered Rate","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-44,Look-Back Period,Numeric,2,,"The two-digit time period used to establish a specific
+point in time for the particular ARM Index that will be
+used to determine the interest rate change. (Used in
+conjunction with the published index tables. See
+Ginnie Mae MBS Guide Chapter 26). This applies to
+loans in ARM Pools only.
+Values are:
+“30” = 30-day look back
+“45” = 45-day look back","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-45,Interest Rate Change Date,Numeric,8,,"The date of the next interest rate change for the loan
+in an ARM pool, i.e. the date the interest rate changes.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-46,Initial Interest Rate Cap,Numeric,1,,"The maximum interest rate change amount (+/-) for
+the loan in an ARM pool, applicable only to the initial
+interest rate change.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-47,Subsequent Interest Rate Cap,Numeric,1,,The maximum interest rate change amount (+/-) for,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-48,Lifetime Interest Rate Cap,Numeric,1,,"The maximum interest rate change amount (+/-) of the
+loan in an ARM pool over the life of the loan.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-49,Next Interest Rate Change Ceiling,Numeric,5,,"The maximum interest rate that the loan in an ARM
+pool can have for each interest rate change. This field
+will have the initial rate change ceiling during the
+initial period. After this and during each annual change
+period this field will have the ceiling for each
+respective annual change. The value in this field can
+change for each adjustment period.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-50,Lifetime Interest Rate Ceiling,Numeric,5,,"The maximum interest rate that the loan in an ARM
+pool can have for the life of the loan. This is a constant
+value for the loan and does not change over the life of
+the loan.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-51,Lifetime Interest Rate Floor,Numeric,5,,"The minimum interest rate that the loan in an ARM
+pool can have for the life of the loan. This is a constant
+value for the loan and does not change over the life of
+the loan.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-52,Prospective Interest Rate,Numeric,5,,"This data element is currently not disclosed. Ginnie
+Mae will be collecting and disclosing this field in the
+future.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-53,Liquidation Balance (principal pass through),Numeric,16,,"The unscheduled remaining principal of the loan that
+is being passed through, after taking into account
+scheduled principal remitted. This field will be blank if
+the loan is removed within 6 months of pool issuance.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-54,Number of Months Forbearance (Term),Character,2,,"The number of months forbearance (the forbearance
+term) based on scheduled installments, as reported by
+the issuer. This field will be blank if not available.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-55,COVID Flag,Character,1,Col4,Values are: Y = COVID related N = Other type of forbearance not COVID related U = Unknown. Ginnie Mae issuers report all active forbearances and to the extent available a flag indicating that the forbearance is specific to COVID circumstances or not. Will be “U” if not available.,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-56,Begin Date,Numeric,8,CCYYMMDD,"The scheduled installment (per the loan’s amortization
+schedule), that the forbearance begins. Will be blank if
+not available.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-57,End Date,Numeric,8,CCYYMMDD,"The scheduled installment (per the loan’s amortization
+schedule), that the forbearance ends. Will be blank if
+not available.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-58,Forbearance “Exit” Code,Character,1,,"Values are:
+1 = Lump Sum Repayment Plan
+2 = Installment Repayment Plan
+3 = Partial Claim or Deferral
+4 = Loan Mod/Loss Mitigation/Combo
+5 = Loan Paid Off
+6 = No Workout/No Loss Mitigation
+7 = Other Type of Workout Plan
+8 = Unavailable: This is used where there is a
+Forbearance Exit, but no code was available
+9 = Cancelled; Loan Remained Current
+U = Status Unknown for the Period. There is nothing to
+disclose.
+N = The loan is not exiting forbearance this reporting
+period.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+LP-59,Months Delinquent (up to previous 24 months),Character,48,,"This is a single field with up to 24 occurrences of
+Payment History (a maximum of 48: 2 characters of 24","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,LP,,
+TT-01,Record Type = TT,Character,2,,File Trailer Record,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,TT,,
+TT-02,Report Period,Numeric,6,YYYYMM,Reporting Period of the data in the file,"LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,TT,,
+TT-03,Loan Count,Numeric,9,,"The number of loans/LP Records contained in the
+file. This count does not include the “HH” or “TT”
+records.","LoanPerfAnn_LOAN PERFORMANCE FILE, ANNUAL Layout V1.0 (Jan 2024 - Present).pdf",2024-01-01,2099-12-31,TT,,

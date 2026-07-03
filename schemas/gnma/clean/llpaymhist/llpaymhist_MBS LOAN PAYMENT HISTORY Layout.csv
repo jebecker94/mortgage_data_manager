@@ -1,0 +1,68 @@
+Item,Data Element,Type,Max Length,Format,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+HH-1,Record Type = HH,Character,2,,File Header Record,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,HH,,
+HH-2,Report Period,Numeric,6,YYYYMM,"Reporting Period of the data in the file (the “as of” month
+and year).",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,HH,,
+HH-3,Date File Generated,Numeric,8,YYYYMMDD,The Date the file was created,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,HH,,
+PH-1,Record Type = PH,Character,2,,File Header Record,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+PH-2,CUSIP Number,Character,9,,"The CUSIP is a unique identification number permanently
+assigned by the Committee on Uniform Securities
+Identification Procedures (CUSIP) to each publicly traded
+security at the time of issuance.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+PH-3,Pool ID,Character,6,,The Pool identifier assigned by Ginnie Mae at pooling.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+PH-4,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or
+M.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+PH-5,Pool Type,Character,2,,"Two-character pool type for the pool (see listing in Ginnie
+Mae Guide, Chapter 1).",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+PH-6,Pool Issue Date,Numeric,8,YYYYMMDD,The date the pool was issued.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+PH-7,Issuer ID,Numeric,4,,"The four-digit identifier for the current Issuer responsible
+for the loan. There will be no value in this field for
+Multiple Issuer Pools.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+PH-8,Report Period,Numeric,6,YYYYMM,"Reporting Period of the data in the file (the “as of” month
+and year).",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PH,,
+LL-1,Record Type = LL,Character,2,,Loan Payment History Record,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,LL,,
+LL-2,Pool ID,Character,6,,The Pool identifier assigned by Ginnie Mae at pooling.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,LL,,
+LL-3,Disclosure Sequence Number,Numeric,10,,"A number used to identify each loan distinctly for data
+disclosures.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,LL,,
+LL-4,Issuer ID,Numeric,4,,"The four-digit identifier for the current Issuer responsible
+for the loan. There will be no value in this field for
+Multiple Issuer Pools.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,LL,,
+LL-5,Months Delinquent,Character,48,,"This is a single field with up to 24 occurrences of Payment
+History (a maximum of 48: 2 characters of 24 periods).
+Values in Months Delinquent are:
+00 – Current
+01 – 1 Month Delinquent
+02 – 2 Months Delinquent
+03 – 3 Months Delinquent
+….
+99 – 99 or more Months Delinquent
+XX – Data is Not Available for a Period
+For loans with less than 24 months of history, the field will
+end after the final month of delinquency data. An
+example is available at the end of the Loan Payment
+Record.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,LL,,
+PT-1,Record Type = PT,Character,2,,File Trailer Record,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-2,CUSIP Number,Character,9,,"The CUSIP is a unique identification number
+permanently assigned by the Committee on Uniform
+Securities Identification Procedures (CUSIP) to each
+publicly traded security at the time of issuance.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-3,Pool ID,Character,6,,"The Pool identifier assigned by Ginnie Mae at
+pooling.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-4,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C,
+or M.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-5,Pool Type,Character,2,,"Two-character pool type for the pool (see listing in
+Ginnie Mae Guide, Chapter 1).",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-6,Pool Issue Date,Numeric,8,YYYYMMDD,The date the pool was issued.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-7,Issuer ID,Numeric,4,,"The four-digit identifier for the current Issuer
+responsible for the loan. There will be no value in
+this field for Multiple Issuer Pools.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-8,Report Period,Numeric,6,YYYYMM,"Reporting Period of the data in the file (the “as of”
+month and year).",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+PT-9,Loan Count for the Pool,Numeric,9,,"The number of loans/LL Records contained in the
+pool.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,PT,,
+TT-1,Record Type = TT,Character,2,,File Trailer Record,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,TT,,
+TT-2,Report Period,Numeric,6,YYYYMM,Reporting Period of the data in the file.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,TT,,
+TT-3,Date File Generated,Numeric,8,YYYYMMDD,The Date the file was created.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,TT,,
+TT-4,Pool Count (File),Numeric,7,,The number of pools contained in the file.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,TT,,
+TT-5,Loan Count (File),Numeric,9,,The number of loans contained in the file.,llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,TT,,
+TT-6,Total Record Count (File),Numeric,9,,"The total number of records contained in the file,
+including all headers and trailers.",llpaymhist_MBS LOAN PAYMENT HISTORY Layout.pdf,,,TT,,

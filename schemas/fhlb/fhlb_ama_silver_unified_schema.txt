@@ -1,0 +1,377 @@
+FHLB AMA Silver Layer Unified Schema (2009-2024)
+================================================================================
+
+This schema represents the cleaned and standardized silver layer data.
+All transformations from bronze layer have been applied.
+
+Total unique columns across all years: 88
+Years covered: 2009-2024 (16 years)
+Total records: 858,105
+
+Key transformations applied:
+  - Percentage values normalized (pre-2019 decimals → percentages)
+  - Income amounts standardized (all to monthly)
+  - Indicator variables converted (1/2 → 0/1)
+  - Census tracts cleaned (multiplied by 100, rounded)
+  - Property types converted to numeric (PT01 → 1)
+  - Extreme DTI values capped (≥1000 → null)
+  - Sentinel missing values replaced with nulls
+  - Date fields parsed and cleaned
+  - Redundant Year column dropped
+
+================================================================================
+Column Details
+================================================================================
+
+AcqTyp
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Aff1
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Aff2
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Aff3
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Aff4
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Bank
+  Type: String
+  Years: 2015-2024 (10/16)
+
+Bed1
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Bed2
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Bed3
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Bed4
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Borrower1AgeAtApplicationYears
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1CreditScoreValue
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1EthnicityType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1Race1Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1Race2Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1Race3Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1Race4Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1Race5Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower1SexType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2AgeAtApplicationYears
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2CreditScoreValue
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2EthnicityType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2Race1Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2Race2Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2Race3Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2Race4Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2Race5Type
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Borrower2SexType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+BorrowerCount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+BorrowerFirstTimeHomebuyer
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+CICA
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+CensusTractIdentifier
+  Type: Float64
+  Years: All years (2009-2024) (16/16)
+
+CensusTractMedFamIncomeAmount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+CensusTractMinorityRatioPercent
+  Type: Float64
+  Years: All years (2009-2024) (16/16)
+
+Coop
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+CoreBasedStatisticalAreaCode
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+EmploymentBorrowerSelfEmployed
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+FHFBID
+  Type: Int64
+  Years: 2009-2014 (6/16)
+
+FHLBankID
+  Type: String
+  Years: 2010-2014 (5/16)
+
+FIPSCountyCode
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+FIPSStateNumericCode
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+FeatureID
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+FedFinStbltyPlan
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+GSEREO
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Geog
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+HOEPALoanStatusType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+HUDMedianIncomeAmount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+HousingExpenseRatioPercent
+  Type: Float64
+  Years: All years (2009-2024) (16/16)
+
+IncRat
+  Type: Float64
+  Years: 2009-2018 (10/16)
+
+IndexSourceType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+LTVRatioPercent
+  Type: Float64
+  Years: All years (2009-2024) (16/16)
+
+LienPriorityType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+LoanAcquisitionActualUPBAmt
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+LoanAcquisitionDate
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+LoanAmortizationMaxTermMonths
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+LoanCharacteristicsID
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+LoanPurposeType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+LocalAreaMedianIncomeAmount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+MarginRatePercent
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+MortgageLoanSellerInstType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+MortgageType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+NoteAmount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+NoteDate
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+NoteRatePercent
+  Type: Float64
+  Years: All years (2009-2024) (16/16)
+
+PMICoveragePercent
+  Type: Float64, Int64
+  Years: All years (2009-2024) (16/16)
+
+PrepaymentPenaltyExpirationDate
+  Type: Date
+  Years: All years (2009-2024) (16/16)
+
+ProductCategoryName
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Program
+  Type: Int64
+  Years: 2009-2014 (6/16)
+
+PropertyType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+PropertyUnitCount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+PropertyUsageType
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+Rent1
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Rent2
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Rent3
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+Rent4
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+RentUt1
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+RentUt2
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+RentUt3
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+RentUt4
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+ScheduledTotalPaymentCount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+SellCity
+  Type: String
+  Years: 2009-2014 (6/16)
+
+SellSt
+  Type: String
+  Years: 2009-2014 (6/16)
+
+Seller
+  Type: String
+  Years: 2009-2014 (6/16)
+
+SpcHsgGoals
+  Type: Int64
+  Years: 2009-2018 (10/16)
+
+TotalDebtExpenseRatioPercent
+  Type: Float64
+  Years: All years (2009-2024) (16/16)
+
+TotalMonthlyIncomeAmount
+  Type: Int64
+  Years: All years (2009-2024) (16/16)
+
+TractRat
+  Type: Float64
+  Years: 2009-2018 (10/16)
+
+data_year
+  Type: Int32
+  Years: All years (2009-2024) (16/16)
+

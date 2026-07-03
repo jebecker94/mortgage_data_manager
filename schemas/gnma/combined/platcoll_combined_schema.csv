@@ -1,0 +1,19 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+1,Platinum CUSIP Number,1,9,Character,9,X(9),platcoll_layout.pdf,,,J,string,String
+2,Platinum Pool ID,10,15,Character,6,X(6),platcoll_layout.pdf,,,J,string,String
+3,Platinum Pool Indicator,16,16,Character,1,X,platcoll_layout.pdf,,,J,string,String
+4,Platinum Pool Type,17,18,Character,2,X(2),platcoll_layout.pdf,,,J,string,String
+5,"Record Type (J = Platinum Collateral, Active and Inactive Pools)",19,19,Character,1,X,platcoll_layout.pdf,,,J,string,String
+6,Pool ID,20,25,Character,6,X(6),platcoll_layout.pdf,,,J,string,String
+7,Pool Indicator,26,26,Character,1,X,platcoll_layout.pdf,,,J,string,String
+8,Pool Type,27,28,Character,2,X(2),platcoll_layout.pdf,,,J,string,String
+9,Issuer Number *,29,32,Character,4,X(4),platcoll_layout.pdf,,,J,string,String
+10,Issue Date,33,40,Numeric,8,9(8),platcoll_layout.pdf,,,J,Int64,Int64
+11,Maturity Date,41,48,Numeric,8,9(8),platcoll_layout.pdf,,,J,Int64,Int64
+12,Interest Rate,49,53,Numeric,5,9(2)v9(3),platcoll_layout.pdf,,,J,float64,Float64
+13,Face Amount in Platinum Pool,54,68,Numeric,15,9(13)v9(2),platcoll_layout.pdf,,,J,float64,Float64
+14,Percentage of Pool in Platinum Pool (At Issuance),69,79,Numeric,11,9(3)v9(8),platcoll_layout.pdf,,,J,float64,Float64
+15,Active Pool Flag (Active or Terminated) **,80,80,Character,1,X,platcoll_layout.pdf,,,J,string,String
+16,As-Of Date (CCYYMM),81,86,Numeric,6,9(6),platcoll_layout.pdf,,,J,Int64,Int64
+17,Current Month Amount in Platinum Pool,87,101,Numeric,15,9(13)v9(2),platcoll_layout.pdf,,,J,float64,Float64
+18,Percentage of Platinum Pool (Current Month),102,108,Numeric,7,9(3)v9(4),platcoll_layout.pdf,,,J,float64,Float64

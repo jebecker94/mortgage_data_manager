@@ -1,0 +1,11 @@
+Field #,Field Width,Field Name,Values,Description / Comments,NameNum
+1,1,Enterprise Flag,1 = Fannie Mae 2 = Freddie Mac,Flag identifying whether the mortgage was purchased by Fannie Mae or by Freddie Mac. Fannie Mae and Freddie Mac are collectively referred to as the Enterprises in this document.,
+2,7,Record Number,"",Sequential numerical identifier for the property not related to the record number in the Census Tract File but matching the record number in each associated multifamily National File unit class record.,
+3,1,2010 Census Tract - Percent Minority,"1 = >=0, <10% 2 = >=10, <30% 3 = >=30, <=100% 9 = Missing","The percentage of the census tract’s population that is classified as belonging to a minority group, based on the 2010 decennial census.",
+4,1,Tract Income Ratio,"1 = >0, <=80% 2 = >80, <=120% 3 = >120% 9 = Missing",The ratio of the 2010 census tract median income to the local area median income. This field is not required for calculating performance for the multifamily housing goal or subgoal. It is provided here for informational purposes.,
+5,1,Affordability Category,"1 = >=20% of the units in the property are affordable at or below 50% of Area Median Income (AMI), and <40% are affordable at or below 60% AMI 2 = <20% and >=40% 3 = >=20% and >=40% 4 = <20% and <40% 8 = Not available 9 = Not eligible 0 = Missing","",
+6,1,Date of Mortgage Note,1 = originated in same year as acquired 2 = originated prior to calendar year of acquisition 9 = missing,"",
+7,1,Purpose of Loan,1 = Purchase 2 = Refinancing 3 = New construction 4 = Home Improvement/Rehabilitation 9 = Not applicable/not available,Purpose of loan reported by the Enterprise.,
+8,1,Type of Seller Institution,1 = Mortgage Company 2 = Savings Association Insurance Fund (SAIF)- or Bank Insurance Fund (BIF)-insured depository institution 3 = NCUA-insured Credit Union 4 = Other,The type of seller that sold the mortgage to the Enterprise; this is not necessarily the originating lender.,
+9,1,Federal Guarantee,1 = Yes (has some type of Federal Guarantee) 2 = No 3 = FHA Risk Sharing 9 = Not available,"",
+10,5,Total Number of Units,"",Physical number of units in the property (unadjusted for REMIC weights and participations).,

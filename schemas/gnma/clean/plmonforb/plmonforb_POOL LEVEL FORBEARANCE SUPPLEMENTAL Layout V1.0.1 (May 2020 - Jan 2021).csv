@@ -1,0 +1,113 @@
+Item,Data Element,Type,Max Length,Format,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+01,Record Type = HF,Character,2,,File Header Record,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HF,,
+02,Reporting Period,Numeric,6,YYYYMM,The monthly reporting period for the data in the file.,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HF,,
+03,Create Date,Date,8,YYYYMMDD,The date that the file is produced.,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HF,,
+01,Record Type = 90,Character,2,,"Forbearance Type Stratification; for pools with loans that have a
+reported forbearance record. Stratification record types do not
+include a type for “not-in-forbearance”.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+02,CUSIP,Character,9,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+03,Pool ID,Character,6,,"The Ginnie Mae unique identifier for the pool; this is assigned by
+Ginnie Mae at pool issuance.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+04,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or M.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+05,Pool Type,Character,2,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+06,Forbearance Type,Numeric,2,,"Values are:
+1 = Forbearance is COVID Related
+2 = Forbearance Other (is not COVID related)
+9 = Forbearance Type Unavailable",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+07,Number of Loans,Numeric,6,,The number of loans in the pool for the Forbearance Type Value.,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+08,% of Loans,Numeric,6,3.2,"The percentage of the number of loans in the pool for the
+Forbearance Type Value.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+09,UPB,Numeric,16,13.2,"The total Unpaid Balance (UPB) in the pool for the Forbearance
+Type Value.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+10,% of UPB,Numeric,6,3.2,"The percentage of the total Unpaid Balance (UPB) in the pool for
+the Forbearance Type Value.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,90,,
+01,Record Type = 91,Character,2,,Forbearance Type and Delinquency Stratification,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+02,CUSIP,Character,9,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+03,Pool ID,Character,6,,"The Ginnie Mae unique identifier for the pool; this is assigned by
+Ginnie Mae at pool issuance.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+04,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or M.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+05,Pool Type,Character,2,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+06,Forbearance Type,Numeric,2,,"Values are:
+1 = Forbearance is COVID Related
+2 = Forbearance Other (is not COVID related)
+9 = Forbearance Type Unavailable",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+07,Delinquency,Numeric,2,,"Values are:
+0 = 0 Months (Not Delinquent)
+1 = 1 Month
+2 = 2 Months
+3 = 3+ Months",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+08,Number of Loans,Numeric,6,,"The number of loans in the pool for the Forbearance Type Value
+/ Delinquency Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+09,% of Loans,Numeric,6,3.2,"The percentage of the number of loans in the pool for the
+Forbearance Type Value / Delinquency Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+10,UPB,Numeric,16,13.2,"The total Unpaid Balance (UPB) in the pool for the Forbearance
+Type Value / Delinquency Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+11,% of UPB,Numeric,6,3.2,"The percentage of the total Unpaid Balance (UPB) in the pool for
+the Forbearance Type Value / Delinquency Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,91,,
+01,Record Type = 92,Character,2,,"Forbearance Type and Loan Type Government
+Insured/Guarantee Stratification",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+02,CUSIP,Character,9,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+03,Pool ID,Character,6,,"The Ginnie Mae unique identifier for the pool; this is assigned by
+Ginnie Mae at pool issuance.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+04,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or M.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+05,Pool Type,Character,2,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+06,Forbearance Type,Numeric,2,,"Values are:
+1 = Forbearance is COVID Related
+2 = Forbearance Other (is not COVID related)
+9 = Forbearance Type Unavailable",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+07,Loan Type,Numeric,2,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+9 = Not Available",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+08,Number of Loans,Numeric,6,,"The number of loans in the pool for the Forbearance Type Value
+/ Loan Type Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+09,% of Loans,Numeric,6,3.2,"The percentage of the number of loans in the pool for the
+Forbearance Type Value / Loan Type Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+10,UPB,Numeric,16,13.2,"The total Unpaid Balance (UPB) in the pool for the Forbearance
+Type Value / Loan Type Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+11,% of UPB,Numeric,6,3.2,"The percentage of the total Unpaid Balance (UPB) in the pool for
+the Forbearance Type Value / Loan Type Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,92,,
+01,Record Type = 93,Character,2,,Forbearance Type and Loan Purpose Stratification,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+02,CUSIP,Character,9,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+03,Pool ID,Character,6,,"The Ginnie Mae unique identifier for the pool; this is assigned by
+Ginnie Mae at pool issuance.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+04,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or M.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+05,Pool Type,Character,2,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+06,Forbearance Type,Numeric,2,,"Values are:
+1 = Forbearance is COVID Related
+2 = Forbearance Other (is not COVID related)
+9 = Forbearance Type Unavailable",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+07,Loan Purpose,Numeric,2,,"Values are:
+1 = Regular
+2 = Refinance
+3 = Loan Modification (HAMP)
+4 = Loan Modification (non-HAMP)
+9 = Not Available",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+08,Number of Loans,Numeric,6,,"The number of loans in the pool for the Forbearance Type Value
+/ Loan Purpose Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+09,% of Loans,Numeric,6,3.2,"The percentage of the number of loans in the pool for the
+Forbearance Type Value / Loan Purpose Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+10,UPB,Numeric,16,13.2,"The total Unpaid Balance (UPB) in the pool for the Forbearance
+Type Value / Loan Purpose Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+11,% of UPB,Numeric,6,3.2,"The percentage of the total Unpaid Balance (UPB) in the pool for
+the Forbearance Type Value / Loan Purpose Value combination.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,93,,
+01,Record Type = TF,Character,2,,File Trailer Record,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TF,,
+02,Reporting Period,Numeric,6,YYYYMM,The monthly reporting period for the data in the file.,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TF,,
+03,File Create Date,Date,8,YYYYMMDD,The date that the file is produced.,plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TF,,
+04,Detail Record Count,Numeric,12,,"Control total of the total number of Record Type 90, 91, 92,
+and 93 records in the file. This count will not include HF or
+TF records.",plmonforb_POOL LEVEL FORBEARANCE SUPPLEMENTAL Layout V1.0.1 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TF,,

@@ -1,0 +1,751 @@
+Item,Data Element,Type,Max Length,Format,Description,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+01,Record Type = HP,Character,2,,,File Header Record,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HP,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HP,,
+03,Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HP,,
+01,Record Type = PS,Character,2,,,SF Pool/Security Detail Record,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+02,CUSIP Number,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned by
+Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+06,Issue Date,Date,8,YYYYMMDD,,The date that the pool was issued,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+07,Security Interest Rate,Numeric,6,2.3,,"The interest rate of the Ginnie Mae Security. For ARM pools this
+is the rate in effect for the report period.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+08,Maturity Date,Numeric,8,YYYYMMDD,,"The date on which the final payment for the Security is
+scheduled to be paid.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+09,Original Aggregate Amount,Numeric,16,13.2,,The aggregate principal amount (UPB at issuance) of the loans in the pool at pool issuance.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+10,Remaining Security RPB,Numeric,16,13.2,,"The Remaining Principal Balance of the Security as of the end of
+the Reporting Period; (based on a computation of scheduled
+principal).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+11,RPB Factor,Numeric,10,1.8,,"The decimal value of the Security’s Remaining Principal Balance
+divided by the Original Aggregate Amount. The factor is 1 at
+issuance, and zero in the period of final payment.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+12,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer responsible for
+the pool; a value of “9999” indicates a Multiple Issuer Pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+13,Issuer Name,Character,40,,,"The name of the Issuer currently responsible for the pool; a value
+of “Multiple Issuers” indicates Multiple Issuer Pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+14,Number of loans in pool,Numeric,6,,,The current total number of loans in the pool.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+15,Pool UPB,Numeric,16,13.2,,"The sum of the Loan UPBs in the pool. This is the aggregate of
+the actual UPB balances of the loans in the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+16,Average Original Loan Size (AOLS),Numeric,16,13.2,,"Original Loan Size (original principal amount of the loan) for the
+loans in the pool. This is a simple average, not a weighted
+average.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+17,WA Original Loan Size,Numeric,16,13.2,,"Weighted Average of the Original Loan Size (principal amount of
+the loan) of the loans in the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+18,WA Interest Rate (WAC),Numeric,6,2.3,,"Weighted Average Interest Rate (Coupon) of loans in the pool.
+This is the gross WA Interest Rate (not the Security Rate).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+19,WA Remaining Months to Maturity (WARM),Numeric,3,,,"Weighted Average Remaining Maturity (remaining months to pay
+off the loans) for the loans in the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+20,WA Loan Age (WALA),Numeric,3,,,"Weighted Average Loan Age (age of loans in months from the
+first scheduled payment date) for the loans in the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+21,WA Original Loan Term (WAOLT),Numeric,3,,,"Weighted Average Original Loan Term (original term of loans in
+months) for the loans in the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+22,WA Gross Margin (WAGM),Numeric,6,2.3,,"For ARM pools, the Weighted Average Gross Margin for the loans
+in the pool. For an adjustable rate loan, the Gross Margin is the
+amount added to the ARM index for the loan to determine the
+loan’s interest rate.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+23,WA Loan to Value (LTV),Numeric,3,,,"Weighted Average Loan-to-Value of the original LTV for the loans
+in the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+24,WA Combined Loan to Value (CLTV),Numeric,3,Col4,,Weighted Average Combined Loan-to-Value of the original CLTV for the loans in the pool.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+25,WA Credit Score,Numeric,3,,,"The Weighted Average of the original three-digit credit score for
+the loan which was used by the lender in the origination of the
+loan.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+26,WA Debt to Income,Numeric,5,1.3,,"The Weighted Average of the debt to income for the loan which
+was used by the lender in the origination of the loan.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+27,WA Pre-Modified LAD,Numeric,3,,,"The Weighted Average of the difference in months between the
+original (Pre-Modified) first scheduled installment date and the
+modified first scheduled installment date, where a loan has been
+modified and re-amortized.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+28,WA Pre-Modified OPB,Numeric,16,13.2,,"The Weighted Average value for modified loans of the original
+loan size (Pre-Modified OPB) before loan modification.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+29,WA Interest Rate (WAC) at Issuance,Numeric,6,2.3,,"Weighted Average Interest Rate (Coupon) of all loans in the pool
+at issuance. Point Forward Field not populated in V1.1",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+30,WA Remaining Months to Maturity (WARM) at Issuance,Numeric,3,,,"Weighted Average Remaining Maturity of all loans in the pool at
+issuance. Point Forward Field not populated in V1.1",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+31,WA Loan Age (WALA) at Issuance,Numeric,3,,,"Weighted Average Loan Age (age of loan in months) of all loans
+in the pool at issuance. Point Forward Field not populated in V1.1",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+32,WA Original Loan Term (WAOLT) at Issuance,Numeric,3,,,"Weighted Average Original Loan Term (original length of loan in
+months) for all loans in the pool at issuance. Point Forward Field
+not populated in V1.1",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,PS,,
+01,Record Type = TP,Character,2,,,File Trailer Record,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TP,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TP,,
+03,File Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TP,,
+04,Detail Record Count,Numeric,8,,,"Control total of the total number of records with Record Type =
+“PS” in the file.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TP,,
+01,Record Type = HS,Character,2,,,File Header Record,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HS,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HS,,
+03,Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,HS,,
+01,Record Type = 01,Character,2,,,Adjustable Rate Mortgage Record; applies to ARM Pools only.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Values are C or M.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+06,Look Back Period,Numeric,2,,,"The two-digit number of days used to establish a specific
+point in time for the particular ARM Index that will be used to",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+07,Index Type,Character,5,,,"The type of ARM index being used for the ARM loan. Values
+are:
+CMT = Constant Maturity Treasury
+LIBOR = London Interbank Offered Rate",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+08,Security Interest Rate at Issuance,Numeric,6,2.3,,The interest rate of the Security at issuance.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+09,Security Margin,Numeric,5,1.3,,"The amount added to the ARM index to determine the
+Security Interest Rate.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+10,Prospective Interest Rate,Numeric,6,2.3,,"The next Interest rate for the ARM Pool, if applicable.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+11,Next Interest Adjustment Date,Date,8,YYYYMMDD,,"The date of the next Interest Rate Adjustment for the ARM
+Pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+12,Prior Interest Adjustment Date,Date,8,YYYYMMDD,,"The date of the current Interest Rate Adjustment for the ARM
+Pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+13,Next Payment Adjustment Date,Date,8,YYYYMMDD,,The date of the next Payment Adjustment for the ARM Pool.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+14,Months To Adjust,Numeric,3,,,"The number of months remaining until the Next Adjustment
+Date.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+15,WA Gross Margin (WAGM),Numeric,6,2.3,,"For ARM Pools, the Weighted Average Gross Margin of the
+loans in the pool. For an adjustable rate loan, the Gross
+Margin is the amount added to the ARM index for the loan to
+determine the loan’s interest rate.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+16,Maximum Mortgage Margin,Numeric,6,2.3,,"The maximum Mortgage Margin of the loans in the ARM
+pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+17,Minimum Mortgage Margin,Numeric,6,2.3,,The minimum Mortgage Margin of the loans in the ARM pool.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+18,Initial Interest Rate Cap,Numeric,1,,,"The maximum interest rate change (+ or -) in an ARM pool for
+the initial interest rate change. Values are 1 or 2.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+19,Subsequent Interest Rate Cap,Numeric,1,,,"The maximum interest rate change (+ or -) in an ARM pool for
+each of the annual rate changes following the initial period.
+The cap is constant for each annual change and is applied to
+the current interest rate (not the initial interest rate).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+20,Lifetime Interest Rate Cap,Numeric,1,Col4,,The maximum interest rate change (+ or -) in an ARM pool over the life of the pool.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+21,Lifetime Interest Rate Ceiling,Numeric,6,2.3,,"The maximum interest rate that the ARM pool can have for
+the life of the pool. This is a constant value and does not
+change over the life of the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+22,Next Interest Rate Ceiling,Numeric,6,2.3,,"The maximum interest rate that the ARM pool can have for
+each interest rate change. This field will have the initial rate
+change ceiling during the initial period. After this and during
+each annual change period, this field will have the ceiling for
+each respective annual change.
+The value in this field can change for each adjustment period.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+23,Lifetime Interest Rate Floor,Numeric,6,2.3,,"The minimum interest rate that the ARM pool can have for
+the life of the pool. This is a constant value and does not
+change over the life of the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,01,,
+01,Record Type = 02,Character,2,,,"Issuer-Level Pool Detail Record for each Issuer in the Multiple
+Issuer Pool (MIP)",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+02,CUSIP Number,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+04,Pool Indicator = M,Character,1,,,"Identifies the Issue Type of the pool. Value is always M
+(always M for Record Type 02 Multi Issuer Pools )",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+06,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer participating in
+the Multiple Issuer Pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+07,Issuer Name,Character,40,,,"The name of the Issuer participating in the Multiple Issuer
+Pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+08,Number of Loans in Pool,Numeric,6,,,"The total number of loans in the Multiple Issuer Pool for the
+Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+09,% of Loans in Pool,Numeric,6,3.2,,"The percentage of the number of loans in the Multiple Issuer
+Pool for the Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+10,Pool UPB,Numeric,16,13.2,,"The sum of the actual Unpaid Principal Balances in the
+Multiple Issuer Pool for the Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+11,% of UPB in Pool,Numeric,6,3.2,,"The percentage of the Unpaid Principal Balance in the Multiple
+Issuer Pool for the Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+12,WA Original Loan Size,Numeric,16,13.2,,"Weighted Average of the Original Loan Size (principal amount
+of the loan) of the loans in the Multiple Issuer Pool for the
+Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+13,WA Interest Rate (WAC),Numeric,6,2.3,,Weighted Average Interest Rate (Coupon) of loans in the Multiple Issuer Pool for the Issuer. This is the gross WA Interest Rate (not the Security Rate).,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+14,WA Remaining Months to Maturity (WARM),Numeric,3,,,"Weighted Average Remaining Maturity (remaining months to
+pay off the loans) for the loans in the Multiple Issuer Pool for
+the Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+15,WA Loan Age (WALA),Numeric,3,,,"Weighted Average Loan Age (age of loans in months from the
+first scheduled payment date) for the loans in the Multiple
+Issuer Pool for the Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+16,WA Original Loan Term (WAOLT),Numeric,3,,,"Weighted Average Original Loan Term (original term of loans
+in months) for the loans in the Multiple Issuer Pool for the
+Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+17,WA Gross Margin (WAGM),Numeric,6,2.3,,"For ARM pools, the Weighted Average Gross Margin for the
+loans in the Multiple Issuer Pool for the Issuer. For an
+adjustable rate loan, the Gross Margin is the amount added to
+the ARM index for the loan to determine the loan’s interest
+rate.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+18,WA Loan to Value (LTV),Numeric,3,,,"Weighted Average Loan-to-Value of the original LTV for the
+loans in the Multiple Issuer Pool for the Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+19,WA Combined Loan to Value (CLTV),Numeric,3,,,"Weighted Average Combined Loan-to-Value of the original
+CLTV for the loans in the Multiple Issuer Pool for the Issuer.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+20,WA Credit Score,Numeric,3,,,"The Weighted Average of the original three-digit credit score
+for the loan in the Multiple Issuer Pool for the Issuer (which
+was used by the lender in the origination of the loan).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+21,WA Debt to Income,Numeric,5,1.3,,"The Weighted Average of the debt to income for the loan in
+the Multiple Issuer Pool for the Issuer (which was used by the
+lender in the origination of the loan).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+22,WA Pre-Modified LAD,Numeric,3,,,"The Weighted Average of the difference in months between
+the original (Pre-Modified) first scheduled installment date
+and the modified first scheduled installment date, where a
+loan has been modified and re-amortized.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+23,WA Pre-Modified OPB,Numeric,16,13.2,,"The Weighted Average value for modified loans of the original
+loan size (Pre-Modified OPB) before loan modification.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,02,,
+01,Record Type = 03,Character,2,,,Pool Transfer Record,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.
+Transfers in M pools are aggregated by selling/buying Issuers.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+06,Pool Issue Date,Date,8,YYYYMMDD,,The issue date of the pool.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+07,Transfer Type,Numeric,1,,,"The type of pool transfer. Values are:
+1 = PIIT (Pool Issued for Immediate Transfer)
+2 = Regular",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+08,Selling Issuer,Numeric,4,,,Unique Identifier of the Issuer selling (transferring the pool),nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+09,Buying Issuer,Numeric,4,,,Unique identifier of the Issuer buying (receiving the pool),nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+10,Number of Loans,Numeric,6,,,Total number of loans transferred in the pool,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+11,UPB of Loans,Numeric,16,13.2,,"Aggregate actual Unpaid Principal Balances of the loans
+transferred in the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,03,,
+01,Record Type = 04,Character,2,,,Quartiles Record,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+06,Quartiles,Character,1,,,"Values are:
+4 = Maximum (100%) Quartile
+3 = 75th Percentage Quartile
+2 = Median (50%) Percentage Quartile
+1 = 25th Percentage Quartile
+0 = Minimum (0%) Quartile",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+07,Original Loan Size,Numeric,16,13.2,,"Original Loan Size (original principal amount of the loan) for
+the loans in the quartile.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+08,Interest Rate (Coupon),Numeric,6,2.3,,Interest Rate (Coupon) of the loans in the quartile.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+09,Remaining Maturity,Numeric,3,,,"Remaining Maturity (months left before maturity) of the
+loans in the quartile.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+10,Loan Age,Numeric,3,,,Loan Age (age of loans in months) of the loans in the quartile.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+11,Original Loan Term,Numeric,3,,,"Original Loan Term (original length of loans in months) for the
+loans in the quartile.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+12,Gross Margin,Numeric,6,2.3,,"Gross Margin for the loans in the quartile. For an adjustable
+rate loan, the Gross Margin is the amount added to the ARM
+index for the loan to determine the loan’s interest rate.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+13,LTV,Numeric,3,,,Loan-to-Value Ratio for the loans in the quartile.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+14,CLTV,Numeric,3,,,"The Combined Loan-to-Value Ratio of the loan for the
+quartile.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+15,Credit Score,Numeric,3,Col4,,Credit score of the loan for the quartile. The original three- digit credit score for the loan which was used by the lender in the origination of the loan.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+16,Debt Income Ratio,Numeric,5,1.3,,"Debt income ratio of the loan for the quartile. The debt to
+income for the loan which was used by the lender in the
+origination of the loan.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+17,Pre-Mod LAD,Numeric,3,,,"Pre-Mod LAD of the loan for the quartile. The weighted
+average of the difference in months between the original
+(Pre-Modified) first scheduled installment date and the
+modified first scheduled installment date, where a loan has
+been modified and re-amortized.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+18,Pre-Mod OLS,Numeric,16,13.2,,"Pre-Mod OLS of the loan for the quartile. The
+value for modified loans of the original loan size (Pre-
+Modified OPB) before loan modification.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,04,,
+01,Record Type = 05,Character,2,,,Loan Type Government Insured/Guarantee Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+07,Number of Loans,Numeric,6,,,The number of loans in the pool for the Loan Type Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Loan Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,05,,
+01,Record Type = 06,Character,2,,,Loan Purpose Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+06,Loan Purpose,Numeric,1,,,"Values are:
+1 = Regular
+2 = Refinance
+3 = Loan Modification (HAMP)
+4 = Loan Modification (non-HAMP)
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+07,Number of Loans,Numeric,6,,,The number of loans in the pool for the Loan Purpose Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Loan Purpose Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan
+Purpose Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Purpose Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,06,,
+01,Record Type = 07,Character,2,,,Number of Living Units Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+06,Living Units,Numeric,1,,,"Values are:
+1 = 1 Unit
+2 = 2 Units
+3 = 3 Units
+4 = 4 Units
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+07,Number of Loans,Numeric,6,,,The number of loans in the pool for the Living Units Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Living Units Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Living
+Units Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Living Units Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,07,,
+01,Record Type = 08,Character,2,,,First Time Homebuyer Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+06,First Time Homebuyer,Character,1,,,"Values are:
+Y = Yes
+N = No
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the First Time
+Homebuyer Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+First Time Homebuyer Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the First Time
+Homebuyer Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the First Time Homebuyer Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,08,,
+01,Record Type = 09,Character,2,,,Removal Type Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+06,Removal Type,Numeric,1,,,"This is a code of the reason for removal from the pool.
+Values are:
+1 = Mortgager Payoff
+2 = Repurchase of Delinquent Loan
+3 = Foreclosure with Claim Payment
+4 = Loss Mitigation
+5 = Substitution
+6 = Other Removal",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+07,Number of Loans,Numeric,6,,,The number of loans in the pool for the Removal Type Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Removal Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Removal
+Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Removal Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,09,,
+01,Record Type = 10,Character,2,,,Down Payment Assistance Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+06,Down Payment Assistance,Character,1,,,"Values are:
+Y = Yes
+N = No
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Down Payment
+Assistance Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Down Payment Assistance Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Down
+Payment Assistance Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Down Payment Assistance Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,10,,
+01,Record Type = 11,Character,2,,,Loan Origination Channel Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+06,Loan Origination Type,Numeric,1,,,"Values are:
+1 = Broker
+2 = Correspondent
+3 = Retail
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Loan Origination Type
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Loan Origination Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan
+Origination Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Origination Type Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,11,,
+01,Record Type = 12,Character,2,,,Origination Year Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+06,Origination Year,Numeric,4,,,Values are the Year of Origination,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Origination Year
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Origination Year Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Origination
+Year Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Origination Year Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,12,,
+01,Record Type = 13,Character,2,,,"Refinance Type Stratification: Only for refinance loans (Loan
+Purpose of 2)",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+06,Refinance Code,Numeric,1,,,"Values are:
+1 = Not Streamlined, Not Cash Out
+2 = Cash Out
+3 = Streamlined
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Refinance Code
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Refinance Code Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Refinance
+Code Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Refinance Code Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,13,,
+01,Record Type = 14,Character,2,,,"Metropolitan Statistical Area (MSA) Stratification for each
+MSA applicable to the pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+06,MSA,Numeric,5,,,"The MSA values and the MSA Not Available are provided.
+Values are:
+• the MSA value
+• 99999 = MSA Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+07,Number of Loans,Numeric,6,,,The number of loans in the pool for the MSA Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+MSA Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the MSA
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the MSA Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,14,,
+01,Record Type = 15,Character,2,,,Property State Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+06,State Code,Character,2,,,"The abbreviation of the state or territory where the loan
+property exists. See Appendix 2 for a listing of state codes.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+07,Number of Loans,Numeric,6,,,The number of loans in the pool for the State Code Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+State Code Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the State Code
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the State Code Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,15,,
+01,Record Type = 16,Character,2,,,"Upfront MIP Stratification: Applies only to FHA mortgage
+insurance",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+06,Upfront MIP Rate,Numeric,3,,,"Values are FHA Upfront Mortgage Insurance Premium (MIP)
+rates:
+000 = 000 Basis Points (BPS)
+001 = 001 BPS
+050 = 050 BPS
+100 = 100 BPS
+125 = 125 BPS
+150 = 150 BPS
+175 = 175 BPS
+200 = 200 BPS
+225 = 225 BPS
+240 = 240 BPS
+250 = 250 BPS
+300 = 300 BPS
+380 = 380 BPS
+999 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Upfront MIP Rate
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Upfront MIP Rate Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+09,UPB,Numeric,16,13.2,,The total Unpaid Balance (UPB) in the pool for the Upfront MIP Rate Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Upfront MIP Rate Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,16,,
+01,Record Type = 17,Character,2,,,"Annual MIP Stratification: Applies only to FHA mortgage
+insurance",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+06,Annual MIP Rate,Numeric,3,,,"Values are FHA Annual Mortgage Insurance Premium (MIP)
+rates:
+000 = 000 Basis Point (BPS)
+025 = 25 BPS
+035 = 35 BPS
+045 = 45 BPS
+050 = 50 BPS
+055 = 55 BPS
+060 = 60 BPS
+070 = 70 BPS
+075 = 75 BPS
+080 = 80 BPS
+085 = 85 BPS
+090 = 90 BPS
+095 = 95 BPS
+100 = 100 BPS
+105 = 105 BPS
+110 = 110 BPS
+115 = 115 BPS
+120 = 120 BPS
+125 = 125 BPS",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Annual MIP Rate
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Annual MIP Rate Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Annual
+MIP Rate Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Annual MIP Rate Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,17,,
+01,Record Type = 18,Character,2,,,"Pre-Modification Stratification; applies only if there are
+modified loans in the pool (Loan Purpose of 3 or 4)",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+06,Pre-Modification,Numeric,1,,,"Values are:
+1 = Pre-Modified First Payment Date
+2 = Pre-Modified Original Principal Balance",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+07,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Pre-Modification
+Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Pre-Modification Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Pre-
+Modification Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Pre-Modification Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,18,,
+01,Record Type = 19,Character,2,,,Government Agency and Loan Purpose Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+07,Loan Purpose,Numeric,1,,,"Values are:
+1 = Purchase
+2 = Refinance
+3 = Loan Modification (HAMP)
+4 = Loan Modification (non-HAMP)
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+08,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Loan Type
+Value/Loan Purpose Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+09,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Loan Type Value/Loan Purpose Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+10,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value/Loan Purpose Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+11,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value/Loan Purpose Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,19,,
+01,Record Type = 20,Character,2,,,Issuer Level Removals Stratification for Multiple Issuer Pools,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+04,Pool Indicator = M,Character,1,,,"Identifies the Issue Type of the pool. Value is always M.
+(always M for Record Type 20 Multi Issuer Pools )",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+06,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer participating
+in the Multiple Issuer Pool.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+07,Removal Type,Numeric,1,,,"This is a code of the reason for removal from the pool.
+Values are:
+1 = Mortgager Payoff
+2 = Repurchase of Delinquent Loan
+3 = Foreclosure with Claim Payment
+4 = Loss Mitigation
+5 = Substitution
+6 = Other Removal",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+08,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Issuer Number
+Value/Removal Type Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+09,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Issuer Number Value/Removal Type Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+10,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Issuer
+Number Value/Removal Type Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+11,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Issuer Number Value/Removal Type Value
+combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,20,,
+01,Record Type = 21,Character,2,,,"Issuer Level Government Agency Delinquency Stratification;
+produced only for Multiple Issuer Pools",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+04,Pool Indicator = M,Character,1,,,"Identifies the Issue Type of the pool. Value is always M.
+(always M for Record Type 21 Multi Issuer Pools )",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+06,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer participating
+in the Multiple Issuer Pools.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+07,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+A = All Agencies
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+08,Delinquency,Numeric,1,,,"Values are:
+1 = 1 Month
+2 = 2 Months
+3 = 3+ Months",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+09,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Issuer ID Value/Loan
+Type Value/Delinquency Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+10,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Issuer ID Value/Loan Type Value/Delinquency Value
+combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+11,UPB,Numeric,16,13.2,,The total Unpaid Balance (UPB) in the pool for the Issuer ID Value/Loan Type Value/Delinquency Value combination.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+12,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Issuer ID Value/Loan Type Value/Delinquency Value
+combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,21,,
+01,Record Type = 22,Character,2,,,Government Agency and Delinquency Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+A = All Agencies
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+07,Delinquency,Numeric,1,,,"Values are:
+1 = 1 Month
+2 = 2 Months
+3 = 3+ Months",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+08,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Loan Type
+Value/Delinquency Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+09,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Loan Type Value/Delinquency Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+10,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value/Delinquency Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+11,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value/Delinquency Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,22,,
+01,Record Type = 23,Character,2,,,"Government Agency and Interest Buy Down Stratification.
+Not applicable to ARM pools; record is only produced only for
+Buydown loans.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+07,Buydown Status,Numeric,1,,,"Values are:
+1 = Buydown Loan
+2 = Not Buydown Loan
+9 = Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+08,Number of Loans,Numeric,6,,,"The number of loans in the pool for the Loan Type
+Value/Buydown Status Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+09,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the
+Loan Type Value/Buydown Status Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+10,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value/Buydown Status Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+11,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value/Buydown Status Value combination.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,23,,
+01,Record Type = 24,Character,2,,,Not Available Stratification,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+06,Not Available,Numeric,2,,,"Values are:
+1 = Loan to Value (LTV) Not Available
+2 = Combined Loan to Value (CLTV) Not Available
+3 = Debt Income Ratio Not Available
+4 = Credit Score Not Available",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+07,Number of Loans,Numeric,6,,,The number of loans in the pool for the Not Available Value.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+08,% of Loans,Numeric,6,3.2,,"The percentage of the number of loans in the pool for the Not
+Available Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Not
+Available Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Not Available Value.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,24,,
+01,Record Type = TS,Character,2,,,File Trailer Record,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TS,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TS,,
+03,File Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TS,,
+04,Detail Record Count,Numeric,12,,,"Control total of the total number of SF Pool Supplemental
+records in the file. This count will not include HS or TS
+records.",nimonSFPS_MBS SF MONTHLY NEW ISSUES - POOL_SECURITY Layout V1.2 (May 2020 - Jan 2021).pdf,2020-05-01,2021-01-01,TS,,

@@ -1,0 +1,12 @@
+Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+CUSIP,1.0,9.0,Character,9.0,X(9),hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,string,String
+Pool Number,10.0,15.0,Character,6.0,X(6),hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,string,String
+Pool Indicator and Type,,,,,,hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,,
+Pool Indicator (Always H),16.0,16.0,Character,1.0,X,hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,string,String
+Pool Type,17.0,18.0,Character,2.0,X(2),hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,string,String
+Record Type (Y),19.0,19.0,Character,1.0,X,hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,string,String
+Report Period (YYYYMM),20.0,25.0,Numeric,6.0,9(6),hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,Int64,Int64
+FHA,,,,,,hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,,
+HECM Saver Number of Participations,26.0,31.0,Numeric,6.0,9(6),hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,Int64,Int64
+HECM Saver UPB of Participations,32.0,44.0,Numeric,13.0,9(11)v9(2),hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,float64,Float64
+HECM Saver % of Total UPB,45.0,49.0,Numeric,5.0,9(3)v9(2),hsavr_HMBS POOL LEVEL HECM SAVER DATA Layout.pdf,,,float64,Float64

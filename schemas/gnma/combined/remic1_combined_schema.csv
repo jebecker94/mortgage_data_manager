@@ -1,0 +1,25 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+1,Record Type,1,1,Numeric,1,,remic1_REMIC 1 FACTOR Layout.pdf,,,1,Int64,Int64
+2,Filler,2,7,Character,6,,remic1_REMIC 1 FACTOR Layout.pdf,,,1,string,String
+3,RunDate,8,20,Date,12,,remic1_REMIC 1 FACTOR Layout.pdf,,,1,string,String
+4,Record Date,21,33,Date,12,last day of previous month of Rundate.,remic1_REMIC 1 FACTOR Layout.pdf,,,1,string,String
+5,Label1,34,53,Character,20,,remic1_REMIC 1 FACTOR Layout.pdf,,,1,string,String
+1,Record Type,1,1,Numeric,1,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,Int64,Int64
+2,Series,2,16,Character,15,"X##X examples C24 , 016 , 005O",remic1_REMIC 1 FACTOR Layout.pdf,,,2,string,String
+3,TrancheName,17,25,Character,9,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,string,String
+4,Cusip,26,34,Character,9,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,string,String
+5,TrancheFactor,35,45,Numeric,11,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,float64,Float64
+6,CouponRate,46,56,Numeric,11,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,float64,Float64
+7,FinalDistributionDate,57,65,Date,9,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,string,String
+8,OriginalBalance,66,82,Numeric,17,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,float64,Float64
+9,CurrentBalance,83,99,Numeric,17,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,float64,Float64
+10,PaymentDate,100,108,Date,9,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,string,String
+11,FirstAccrualdate,109,117,Date,9,,remic1_REMIC 1 FACTOR Layout.pdf,,,2,string,String
+1,Record Type,1,1,Numeric,1,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,Int64,Int64
+2,Filler,2,7,Character,6,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,string,String
+3,LABEL1,8,23,Character,16,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,string,String
+4,TOTAL AGGREGATE ORIGINAL BALANCE,24,38,Numeric,15,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,float64,Float64
+5,LABEL2,39,55,Character,17,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,string,String
+6,Total Current Balance,56,70,Numeric,15,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,float64,Float64
+7,LABEL3,71,93,Character,23,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,string,String
+8,Total Pool Count,94,108,Numeric,15,,remic1_REMIC 1 FACTOR Layout.pdf,,,3,Int64,Int64

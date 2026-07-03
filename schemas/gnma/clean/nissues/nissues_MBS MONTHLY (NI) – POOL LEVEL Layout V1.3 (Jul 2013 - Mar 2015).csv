@@ -1,0 +1,659 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+1,CUSIP Number,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,string,String
+3,"Pool Indicator (X, C, or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,string,String
+5,Record Type (D=Pool Details),19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,string,String
+6,Pool Interest Rate (Security interest rate),20,24,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+7,Pool Issue Date,25,32,Numeric,8,9(8),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+8,Pool Maturity Date,33,40,Numeric,8,9(8),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+9,Original Aggregate Amount,41,55,Numeric,15,9(13)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+10,Issuer Number,56,59,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+11,Issuer Name,60,99,Character,40,X(40),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,string,String
+12,Security Margin (ARM pools only),100,103,Numeric,4,9(1)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+13,Interest Adjustment Date (ARM pools only),104,111,Numeric,8,9(8),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+14,Payment Adjustment Date (ARM pools only),112,119,Numeric,8,9(8),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+15,Number of loans in pool,120,125,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+16,Average Original Loan Size (AOLS),126,133,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+17,Maximum AOLS (Q4),134,141,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+18,75th Percentile AOLS (Q3),142,149,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+19,Median AOLS (Q2),150,157,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+20,25th Percentile AOLS (Q1),158,165,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+21,Minimum AOLS (Q0),166,173,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+22,WAC,174,178,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+23,Maximum WAC (Q4),179,183,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+24,75th Percentile WAC (Q3),184,188,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+25,Median WAC (Q2),189,193,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+26,25th Percentile WAC (Q1),194,198,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+27,Minimum WAC (Q0),199,203,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+28,WARM,204,206,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+29,Maximum WARM (Q4),207,209,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+30,75th Percentile WARM (Q3),210,212,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+31,Median WARM (Q2),213,215,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+32,25th Percentile WARM (Q1),216,218,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+33,Minimum WARM (Q0),219,221,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+34,WALA,222,224,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+35,Maximum WALA (Q4),225,227,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+36,75th Percentile WALA (Q3),228,230,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+37,Median WALA (Q2),231,233,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+38,25th Percentile WALA (Q1),234,236,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+39,Minimum WALA (Q0),237,239,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+40,WAOLT,240,242,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+41,Maximum WAOLT (Q4),243,245,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+42,75th Percentile WAOLT (Q3),246,248,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+43,Median WAOLT (Q2),249,251,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+44,25th Percentile WAOLT (Q1),252,254,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+45,Minimum WAOLT (Q0),255,257,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+46,WAGM (AR pool type only),258,262,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+47,Maximum WAGM (Q4),263,267,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+48,75th Percentile WAGM (Q3),268,272,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+49,Median WAGM (Q2),273,277,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+50,25th Percentile WAGM (Q1),278,282,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+51,Minimum WAGM (Q0),283,287,Numeric,5,9(2)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+52,Weighted Average Original LTV,288,290,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+53,Maximum LTV (Q4),291,293,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+54,75th Percentile LTV (Q3),294,296,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+55,Median LTV (Q2),297,299,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+56,25th Percentile LTV (Q1),300,302,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+57,Minimum LTV (Q0),303,305,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+58,LTV Not Available – Number of loans,306,311,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+59,LTV Not Available – UPB,312,324,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+60,LTV Not Available – % of UPB,325,329,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+61,Purchase Number Of Loans,330,335,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+62,Purchase UPB,336,348,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+63,Purchase % of UPB,349,353,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+64,Refinance Number of Loans,354,359,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+65,Refinance UPB,360,372,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+66,Refinance % of UPB,373,377,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+67,HAMP Modified Number of Loans,378,383,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+68,HAMP Modified UPB,384,396,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+69,HAMP Modified % of Total UPB,397,401,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+70,Non-HAMP Modified Number of Loans,402,407,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+71,Non-HAMP Modified UPB,408,420,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+72,Non-HAMP Modified % of Total UPB,421,425,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+73,Loan Purpose Not Available Number of Loans,426,431,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+74,Loan Purpose Not Available UPB,432,444,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+75,Loan Purpose Not Available % of UPB,445,449,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+76,Weighted Average Original CLTV,450,452,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+77,Maximum CLTV (Q4),453,455,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+78,75th Percentile CLTV (Q3),456,458,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+79,Median CLTV (Q2),459,461,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+80,25th Percentile CLTV (Q1),462,464,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+81,Minimum CLTV (Q0),465,467,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+82,Weighted Average Original Loan Size,468,475,Numeric,8,9(6)v(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,,
+83,Reserved (Filler),476,481,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+84,Reserved (Filler),482,488,Numeric,7,9(7),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+85,Reserved (Filler),489,495,Numeric,7,9(7),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+86,Reserved (Filler),496,502,Numeric,7,9(7),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+87,Reserved (Filler),503,509,Numeric,7,9(7),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+88,Reserved (Filler),510,515,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+89,Reserved (Filler),516,528,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+90,Reserved (Filler),529,533,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+91,1 Unit Number of Loans,534,539,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+92,1 Unit UPB,540,552,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+93,1 Unit % of UPB,553,557,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+94,2 – 4 Units Number of Loans,558,563,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+95,2 – 4 Units UPB,564,576,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+96,2 – 4 Units % of UPB,577,581,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+97,Property Type Not Available Number of Loans,582,587,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+98,Property Type Not Available UPB,588,600,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+99,Property Type Not Available % of UPB,601,605,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+100,Pool UPB,606,620,Numeric,15,9(13)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,float64,Float64
+101,Filler,621,629,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,string,String
+101,As-Of Date (CCYYMM),630,635,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,D,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,string,String
+3,Pool Indicator ( M),16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,string,String
+5,Record Type (I = Issuer),19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,string,String
+6,Issuer Number,20,23,Character,4,X(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,string,String
+7,Issuer Name,24,63,Character,40,X(40),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,string,String
+8,Number of Loans,64,69,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,Int64,Int64
+9,Issuer’s UPB in Multiple Issuer Pool,70,82,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,float64,Float64
+10,Issuer’s Percentage of Multiple Issuer Pool,83,87,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,float64,Float64
+11,As-Of Date (CCYYMM),88,93,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,I,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,string,String
+3,"Pool Indicator (X, C or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,string,String
+5,Record Type (O = Origination Year),19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,string,String
+6,Origination Year 1,20,23,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+7,Unpaid Principal Balance for Origination Year 1,24,36,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+8,Percent of UPB for Origination Year 1,37,41,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+9,Number of Loans for Origination Year 1,42,47,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+10,Percent of Loans for Origination Year 1,48,52,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+11,Origination Year 2,53,56,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+12,Unpaid Principal Balance for Origination Year 2,57,69,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+13,Percent of UPB for Origination Year 2,70,74,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+14,Number of Loans for Origination Year 2,75,80,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+15,Percent of Loans for Origination Year 2,81,85,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+16,Origination Year 3,86,89,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+17,Unpaid Principal Balance for Origination Year 3,90,102,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+18,Percent of UPB for Origination Year 3,103,107,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+19,Number of Loans for Origination Year 3,108,113,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+20,Percent of Loans for Origination Year 3,114,118,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+21,Origination Year 4,119,122,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+22,Unpaid Principal Balance for Origination Year 4,123,135,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+23,Percent of UPB for Origination Year 4,136,140,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+24,Number of Loans for Origination Year 4,141,146,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+25,Percent of Loans for Origination Year 4,147,151,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+26,Origination Year All Others,152,155,Character,4,X(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,string,String
+27,Unpaid Principal Balance for Origination Year Others,156,168,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+28,Percent of UPB for Origination Year All Others,169,173,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+29,Number of Loans for Origination Year All Others,174,179,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+30,Percent of Loans for Origination Year All Others,180,184,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,float64,Float64
+31,As-Of Date (CCYYMM),185,190,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,O,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,string,String
+3,"Pool Indicator (X, C or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,string,String
+5,Record Type (S = State Distribution),19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,string,String
+6,State Abbreviation,20,21,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,string,String
+7,Current Security Balance for State,22,34,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,float64,Float64
+8,Balance as a Percent,35,39,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,float64,Float64
+9,Number of Loans for State,40,45,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,Int64,Int64
+10,Number of Loans as a Percent,46,50,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,float64,Float64
+11,Total Loans,51,56,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,Int64,Int64
+12,Original Balance for State,57,69,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,float64,Float64
+13,As-Of Date (CCYYMM),70,75,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,S,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,string,String
+3,"Pool Indicator (X, C, or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,string,String
+5,Record Type (V = Various Data),19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,string,String
+6,FHA Pool UPB,20,32,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+7,FHA UPB as a Percent of total pool,33,37,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+8,FHA Number of Loans,38,43,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+9,FHA Number of Loans as a Percent of total loans,44,48,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+10,FHA Original Pool Balance,49,61,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+11,VA Pool UPB,62,74,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+12,VA UPB as a Percent of total pool,75,79,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+13,VA Number of Loans,80,85,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+14,VA Number of Loans as a Percent of total loans,86,90,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+15,VA Original Pool Balance,91,103,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+16,RD Pool UPB,104,116,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+17,RD UPB as a Percent of total pool,117,121,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+18,RD Number of Loans,122,127,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+19,RD Number of Loans as a Percent of total loans,128,132,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+20,RD Original Pool Balance,133,145,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+21,PIH Pool UPB,146,158,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+22,PIH UPB as a Percent of total pool,159,163,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+23,PIH Number of Loans,164,169,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+24,PIH Number of Loans as a Percent of total loans,170,174,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+25,PIH Original Pool Balance,175,187,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+26,Number of loans Paid Off,188,193,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+27,Unpaid Principal Balance of Loans Paid Off,194,206,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+28,Percent of UPB of Loans Paid Off,207,211,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+29,Number of Repurchased Delinquent Loans,212,217,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+30,UPB of Repurchased Delinquent Loans,218,230,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+31,Percent of UPB of Repurchased Delinquent Loans,231,235,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+32,Number of loans Foreclosed with claim payment,236,241,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+33,UPB of loans Foreclosed with claim payment,242,254,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+34,Percentage of UPB of loans Foreclosed with claim payment,255,259,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+35,Number of Repurchased Loss Mitigation Loans,260,265,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+36,UPB of Repurchased Loss Mitigation Loans,266,278,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+37,Percent of UPB of Repurchased Loss Mitigation Loans,279,283,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+38,Number of Repurchased Substitution Loans,284,289,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+39,UPB of Repurchased Substitution Loans,290,302,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+40,Percent of UPB of Repurchased Substitution Loans,303,307,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+41,Number of Other Removal Repurchased Loans,308,313,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+42,UPB of Other Removal Repurchased Loans,314,326,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+43,Percent of UPB of Other Removal Repurchased Loans,327,331,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+44,Number of FHA Buydown loans,332,337,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+45,UPB of FHA Buydown Loans,338,350,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+46,Percentage of UPB of FHA Buydown Loans,351,355,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+47,Number of VA Buydown loans,356,361,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+48,UPB of VA Buydown Loans,362,374,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+49,Percentage of UPB of VA Buydown Loans,375,379,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+50,Reserved (Filler),380,385,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+51,Reserved (Filler),386,398,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+52,Reserved (Filler),399,403,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+53,Reserved (Filler),404,409,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+54,Reserved (Filler),410,422,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+55,Reserved (Filler),423,427,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+56,Reserved (Filler),428,433,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+57,Reserved (Filler),434,446,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+58,Reserved (Filler),447,451,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+59,Reserved (Filler),452,457,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+60,Reserved (Filler),458,470,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+61,Reserved (Filler),471,475,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+62,Number of Loans 30 days delinquent,476,481,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+63,UPB of Loans 30 days delinquent,482,494,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+64,Percentage of UPB of Loans 30 days delinquent,495,499,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+65,Number of Loans 60 days delinquent,500,505,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+66,UPB of Loans 60 days delinquent,506,518,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+67,Percentage of UPB of Loans 60 days delinquent,519,523,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+68,Number of Loans 90+ days delinquent,524,529,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+69,UPB of Loans 90+ days delinquent,530,542,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+70,Percentage of UPB of Loans 90+ days delinquent,543,547,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+71,FHA Number of Loans 30 days delinquent,548,553,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+72,FHA UPB of Loans 30 days delinquent,554,566,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+73,FHA Percentage of UPB of Loans 30 days delinquent,567,571,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+74,FHA Number of Loans 60 days delinquent,572,577,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+75,FHA UPB of Loans 60 days delinquent,578,590,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+76,FHA Percentage of UPB of Loans 60 days delinquent,591,595,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+77,FHA Number of Loans 90+ days delinquent,596,601,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+78,FHA UPB of Loans 90+ days delinquent,602,614,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+79,FHA Percentage of UPB of Loans 90+ days delinquent,615,619,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+80,VA Number of Loans 30 days delinquent,620,625,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+81,VA UPB of Loans 30 days delinquent,626,638,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+82,VA Percentage of UPB of Loans 30 days delinquent,639,643,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+83,VA Number of Loans 60 days delinquent,644,649,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+84,VA UPB of Loans 60 days delinquent,650,662,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+85,VA Percentage of UPB of Loans 60 days delinquent,663,667,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+86,VA Number of Loans 90+ days delinquent,668,673,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+87,VA UPB of Loans 90+ days delinquent,674,686,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+88,VA Percentage of UPB of Loans 90+ days delinquent,687,691,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+89,RD Number of Loans 30 days delinquent,692,697,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+90,RD UPB of Loans 30 days delinquent,698,710,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+91,RD Percentage of UPB of Loans 30 days delinquent,711,715,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+92,RD Number of Loans 60 days delinquent,716,721,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+93,RD UPB of Loans 60 days delinquent,722,734,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+94,RD Percentage of UPB of Loans 60 days delinquent,735,739,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+95,RD Number of Loans 90+ days delinquent,740,745,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+96,RD UPB of Loans 90+ days delinquent,746,758,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+97,RD Percentage of UPB of Loans 90+ days delinquent,759,763,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+98,PIH Number of Loans 30 days delinquent,764,769,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+99,PIH UPB of Loans 30 days delinquent,770,782,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+100,PIH Percentage of UPB of Loans 30 days delinquent,783,787,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+101,PIH Number of Loans 60 days delinquent,788,793,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+102,PIH UPB of Loans 60 days delinquent,794,806,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+103,PIH Percentage of UPB of Loans 60 days delinquent,807,811,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+104,PIH Number of Loans 90+ days delinquent,812,817,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+105,PIH UPB of Loans 90+ days delinquent,818,830,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+106,PIH Percentage of UPB of Loans 90+ days delinquent,831,835,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+107,Reserved (Filler),836,841,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+108,Reserved (Filler),842,854,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+109,Reserved (Filler),855,859,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+110,Reserved (Filler),860,865,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+111,Reserved (Filler),866,878,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+112,Reserved (Filler),879,883,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,float64,Float64
+113,As-Of Date (CCYYMM),884,889,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,V,Int64,Int64
+1,CUSIP,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,string,String
+3,"Pool Indicator (X, C, or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,string,String
+5,Record Type U,19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,string,String
+6,Issuer,20,23,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+7,Weighted Average Credit Score,24,26,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+8,Maximum Credit Score (Q4),27,29,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+9,75th Percentile Credit Score (Q3),30,32,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+10,Median Credit Score (Q2),33,35,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+11,25th Percentile Credit Score (Q1),36,38,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+12,Minimum Credit Score (Q0),39,41,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+13,Credit Score Not Available Number of Loans,42,47,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+14,Credit Score Not Available UPB,48,60,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+15,Credit Score Not Available % of Total UPB,61,65,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+16,Weighted Average Debt Income Ratio,66,69,Numeric,4,9(1)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+17,Maximum Debt Income Ratio (Q4),70,73,Numeric,4,9(1)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+18,75th Percentile Debt Income Ratio (Q3),74,77,Numeric,4,9(1)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+19,Median Debt Income Ratio (Q2),78,81,Numeric,4,9(1)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+20,25th Percentile Debt Income Ratio (Q1),82,85,Numeric,4,9(1)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+21,Minimum Debt Income Ratio (Q0),86,89,Numeric,4,9(1)v9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+22,Debt Income Ratio Not Available Number of Loans,90,95,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+23,Debt Income Ratio Not Available UPB,96,108,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+24,Debt Income Ratio Not Available % of Total UPB,109,113,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+25,Down Payment Assistance Number of Loans,114,119,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+26,Down Payment Assistance UPB of Loans,120,132,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+27,Down Payment Assistance % of Total UPB,133,137,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+28,Without Payment Assistance Number of Loans,138,143,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+29,Without Payment Assistance UPB of Loans,144,156,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+30,Without Payment Assistance % of Total UPB,157,161,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+31,FHA Purchase Number of Loans,162,167,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+32,FHA Purchase UPB,168,180,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+33,FHA Purchase % of Total UPB,181,185,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+34,FHA Refinance Number of Loans,186,191,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+35,FHA Refinance UPB,192,204,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+36,FHA Refinance % of Total UPB,205,209,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+37,FHA HAMP Modified Number of Loans,210,215,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+38,FHA HAMP Modified UPB,216,228,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+39,FHA HAMP Modified % of Total UPB,229,233,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+40,FHA Non-HAMP Modified Number of Loans,234,239,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+41,FHA Non-HAMP Modified UPB,240,252,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+42,FHA Non-HAMP Modified % of Total UPB,253,257,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+43,FHA Purpose Not Available Number of Loans,258,263,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+44,FHA Purpose Not Available UPB,264,276,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+45,FHA Purpose Not Available % of Total UPB,277,281,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+46,VA Purchase Number of Loans,282,287,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+47,VA Purchase UPB,288,300,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+48,VA Purchase % of Total UPB,301,305,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+49,VA Refinance Number of Loans,306,311,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+50,VA Refinance UPB,312,324,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+51,VA Refinance % of Total UPB,325,329,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+52,VA HAMP Modified Number of Loans,330,335,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+53,VA HAMP Modified UPB,336,348,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+54,VA HAMP Modified % of Total UPB,349,353,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+55,VA Non-HAMP Modified Number of Loans,354,359,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+56,VA Non-HAMP Modified UPB,360,372,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+57,VA Non-HAMP Modified % of Total UPB,373,377,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+58,VA Purpose Not Available Number of Loans,378,383,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+59,VA Purpose Not Available UPB,384,396,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+60,VA Purpose Not Available % of Total UPB,397,401,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+61,PIH Purchase Number of Loans,402,407,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+62,PIH Purchase UPB,408,420,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+63,PIH Purchase % of Total UPB,421,425,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+64,PIH Refinance Number of Loans,426,431,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+65,PIH Refinance UPB,432,444,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+66,PIH Refinance % of Total UPB,445,449,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+67,PIH HAMP Modified Number of Loans,450,455,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+68,PIH HAMP Modified UPB,456,468,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+69,PIH HAMP Modified % of Total UPB,469,473,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+70,PIH Non-HAMP Modified Number of Loans,474,479,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+71,PIH Non-HAMP Modified UPB,480,492,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+72,PIH Non-HAMP Modified % of Total UPB,493,497,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+73,PIH Purpose Not Available Number of Loans,498,503,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+74,PIH Purpose Not Available UPB,504,516,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+75,PIH Purpose Not Available % of Total UPB,517,521,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+76,RD Purchase Number of Loans,522,527,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+77,RD Purchase UPB,528,540,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+78,RD Purchase % of Total UPB,541,545,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+79,RD Refinance Number of Loans,546,551,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+80,RD Refinance UPB,552,564,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+81,RD Refinance % of Total UPB,565,569,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+82,RD HAMP Modified Number of Loans,570,575,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+83,RD HAMP Modified UPB,576,588,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+84,RD HAMP Modified % of Total UPB,589,593,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+85,RD Non-HAMP Modified Number of Loans,594,599,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+86,RD Non-HAMP Modified UPB,600,612,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+87,RD Non-HAMP Modified % of Total UPB,613,617,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+88,RD Purpose Not Available Number of Loans,618,623,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+89,RD Purpose Not Available UPB,624,636,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+90,RD Purpose Not Available % of Total UPB,637,641,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+91,Non Streamlined Refi Number of Loans,642,647,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+92,Non Streamlined Refi Purchase UPB,648,660,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+93,Non Streamlined Refi Purchase % of Total UPB,661,665,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+94,Cash Out Refi Number of Loans,666,671,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+95,Cash Out Refi UPB,672,684,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+96,Cash Out Refi % of Total UPB,685,689,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+97,Streamlined Refi Number of Loans,690,695,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+98,Streamlined Refi UPB,696,708,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+99,Streamlined Refi % of Total UPB,709,713,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+100,FHA Short Refinance Number of Loans,714,719,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+101,FHA Short Refinance UPB,720,732,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+102,FHA Short Refinance % of Total UPB,733,737,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+103,Refinance Type Not Available Number of Loans,738,743,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+104,Refinance Type Not Available UPB,744,756,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+105,Refinance Type Not Available % of Total UPB,757,761,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,float64,Float64
+106,As-Of Date (CCYYMM),762,767,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,U,Int64,Int64
+1,CUSIP,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,string,String
+3,Pool Indicator (M),16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,string,String
+5,Record Type R,19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,string,String
+6,Issuer,20,23,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+7,Mortgagor Payoff Number of Loans,24,29,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+8,Mortgagor Payoff UPB of Loans,30,42,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+9,Mortgagor Payoff % UPB,43,47,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+10,Repurchase Delinquent Loan Number of Loans,48,53,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+11,Repurchase Delinquent Loan UPPB of Loans,54,66,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+12,Repurchase Delinquent Loan % UPB,67,71,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+13,Foreclosure with Claim Payment Number of Loans,72,77,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+14,Foreclosure with Claim Payment UPB of Loans,78,90,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+15,Foreclosure with Claim Payment % UPB,91,95,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+16,Repurchase Loss Mitigation Number of Loans,96,101,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+17,Repurchase Loss Mitigation UPB of Loans,102,114,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+18,Repurchase Loss Mitigation % UPB,115,119,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+19,Substitution Number of Loans,120,125,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+20,Substitution UPB of Loans,126,138,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+21,Substitution Number of % UPB,139,143,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+22,Other Removal Number of Loans,144,149,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+23,Other Removal UPB of Loans,150,162,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+24,Other Removal Number of % UPB,163,167,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,float64,Float64
+25,As-Of Date (CCYYMM),168,173,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,R,Int64,Int64
+1,CUSIP,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,string,String
+3,"Pool Indicator (X, C, or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,string,String
+5,Record Type M,19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,string,String
+6,Issuer,20,23,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+7,Highest MSA,24,28,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+8,Highest MSA Number of Loans,29,34,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+9,Highest MSA UPB of Loans,35,47,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+10,Highest MSA % of Total UPB,48,52,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+11,2nd Highest MSA,53,57,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+12,2nd Highest MSA Number of Loans,58,63,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+13,2nd Highest MSA UPB of Loans,64,76,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+14,2nd Highest MSA % of Total UPB,77,81,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+15,3rd Highest MSA,82,86,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+16,3rd Highest MSA Number of Loans,87,92,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+17,3rd Highest MSA UPB of Loans,93,105,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+18,3rd Highest MSA % of Total UPB,106,110,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+19,4th Highest MSA,111,115,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+20,4th Highest MSA Number of Loans,116,121,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+21,4th Highest MSA UPB of Loans,122,134,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+22,4th Highest MSA % of Total UPB,135,139,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+23,5th Highest MSA,140,144,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+24,5th Highest MSA Number of Loans,145,150,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+25,5th Highest MSA UPB of Loans,151,163,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+26,5th Highest MSA % of Total UPB,164,168,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+27,6th Highest MSA,169,173,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+28,6th Highest MSA Number of Loans,174,179,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+29,6th Highest MSA UPB of Loans,180,192,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+30,6th Highest MSA % of Total UPB,193,197,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+31,7th Highest MSA,198,202,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+32,7th Highest MSA Number of Loans,203,208,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+33,7th Highest MSA UPB of Loans,209,221,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+34,7th Highest MSA % of Total UPB,222,226,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+35,8th Highest MSA,227,231,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+36,8th Highest MSA Number of Loans,232,237,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+37,8th Highest MSA UPB of Loans,238,250,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+38,8th Highest MSA % of Total UPB,251,255,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+39,9th Highest MSA,256,260,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+40,9th Highest MSA Number of Loans,261,266,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+41,9th Highest MSA UPB of Loans,267,279,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+42,9th Highest MSA % of Total UPB,280,284,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+43,10th Highest MSA,285,289,Numeric,5,9(5),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+44,10th Highest MSA Number of Loans,290,295,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+45,10th Highest MSA UPB of Loans,296,308,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+46,10th Highest MSA % of Total UPB,309,313,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+47,MSA Not Available Number of Loans,314,319,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+48,MSA Not Available UPB of Loans,320,332,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+49,MSA Not Available % of Total UPB,333,337,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,float64,Float64
+50,As-Of Date (CCYYMM),338,343,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,M,Int64,Int64
+1,CUSIP,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,string,String
+3,"Pool Indicator (X, C, or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,string,String
+5,Record Type P,19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,string,String
+6,Issuer,20,23,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+7,Weighted Average LAD *,24,26,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+8,Maximum LAD (Q4),27,29,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+9,75th Percentile LAD (Q3),30,32,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+10,Median LAD (Q2),33,35,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+11,25th Percentile LAD (Q1),36,38,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+12,Minimum LAD (Q0),39,41,Numeric,3,9(3),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+13,Unpaid Principal Balance for Pre-Modified First Payment Date Loans,42,54,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+14,Percent of Pool UPB for Pre-Modified First Payment Date Loans,55,59,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+15,Number of Pre-Modified First Payment Date Loans,60,65,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+16,Percent of Pool Loans that are Pre-Modified First Payment Date Loans,66,70,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+17,Pre-Modified Average Original Loan Size (AOLS) **,71,78,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+18,Maximum Pre-Modified OLS (Q4),79,86,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+19,75th Percentile Pre-Modified OLS (Q3),87,94,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+20,Median Pre-Modified OLS (Q2),95,102,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+21,25th Percentile Pre-Modified OLS (Q1),103,110,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+22,Minimum Pre-Modified OLS (Q0),111,118,Numeric,8,9(6)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+23,Unpaid Principal Balance for Loans with Pre- Modified OPB,119,131,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+24,Percent of Pool UPB for Loans with Pre- Modified OPB,132,136,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+25,Number of Loans with Pre-Modified OPB,137,142,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+26,Percent of Pool Loans that Have Pre-Modified OPB,143,147,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,float64,Float64
+27,As-Of Date (CCYYMM),148,153,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,P,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,string,String
+3,Pool Indicator (M),16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,string,String
+5,Record Type (L = Issuer Delinquencies),19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,string,String
+6,Issuer,20,23,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+7,Number of Loans 30 days delinquent,24,29,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+8,UPB of Loans 30 days delinquent,30,42,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+9,Percentage of UPB of Loans 30 days delinquent,43,47,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+10,Number of Loans 60 days delinquent,48,53,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+11,UPB of Loans 60 days delinquent,54,66,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+12,Percentage of UPB of Loans 60 days delinquent,67,71,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+13,Number of Loans 90+ days delinquent,72,77,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+14,UPB of Loans 90+ days delinquent,78,90,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+15,Percentage of UPB of Loans 90+ days delinquent,91,95,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+16,FHA Number of Loans 30 days delinquent,96,101,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+17,FHA UPB of Loans 30 days delinquent,102,114,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+18,FHA Percentage of UPB of Loans 30 days delinquent,115,119,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+19,FHA Number of Loans 60 days delinquent,120,125,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+20,FHA UPB of Loans 60 days delinquent,126,138,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+21,FHA Percentage of UPB of Loans 60 days delinquent,139,143,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+22,FHA Number of Loans 90+ days delinquent,144,149,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+23,FHA UPB of Loans 90+ days delinquent,150,162,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+24,FHA Percentage of UPB of Loans 90+ days delinquent,163,167,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+25,VA Number of Loans 30 days delinquent,168,173,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+26,VA UPB of Loans 30 days delinquent,174,186,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+27,VA Percentage of UPB of Loans 30 days delinquent,187,191,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+28,VA Number of Loans 60 days delinquent,192,197,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+29,VA UPB of Loans 60 days delinquent,198,210,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+30,VA Percentage of UPB of Loans 60 days delinquent,211,215,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+31,VA Number of Loans 90+ days delinquent,216,221,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+32,VA UPB of Loans 90+ days delinquent,222,234,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+33,VA Percentage of UPB of Loans 90+ days delinquent,235,239,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+34,RD Number of Loans 30 days delinquent,240,245,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+35,RD UPB of Loans 30 days delinquent,246,258,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+36,RD Percentage of UPB of Loans 30 days delinquent,259,263,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+37,RD Number of Loans 60 days delinquent,264,269,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+38,RD UPB of Loans 60 days delinquent,270,282,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+39,RD Percentage of UPB of Loans 60 days delinquent,283,287,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+40,RD Number of Loans 90+ days delinquent,288,293,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+41,RD UPB of Loans 90+ days delinquent,294,306,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+42,RD Percentage of UPB of Loans 90+ days delinquent,307,311,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+43,PIH Number of Loans 30 days delinquent,312,317,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+44,PIH UPB of Loans 30 days delinquent,318,330,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+45,PIH Percentage of UPB of Loans 30 days delinquent,331,335,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+46,PIH Number of Loans 60 days delinquent,336,341,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+47,PIH UPB of Loans 60 days delinquent,342,354,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+48,PIH Percentage of UPB of Loans 60 days delinquent,355,359,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+49,PIH Number of Loans 90+ days delinquent,360,365,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+50,PIH UPB of Loans 90+ days delinquent,366,378,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+51,PIH Percentage of UPB of Loans 90+ days delinquent,379,383,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,float64,Float64
+52,As-Of Date (CCYYMM),384,389,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,L,Int64,Int64
+1,CUSIP,1,9,Character,9,X(9),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,string,String
+2,Pool Number,10,15,Character,6,X(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,string,String
+3,"Pool Indicator (X, C, or M)",16,16,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,string,String
+4,Pool Type,17,18,Character,2,X(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,string,String
+5,Record Type F,19,19,Character,1,X,nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,string,String
+6,Issuer,20,23,Numeric,4,9(4),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+7,MIP 100 Number of Loans,24,29,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+8,MIP 100 UPB of Loans,30,42,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+9,MIP 100 % of Pool UPB,43,47,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+10,MIP 125 Number of Loans,48,53,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+11,MIP 125 UPB of Loans,54,66,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+12,MIP 125 % of Pool UPB,67,71,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+13,MIP 150 Number of Loans,72,77,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+14,MIP 150 UPB of Loans,78,90,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+15,MIP 150 % of Pool UPB,91,95,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+16,MIP 175 Number of Loans,96,101,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+17,MIP 175 UPB of Loans,102,114,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+18,MIP 175 % of Pool UPB,115,119,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+19,MIP 200 Number of Loans,120,125,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+20,MIP 200 UPB of Loans,126,138,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+21,MIP 200 % of Pool UPB,139,143,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+22,MIP 225 Number of Loans,144,149,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+23,MIP 225 UPB of Loans,150,162,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+24,MIP 225 % of Pool UPB,163,167,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+25,MIP Not Available Number of Loans,168,173,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+26,MIP Not Available UPB of Loans,174,186,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+27,MIP Not Available % of Pool UPB,187,191,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+28,MIP 25 Number of Loans,192,197,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+29,MIP 25 UPB of Loans,198,210,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+30,MIP 25 % of Pool UPB,211,215,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+31,MIP 35 Number of Loans,216,221,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+32,MIP 35 UPB of Loans,222,234,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+33,MIP 35 % of Pool UPB,235,239,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+34,MIP 50 Number of Loans,240,245,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+35,MIP 50 UPB of Loans,246,258,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+36,MIP 50 % of Pool UPB,259,263,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+37,MIP 55 Number of Loans,264,269,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+38,MIP 55 UPB of Loans,270,282,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+39,MIP 55 % of Pool UPB,283,287,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+40,MIP 60 Number of Loans,288,293,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+41,MIP 60 UPB of Loans,294,306,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+42,MIP 60 % of Pool UPB,307,311,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+43,MIP 85 Number of Loans,312,317,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+44,MIP 85 UPB of Loans,318,330,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+45,MIP 85 % of Pool UPB,331,335,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+46,MIP 90 Number of Loans,336,341,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+47,MIP 90 UPB of Loans,342,354,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+48,MIP 90 % of Pool UPB,355,359,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+49,MIP 110 Number of Loans,360,365,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+50,MIP 110 UPB of Loans,366,378,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+51,MIP 110 % of Pool UPB,379,383,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+52,MIP 115 Number of Loans,384,389,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+53,MIP 115 UPB of Loans,390,402,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+54,MIP 115 % of Pool UPB,403,407,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+55,MIP 120 Number of Loans,408,413,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+56,MIP 120 UPB of Loans,414,426,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+57,MIP 120 % of Pool UPB,427,431,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+58,MIP 125 Number of Loans,432,437,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+59,MIP 125 UPB of Loans,438,450,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+60,MIP 125 % of Pool UPB,451,455,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+61,MIP 145 Number of Loans,456,461,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+62,MIP 145 UPB of Loans,462,474,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+63,MIP 145 % of Pool UPB,475,479,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+64,MIP 150 Number of Loans,480,485,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+65,MIP 150 UPB of Loans,486,498,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+66,MIP 150 % of Pool UPB,499,503,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+67,MIP Not Available Number of Loans,504,509,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+68,MIP Not Available UPB of Loans,510,522,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+69,MIP Not Available % of Pool UPB,523,527,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+70,First Time Homebuyer Number of Loans,528,533,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+71,First Time Homebuyer UPB,534,546,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+72,First Time Homebuyer % of UPB,547,551,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+73,Not First Time Homebuyer Number of Loans,552,557,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+74,Not First Time Homebuyer UPB,558,570,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+75,Not First Time Homebuyer % of UPB,571,575,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+76,First Time Homebuyer Not Available Number of Loans,576,581,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+77,First Time Homebuyer Not Available UPB,582,594,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+78,First Time Homebuyer Not Available % of UPB,595,599,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+79,Broker Number of Loans,600,605,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+80,Broker UPB of Loans,606,618,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+81,Broker % of Total UPB,619,623,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+82,Correspondent Number of Loans,624,629,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+83,Correspondent UPB of Loans,630,642,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+84,Correspondent % of Total UPB,643,647,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+85,Retail Number of Loans,648,653,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+86,Retail UPB of Loans,654,666,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+87,Retail % of Total UPB,667,671,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+88,Origination Type Not Available Number of Loans,672,677,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+89,Origination Type Not Available UPB of Loans,678,690,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+90,Origination Type Not Available % of Total UPB,691,695,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+91,MIP 000 Number of Loans,696,701,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+92,MIP 000 UPB of Loans,702,714,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+93,MIP 000 % of Pool UPB,715,719,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+94,MIP 001 Number of Loans,720,725,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+95,MIP 001 UPB of Loans,726,738,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+96,MIP 001 % of Pool UPB,739,743,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+97,MIP 300 Number of Loans,744,749,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+98,MIP 300 UPB of Loans,750,762,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+99,MIP 300 % of Pool UPB,763,767,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+100,MIP 380 Number of Loans,768,773,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+101,MIP 380 UPB of Loans,774,786,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+102,MIP 380 % of Pool UPB,787,791,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+103,MIP 000 Number of Loans,792,797,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+104,MIP 000 UPB of Loans,798,810,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+105,MIP 000 % of Pool UPB,811,815,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+106,MIP Other Number of Loans,816,821,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+107,MIP Other UPB of Loans,822,834,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+108,MIP Other % of Pool UPB,835,839,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+109,MIP 45 Number of Loans,840,845,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+110,MIP 45 UPB of Loans,846,858,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+111,MIP 45 % of Pool UPB,859,863,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+112,MIP 70 Number of Loans,864,869,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+113,MIP 70 UPB of Loans,870,882,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+114,MIP 70 % of Pool UPB,883,887,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+115,MIP 95 Number of Loans,888,893,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+116,MIP 95 UPB of Loans,894,906,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+117,MIP 95 % of Pool UPB,907,911,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+118,MIP 130 Number of Loans,912,917,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+119,MIP 130 UPB of Loans,918,930,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+120,MIP 130 % of Pool UPB,931,935,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+121,MIP 135 Number of Loans,936,941,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+122,MIP 135 UPB of Loans,942,954,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+123,MIP 135 % of Pool UPB,955,959,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+124,MIP 155 Number of Loans,960,965,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64
+125,MIP 155 UPB of Loans,966,978,Numeric,13,9(11)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+126,MIP 155 % of Pool UPB,979,983,Numeric,5,9(3)v9(2),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,float64,Float64
+127,Filler,984,1463,Character,480,X(480),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,string,String
+128,As-Of Date (CCYYMM),1464,1469,Numeric,6,9(6),nissues_MBS MONTHLY (NI) – POOL LEVEL Layout V1.3 (Jul 2013 - Mar 2015).pdf,2013-07-01,2015-03-01,F,Int64,Int64

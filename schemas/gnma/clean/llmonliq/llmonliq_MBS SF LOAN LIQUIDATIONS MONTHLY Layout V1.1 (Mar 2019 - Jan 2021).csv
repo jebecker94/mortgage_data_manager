@@ -1,0 +1,52 @@
+Item,Data Element,Type,Max Length,Format,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+HH-001,Record Type = HH,Character,2,,File Header Record,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,HH,,
+HH-002,Report Period,Numeric,6,YYYYMM,"Reporting Period of the data in the file (the “as of” month
+and year). For the One-time file, this will be “201903”.",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,HH,,
+HH-003,Date File Generated,Numeric,8,YYYYMMDD,The Date the file was created,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,HH,,
+LR-001,Record Type = LR,Character,2,,Loan Liquidation Record,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-002,CUSIP Number,Character,9,,"The CUSIP is a unique identification number permanently
+assigned by the Committee on Uniform Securities
+Identification Procedures (CUSIP) to each publicly traded
+security at the time of issuance.",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-003,Pool ID,Character,6,,The Pool identifier assigned by Ginnie Mae at pooling.,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-004,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or M.",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-005,Pool Type,Character,2,,"Two-character pool type for the pool (see listing in Ginnie
+Mae Guide, Chapter 1).",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-006,Pool Issue Date,Numeric,8,YYYYMMDD,The date the pool was issued,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-007,Disclosure Sequence Number,Numeric,10,,"A number used to identify each loan distinctly for data
+disclosures",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-008,Issuer ID,Numeric,4,,"The four-digit identifier for the current Issuer responsible
+for the loan",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-009,Report Period,Numeric,6,YYYYMM,Reporting Period of the loan liquidation.,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-010,Agency Type,Character,1,,"Identifier of the government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American
+9 = Not Available",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-011,Loan Purpose,Numeric,1,,"Purpose of the loan. Values are:
+1 = Purchase
+2 = Refinance
+3 = Loan Modification (HAMP)
+4 = Loan Modification (non-HAMP)
+9 = Not Available",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-012,Original Principal Balance (OPB),Numeric,16,13.2,"The Original Principal Balance of the loan at pool issuance.
+The value is truncated to the thousandths place.",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-013,Unpaid Principal Balance (UPB),Numeric,16,13.2,"The Unpaid Principal Balance (UPB) of the loan as of the
+reporting period. This field will be blank if the loan is
+removed within 6 months of pool issuance.",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-014,Liquidation Balance (principal pass through),Numeric,16,13.2,"The unscheduled remaining principal of the loan that is
+being passed through, after taking into account scheduled
+principal remitted. This field will be blank if the loan is
+removed within 6 months of pool issuance.",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+LR-015,Removal Reason Code,Numeric,1,,"Reason for removal of the loan. Values are:
+1 = Mortgagor Payoff
+2 = Repurchase of Delinquent Loan
+3 = Foreclosure with Claim Payment
+4 = Loss Mitigation
+5 = Substitution
+6 = Other Removal",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,LR,,
+TT-001,Record Type = TT,Character,2,,File Trailer Record,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,TT,,
+TT-002,Report Period,Numeric,6,YYYYMM,"Reporting Period of the data in the file. For the One-
+time file, this will be “201903”.",llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,TT,,
+TT-003,Loan Count,Numeric,9,,The number of loans/LR Records contained in the file,llmonliq_MBS SF LOAN LIQUIDATIONS MONTHLY Layout V1.1 (Mar 2019 - Jan 2021).pdf,2019-03-01,2021-01-01,TT,,

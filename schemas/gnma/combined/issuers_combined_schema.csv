@@ -1,0 +1,22 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+1,Issuer Number,1,4,Character,4,X(4),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+2,Filler,5,6,Character,2,X(2),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+3,Filler of value “A0”,7,8,Character,2,X(2),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+4,Filler,9,10,Character,2,X(2),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+5,Filler,11,12,Character,2,X(2),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+6,Issuer Name (Short Name),13,30,Character,18,X(18),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+7,Issuer Name (Long Name),31,90,Character,60,X(60),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+8,Issuer Address 1,91,120,Character,30,X(30),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+9,Issuer Address 2,121,144,Character,24,X(24),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+10,Issuer City,145,166,Character,22,X(22),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+11,Issuer State,167,168,Character,2,X(2),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+12,Filler,169,169,Character,1,X,issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+13,Issuer Zip,170,174,Character,5,X(5),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+14,Issuer Phone Number 1,175,184,Character,10,X(10),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+15,Issuer Phone Number 2,185,194,Character,10,X(10),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+16,Issuer Phone Number 3,195,204,Character,10,X(10),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+17,Filler,205,216,Character,12,X(12),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+18,Issuer Contact Name 1,217,246,Character,30,X(30),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+19,Issuer Contact Name 2,247,276,Character,30,X(30),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+20,Issuer Contact Name 3,277,306,Character,30,X(30),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String
+21,Filler,307,308,Character,2,X(2),issuers_ACTIVE GINNIE MAE ISSUERS Layout.pdf,,,string,String

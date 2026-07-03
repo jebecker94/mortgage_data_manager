@@ -1,0 +1,152 @@
+Field Name,Standardized Name
+2000 Census Tract - Median Income,tract_median_income
+2000 Census Tract - Percent Minority,tract_percent_minority
+2000 Local Area Median Income,local_area_median_income
+2010 Census Tract - Median Income,tract_median_income
+2010 Census Tract - Percent Minority,tract_percent_minority
+2020 Census Tract - Median Income,tract_median_income
+2020 Census Tract - Percent Minority,tract_percent_minority
+Acquisition Unpaid Principal Balance (UPB),upb_acquisition
+Affordability Category,affordability_category
+Age of Borrower,age_borrower
+Age of Co-Borrower,age_co_borrower
+Amortization Term,amortization_term
+Application Channel,application_channel
+Area Median Family Income (2008),area_median_family_income
+Area Median Family Income (2009),area_median_family_income
+Area Median Family Income (2010),area_median_family_income
+Area Median Family Income (2011),area_median_family_income
+Area Median Family Income (2012),area_median_family_income
+Area Median Family Income (2013),area_median_family_income
+Area Median Family Income (2014),area_median_family_income
+Area Median Family Income (2015),area_median_family_income
+Area Median Family Income (2016),area_median_family_income
+Area Median Family Income (2017),area_median_family_income
+Area Median Family Income (2018),area_median_family_income
+Area Median Family Income (2019),area_median_family_income
+Area Median Family Income (2020),area_median_family_income
+Area Median Family Income (2021),area_median_family_income
+Area Median Family Income (2022),area_median_family_income
+Area Median Family Income (2023),area_median_family_income
+Area Median Family Income (2024),area_median_family_income
+Area of Concentrated Poverty,area_concentrated_poverty
+Automated Underwriting System (AUS) Name,aus_name
+Borrower Age 62 or older,borrower_age_62_plus
+Borrower Ethnicity,borrower_ethnicity
+Borrower Income Ratio,borrower_income_ratio
+Borrower Income Ratio or Rent Affordability Category,borrower_income_ratio_rent_affordability_category
+Borrower Race 1,borrower_race_1
+Borrower Race 2,borrower_race_2
+Borrower Race 3,borrower_race_3
+Borrower Race 4,borrower_race_4
+Borrower Race 5,borrower_race_5
+Borrower Race or National Origin 1,borrower_race_1
+Borrower Race or National Origin 2,borrower_race_2
+Borrower Race or National Origin 3,borrower_race_3
+Borrower Race or National Origin 4,borrower_race_4
+Borrower Race or National Origin 5,borrower_race_5
+"Borrower Race or National Origin, and Ethnicity",borrower_race_and_ethnicity
+Borrower Sex,borrower_sex
+Borrower’s (or Borrowers’) Annual Income,borrower_annual_income
+Census Tract - 2000 Census,census_tract
+Census Tract - 2010 Census,census_tract
+Census Tract - 2020 Census,census_tract
+Co-Borrower Age 62 or older,co_borrower_age_62_plus
+Co-Borrower Ethnicity,co_borrower_ethnicity
+Co-Borrower Race or National Origin 1,co_borrower_race_1
+Co-Borrower Race or National Origin 2,co_borrower_race_2
+Co-Borrower Race or National Origin 3,co_borrower_race_3
+Co-Borrower Race or National Origin 4,co_borrower_race_4
+Co-Borrower Race or National Origin 5,co_borrower_race_5
+"Co-Borrower Race or National Origin, and Ethnicity",co_borrower_race_and_ethnicity
+Co-Borrower Sex,co_borrower_sex
+Colonias Tract,colonias_tract
+Construction Method,construction_method
+County - 2000 Census,county
+County - 2010 Census,county
+County - 2020 Census,county
+Credit Score,credit_score
+Credit Score Model - Borrower,credit_score_model_borrower
+Credit Score Model - Co-Borrower,credit_score_model_co_borrower
+Date of Mortgage Note,date_of_mortgage_note
+Debt-to-Income (DTI) Ratio,dti_ratio
+Discount Points,discount_points
+Enterprise Flag,enterprise_flag
+Federal Guarantee,federal_guarantee
+First-Time Home Buyer,first_time_home_buyer
+HOEPA Status,hoepa_status
+High Opportunity Area,high_opportunity_area
+Interest Rate at Origination,interest_rate_at_origination
+Introductory Rate Period,introductory_rate_period
+Lien Status,lien_status
+Loan-to-Value Ratio (LTV) at Origination,ltv_at_origination
+"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",ltv_at_origination
+"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",ltv_at_origination
+Local Area Median Income,local_area_median_income
+Lower Mississippi Delta County,lower_mississippi_delta_county
+Manufactured Home - Land Property Interest,manufactured_home_land_property_interest
+Metropolitan Statistical Area (MSA) Code,msa_code
+Middle Appalachia County,middle_appalachia_county
+Multifamily Affordable Units - Percent,multifamily_affordable_units_percent
+Non-fully Amortizing Feature - Balloon,balloon_payment
+Non-fully Amortizing Feature - Interest-only,interest_only_payment
+Non-fully Amortizing Feature - Negative Amortization,negative_amortization
+Non-fully Amortizing Feature - Other,other_non_amortizing
+Note Amount,note_amount
+Number of Borrowers,number_of_borrowers
+Number of Units,number_of_units
+Occupancy Code,occupancy_code
+Percent Repurchased,percent_repurchased
+Persistent Poverty County,persistent_poverty_county
+Portfolio Flag,portfolio_flag
+Preapproval,preapproval
+Prepayment Penalty Term,prepayment_penalty_term
+Product Type,product_type
+Property Type,property_type
+Property Value,property_value
+Purchase Price,purchase_price
+Purpose of Loan,loan_purpose
+Qualified Opportunity Zone (QOZ) Census Tract,qoz_census_tract
+Rate Spread,rate_spread
+Record Number,record_number
+Rural Census Tract,rural_census_tract
+Term of Mortgage at Origination,loan_term
+Total Number of Units,total_units
+Tract Income Ratio,tract_income_ratio
+Type of Seller Institution,type_of_seller_institution
+US Postal State Code,state_code
+Underserved Areas Indicator,underserved_areas_indicator
+Unit - Affordability Category,unit_affordability_category
+Unit - Owner Occupied,unit_owner_occupied
+Unit Type XX-Affordability Level,unit_affordability_level
+Unit Type XX-Number of Bedrooms,unit_bedrooms
+Unit Type XX-Number of Units,unit_number_of_units
+Unit Type XX-Tenant Income Indicator,unit_tenant_income_indicator
+County - 1990 Census,county
+Census Tract - 1990 Census,census_tract
+1990 Census Tract - Percent Minority,tract_percent_minority
+1990 Census Tract - Median Income,tract_median_income
+1990 Local Area Median Income,local_area_median_income
+Acquisition UPB Range,upb_acquisition_range
+Government Insurance,government_insurance
+Geographically Targeted Indicator,underserved_areas_indicator
+Area Median Family Income (1993),area_median_family_income
+Area Median Family Income (1994),area_median_family_income
+Area Median Family Income (1995),area_median_family_income
+Area Median Family Income (1996),area_median_family_income
+Area Median Family Income (1997),area_median_family_income
+Area Median Family Income (1998),area_median_family_income
+Area Median Family Income (1999),area_median_family_income
+Area Median Family Income (2000),area_median_family_income
+Area Median Family Income (2001),area_median_family_income
+Area Median Family Income (2002),area_median_family_income
+Area Median Family Income (2003),area_median_family_income
+Area Median Family Income (2004),area_median_family_income
+Area Median Family Income (2005),area_median_family_income
+Area Median Family Income (2006),area_median_family_income
+Area Median Family Income (2007),area_median_family_income
+HUD Provisional Census Field 1,hud_provisional_census_field_1
+HUD Provisional Census Field 2,hud_provisional_census_field_2
+HUD Provisional Census Field 3,hud_provisional_census_field_3
+HUD Provisional Property Amount 1,hud_provisional_property_amount_1
+HUD Provisional Property Amount 2,hud_provisional_property_amount_2

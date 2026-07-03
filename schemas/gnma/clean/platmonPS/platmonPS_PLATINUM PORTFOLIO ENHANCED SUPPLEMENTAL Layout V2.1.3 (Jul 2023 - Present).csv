@@ -1,0 +1,663 @@
+Item,Data Element,Type,Max Length,Format,Description,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+01,Record Type = HP,Character,2,,,File Header Record,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,HP,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,HP,,
+03,Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,HP,,
+01,Record Type = PS,Character,2,,,Platinum Pool/Security Detail Record,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+02,CUSIP Number,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned by
+Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+06,Issue Date,Date,8,YYYYMMDD,,The date that the pool was issued,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+07,Security Interest Rate,Numeric,6,2.3,,"The interest rate of the Ginnie Mae Security. For ARM pools this
+is the rate in effect for the report period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+08,Maturity Date,Numeric,8,YYYYMMDD,,"The date on which the final payment for the Security is
+scheduled to be paid.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+09,Original Aggregate Amount,Numeric,16,13.2,,"The aggregate principal amount (UPB at issuance) of the loans in
+the pool at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+10,Remaining Security RPB,Numeric,16,13.2,,The Remaining Principal Balance of the Security as of the end of the Reporting Period; (based on a computation of scheduled principal).,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+11,RPB Factor,Numeric,10,1.8,,"The decimal value of the Security’s Remaining Principal Balance
+divided by the Original Aggregate Amount. The factor is 1 at
+issuance, and zero in the period of final payment.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+12,Issuer Number,Numeric,4,,,"The Issuer number in the Platinum Pool. Value will be “9999” for
+all pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+13,Issuer Name,Character,40,,,"The Issuer name in the Platinum Pool. Value will be “Multiple
+Issuers” for all pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+14,Pool UPB,Numeric,16,13.2,,"The sum of the Loan UPBs in the pool. This is the aggregate of
+the actual UPB balances of the loans in the pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+15,Average Original Loan Size (AOLS) - Weighted,Numeric,16,13.2,,"Original Loan Size (original principal amount of the loan) for the
+loans in the pool. This is a weighted average of the underlying
+pools’ Average Original Loan Size (AOLS).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+16,WA Original Loan Size,Numeric,16,13.2,,"Weighted Average of the Original Loan Size (principal amount of
+the loan) of the loans in the pool. This is a weighted average of
+the underlying pools’ Weighted Average Original Loan Size
+(WAOLS).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+17,WA Interest Rate (WAC),Numeric,6,2.3,,"Weighted Average Interest Rate (Coupon) of loans in the pool.
+This is the gross WA Interest Rate (not the Security Rate).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+18,WA Remaining Months to Maturity (WARM),Numeric,3,,,"Weighted Average Remaining Maturity (remaining months to pay
+off the loans) for the loans in the pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+19,WA Loan Age (WALA),Numeric,3,,,"Weighted Average Loan Age (age of loans in months from the
+first scheduled payment date) for the loans in the pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+20,WA Original Loan Term (WAOLT),Numeric,3,,,"Weighted Average Original Loan Term (original term of loans in
+months) for the loans in the pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+21,WA Gross Margin (WAGM),Numeric,6,2.3,,"For ARM pools, the Weighted Average Gross Margin for the loans
+in the pool. For an adjustable rate loan, the Gross Margin is the
+amount added to the ARM index for the loan to determine the
+loan’s interest rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+22,WA Loan to Value (LTV),Numeric,3,,,"Weighted Average Loan-to-Value of the original LTV for the loans
+in the pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+23,WA Combined Loan to Value (CLTV),Numeric,3,Col4,,Weighted Average Combined Loan-to-Value of the original CLTV for the loans in the pool.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+24,WA Credit Score,Numeric,3,,,"The Weighted Average of the original three-digit credit score for
+the loan which was used by the lender in the origination of the
+loan.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+25,WA Debt to Income,Numeric,5,1.3,,"The Weighted Average of the debt to income for the loan which
+was used by the lender in the origination of the loan.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+26,WA Pre-Modified LAD,Numeric,3,,,"The Weighted Average of the difference in months between the
+original (Pre-Modified) first scheduled installment date and the
+modified first scheduled installment date, where a loan has been
+modified and re-amortized.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+27,WA Pre-Modified OPB,Numeric,16,13.2,,"The Weighted Average value for modified loans of the original
+loan size (Pre-Modified OPB) before loan modification.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+28,WA Interest Rate (WAC) at Issuance,Numeric,6,2.3,,"Weighted Average Interest Rate (Coupon) of all loans in the pool
+at issuance. Point Forward field populated for new pools issued
+after implementation date of Platinum v2.0.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+29,WA Remaining Months to Maturity (WARM) at Issuance,Numeric,3,,,"Weighted Average Remaining Maturity of all loans in the pool at
+issuance. Point Forward field populated for new pools issued
+after implementation date of Platinum v2.0.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+30,WA Loan Age (WALA) at Issuance,Numeric,3,,,"Weighted Average Loan Age (age of loan in months) of all loans
+in the pool at issuance. Point Forward field populated for new
+pools issued after implementation date of Platinum v2.0.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+31,WA Original Loan Term (WAOLT) at Issuance,Numeric,3,,,"Weighted Average Original Loan Term (original length of loan in
+months) for all loans in the pool at issuance. Point Forward field
+populated for new pools issued after implementation date of
+Platinum v2.0.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,PS,,
+01,Record Type = TP,Character,2,,,File Trailer Record,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TP,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TP,,
+03,File Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TP,,
+04,Detail Record Count,Numeric,8,,,"Control total of the total number of records with Record Type =
+“PS” in the file.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TP,,
+01,Record Type = HS,Character,2,,,File Header Record,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,HS,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,HS,,
+03,Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,HS,,
+01,Record Type = 01,Character,2,,,"ARM Pool Detail record, for Platinum WAC ARM pools only",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Values are C or M.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+06,Index Type,Character,5,,,"The type of ARM index being used for the ARM loan. Values
+are:
+CMT = Constant Maturity Treasury
+LIBOR = London Interbank Offered Rate",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+07,Interest Rate Look Back Period,Numeric,2,,,"The two-digit code for the number of days used to establish a
+specific point in time for the particular ARM Index that will be
+used to determine the interest rate change. (Used in
+conjunction with the published index tables. See Ginnie Mae
+MBS Guide Chapter 26). Values are:
+01 = 30-day look back
+02 = 45-day look back
+03 = Combination of 30-day and 45-day look back periods",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+08,Interest Rate Adjustment Frequency,Character,2,,,"The nominal adjustment frequency of the collateral pools
+underlying the WAC ARM Platinum Pool. Is based on the
+Platinum WAC ARM pool type, which will reflect the nominal
+adjustment frequency of the collateral pools. For example,
+for a WC pool type, where all of the collateral pools are 5-
+year hybrid ARMs, then a value of “05” will be disclosed",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+09,Weighted Average Mortgage Margin,Numeric,6,2.3,,"Weighted Average of the Mortgage Margins of the collateral
+pools in the Platinum pool weighted by (the Pool RPB
+multiplied by the “percentage” in the pool).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+10,Weighted Average Security Margin,Numeric,5,1.3,,Weighted Average of the Security Margins of the collateral pools in the Platinum pool weighted by (the Pool RPB multiplied by the “percentage” in the pool).,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+11,Maximum Security Margin,Numeric,5,1.3,,"The Maximum Security Margin of the collateral pools in the
+Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+12,Minimum Security Margin,Numeric,5,1.3,,"The Minimum Security Margin of the collateral pools in the
+Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+13,Maximum Pool Rate,Numeric,6,2.3,,"The Maximum Pool Rate of the collateral pools in the
+Platinum pool. This is the gross rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+14,Minimum Pool Rate,Numeric,6,2.3,,"The Minimum Pool Rate of the collateral pools in the
+Platinum pool. This is the gross rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+15,Maximum Security Rate,Numeric,6,2.3,,"The Maximum Security Rate of the pools in the Platinum
+pool. This is the net rate, ie. the security rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+16,Minimum Security Rate,Numeric,6,2.3,,"The Minimum Security Rate of the pools in the Platinum pool.
+This is the net rate, ie. the security rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+17,Weighted Average Lifetime Interest Rate Ceiling,Numeric,6,2.3,,"Weighted Average of the Lifetime Interest Rate Ceilings for
+the collateral pools in the Platinum pool weighted by (the
+Pool RPB multiplied by the “percentage” in the pool).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+18,Maximum Lifetime Interest Rate Ceiling,Numeric,6,2.3,,"The maximum Lifetime Interest Rate Ceiling of the pools in
+the Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+19,Minimum Lifetime Interest Rate Ceiling,Numeric,6,2.3,,"The minimum Lifetime Interest Rate Ceiling of the pools in
+the Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+20,Weighted Average Next Interest Rate Ceiling,Numeric,6,2.3,,"Weighted Average of the Next Interest Rate Ceilings for the
+collateral pools in the Platinum pool weighted by (the Pool
+RPB multiplied by the “percentage” in the pool). The Next
+Interest Rate Ceiling is the ceiling associated with the initial
+period or the subsequent period as applicable to the
+collateral pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+21,Maximum Lifetime Next Interest Rate Ceiling,Numeric,6,2.3,,"The maximum Next Interest Rate Ceiling of the pools in the
+Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+22,Minimum Lifetime Next Interest Rate Ceiling,Numeric,6,2.3,,"The minimum Next Interest Rate Ceiling of the pools in the
+Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+23,Weighted Average Lifetime Interest Rate Floor,Numeric,6,2.3,,Weighted Average of the Lifetime Interest Rate Floors for the collateral pools in the Platinum pool weighted by (the Pool RPB multiplied by the “percentage” in the pool).,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+24,Maximum Lifetime Interest Rate Floor,Numeric,6,2.3,,"The maximum Lifetime Interest Rate Floor of the pools in the
+Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+25,Minimum Lifetime Interest Rate Floor,Numeric,6,2.3,,"The minimum Lifetime Interest Rate Floor of the pools in the
+Platinum pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+26,Minimum Adjustment Date (Collateral),Date,8,YYYYMMDD,,"The next interest rate adjustment date that is nearest to the
+present date (the Disclosure As-Of Date) of all the collateral
+pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+27,Weighted Average Months to Next Interest Rate Adjustment,Numeric,3,,,"Weighted Average of the Months to Next Adjustment, of the
+collateral pools in the Platinum pool weighted by (the Pool
+RPB multiplied by the “percentage” in the pool).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+28,Weighted Average of Months to Maturity,Numeric,3,,,"Weighted Average of the Months to Maturity Date for the
+collateral pools in the Platinum pool weighted by (the Pool
+RPB multiplied by the “percentage” in the pool). The number
+of months for each collateral pool is based on the Maturity
+Date (Last Payment Date) of the respective pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+29,Maximum Maturity in Months,Numeric,3,,,"The Maximum Maturity in Months of the collateral pools in
+the Platinum pool, based on the Maturity Date (Last Payment
+Date) of the pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+30,Minimum Maturity in Months,Numeric,3,,,"The Minimum Maturity in Months of the collateral pools in
+the Platinum pool, based on the Maturity Date (Last Payment
+Date) of the pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+31,Maximum Adjustment Date,Date,8,YYYYMMDD,,"The next interest rate adjustment date that is furthest from
+the present date (the Disclosure As-Of Date) of the collateral
+pools. This date is initially calculated at issuance and
+recalculated monthly. This field indicates when the last
+collateral pool starts adjusting annually. This field will be
+blank for all annually-adjusting Platinum ARM Pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,01,,
+01,Record Type = 02,Character,2,,,"Issuer-Level Pool Detail Record for each Issuer in the Platinum
+Pool",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+02,CUSIP Number,Character,9,,,"The unique identification number permanently assigned by the
+Committee on Uniform Securities Identification Procedures
+(CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+06,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer participating in
+the Platinum Pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+07,Issuer Name,Character,40,,,The name of the Issuer participating in the Platinum Pool.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+08,Pool UPB,Numeric,16,13.2,,"The sum of the actual Unpaid Principal Balances in the
+Platinum Pool for the Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+09,% of UPB in Pool,Numeric,6,3.2,,"The percentage of the Unpaid Principal Balance in the
+Platinum Pool for the Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+10,WA Original Loan Size,Numeric,16,13.2,,"Weighted Average of the Original Loan Size (principal amount
+of the loan) of the loans in the Platinum Pool for the Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+11,WA Interest Rate (WAC),Numeric,6,2.3,,"Weighted Average Interest Rate (Coupon) of loans in the
+Platinum Pool for the Issuer. This is the gross WA Interest Rate
+(not the Security Rate).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+12,WA Remaining Months to Maturity (WARM),Numeric,3,,,"Weighted Average Remaining Maturity (remaining months to
+pay off the loans) for the loans in the Platinum Pool for the
+Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+13,WA Loan Age (WALA),Numeric,3,,,"Weighted Average Loan Age (age of loans in months from the
+first scheduled payment date) for the loans in the Platinum
+Pool for the Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+14,WA Original Loan Term (WAOLT),Numeric,3,,,"Weighted Average Original Loan Term (original term of loans
+in months) for the loans in the Platinum Pool for the Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+15,WA Gross Margin (WAGM),Numeric,6,2.3,,"For ARM pools, the Weighted Average Gross Margin for the loans in the Platinum Pool for the Issuer. For an adjustable rate loan, the Gross Margin is the amount added to the ARM index for the loan to determine the loan’s interest rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+16,WA Loan to Value (LTV),Numeric,3,,,"Weighted Average Loan-to-Value of the original LTV for the
+loans in the Platinum Pool for the Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+17,WA Combined Loan to Value (CLTV),Numeric,3,,,"Weighted Average Combined Loan-to-Value of the original
+CLTV for the loans in the Platinum Pool for the Issuer.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+18,WA Credit Score,Numeric,3,,,"The Weighted Average of the original three-digit credit score
+for the loan in the Platinum Pool for the Issuer (which was
+used by the lender in the origination of the loan).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+19,WA Debt to Income,Numeric,5,1.3,,"The Weighted Average of the debt to income for the loan in
+the Platinum Pool for the Issuer (which was used by the lender
+in the origination of the loan).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+20,WA Pre-Modified LAD,Numeric,3,,,"The Weighted Average of the difference in months between
+the original (Pre-Modified) first scheduled installment date
+and the modified first scheduled installment date, where a
+loan has been modified and re-amortized.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+21,WA Pre-Modified OPB,Numeric,16,13.2,,"The Weighted Average value for modified loans of the original
+loan size (Pre-Modified OPB) before loan modification.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,02,,
+01,Record Type = 03,Character,2,,,"ARM Pool Rate Reset Data record, for Platinum WAC ARM
+pools only",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+04,Pool Indicator,Character,1,,,Identifies the Issue Type of the pool. Values are C or M.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+06,Reset Change Date,Date,8,YYYYMMDD,,"The date of the Reset Period; the year, month, and day that
+the interest rate is next subject to change (eg. 20180401
+reset date is effective for April 1st) for the subject collateral
+pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+07,Reset Security RPB,Numeric,16,13.2,,"The Security RPB of the collateral in the Platinum WAC ARM
+Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+08,Reset Percentage of RPB,Numeric,7,3.3,,"The Percentage of the Security RPB of the collateral in the
+Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+09,Reset Weighted Average Security Rate,Numeric,6,2.3,,"The Weighted Average of the Security Rate of the collateral in
+the Platinum WAC ARM Pool for the reset period. This is the
+net rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+10,Reset Maximum Security Rate,Numeric,6,2.3,,"The Maximum Security Rate of the collateral in the Platinum
+WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+11,Reset Minimum Security Rate,Numeric,6,2.3,,"The Minimum Security Rate of the collateral in the Platinum
+WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+12,Reset Weighted Average Pool Rate,Numeric,6,2.3,,"The Weighted Average of the Pool Rate of the collateral in
+the Platinum WAC ARM Pool for the reset period. This is the
+gross rate.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+13,Reset Maximum Pool Rate,Numeric,6,2.3,,The Maximum Pool Rate of the collateral in the Platinum WAC ARM Pool for the reset period.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+14,Reset Minimum Pool Rate,Numeric,6,2.3,,"The Minimum Pool Rate of the collateral in the Platinum WAC
+ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+15,Reset Weighted Average Security Margin,Numeric,5,1.3,,"The Weighted Average of the Security Margins of the
+collateral in the Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+16,Reset Maximum Security Margin,Numeric,5,1.3,,"The Maximum Security Margin of the collateral in the
+Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+17,Reset Minimum Security Margin,Numeric,5,1.3,,"The Minimum Security Margin of the collateral in the
+Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+18,Reset Weighted Average Lifetime Interest Rate Ceiling,Numeric,6,2.3,,"The Weighted Average of the Lifetime Interest Rate Ceilings
+of the collateral in the Platinum WAC ARM Pool for the reset
+period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+19,Reset Maximum Lifetime Interest Rate Ceiling,Numeric,6,2.3,,"The Maximum Lifetime Interest Rate Ceiling of the collateral
+in the Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+20,Reset Minimum Lifetime Interest Rate Ceiling,Numeric,6,2.3,,"The Minimum Lifetime Interest Rate Ceiling of the collateral
+in the Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+21,Reset Weighted Average Lifetime Interest Rate Floor,Numeric,6,2.3,,"The Weighted Average of the Lifetime Interest Rate Floors of
+the collateral in the Platinum WAC ARM Pool for the reset
+period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+22,Reset Maximum Lifetime Interest Rate Floor,Numeric,6,2.3,,"The Maximum Lifetime Interest Rate Floor of the collateral in
+the Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+23,Reset Minimum Lifetime Interest Rate Floor,Numeric,6,2.3,,"The Minimum Lifetime Interest Rate Floor of the collateral in
+the Platinum WAC ARM Pool for the reset period.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,03,,
+01,Record Type = 05,Character,2,,,Loan Type Government Insured/Guarantee Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,05,,
+01,Record Type = 06,Character,2,,,Loan Purpose Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+06,Loan Purpose,Numeric,1,,,"Values are:
+1 = Regular
+2 = Refinance
+3 = Loan Modification (HAMP)
+4 = Loan Modification (non-HAMP)
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan
+Purpose Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Purpose Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,06,,
+01,Record Type = 07,Character,2,,,Number of Living Units Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+06,Living Units,Numeric,1,,,"Values are:
+1 = 1 Unit
+2 = 2 Units
+3 = 3 Units
+4 = 4 Units
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Living
+Units Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Living Units Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,07,,
+01,Record Type = 08,Character,2,,,First Time Homebuyer Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+06,First Time Homebuyer,Character,1,,,"Values are:
+Y = Yes
+N = No
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the First Time
+Homebuyer Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the First Time Homebuyer Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,08,,
+01,Record Type = 09,Character,2,,,"Removal Type Stratification; this record will not be present in
+New Issuance files.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+06,Removal Type,Numeric,1,,,"This is a code of the reason for removal from the pool.
+Values are:
+1 = Mortgager Payoff
+2 = Repurchase of Delinquent Loan
+3 = Foreclosure with Claim Payment
+4 = Loss Mitigation
+5 = Substitution
+6 = Other Removal",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Removal
+Type Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Removal Type Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,09,,
+01,Record Type = 10,Character,2,,,Down Payment Assistance Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+06,Down Payment Assistance,Character,1,,,"Values are:
+Y = Yes
+N = No
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Down
+Payment Assistance Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Down Payment Assistance Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,10,,
+01,Record Type = 11,Character,2,,,Loan Origination Channel Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+06,Loan Origination Type,Numeric,1,,,"Values are:
+1 = Broker
+2 = Correspondent
+3 = Retail
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan
+Origination Type Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Origination Type Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,11,,
+01,Record Type = 13,Character,2,,,"Refinance Type Stratification: Only for refinance loans (Loan
+Purpose of 2)",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+06,Refinance Code,Numeric,1,,,"Values are:
+1 = Not Streamlined, Not Cash Out
+2 = Cash Out
+3 = Streamlined
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Refinance
+Code Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Refinance Code Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,13,,
+01,Record Type = 15,Character,2,,,Property State Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+06,State Code,Character,2,,,"The abbreviation of the state or territory where the loan
+property exists. See Appendix 2 for a listing of state codes.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the State Code
+Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the State Code Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,15,,
+01,Record Type = 19,Character,2,,,Government Agency and Loan Purpose Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+07,Loan Purpose,Numeric,1,,,"Values are:
+1 = Purchase
+2 = Refinance
+3 = Loan Modification (HAMP)
+4 = Loan Modification (non-HAMP)
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+08,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value/Loan Purpose Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+09,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value/Loan Purpose Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,19,,
+01,Record Type = 20,Character,2,,,"Issuer Level Removals Stratification; this record will not be
+present in New Issuance files.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Value is X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+06,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer participating
+in the Platinum Pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+07,Removal Type,Numeric,1,,,"This is a code of the reason for removal from the pool.
+Values are:
+1 = Mortgager Payoff
+2 = Repurchase of Delinquent Loan
+3 = Foreclosure with Claim Payment
+4 = Loss Mitigation
+5 = Substitution
+6 = Other Removal",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+08,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Issuer
+Number Value/Removal Type Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+09,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Issuer Number Value/Removal Type Value
+combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,20,,
+01,Record Type = 21,Character,2,,,"Issuer Level Government Agency Delinquency Stratification;
+this record will not be present in New Issuance files.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Value is X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+06,Issuer Number,Numeric,4,,,"A four-digit number which identifies the Issuer participating
+in the Platinum Pools.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+07,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+A = All Agencies
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+08,Delinquency,Numeric,1,,,"Values are:
+1 = 1 Month
+2 = 2 Months
+3 = 3+ Months",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+09,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Issuer ID
+Value/Loan Type Value/Delinquency Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+10,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Issuer ID Value/Loan Type Value/Delinquency Value
+combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,21,,
+01,Record Type = 22,Character,2,,,"Government Agency and Delinquency Stratification; this
+record will not be present in New Issuance files.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+A = All Agencies
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+07,Delinquency,Numeric,1,,,"Values are:
+1 = 1 Month
+2 = 2 Months
+3 = 3+ Months",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+08,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value/Delinquency Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+09,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value/Delinquency Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,22,,
+01,Record Type = 23,Character,2,,,"Government Agency and Interest Buy Down Stratification.
+Not applicable to ARM pools; record is only produced only for
+Buydown loans.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+06,Loan Type,Character,1,,,"This is the Federal government agency. Values are:
+F = Federal Housing Administration
+V = Veterans Administration
+R = Rural Development
+N = Native American Section 184
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+07,Buydown Status,Numeric,1,,,"Values are:
+1 = Buydown Loan
+2 = Not Buydown Loan
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+08,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Loan Type
+Value/Buydown Status Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+09,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Loan Type Value/Buydown Status Value combination.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,23,,
+01,Record Type = 24,Character,2,,,Not Available Stratification,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+06,Not Available,Numeric,2,,,"Values are:
+1 = Loan to Value (LTV) Not Available
+2 = Combined Loan to Value (CLTV) Not Available
+3 = Debt Income Ratio Not Available
+4 = Credit Score Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Not
+Available Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Not Available Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,24,,
+01,Record Type = 25,Character,2,,,"Low and Moderate Income Area Stratification as defined by
+the Department of Housing and Urban Development (HUD).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+06,Low and Moderate Income Area,Character,1,,,"Value is:
+Y = Property is in a Low and Moderate Income Area",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Low and
+Moderate Income Area Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Low and Moderate Income Area Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,25,,
+01,Record Type = 26,Character,2,,,"Re-Pooled Loans Stratification. Pools with re-pooled loans,
+i.e. currently active loans in the pool that were previously
+liquidated from another Ginnie Mae pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+06,Re-Pooled Loans,Numeric,1,,,"Value is:
+Y = Re-Pooled Loans",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) of Re-Pooled loans in the
+pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) of Re-
+Pooled loans in the pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,26,,
+01,Record Type = 27,Character,2,,,"FHA Partial Claims Stratification. Applies for active loans in
+the pool that have had an FHA Partial Claims paid (includes
+partial claims paid December 2016 and thereafter).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+06,FHA Partial Claims,Numeric,1,,,"Value is:
+Y = Pool contains FHA Partial Claim(s) data",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) of FHA Partial Claims in the
+pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) of FHA
+Partial Claims in the pool.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,27,,
+01,Record Type = 28,Character,2,,,"Low Moderate Borrower Income Stratification. Pools with
+Low and Moderate Income characteristics based on Federal
+Financial Institutions Examination Council (FFIEC) data. This
+record includes loans in collateral pools issued January 2012
+and thereafter. Agency data from the Federal Housing
+Administration, Veterans Administration, and Rural
+Development is included; no agency data from Native
+American Section 184 is included.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+02,CUSIP,Character,9,,,"The unique identification number permanently assigned by
+the Committee on Uniform Securities Identification
+Procedures (CUSIP).",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+03,Pool ID,Character,6,,,"The Ginnie Mae unique identifier for the pool; this is assigned
+by Ginnie Mae at pool issuance.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+04,Pool Indicator,Character,1,,,"Identifies the Issue Type of the pool. Values are X, C, or M.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+05,Pool Type,Character,2,,,"The type of Ginnie Mae pool. Appendix 1 provides a listing of
+pool types.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+06,Low Moderate Borrower Income,Character,1,,,"Values are:
+Y = Borrower Income is Less than 80% of the FFIEC Median
+Family Income (MFI)
+N = Borrower Income is Greater than or Equal to 80% of the
+FFIEC Median Family Income (MFI)
+9 = Not Available",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+07,UPB,Numeric,16,13.2,,"The total Unpaid Balance (UPB) in the pool for the Low
+Moderate Borrower Income Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+08,% of UPB,Numeric,6,3.2,,"The percentage of the total Unpaid Balance (UPB) in the pool
+for the Low Moderate Borrower Income Value.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,28,,
+01,Record Type = TS,Character,2,,,File Trailer Record,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TS,,
+02,Reporting Period,Numeric,6,YYYYMM,,The monthly reporting period for the data in the file.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TS,,
+03,File Create Date,Date,8,YYYYMMDD,,The date that the file is produced.,platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TS,,
+04,Detail Record Count,Numeric,12,,,"Control total of the total number of Pool Supplemental
+records in the file. This count will not include HS or TS
+records.",platmonPS_PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL Layout V2.1.3 (Jul 2023 - Present).pdf,2023-07-01,2099-12-31,TS,,

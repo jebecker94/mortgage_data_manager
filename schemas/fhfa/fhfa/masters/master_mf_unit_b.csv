@@ -1,0 +1,83 @@
+Field #,Field Width,Field Name,year
+1,1,Enterprise Flag,2008
+2,7,Record Number,2008
+12,1,Unit Type XX-Number of Bedrooms,2008
+13,5,Unit Type XX-Number of Units,2008
+14,1,Unit Type XX-Affordability Level,2008
+15,1,Unit Type XX-Tenant Income Indicator,2008
+1,1,Enterprise Flag,2009
+2,7,Record Number,2009
+12,1,Unit Type XX-Number of Bedrooms,2009
+13,6,Unit Type XX-Number of Units,2009
+14,1,Unit Type XX-Affordability Level,2009
+1,1,Enterprise Flag,2010
+2,7,Record Number,2010
+11,1,Unit Type XX-Number of Bedrooms,2010
+12,6,Unit Type XX-Number of Units,2010
+13,1,Unit Type XX-Affordability Level,2010
+1,1,Enterprise Flag,2012
+2,7,Record Number,2012
+11,1,Unit Type XX-Number of Bedrooms,2012
+12,6,Unit Type XX-Number of Units,2012
+13,1,Unit Type XX-Affordability Level,2012
+1,1,Enterprise Flag,2013
+2,7,Record Number,2013
+11,1,Unit Type XX-Number of Bedrooms,2013
+12,6,Unit Type XX-Number of Units,2013
+13,1,Unit Type XX-Affordability Level,2013
+1,1,Enterprise Flag,2014
+2,7,Record Number,2014
+11,1,Unit Type XX-Number of Bedrooms,2014
+12,6,Unit Type XX-Number of Units,2014
+13,1,Unit Type XX-Affordability Level,2014
+1,1,Enterprise Flag,2015
+2,7,Record Number,2015
+11,1,Unit Type XX-Number of Bedrooms,2015
+12,6,Unit Type XX-Number of Units,2015
+13,1,Unit Type XX-Affordability Level,2015
+1,1,Enterprise Flag,2016
+2,7,Record Number,2016
+11,1,Unit Type XX-Number of Bedrooms,2016
+12,6,Unit Type XX-Number of Units,2016
+13,1,Unit Type XX-Affordability Level,2016
+1,1,Enterprise Flag,2017
+2,7,Record Number,2017
+11,1,Unit Type XX-Number of Bedrooms,2017
+12,6,Unit Type XX-Number of Units,2017
+13,1,Unit Type XX-Affordability Level,2017
+1,1,Enterprise Flag,2018
+2,7,Record Number,2018
+11,1,Unit Type XX-Number of Bedrooms,2018
+12,6,Unit Type XX-Number of Units,2018
+13,1,Unit Type XX-Affordability Level,2018
+1,1,Enterprise Flag,2019
+2,7,Record Number,2019
+11,1,Unit Type XX-Number of Bedrooms,2019
+12,6,Unit Type XX-Number of Units,2019
+13,1,Unit Type XX-Affordability Level,2019
+1,1,Enterprise Flag,2020
+2,7,Record Number,2020
+11,1,Unit Type XX-Number of Bedrooms,2020
+12,6,Unit Type XX-Number of Units,2020
+13,1,Unit Type XX-Affordability Level,2020
+1,1,Enterprise Flag,2021
+2,7,Record Number,2021
+11,1,Unit Type XX-Number of Bedrooms,2021
+12,6,Unit Type XX-Number of Units,2021
+13,1,Unit Type XX-Affordability Level,2021
+1,1,Enterprise Flag,2022
+2,7,Record Number,2022
+11,1,Unit Type XX-Number of Bedrooms,2022
+12,6,Unit Type XX-Number of Units,2022
+13,1,Unit Type XX-Affordability Level,2022
+1,1,Enterprise Flag,2023
+2,7,Record Number,2023
+11,1,Unit Type XX-Number of Bedrooms,2023
+12,6,Unit Type XX-Number of Units,2023
+13,1,Unit Type XX-Affordability Level,2023
+1,1,Enterprise Flag,2024
+2,8,Record Number,2024
+3,1,Unit Type XX-Number of Bedrooms,2024
+4,6,Unit Type XX-Number of Units,2024
+5,1,Unit Type XX-Affordability Level,2024
+6,1,Unit Type XX-Tenant Income Indicator,2024

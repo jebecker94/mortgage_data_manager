@@ -1,0 +1,11 @@
+Item,Data Item,Data Type,Format,Max Length,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+1,Issuer Number,Numeric,,4,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+2,Reporting Period,Date,CCYYMM,6,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+3,CUSIP Number,String,,9,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+4,Pool Number,String,,6,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+5,Pool Type,String,,2,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+6,Issue Type,String,,1,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+7,Payment Date,Date,CCYYMMDD,8,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+8,Penalty Amount,Numeric,11.2,14,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+9,Lockout Period End Date,Date,CCYYMMDD,8,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,
+10,Prepayment End Date,Date,CCYYMMDD,8,mfpppmon_MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA Layout.pdf,,,,

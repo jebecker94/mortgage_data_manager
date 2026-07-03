@@ -1,0 +1,12 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+1,Series,1,15,Character,15,GNMA-YYYY-NNN left justify,SRF_layout.pdf,,,string,String
+2,Payment Date,16,23,Numeric,8,YYYYMMDD,SRF_layout.pdf,,,Int64,Int64
+3,Factor,24,34,Numeric,11,9(2).9(8) zero-fill right-justify,SRF_layout.pdf,,,Float64,Float64
+4,Settlement Date,35,43,Numeric,9,YYYYMMDD right-justify,SRF_layout.pdf,,,Int64,Int64
+5,First Accrual Date,44,52,Numeric,9,YYYYMMDD right-justify,SRF_layout.pdf,,,Int64,Int64
+6,Original Balance,53,69,Numeric,17,9(14).9(2) right-justify,SRF_layout.pdf,,,Float64,Float64
+7,Current WAC,70,76,Numeric,7,9(3).9(3) right-justify,SRF_layout.pdf,,,Float64,Float64
+8,Current WARM,77,80,Numeric,4,9(4) right-justify,SRF_layout.pdf,,,Int64,Int64
+9,Current WALA,81,84,Numeric,4,9(4) right-justify,SRF_layout.pdf,,,Int64,Int64
+10,Current Balance,85,101,Numeric,17,9(14).9(2) right-justify,SRF_layout.pdf,,,Float64,Float64
+11,Filler,102,110,Character,9,,SRF_layout.pdf,,,string,String

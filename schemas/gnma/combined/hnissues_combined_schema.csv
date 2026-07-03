@@ -1,0 +1,604 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+1,CUSIP Number,1,9,Character,9,X(9),hnissues_layout.pdf,,,D,string,String
+2,Pool ID,10,15,Character,6,X(6),hnissues_layout.pdf,,,D,string,String
+3,Pool Indicator (H),16,16,Character,1,X,hnissues_layout.pdf,,,D,string,String
+4,Pool Type,17,18,Character,2,X(2),hnissues_layout.pdf,,,D,string,String
+5,Record Type (D=Pool Details),19,19,Character,1,X,hnissues_layout.pdf,,,D,string,String
+6,Current Security Interest Rate (WAC),20,24,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,D,float64,Float64
+7,Pool Issue Date,25,32,Numeric,8,9(8),hnissues_layout.pdf,,,D,Int64,Int64
+8,Original Aggregate Amount,33,47,Numeric,15,9(13)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+9,Issuer Number,48,51,Numeric,4,9(4),hnissues_layout.pdf,,,D,Int64,Int64
+10,Issuer Name,52,91,Character,40,X(40),hnissues_layout.pdf,,,D,string,String
+11,Index Type,92,96,Character,5,X(5),hnissues_layout.pdf,,,D,string,String
+12,Number of participations in pool (current number of participations in the pool),97,102,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+13,Average Original Participation Size (AOPS),103,110,Numeric,8,9(6)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+14,Maximum AOPS (Q4),111,118,Numeric,8,9(6)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+15,Minimum AOPS (Q0),119,126,Numeric,8,9(6)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+16,WAC of the Participations (the reported (prospective) WAC of the pool),127,131,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,D,float64,Float64
+17,Maximum WAC (Q4)( the reported prospective WAC),132,136,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,D,float64,Float64
+18,Minimum WAC (Q0) (The reported prospective WAC),137,141,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,D,float64,Float64
+19,WALA Participations (based on HECM loan origination date and participation UPB),142,144,Numeric,3,9(3),hnissues_layout.pdf,,,D,Int64,Int64
+20,Maximum WALA (Q4),145,147,Numeric,3,9(3),hnissues_layout.pdf,,,D,Int64,Int64
+21,Minimum WALA (Q0),148,150,Numeric,3,9(3),hnissues_layout.pdf,,,D,Int64,Int64
+22,Pay Op TERM Number Of Participations,151,156,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+23,Pay Op TERM UPB of Participations,157,169,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+24,Pay Op TERM UPB of Participations as % of Pool UPB,170,174,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+25,Pay Op TERM UPB of Participations as % of Principal Limit of HECM Loans,175,179,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+26,Pay Op TERM UPB of Participations as % of MCA of HECM Loans,180,184,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+27,Pay Op TERM HECM Loans UPB as % of Principal Limit of HECM Loans,185,189,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+28,Pay Op TERM HECM Loans UPB as % of MCA of HECM loans,190,194,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+29,Pay Op TENURE Number Of Participations,195,200,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+30,Pay Op TENURE UPB of Participations,201,213,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+31,Pay Op TENURE UPB of Participations as % of Pool UPB,214,218,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+32,Pay Op TENURE UPB of Participations as % of Principal Limit of HECM Loans,219,223,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+33,Pay Op TENURE UPB of Participations as % of MCA of HECM Loans,224,228,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+34,Pay Op TENURE HECM Loan UPB as % of Principal Limit of HECM Loans,229,233,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+35,Pay Op TENURE HECM Loan UPB as % of MCA of HECM Loans,234,238,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+36,Pay Op LOC Number Of Participations,239,244,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+37,Pay Op LOC UPB of Participations,245,257,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+38,Pay Op LOC UPB of Participations as % of Pool UPB,258,262,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+39,Pay Op LOC UPB of Participations as % of Principal Limit of HECM Loans,263,267,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+40,Pay Op LOC UPB of Participations as % of MCA of HECM Loans,268,272,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+41,Pay Op LOC HECM Loan UPB as % of Principal Limit of HECM Loans,273,277,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+42,Pay Op LOC HECM Loan UPB as % of MCA of HECM Loans,278,282,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+43,Pay Op MOD TENURE Number Of Participations,283,288,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+44,Pay Op MOD TENURE UPB of Participations,289,301,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+45,Pay Op MOD TENURE UPB of Participations as % of Pool UPB,302,306,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+46,Pay Op MOD TENURE UPB of Participations as % of Principal Limit of HECM Loans,307,311,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+47,Pay Op MOD TENURE UPB of Participations as % of MCA of HECM Loans,312,316,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+48,Pay Op MOD TENURE HECM Loan UPB as % of Principal Limit of HECM Loans,317,321,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+49,Pay Op MOD TENURE HECM Loan UPB as % of MCA of HECM Loans,322,326,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+50,Pay Op MOD TERM Number of Participations,327,332,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+51,Pay Op MOD TERM UPB of Participations,333,345,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+52,Pay Op MOD TERM UPB of Participations as % of Pool UPB,346,350,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+53,Pay Op MOD TERM UPB of Participations as % of Principal Limit of HECM Loans,351,355,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+54,Pay Op MOD TERM UPB of Participations as % of MCA of HECM Loans,356,360,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+55,Pay Op MOD TERM HECM UPB as % of Principal Limit of HECM Loans,361,365,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+56,Pay Op MOD TERM HECM UPB as % of MCA of HECM Loans,366,370,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+57,Pay Op LUMP SUM Number of Participations,371,376,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+58,Pay Op LUMP SUM UPB of Participations,377,389,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+59,Pay Op LUMP SUM UPB of Participations as % of Pool UPB,390,394,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+60,Pay Op LUMP SUM UPB of Participations as % of Principal Limit of HECM Loans,395,399,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+61,Pay Op LUMP SUM UPB of Participations as % of MCA of HECM Loans,400,404,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+62,Pay Op LUMP SUM HECM UPB as % of Principal Limit of HECM Loans,405,409,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+63,Pay Op LUMP SUM HECM UPB as % of MCA of HECM Loans,410,414,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+64,Pay Op Not Available Number of Participations,415,420,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+65,Pay Op Not Available UPB of Participations,421,433,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+66,Pay Op Not Available UPB of Participations as % of Pool UPB,434,438,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+67,Pay Op Not Available UPB of Participations as % of Principal Limit of HECM Loans,439,443,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+68,Pay Op Not Available UPB of Participations as % of MCA of HECM Loans,444,448,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+69,Pay Op Not Available HECM UPB as % of Principal Limit of HECM Loans,449,453,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+70,Pay Op Not Available HECM UPB as % of MCA of HECM Loans,454,458,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+71,Property Type SINGLE FAMILY Number of Participations,459,464,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+72,Property Type SINGLE FAMILY UPB of Participations,465,477,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+73,Property Type SINGLE FAMILY UPB of Participations as % of Pool UPB,478,482,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+74,Property Type SINGLE FAMILY UPB of Participations as % of Principal Limit of HECM Loans,483,487,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+75,Property Type SINGLE FAMILY UPB of Participations as % of MCA of HECM Loans,488,492,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+76,Property Type SINGLE FAMILY HECM Loan UPB as % of Principal Limit of HECM Loans,493,497,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+77,Property Type SINGLE FAMILY HECM Loan UPB as % of MCA of HECM Loans,498,502,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+78,Property Type CONDO Number of Participations,503,508,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+79,Property Type CONDO UPB of Participations,509,521,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+80,Property Type CONDO UPB of Participations as % of Pool UPB,522,526,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+81,Property Type CONDO UPB of Participations as % of Principal Limit of HECM Loans,527,531,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+82,Property Type CONDO UPB of Participations as % of MCA of HECM Loans,532,536,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+83,Property Type CONDO HECM Loans UPB as % of Principal Limit of HECM Loans,537,541,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+84,Property Type CONDO HECM Loans UPB as % of MCA of HECM Loans,542,546,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+85,Property Type MANUF Number of Participations,547,552,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+86,Property Type MANUF UPB of Participations,553,565,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+87,Property Type MANUF UPB of Participations as % of Pool UPB,566,570,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+88,Property Type MANUF UPB of Participations as % of Principal Limit of HECM Loans,571,575,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+89,Property Type MANUF UPB of Participations as % of MCA of HECM Loans,576,580,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+90,Property Type MANUF HECM UPB as % of Principal Limit of HECM Loans,581,585,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+91,Property Type MANUF HECM UPB as % of MCA,586,590,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+92,Property Type PUD Number of Participations,591,596,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+93,Property Type PUD UPB of Participations,597,609,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+94,Property Type PUD UPB of Participations as % of Pool UPB,610,614,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+95,Property Type PUD UPB of Participations as % of Principal Limit of HECM Loans,615,619,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+96,Property Type PUD UPB of Participations as % of MCA of HECM Loans,620,624,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+97,Property Type PUD HECM UPB as % of Principal Limit,625,629,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+98,Property Type PUD HECM UPB as % of MCA,630,634,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+99,Property Type Not Available Number of Participations,635,640,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+100,Property Type Not Available UPB of Participations,641,653,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+101,Property Type Not Available UPB of Participations as % of Pool UPB,654,658,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+102,Property Type Not Available UPB of Participations as % of Principal Limit of HECM Loans,659,663,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+103,Property Type Not Available UPB of Participations as % of MCA of HECM Loans,664,668,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+104,Property Type Not Available HECM UPB as % of Principal Limit of HECM Loans,669,673,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+105,Property Type Not Available HECM UPB as % of MCA of HECM Loans,674,678,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+106,Original Security Interest Rate (WAC),679,683,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,D,float64,Float64
+107,Maximum WAC (Q4)( the original WAC),684,688,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,D,float64,Float64
+108,Minimum WAC (Q0) (The original WAC),689,693,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,D,float64,Float64
+109,Eligible Non-borrowing Spouse Number Of Participations,694,699,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+110,Eligible Non-borrowing Spouse UPB of Participations,700,712,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+111,Eligible Non-borrowing Spouse UPB of Participations as % of Pool UPB,713,717,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+112,Remaining Property Charges Set Aside Number of Participations,718,723,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+113,Remaining Property Charges Set Aside UPB of Participations,724,736,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+114,Remaining Property Charges Set Aside UPB of Participations as % of Pool UPB,737,741,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,D,float64,Float64
+115,As of Date (CCYYMM),742,747,Numeric,6,9(6),hnissues_layout.pdf,,,D,Int64,Int64
+116,Pool Maturity Date,748,755,Numeric,8,9(8),hnissues_layout.pdf,,,D,Int64,Int64
+1,CUSIP,1,9,Character,9,X(9),hnissues_layout.pdf,,,M,string,String
+2,Pool ID,10,15,Character,6,X(6),hnissues_layout.pdf,,,M,string,String
+3,Pool Indicator (H),16,16,Character,1,X,hnissues_layout.pdf,,,M,string,String
+4,Pool Type,17,18,Character,2,X(2),hnissues_layout.pdf,,,M,string,String
+5,Record Type M,19,19,Character,1,X,hnissues_layout.pdf,,,M,string,String
+6,Issuer,20,23,Numeric,4,9(4),hnissues_layout.pdf,,,M,Int64,Int64
+7,Highest MSA,24,28,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+8,Highest MSA Number of Loans,29,34,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+9,Highest MSA UPB of Loans,35,47,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+10,Highest MSA % of Total UPB,48,52,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+11,2nd Highest MSA,53,57,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+12,2nd Highest MSA Number of Loans,58,63,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+13,2nd Highest MSA UPB of Loans,64,76,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+14,2nd Highest MSA % of Total UPB,77,81,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+15,3rd Highest MSA,82,86,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+16,3rd Highest MSA Number of Loans,87,92,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+17,3rd Highest MSA UPB of Loans,93,105,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+18,3rd Highest MSA % of Total UPB,106,110,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+19,4th Highest MSA,111,115,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+20,4th Highest MSA Number of Loans,116,121,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+21,4th Highest MSA UPB of Loans,122,134,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+22,4th Highest MSA % of Total UPB,135,139,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+23,5th Highest MSA,140,144,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+24,5th Highest MSA Number of Loans,145,150,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+25,5th Highest MSA UPB of Loans,151,163,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+26,5th Highest MSA % of Total UPB,164,168,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+27,6th Highest MSA,169,173,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+28,6th Highest MSA Number of Loans,174,179,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+29,6th Highest MSA UPB of Loans,180,192,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+30,6th Highest MSA % of Total UPB,193,197,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+31,7th Highest MSA,198,202,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+32,7th Highest MSA Number of Loans,203,208,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+33,7th Highest MSA UPB of Loans,209,221,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+34,7th Highest MSA % of Total UPB,222,226,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+35,8th Highest MSA,227,231,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+36,8th Highest MSA Number of Loans,232,237,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+37,8th Highest MSA UPB of Loans,238,250,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+38,8th Highest MSA % of Total UPB,251,255,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+39,9th Highest MSA,256,260,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+40,9th Highest MSA Number of Loans,261,266,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+41,9th Highest MSA UPB of Loans,267,279,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+42,9th Highest MSA % of Total UPB,280,284,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+43,10th Highest MSA,285,289,Numeric,5,9(5),hnissues_layout.pdf,,,M,Int64,Int64
+44,10th Highest MSA Number of Loans,290,295,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+45,10th Highest MSA UPB of Loans,296,308,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+46,10th Highest MSA % of Total UPB,309,313,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+47,MSA Not Available Number of Loans,314,319,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+48,MSA Not Available UPB of Loans,320,332,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+49,MSA Not Available % of Total UPB,333,337,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,M,float64,Float64
+50,As of Date (CCYYMM),338,343,Numeric,6,9(6),hnissues_layout.pdf,,,M,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),hnissues_layout.pdf,,,S,string,String
+2,Pool ID,10,15,Character,6,X(6),hnissues_layout.pdf,,,S,string,String
+3,Pool Indicator (H),16,16,Character,1,X,hnissues_layout.pdf,,,S,string,String
+4,Pool Type,17,18,Character,2,X(2),hnissues_layout.pdf,,,S,string,String
+5,Record Type (S = State Distribution),19,19,Character,1,X,hnissues_layout.pdf,,,S,string,String
+6,State Abbreviation,20,21,Character,2,X(2),hnissues_layout.pdf,,,S,string,String
+7,Current Pool UPB Balance for State,22,34,Numeric,13,9(11)v99,hnissues_layout.pdf,,,S,,
+8,Pool UPB Balance for State as a % of total Pool UPB,35,39,Numeric,5,9(3)v99,hnissues_layout.pdf,,,S,,
+9,Number of Participations for State,40,45,Numeric,6,9(6),hnissues_layout.pdf,,,S,Int64,Int64
+10,Number of Participations for State as a % of Pool’s total Participation count,46,50,Numeric,5,9(3)v99,hnissues_layout.pdf,,,S,,
+11,Total Participations,51,56,Numeric,6,9(6),hnissues_layout.pdf,,,S,Int64,Int64
+12,Participation Original Principal Balance for State,57,69,Numeric,13,9 (11)v99,hnissues_layout.pdf,,,S,,
+13,As of Date (CCYYMM),70,75,Numeric,6,9(6),hnissues_layout.pdf,,,S,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),hnissues_layout.pdf,,,U,string,String
+2,Pool ID,10,15,Character,6,X(6),hnissues_layout.pdf,,,U,string,String
+3,Pool Indicator (H),16,16,Character,1,X,hnissues_layout.pdf,,,U,string,String
+4,Pool Type,17,18,Character,2,X(2),hnissues_layout.pdf,,,U,string,String
+5,Record Type (U= Supplemental Pool Details),19,19,Character,1,X,hnissues_layout.pdf,,,U,string,String
+6,Traditional Number of Participations,20,25,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+7,Traditional UPB,26,38,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+8,Traditional % UPB,39,43,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+9,Refinance Number of Participations,44,49,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+10,Refinance UPB,50,62,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+11,Refinance % UPB,63,67,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+12,Purchase Number of Participations,68,73,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+13,Purchase UPB,74,86,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+14,Purchase % UPB,87,91,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+15,Not Available – Number of Participations,92,97,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+16,Not Available – UPB,98,110,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+17,Not Available – % of UPB,111,115,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+18,Standard Number of Participations,116,121,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+19,Standard UPB,122,134,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+20,Standard % UPB,135,139,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+21,Saver Number of Participations,140,145,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+22,Saver UPB,146,158,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+23,Saver % UPB,159,163,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+24,Tenure Number of Participations,164,169,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+25,Tenure UPB,170,182,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+26,Tenure % UPB,183,187,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+27,Term Number of Participations,188,193,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+28,Term UPB,194,206,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+29,Term % UPB,207,211,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+30,Line of Credit Number of Participations,212,217,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+31,Line of Credit UPB,218,230,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+32,Line of Credit % UPB,231,235,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+33,Modified Term Number of Participations,236,241,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+34,Modified Term UPB,242,254,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+35,Modified Term % UPB,255,259,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+36,Modified Tenure Number of Participations,260,265,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+37,Modified Tenure UPB,266,278,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+38,Modified Tenure % UPB,279,283,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+39,Single Disb Lump Sum Number of Participations,284,289,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+40,Singe Disb Lump Sum UPB,290,302,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+41,Single Disb Lump Sum % UPB,303,307,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+42,Not Available – Number of Participations,308,313,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+43,Not Available – UPB,314,326,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+44,Not Available – % of UPB,327,331,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,U,float64,Float64
+45,Filler,332,338,Character,7,X(7),hnissues_layout.pdf,,,U,string,String
+46,As of Date (CCYYMM),339,344,Numeric,6,9(6),hnissues_layout.pdf,,,U,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),hnissues_layout.pdf,,,V,string,String
+2,Pool ID,10,15,Character,6,X(6),hnissues_layout.pdf,,,V,string,String
+3,Pool Indicator (H),16,16,Character,1,X,hnissues_layout.pdf,,,V,string,String
+4,Pool Type,17,18,Character,2,X(2),hnissues_layout.pdf,,,V,string,String
+5,Record Type (V = Various),19,19,Character,1,X,hnissues_layout.pdf,,,V,string,String
+6,Number of Participations with Payments this Period,20,25,Numeric,6,9(6),hnissues_layout.pdf,,,V,Int64,Int64
+7,Unpaid Principal Balance of Participations with Payments,26,38,Numeric,13,9(11)v99,hnissues_layout.pdf,,,V,,
+8,Percent of UPB Paid Off,39,43,Numeric,5,9(3)v99,hnissues_layout.pdf,,,V,,
+9,Ratio: Pool Outstanding Balance to Max Claim Amount of HECM Loans,44,48,Numeric,5,9(3)v99,hnissues_layout.pdf,,,V,,
+10,Maximum Participation UPB/HECM Max Claim Amount (Q4),49,53,Numeric,5,9(3)v99,hnissues_layout.pdf,,,V,,
+11,Minimum Participation UPB/HECM Max Claim Amount (Q0),54,58,Numeric,5,9(3)v99,hnissues_layout.pdf,,,V,,
+12,Ratio: Pool Outstanding Balance to Principal Limit of HECM Loans,59,63,Numeric,5,9(3)v99,hnissues_layout.pdf,,,V,,
+13,62-65 Number of Participations,64,67,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+14,62-65 UPB of Participations,68,80,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+15,62-65 UPB of Participations as % of Pool UPB,81,85,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+16,62-65 UPB of Participations as % of Principal Limit of HECMs,86,90,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+17,62-65 UPB of Participations as % of MCA of HECMs,91,95,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+18,62-65 HECM UPB as % of Principal Limit of HECMs,96,100,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+19,62-65 HECM UPB as % of MCA of HECMs,101,105,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+20,66-70 Number of Participations,106,109,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+21,66-70 UPB of Participations,110,122,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+22,66-70 UPB of Participations as % of Pool UPB,123,127,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+23,66-70 UPB of Participations as % of Principal Limit of HECMs,128,132,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+24,66-70 UPB of Participations as % of MCA of HECMs,133,137,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+25,66-70 HECM UPB as % of Principal Limit of HECMs,138,142,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+26,66-70 HECM UPB as % of MCA of HECMs,143,147,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+27,71-75 Number of Participations,148,151,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+28,71-75 UPB of Participations,152,164,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+29,71-75 UPB of Participations UPB,165,169,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+30,71-75 UPB of Participations as % of Principal Limit of HECMs,170,174,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+31,71-75 UPB of Participations as % of MCA of HECMs,175,179,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+32,71-75 HECM UPB as % of Principal Limit of HECMs,180,184,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+33,71-75 HECM UPB as % of MCA of HECMs,185,189,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+34,76-80 Number of Participations,190,193,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+35,76-80 UPB of Participations,194,206,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+36,76-80 UPB of Participations as % of Pool UPB,207,211,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+37,76-80 UPB of Participations as % of Principal Limit of HECMs,212,216,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+38,76-80 UPB of Participations as % of MCA of HECMs,217,221,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+39,76-80 HECM UPB as % of Principal Limit of HECMs,222,226,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+40,76-80 HECM UPB as % of MCA of HECMs,227,231,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+41,81-85 Number of Participations,232,235,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+42,81-85 UPB of Participations,236,248,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+43,81-85 UPB of Participations as % of Pool UPB,249,253,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+44,81-85 UPB of Participations as % of Principal Limit of HECMs,254,258,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+45,81-85 UPB of Participations as % of MCA of HECMs,259,263,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+46,81-85 HECM UPB as % of Principal Limit of HECMs,264,268,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+47,81-85 HECM UPB as % of MCA of HECMs,269,273,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+48,86-90 Number of Participations,274,277,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+49,86-90 UPB of Participations,278,290,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+50,86-90 UPB of Participations as % of Pool UPB,291,295,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+51,86-90 UPB of Participations as % of Principal Limit of HECMs,296,300,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+52,86-90 UPB of Participations as % of MCA of HECMs,301,305,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+53,86-90 HECM UPB as % of Principal Limit,306,310,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+54,86-90 HECM UPB as % of MCA,311,315,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+55,91-95 Number of Participations,316,319,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+56,91-95 UPB of Participations,320,332,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+57,91-95 UPB of Participations as % of Pool UPB,333,337,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+58,91-95 UPB of Participations as % of Principal Limit of HECMs,338,342,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+59,91-95 UPB of Participations as % of MCA of HECMs,343,347,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+60,91-95 HECM UPB as % of Principal Limit of HECMs,348,352,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+61,91-95 HECM UPB as % of MCA of HECMs,353,357,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+62,96-100 Number of Participations,358,361,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+63,96-100 UPB of Participations,362,374,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+64,96-100 UPB of Participations as % of Pool UPB,375,379,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+65,96-100 UPB of Participations as % of Principal Limit of HECMs,380,384,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+66,96-100 UPB of Participations as % of MCA of HECMs,385,389,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+67,96-100 HECM UPB as % of Principal Limit of HECMs,390,394,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+68,96-100 HECM UPB as % of MCA of HECMs,395,399,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+69,101- up Number of Participations,400,403,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+70,101- up UPB of Participations,404,416,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+71,101- up UPB of Participations as % of Pool UPB,417,421,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+72,101- up UPB of Participations as % of Principal Limit of HECMs,422,426,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+73,101- up UPB of Participations as % of MCA of HECMs,427,431,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+74,101- up HECM UPB as % of Principal Limit of HECMs,432,436,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+75,101- up HECM UPB as % of MCA of HECMs,437,441,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+76,Age Not Available Number of Participations,442,445,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+77,Age Not Available UPB of Participations,446,458,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+78,Age Not Available UPB of Participations as % of Pool UPB,459,463,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+79,Age Not Available UPB of Participations as % of Principal Limit of HECMs,464,468,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+80,Age Not Available UPB of Participations as % of MCA of HECMs,469,473,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+81,Age Not Available HECM UPB as % of Principal Limit of HECMs,474,478,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+82,Age Not Available HECM UPB as % of MCA of HECMs,479,483,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+83,Joint Loan - Female Number of Participations,484,487,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+84,Joint Loan - Female UPB of Participations,488,500,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+85,Joint Loan - Female UPB of Participations as % of Pool UPB,501,505,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+86,Joint Loan - Female UPB of Participations as % of Principal Limit of HECMs,506,510,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+87,Joint Loan - Female UPB of Participations as % of MCA of HECMs,511,515,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+88,Joint Loan - Female HECM UPB as % of Principal Limit of HECMs,516,520,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+89,Joint Loan - Female HECM UPB as % of MCA of HECMs,521,525,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+90,Joint Loan - Male Number of Participations,526,529,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+91,Joint Loan - Male UPB of Participations,530,542,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+92,Joint Loan - Male UPB of Participations as % of Pool UPB,543,547,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+93,Joint Loan - Male UPB of Participations as % of Principal Limit of HECMs,548,552,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+94,Joint Loan - Male UPB of Participations as % of MCA of HECMs,553,557,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+95,Joint Loan - Male HECM UPB as % of Principal Limit of HECMs,558,562,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+96,Joint Loan - Male HECM UPB as % of MCA of HECMs,563,567,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+97,Joint Loan – Either Gender or Youngest Age Not Available Number of Participations,568,571,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+98,Joint Loan - Either Gender or Youngest Age Not Available UPB of Participations,572,584,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+99,Joint Loan – Either Gender or Youngest Age Not Available UPB of Participations as % of Pool UPB,585,589,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+100,Joint Loan – Either Gender or Youngest Age Not Available UPB of Participations as % of Principal Limit of HECMs,590,594,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+101,Joint Loan – Either Gender or Youngest Age Not Available UPB of Participations as % of MCA of HECMs,595,599,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+102,Joint Loan - Either Gender or Youngest Age Not Available HECM UPB as % of Principal Limit of HECMs,600,604,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+103,Joint Loan - Either Gender or Youngest Age Not Available HECM UPB as % of MCA of HECMs,605,609,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+104,Single Loan - Female Number of Participations,610,613,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+105,Single Loan - Female UPB of Participations,614,626,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+106,Single Loan - Female UPB of Participations as % of Pool UPB,627,631,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+107,Single Loan - Female UPB of Participations as % of Principal Limit of HECMs,632,636,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+108,Single Loan - Female UPB of Participations as % of MCA of HECMs,637,641,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+109,Single Loan - Female Youngest HECM UPB as % of Principal Limit of HECMs,642,646,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+110,Single Loan - Female Youngest HECM UPB as % of MCA of HECMs,647,651,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+111,Single Loan - Male Number of Participations,652,655,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+112,Single Loan - Male UPB of Participations,656,668,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+113,Single Loan - Male UPB of Participations as % of Pool UPB,669,673,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+114,Single Loan - Male UPB of Participations as % of Principal Limit of HECMs,674,678,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+115,Single Loan - Male UPB of Participations as % of MCA of HECMs,679,683,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+116,Single Loan - Male HECM UPB as % of Principal Limit of HECMs,684,688,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+117,Single Loan - Male HECM UPB as % of MCA of HECMs,689,693,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+118,Single Loan – Either Gender or Youngest Age Not Available Number of Participations,694,697,Numeric,4,9(4),hnissues_layout.pdf,,,V,Int64,Int64
+119,Single Loan – Either Gender or Youngest Age Not Available UPB of Participations,698,710,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+120,Single Loan – Either Gender or Youngest Age Not Available UPB of Participations as % of Pool UPB,711,715,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+121,Single Loan – Either Gender or Youngest Age Not Available UPB of Participations as % of Principal Limit of HECMs,716,720,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+122,Single Loan – Either Gender or Youngest Age Not Available UPB of Participations as % of MCA of HECMs,721,725,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+123,Single Loan – Either Gender or Youngest Age Not,726,730,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+124,Single Loan – Either Gender or Youngest Age Not Available HECM UPB as % of MCA of HECMs,731,735,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+125,Current Period Average Balance,736,748,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+126,Maximum Participation UPB Quartile (Q4),749,761,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+127,Minimum Participation UPB Quartile (Q0),762,774,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,V,float64,Float64
+128,As of Date (CCYYMM),775,780,Numeric,6,9(6),hnissues_layout.pdf,,,V,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),hnissues_layout.pdf,,,X,string,String
+2,Pool ID,10,15,Character,6,X(6),hnissues_layout.pdf,,,X,string,String
+3,Pool Indicator (H),16,16,Character,1,X,hnissues_layout.pdf,,,X,string,String
+4,Pool Type,17,18,Character,2,X(2),hnissues_layout.pdf,,,X,string,String
+5,Record Type (X = Eligible Non-borrowing Spouse),19,19,Character,1,X,hnissues_layout.pdf,,,X,string,String
+6,Under 40 Number of Participations,20,23,Numeric,4,9(4),hnissues_layout.pdf,,,X,Int64,Int64
+7,Under 40 UPB of Participations,24,36,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+8,Under 40 UPB of Participations as % of Pool UPB,37,41,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+9,Under 40 UPB of Participations as % of Principal Limit of HECMs,42,46,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+10,Under 40 UPB of Participations as % of MCA of HECMs,47,51,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+11,Under 40 HECM UPB as % of Principal Limit of HECMs,52,56,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+12,Under 40 HECM UPB as % of MCA of HECMs,57,61,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+13,40-49 Number of Participations,62,65,Numeric,4,9(4),hnissues_layout.pdf,,,X,Int64,Int64
+14,40-49 UPB of Participations,66,78,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+15,40-49 UPB of Participations as % of Pool UPB,79,83,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+16,40-49 UPB of Participations as % of Principal Limit of HECMs,84,88,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+17,40-49 UPB of Participations as % of MCA of HECMs,89,93,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+18,40-49 HECM UPB as % of Principal Limit of HECMs,94,98,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+19,40-49 HECM UPB as % of MCA of HECMs,99,103,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+20,50-59 Number of Participations,104,107,Numeric,4,9(4),hnissues_layout.pdf,,,X,Int64,Int64
+21,50-59 UPB of Participations,108,120,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+22,50-59 UPB of Participations UPB,121,125,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+23,50-59 UPB of Participations as % of Principal Limit of HECMs,126,130,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+24,50-59 UPB of Participations as % of MCA of HECMs,131,135,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+25,50-59 HECM UPB as % of Principal Limit of HECMs,136,140,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+26,50-59 HECM UPB as % of MCA of HECMs,141,145,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+27,60-69 Number of Participations,146,149,Numeric,4,9(4),hnissues_layout.pdf,,,X,Int64,Int64
+28,60-69 UPB of Participations,150,162,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+29,60-69 UPB of Participations as % of Pool UPB,163,167,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+30,60-69 UPB of Participations as % of Principal Limit of HECMs,168,172,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+31,60-69 UPB of Participations as % of MCA of HECMs,173,177,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+32,60-69 HECM UPB as % of Principal Limit of HECMs,178,182,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+33,60-69 HECM UPB as % of MCA of HECMs,183,187,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+34,70-79 Number of Participations,188,191,Numeric,4,9(4),hnissues_layout.pdf,,,X,Int64,Int64
+35,70-79 UPB of Participations,192,204,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+36,70-79 UPB of Participations as % of Pool UPB,205,209,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+37,70-79 UPB of Participations as % of Principal Limit of HECMs,210,214,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+38,70-79 UPB of Participations as % of MCA of HECMs,215,219,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+39,70-79 HECM UPB as % of Principal Limit of HECMs,220,224,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+40,70-79 HECM UPB as % of MCA of HECMs,225,229,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+41,Over 80 Number of Participations,230,233,Numeric,4,9(4),hnissues_layout.pdf,,,X,Int64,Int64
+42,Over 80 UPB of Participations,234,246,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+43,Over 80 UPB of Participations as % of Pool UPB,247,251,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+44,Over 80 UPB of Participations as % of Principal Limit of HECMs,252,256,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+45,Over 80 UPB of Participations as % of MCA of HECMs,257,261,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+46,Over 80 HECM UPB as % of Principal Limit,262,266,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+47,Over 80 HECM UPB as % of MCA,267,271,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+48,Age Not Available Number of Participations,272,275,Numeric,4,9(4),hnissues_layout.pdf,,,X,Int64,Int64
+49,Age Not Available UPB of Participations,276,288,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+50,Age Not Available UPB of Participations as % of Pool UPB,289,293,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+51,Age Not Available UPB of Participations as % of Principal Limit of HECMs,294,298,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+52,Age Not Available UPB of Participations as % of MCA of HECMs,299,303,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+53,Age Not Available HECM UPB as % of Principal Limit of HECMs,304,308,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+54,Age Not Available HECM UPB as % of MCA of HECMs,309,313,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,X,float64,Float64
+55,As of Date (CCYYMM),314,319,Numeric,6,9(6),hnissues_layout.pdf,,,X,Int64,Int64
+1,CUSIP Number,1,9,Character,9,X(9),hnissues_layout.pdf,,,W,string,String
+2,Pool ID,10,15,Character,6,X(6),hnissues_layout.pdf,,,W,string,String
+3,Pool Indicator (H),16,16,Character,1,X,hnissues_layout.pdf,,,W,string,String
+4,Pool Type,17,18,Character,2,X(2),hnissues_layout.pdf,,,W,string,String
+5,Record Type (W=Weighted Averages and Quartiles Pool Detail),19,19,Character,1,X,hnissues_layout.pdf,,,W,string,String
+6,Weighted Average Expected Mortgage Interest Rate,20,24,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+7,Maximum (Q4),25,29,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+8,75th Percentile (Q3),30,34,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+9,Median (Q2),35,39,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+10,25th Percentile (Q1),40,44,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+11,Minimum (Q0),45,49,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+12,Not Available – Number of Participations,50,55,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+13,Not Available – UPB,56,68,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+14,Not Available – % of UPB,69,73,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+15,Weighted Average Servicing Fee Set Aside,74,85,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+16,Maximum (Q4),86,97,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+17,75th Percentile (Q3),98,109,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+18,Median (Q2),110,121,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+19,25th Percentile (Q1),122,133,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+20,Minimum (Q0),134,145,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+21,Not Available – Number of Participations,146,151,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+22,Not Available – UPB,152,164,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+23,Not Available – % of UPB,165,169,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+24,Weighted Average Original Funding Age,170,172,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+25,Maximum (Q4),173,175,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+26,75th Percentile (Q3),176,178,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+27,Median (Q2),179,181,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+28,25th Percentile (Q1),182,184,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+29,Minimum (Q0),185,187,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+30,Not Available – Number of Participations,188,193,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+31,Not Available – UPB,194,206,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+32,Not Available – % of UPB,207,211,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+33,Weighted Average Property Valuation Amount,212,223,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+34,Maximum (Q4),224,235,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+35,75th Percentile (Q3),236,247,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+36,Median (Q2),248,259,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+37,25th Percentile (Q1),260,271,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+38,Minimum (Q0),272,283,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+39,Not Available – Number of Participations,284,289,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+40,Not Available – UPB,290,302,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+41,Not Available – % of UPB,303,307,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+42,Weighted Average Original Term of Payments,308,310,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+43,Maximum (Q4),311,313,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+44,75th Percentile (Q3),314,316,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+45,Median (Q2),317,319,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+46,25th Percentile (Q1),320,322,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+47,Minimum (Q0),323,325,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+48,Not Available – Number of Participations,326,331,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+49,Not Available – UPB,332,344,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+50,Not Available – % of UPB,345,349,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+51,Weighted Average Property Charges Set Aside,350,361,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+52,Maximum (Q4),362,373,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+53,75th Percentile (Q3),374,385,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+54,Median (Q2),386,397,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+55,25th Percentile (Q1),398,409,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+56,Minimum (Q0),410,421,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+57,Not Available – Number of Participations,422,427,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+58,Not Available – UPB,428,440,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+59,Not Available – % of UPB,441,445,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+60,Weighted Average Property Repair Set Aside,446,457,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+61,Maximum (Q4),458,469,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+62,75th Percentile (Q3),470,481,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+63,Median (Q2),482,493,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+64,25th Percentile (Q1),494,505,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+65,Minimum (Q0),506,517,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+66,Not Available – Number of Participations,518,523,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+67,Not Available – UPB,524,536,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+68,Not Available – % of UPB,537,541,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+69,Weighted Average Original Available Line of Credit,542,553,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+70,Maximum (Q4),554,565,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+71,75th Percentile (Q3),566,577,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+72,Median (Q2),578,589,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+73,25th Percentile (Q1),590,601,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+74,Minimum (Q0),602,613,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+75,Not Available – Number of Participations,614,619,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+76,Not Available – UPB,620,632,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+77,Not Available – % of UPB,633,637,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+78,Weighted Average Original Draw Amount,638,649,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+79,Maximum (Q4),650,661,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+80,75th Percentile (Q3),662,673,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+81,Median (Q2),674,685,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+82,25th Percentile (Q1),686,697,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+83,Minimum (Q0),698,709,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+84,Not Available – Number of Participations,710,715,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+85,Not Available – UPB,716,728,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+86,Not Available – % of UPB,729,733,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+87,Weighted Average Mortgage Margin,734,738,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+88,Maximum (Q4),739,743,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+89,75th Percentile (Q3),744,748,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+90,Median (Q2),749,753,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+91,25th Percentile (Q1),754,758,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+92,Minimum (Q0),759,763,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+93,Not Available – Number of Participations,764,769,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+94,Not Available – UPB,770,782,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+95,Not Available – % of UPB,783,787,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+96,Weighted Average Lifetime Floor Rate,788,792,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+97,Maximum (Q4),793,797,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+98,75th Percentile (Q3),798,802,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+99,Median (Q2),803,807,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+100,25th Percentile (Q1),808,812,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+101,Minimum (Q0),813,817,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+102,Not Available – Number of Participations,818,823,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+103,Not Available – UPB,824,836,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+104,Not Available – % of UPB,837,841,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+105,Weighted Average Remaining Available Line of Credit,842,853,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+106,Maximum (Q4),854,865,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+107,75th Percentile (Q3),866,877,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+108,Median (Q2),878,889,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+109,25th Percentile (Q1),890,901,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+110,Minimum (Q0),902,913,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+111,Not Available – Number of Participations,914,919,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+112,Not Available – UPB,920,932,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+113,Not Available – % of UPB,933,937,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+114,Weighted Average Monthly Scheduled Payment,938,949,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+115,Maximum (Q4),950,961,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+116,75th Percentile (Q3),962,973,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+117,Median (Q2),974,985,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+118,25th Percentile (Q1),986,997,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+119,Minimum (Q0),998,1009,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+120,Not Available – Number of Participations,1010,1015,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+121,Not Available – UPB,1016,1028,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+122,Not Available – % of UPB,1029,1033,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+123,Weighted Average Remaining Term of Payments,1034,1036,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+124,Maximum (Q4),1037,1039,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+125,75th Percentile (Q3),1040,1042,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+126,Median (Q2),1043,1045,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+127,25th Percentile (Q1),1046,1048,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+128,Minimum (Q0),1049,1051,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+129,Not Available – Number of Participations,1052,1057,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+130,Not Available – UPB,1058,1070,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+131,Not Available – % of UPB,1071,1075,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+132,Weighted Average Credit Line Set Aside,1076,1087,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+133,Maximum (Q4),1088,1099,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+134,75th Percentile (Q3),1100,1111,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+135,Median (Q2),1112,1123,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+136,25th Percentile (Q1),1124,1135,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+137,Minimum (Q0),1136,1147,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+138,Not Available – Number of Participations,1148,1153,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+139,Not Available – UPB,1154,1166,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+140,Not Available – % of UPB,1167,1171,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+141,Weighted Average Lifetime Interest Rate Change Cap,1172,1173,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+142,Maximum (Q4),1174,1175,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+143,75th Percentile (Q3),1176,1177,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+144,Median (Q2),1178,1179,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+145,25th Percentile (Q1),1180,1181,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+146,Minimum (Q0),1182,1183,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+147,Not Available – Number of Participations,1184,1189,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+148,Not Available – UPB,1190,1202,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+149,Not Available – % of UPB,1203,1207,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+150,Weighted Average Annual Interest Rate Change Cap,1208,1209,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+151,Maximum (Q4),1210,1211,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+152,75th Percentile (Q3),1212,1213,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+153,Median (Q2),1214,1215,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+154,25th Percentile (Q1),1216,1217,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+155,Minimum (Q0),1218,1219,Numeric,2,9(2),hnissues_layout.pdf,,,W,Int64,Int64
+156,Not Available – Number of Participations,1220,1225,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+157,Not Available – UPB,1226,1238,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+158,Not Available – % of UPB,1239,1243,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+159,Weighted Average Maximum Interest Rate,1244,1248,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+160,Maximum (Q4),1249,1253,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+161,75th Percentile (Q3),1254,1258,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+162,Median (Q2),1259,1263,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+163,25th Percentile (Q1),1264,1268,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+164,Minimum (Q0),1269,1273,Numeric,5,9(2)v9(3),hnissues_layout.pdf,,,W,float64,Float64
+165,Not Available – Number of Participations,1274,1279,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+166,Not Available – UPB,1280,1292,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+167,Not Available – % of UPB,1293,1297,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+168,Weighted Average Eligible Non-borrowing Spouse Age,1298,1300,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+169,Maximum (Q4),1301,1303,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+170,75th Percentile (Q3),1304,1306,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+171,Median (Q2),1307,1309,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+172,25th Percentile (Q1),1310,1312,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+173,Minimum (Q0),1313,1315,Numeric,3,9(3),hnissues_layout.pdf,,,W,Int64,Int64
+174,Not Available – Number of Participations,1316,1321,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+175,Not Available – UPB,1322,1334,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+176,Not Available – % of UPB,1335,1339,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+177,As of Date (CCYYMM),1340,1345,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+178,Weighted Average Initial Remaining Available Line of Credit,1346,1357,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+179,Maximum (Q4),1358,1369,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+180,75th Percentile (Q3),1370,1381,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+181,Median (Q2),1382,1393,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+182,25th Percentile (Q1),1394,1405,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+183,Minimum (Q0),1406,1417,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+184,Not Available – Number of Participations,1418,1423,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+185,Not Available – UPB,1424,1436,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+186,Not Available – % of UPB,1437,1441,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+187,Weighted Average Initial Monthly Scheduled Payment Amount,1442,1453,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+188,Maximum (Q4),1454,1465,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+189,75th Percentile (Q3),1466,1477,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+190,Median (Q2),1478,1489,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+191,25th Percentile (Q1),1490,1501,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+192,Minimum (Q0),1502,1513,Numeric,12,9(10)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+193,Not Available – Number of Participations,1514,1519,Numeric,6,9(6),hnissues_layout.pdf,,,W,Int64,Int64
+194,Not Available – UPB,1520,1532,Numeric,13,9(11)v9(2),hnissues_layout.pdf,,,W,float64,Float64
+195,Not Available – % of UPB,1533,1537,Numeric,5,9(3)v9(2),hnissues_layout.pdf,,,W,float64,Float64

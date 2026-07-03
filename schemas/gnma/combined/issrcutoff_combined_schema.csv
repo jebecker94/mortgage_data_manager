@@ -1,0 +1,5 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+1,Issuer ID,1,4,Numeric,4,9(4),issrcutoff_layout.pdf,,,Int64,Int64
+2,Issuer Name,5,64,Character,60,X(60),issrcutoff_layout.pdf,,,string,String
+3,Issuer Cut-Off Date Code Description,65,105,Character,41,X(41),issrcutoff_layout.pdf,,,string,String
+4,Data File As-Of Date (YYYYMMDD),106,113,Numeric,8,9(8),issrcutoff_layout.pdf,,,Int64,Int64

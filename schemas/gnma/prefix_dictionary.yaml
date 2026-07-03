@@ -1,0 +1,484 @@
+# MBS (Single Family) File Type
+nimonSFPS:
+  min_date: '202001'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF MONTHLY NEW ISSUES - POOL/SECURITY
+nimonSFS:
+  min_date: '202001'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF MONTHLY NEW ISSUES - POOL SUPPLEMENTAL
+  # Pool supplemental: deterministic stratification of dailyllmni.
+  # See investigations/reports/investigation_gnma_supplemental_reconstruction_2026-05-02.md
+  default_download: false
+dailyllmni:
+  min_date: '201309'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF MONTHLY NEW ISSUES - LOAN LEVEL
+monthlySFPS:
+  min_date: '202001'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF PORTFOLIO - POOL/SECURITY
+monthlySFS:
+  min_date: '202001'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF PORTFOLIO - POOL SUPPLEMENTAL
+  # Pool supplemental: deterministic stratification of llmon1+llmon2.
+  # See investigations/reports/investigation_gnma_supplemental_reconstruction_2026-05-02.md
+  default_download: false
+llmon1:
+  min_date: '201310'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF PORTFOLIO - LOAN LEVEL, GINNIE I
+llmon2:
+  min_date: '201310'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF PORTFOLIO - LOAN LEVEL, GINNIE II
+llmon:
+  min_date: '202601'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF PORTFOLIO - LOAN LEVEL, V2.0 COMBINED (GINNIE I + II)
+llmonliq:
+  min_date: '201809'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF LOAN LIQUIDATIONS MONTHLY
+llmonliqot:
+  min_date: '201903'
+  max_date: '201903'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: LOAN LIQUIDATION FILE (MBS SINGLE FAMILY), OCTOBER 2009 THROUGH MARCH 2019
+liqloanot:
+  min_date: '201405'
+  max_date: '201405'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS LIQUIDATED AND TERMINATED LOANS, OCTOBER 2009 THROUGH SEPTEMBER 2013
+nissues:
+  min_date: '201202'
+  max_date: '202104'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "MBS MONTHLY (NI) \u2013 POOL LEVEL"
+monthly:
+  min_date: '201202'
+  max_date: '202010'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS (PORTFOLIO)
+ptermqtr:
+  min_date: '201409'
+  max_date: '201703'
+  extension: txt
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS POOL TERMINATIONS FILE QUARTERLY
+
+# HMBS File Type
+hmonthly:
+  min_date: '201104'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS PORTFOLIO \u2013 POOL LEVEL"
+hnissues:
+  min_date: '201208'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS MONTHLY NEW ISSUES \u2013 POOL LEVEL"
+hmonthlyPS:
+  min_date: '202403'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS PORTFOLIO \u2013 POOL/SECURITY"
+hmonthlyS:
+  min_date: '202403'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS PORTFOLIO \u2013 POOL SUPPLEMENTAL"
+  # Pool supplemental: deterministic stratification of hllmon1+hllmon2.
+  # Exception: Record 08 (Property State) is not derivable \u2014 HMBS loan-level
+  # has no State column. Re-pull this file if pool x state distribution is needed.
+  # See investigations/reports/investigation_gnma_supplemental_reconstruction_2026-05-02.md
+  default_download: false
+hsavr:
+  min_date: '201010'
+  max_date: '201412'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: HMBS POOL LEVEL HECM SAVER DATA
+hnissuesPS:
+  min_date: '202404'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS MONTHLY NEW ISSUES \u2013 POOL/SECURITY"
+hnissuesS:
+  min_date: '202404'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS MONTHLY NEW ISSUES \u2013 POOL SUPPLEMENTAL"
+hdailyllmni:
+  min_date: '201407'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: HMBS MONTHLY NEW ISSUES - LOAN LEVEL
+hmonthlyenh:
+  min_date: '201407'
+  max_date: '202004'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: HMBS ENHANCED POOL MONTHLY (July 2014 to April 2020)
+hllmon1:
+  min_date: '201307'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: HMBS PORTFOLIO - LOAN LEVEL, MONTHLY ADJUSTABLE
+hllmon2:
+  min_date: '201307'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: HMBS PORTFOLIO - LOAN LEVEL, FIXED AND ANNUAL ADJUSTABLE
+
+# Multifamily File Type
+mfpppot:
+  min_date: '201810'
+  max_date: '201810'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA (MBS), SEPTEMBER 2001 THROUGH SEPTEMBER 2018
+mfpldailymni3:
+  min_date: '202201'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY POOL AND LOAN NEW ISSUANCE MONTHLY DISCLOSURE
+mfpldailymni2:
+  min_date: '202108'
+  max_date: '202203'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY POOL AND LOAN NEW ISSUANCE MONTHLY DISCLOSURE V2.0 (08/01/2021 - 01/01/2022)
+mfpldailymni:
+  min_date: '201812'
+  max_date: '202109'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY POOL AND LOAN NEW ISSUANCE MONTHLY DISCLOSURE V1.0 (12/01/2018 - 07/01/2021)
+mfplmon3:
+  min_date: '202201'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY POOL AND LOAN MONTHLY PORTFOLIO DISCLOSURE
+mfplmon2:
+  min_date: '202107'
+  max_date: '202203'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY POOL AND LOAN MONTHLY PORTFOLIO DISCLOSURE V2.0 (07/01/2021 - 12/01/2021)
+mfplmon:
+  min_date: '201812'
+  max_date: '202109'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY POOL AND LOAN MONTHLY PORTFOLIO DISCLOSURE V1.0 (12/01/2018 - 06/01/2021)
+mfpppmon:
+  min_date: '201810'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA
+
+# Platinum File Type
+platmonPPS:
+  min_date: '202101'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: PLATINUM PORTFOLIO ENHANCED POOL/SECURITY
+platmonPS:
+  min_date: '202101'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL
+platcoll:
+  min_date: '201406'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: PLATINUM PORTFOLIO - COLLATERAL
+platmon:
+  min_date: '201406'
+  max_date: '202104'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: PLATINUM PORTFOLIO - ENHANCED
+hplatmonPS:
+  min_date: '202411'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS PLATINUM PORTFOLIO \u2013 POOL/SECURITY"
+hplatmonS:
+  min_date: '202411'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: "HMBS PLATINUM PORTFOLIO \u2013 POOL SUPPLEMENTAL"
+
+# Factor File File Type
+pfot2000s:
+  min_date: '201812'
+  max_date: '201812'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: POOL FACTOR HISTORY DISCLOSURE DATA (MBS AND HMBS), JANUARY 2000 THROUGH DECEMBER 2006
+pfot1990s:
+  min_date: '201812'
+  max_date: '201812'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: POOL FACTOR HISTORY DISCLOSURE DATA (MBS AND HMBS), JANUARY 1990 THROUGH DECEMBER 1999
+pfot1980s:
+  min_date: '201812'
+  max_date: '201812'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: POOL FACTOR HISTORY DISCLOSURE DATA (MBS AND HMBS), JANUARY 1982 THROUGH DECEMBER 1989
+factorA1:
+  min_date: '201208'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: FACTOR A G I
+factorA2:
+  min_date: '201208'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: FACTOR A G II
+factorAplat:
+  min_date: '201906'
+  max_date: null
+  extension: txt
+  date_format: '%Y%m'
+  frequency: monthly
+  description: FACTOR A PLATINUM
+factorAAdd:
+  min_date: '201509'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: FACTOR A ADDITIONAL
+factorB1:
+  min_date: '201208'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: FACTOR B G I
+factorB2:
+  min_date: '201208'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: FACTOR B G II
+remic1:
+  min_date: '201202'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: REMIC 1 FACTOR
+remic2:
+  min_date: '201202'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: REMIC 2 FACTOR
+FRR:
+  min_date: '201503'
+  max_date: null
+  extension: TXT
+  date_format: '%Y%m'
+  frequency: monthly
+  description: FRR HISTORY FILES
+SRF:
+  min_date: '201503'
+  max_date: null
+  extension: TXT
+  date_format: '%Y%m'
+  frequency: monthly
+  description: SRF HISTORY FILES
+
+# Other Files File Type
+ptermplatot:
+  min_date: '201703'
+  max_date: '201703'
+  extension: txt
+  date_format: '%Y%m'
+  frequency: monthly
+  description: POOL TERMINATIONS FILE (PLATINUM/HMBS), JANUARY 1994 THROUGH MARCH 2017
+ptermot:
+  min_date: '201405'
+  max_date: '201405'
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: POOL TERMINATIONS FILE (MBS), JULY 1983 THROUGH MAY 2014
+issuers:
+  min_date: '201208'
+  max_date: null
+  extension: txt
+  date_format: '%Y%m'
+  frequency: monthly
+  description: ACTIVE GINNIE MAE ISSUERS
+ptermmon:
+  min_date: '201704'
+  max_date: null
+  extension: txt
+  date_format: '%Y%m'
+  frequency: monthly
+  description: POOL TERMINATIONS MONTHLY
+liqloanqtr:
+  min_date: '201409'
+  max_date: null
+  extension: txt
+  date_format: '%Y%m'
+  frequency: quarterly
+  description: MBS TERMINATED LOANS QUARTERLY
+issrinfo:
+  min_date: '201804'
+  max_date: null
+  extension: txt
+  date_format: '%Y%m'
+  frequency: monthly
+  description: GINNIE MAE ISSUER FILE
+issrcutoff:
+  min_date: '20131231'
+  max_date: null
+  extension: txt
+  date_format: '%Y%m%d'
+  frequency: monthly
+  description: ISSUER CUTOFF DATE FILE
+plmonforb:
+  min_date: '202005'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: POOL LEVEL FORBEARANCE SUPPLEMENTAL
+llmonforb:
+  min_date: '202005'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: LOAN LEVEL FORBEARANCE SUPPLEMENTAL
+llpaymhist:
+  min_date: '202105'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS LOAN PAYMENT HISTORY
+LoanPerf:
+  min_date: '202306'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: quarterly
+  description: LOAN PERFORMANCE FILE, QUARTERLY
+LoanPerfAnn:
+  min_date: '202312'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: yearly
+  description: LOAN PERFORMANCE FILE, ANNUAL
+CPRmon:
+  min_date: '202507'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS CPR MONTHLY DISCLOSURE
+REMICSocial:
+  min_date: '202501'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: REMIC SOCIAL DISCLOSURE

@@ -1,0 +1,128 @@
+mbs_column,umbs_column,standardized_name,match_type
+Channel,Channel,Channel,exact
+First Payment Date,First Payment Date,First Payment Date,exact
+Loan Purpose,Loan Purpose,Loan Purpose,exact
+Maturity Date,Maturity Date,Maturity Date,exact
+Mortgage Insurance Cancellation Indicator,Mortgage Insurance Cancellation Indicator,Mortgage Insurance Cancellation Indicator,exact
+Number of Borrowers,Number of Borrowers,Number of Borrowers,exact
+Number of Units,Number of Units,Number of Units,exact
+Occupancy Status,Occupancy Status,Occupancy Status,exact
+Original Interest Rate,Original Interest Rate,Original Interest Rate,exact
+Property State,Property State,Property State,exact
+Property Type,Property Type,Property Type,exact
+Property Valuation Method,Property Valuation Method,Property Valuation Method,exact
+Seller Name,Seller Name,Seller Name,exact
+Servicer Name,Servicer Name,Servicer Name,exact
+First Time Homebuyer Flag,,First Time Home Buyer Indicator,fhlmc_only
+HARP Indicator,,HARP Indicator,fhlmc_only
+Interest Only (I/O) Indicator,,Interest Only (I/O) Indicator,fhlmc_only
+Loan Sequence Number,,Loan Sequence Number,fhlmc_only
+Metropolitan Statistical Area (MSA) Or Metropolitan Division,,Metropolitan Statistical Area (MSA) Or Metropolitan Division,fhlmc_only
+Original UPB,,Mortgage Loan Amount,fhlmc_only
+Postal Code,,Postal Code,fhlmc_only
+Pre-HARP Loan Sequence Number,,Pre-HARP Loan Sequence Number,fhlmc_only
+Prepayment Penalty Mortgage (PPM) Flag,,Prepayment Penalty Mortgage (PPM) Flag,fhlmc_only
+Program Indicator,,Program Indicator,fhlmc_only
+Super Conforming Flag,,Super Conforming Flag,fhlmc_only
+,Alternative Delinquency Resolution,Alternative Delinquency Resolution,umbs_only
+,Assumability Indicator,Assumability Indicator,umbs_only
+,Borrower Assistance Plan,Borrower Assistance Plan,umbs_only
+,CUSIP,CUSIP,umbs_only
+,Convertibility Indicator,Convertibility Indicator,umbs_only
+,Current Deferred UPB,Current Deferred UPB,umbs_only
+,Current Interest Rate,Current Interest Rate,umbs_only
+,Current Investor Loan UPB,Current Investor Loan UPB,umbs_only
+,Current Net Interest Rate,Current Net Interest Rate,umbs_only
+,Days Delinquent,Days Delinquent,umbs_only
+,Estimated Loan-To-Value (ELTV),Estimated Loan-To-Value (ELTV),umbs_only
+,Filler,Filler,umbs_only
+,Filler_duplicated_0,Filler_duplicated_0,umbs_only
+,Filler_duplicated_1,Filler_duplicated_1,umbs_only
+,Filler_duplicated_2,Filler_duplicated_2,umbs_only
+,Filler_duplicated_3,Filler_duplicated_3,umbs_only
+,Filler_duplicated_4,Filler_duplicated_4,umbs_only
+,Filler_duplicated_5,Filler_duplicated_5,umbs_only
+,First Time Home Buyer Indicator,First Time Home Buyer Indicator,umbs_only
+,Government Insured Guarantee,Government Insured Guarantee,umbs_only
+,Index,Index,umbs_only
+,Initial Fixed Rate Period,Initial Fixed Rate Period,umbs_only
+,Initial Interest Rate Cap Down Percent,Initial Interest Rate Cap Down Percent,umbs_only
+,Initial Interest Rate Cap Up Percent,Initial Interest Rate Cap Up Percent,umbs_only
+,Initial Step Fixed-Rate Period,Initial Step Fixed-Rate Period,umbs_only
+,Interest Bearing Mortgage Loan Amount,Interest Bearing Mortgage Loan Amount,umbs_only
+,Interest Only First Principal and Interest Payment Date,Interest Only First Principal and Interest Payment Date,umbs_only
+,Interest Only Loan Indicator,Interest Only Loan Indicator,umbs_only
+,Interest Rate Adjustment Frequency,Interest Rate Adjustment Frequency,umbs_only
+,Interest Rate Lookback,Interest Rate Lookback,umbs_only
+,Interest Rate Rounding Method,Interest Rate Rounding Method,umbs_only
+,Interest Rate Rounding Method Percent,Interest Rate Rounding Method Percent,umbs_only
+,Interest Rate Step Indicator,Interest Rate Step Indicator,umbs_only
+,Issuance Interest Rate,Issuance Interest Rate,umbs_only
+,Issuance Investor Loan UPB,Issuance Investor Loan UPB,umbs_only
+,Issuance Net Interest Rate,Issuance Net Interest Rate,umbs_only
+,Life Ceiling Interest Rate,Life Ceiling Interest Rate,umbs_only
+,Life Ceiling Net Interest Rate,Life Ceiling Net Interest Rate,umbs_only
+,Life Floor Interest Rate,Life Floor Interest Rate,umbs_only
+,Life Floor Net Interest Rate,Life Floor Net Interest Rate,umbs_only
+,Loan Age,Loan Age,umbs_only
+,Loan Age As Of Modification,Loan Age As Of Modification,umbs_only
+,Loan Correction Indicator,Loan Correction Indicator,umbs_only
+,Loan Identifier,Loan Sequence Number,umbs_only
+,Loan Participation Percent,Loan Participation Percent,umbs_only
+,Loan Performance History,Loan Performance History,umbs_only
+,MBS PC Margin,MBS PC Margin,umbs_only
+,Modification Program,Modification Program,umbs_only
+,Modification Type,Modification Type,umbs_only
+,Months to Amortization,Months to Amortization,umbs_only
+,Months to Next Interest Rate Adjustment Date,Months to Next Interest Rate Adjustment Date,umbs_only
+,Months to Next Step Rate Adjustment Date,Months to Next Step Rate Adjustment Date,umbs_only
+,Mortgage Loan Amount,Mortgage Loan Amount,umbs_only
+,Mortgage Margin,Mortgage Margin,umbs_only
+,Next Interest Rate Adjustment Date,Next Interest Rate Adjustment Date,umbs_only
+,Next Step Rate,Next Step Rate,umbs_only
+,Next Step Rate Adjustment Date,Next Step Rate Adjustment Date,umbs_only
+,Number of Alternative Delinquency Resolutions,Number of Alternative Delinquency Resolutions,umbs_only
+,Number of Modifications,Number of Modifications,umbs_only
+,Number of Remaining Steps,Number of Remaining Steps,umbs_only
+,Original Deferred Amount,Original Deferred Amount,umbs_only
+,Origination Amortization Type,Origination Amortization Type,umbs_only
+,Origination Channel,Origination Channel,umbs_only
+,Origination Combined Loan-To-Value (CLTV),Origination Combined Loan-To-Value (CLTV),umbs_only
+,Origination Debt-To-Income Ratio,Origination Debt-To-Income Ratio,umbs_only
+,Origination First Payment Date,Origination First Payment Date,umbs_only
+,Origination Interest Only Loan Indicator,Origination Interest Only Loan Indicator,umbs_only
+,Origination Interest Rate,Origination Interest Rate,umbs_only
+,Origination Loan Purpose,Origination Loan Purpose,umbs_only
+,Origination Loan Term,Origination Loan Term,umbs_only
+,Origination Loan-To-Value (LTV),Origination Loan-To-Value (LTV),umbs_only
+,Origination Maturity Date,Origination Maturity Date,umbs_only
+,Origination Mortgage Loan Amount,Origination Mortgage Loan Amount,umbs_only
+,Origination Occupancy Status,Origination Occupancy Status,umbs_only
+,Periodic Interest Rate Cap Down Percent,Periodic Interest Rate Cap Down Percent,umbs_only
+,Periodic Interest Rate Cap Up Percent,Periodic Interest Rate Cap Up Percent,umbs_only
+,Periodic Step Cap Up Percent,Periodic Step Cap Up Percent,umbs_only
+,Prefix,Prefix,umbs_only
+,Prepayment Penalty Indicator,Prepayment Penalty Indicator,umbs_only
+,Prepayment Penalty Total Term,Prepayment Penalty Total Term,umbs_only
+,Remaining Months to Maturity,Remaining Months to Maturity,umbs_only
+,Security Identifier,Security Identifier,umbs_only
+,Seller City,Seller City,umbs_only
+,Seller State,Seller State,umbs_only
+,Servicer City,Servicer City,umbs_only
+,Servicer State,Servicer State,umbs_only
+,Special Eligibility Program,Special Eligibility Program,umbs_only
+,Step Rate Adjustment Frequency,Step Rate Adjustment Frequency,umbs_only
+,Terminal Step Date,Terminal Step Date,umbs_only
+,Terminal Step Rate,Terminal Step Rate,umbs_only
+,Total Capitalized Amount,Total Capitalized Amount,umbs_only
+,Total Deferral Amount,Total Deferral Amount,umbs_only
+,Total Number of Steps,Total Number of Steps,umbs_only
+Amortization Type (Formerly Product Type),Amortization Type,Amortization Type,ambiguous
+Credit Score,Borrower Credit Score,Credit Score 1,ambiguous
+Credit Score,Origination Credit Score,,ambiguous
+Credit Score,Updated Credit Score,,ambiguous
+Mortgage Insurance Percentage (MI %),Mortgage Insurance Percent,Mortgage Insurance Percentage,ambiguous
+Original Combined Loan-to-Value (CLTV),Combined Loan-To-Value (CLTV),Combined Loan-To-Value,ambiguous
+Original Debt-to-Income (DTI) Ratio,Debt-To-Income (DTI),Debt-To-Income,ambiguous
+Original Loan Term,Loan Term,Loan Term,ambiguous
+Original Loan-to-Value (LTV),Loan-To-Value (LTV),Loan-To-Value,ambiguous

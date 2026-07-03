@@ -1,0 +1,148 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mortgage-data-manager"
+version = "0.1.0"
+description = "Unified data manager for mortgage market data (HMDA, FHA, MBS, financial institutions) with matching workflows"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    {name = "Jonathan Becker", email = "jonathan.becker1994@gmail.com"}
+]
+license = {text = "MIT"}
+
+# Core dependencies shared across all subpackages
+dependencies = [
+    "polars>=1.26.0",
+    "pandas>=2.2.0",
+    "pyarrow>=19.0.0",
+    "python-decouple>=3.8",
+    "pyyaml>=6.0.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+    "lxml>=6.0.0",
+]
+
+[project.optional-dependencies]
+# Subpackage-specific dependencies
+hmda = [
+    "selenium>=4.32.0",
+    "webdriver-manager>=4.0.2",
+    "scipy>=1.15.0",
+]
+fha = [
+    "fastexcel>=0.0.1",
+    "openpyxl>=3.1.5",
+    "addfips>=0.4.0",
+    "networkx>=3.3",
+    "matplotlib>=3.10.0",
+    "plotly>=6.3.0",
+    "kaleido>=1.0.0",
+]
+mbs = [
+    "pymupdf>=1.23.0",
+    "openpyxl>=3.1.0",
+    "python-dateutil>=2.8.0",
+]
+matching = [
+    "addfips>=0.4.0",
+    "numpy>=1.26.0",
+]
+hud = []
+hud_mf = [
+    "fastexcel>=0.0.1",
+]
+analytics = [
+    "numpy>=1.26.0",
+    "scikit-learn>=1.4.0",
+    "statsmodels>=0.14.0",
+    "patsy>=0.5.6",
+    "xgboost>=2.0.0",
+    "fredapi>=0.5.2",
+    "seaborn>=0.13.0",
+    "matplotlib>=3.10.0",
+]
+
+# Convenience groups
+all = [
+    "mortgage-data-manager[hmda,fha,mbs,matching,hud,hud_mf,analytics]"
+]
+dev = [
+    "ruff>=0.11.10",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ipython>=8.0.0",
+    "jupyter>=1.0.0",
+    "mypy>=1.0.0",
+    "types-requests",
+    "types-python-dateutil",
+    "types-PyYAML",
+]
+
+[project.scripts]
+# Single entry point — per-module CLIs are reached as `mortgage-data <module>`.
+# (Standalone per-module scripts were removed 2026-06-07; each module still
+# exposes cli_main, so `python -m`-style access and re-adding a script remain trivial.)
+mortgage-data = "mortgage_data_manager.cli.main:cli_main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mortgage_data_manager"]
+
+# Ship reference data (GNMA layouts, FHFA dictionaries, census crosswalk) into the wheel
+# at mortgage_data_manager/_schemas/ so an installed package can run FHFA/GNMA builds.
+# A custom build hook copies every NON-PDF file from schemas/ (PDFs are source docs,
+# left out to keep the wheel lean). See hatch_build.py and core/config._default_schemas_dir.
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "D"]
+ignore = [
+    "E501", # Line too long (handled by formatter)
+    "D1",   # Missing docstrings — coverage is a judgment call, not a gate
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Statistical-modeling modules use the conventional uppercase `X` for the
+# feature/design matrix (statsmodels/scikit-learn/XGBoost idiom). Allow it here
+# rather than rename to a non-idiomatic lowercase.
+"src/mortgage_data_manager/analytics/estimated.py" = ["N803", "N806"]
+"src/mortgage_data_manager/analytics/features.py" = ["N803", "N806"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+# Coverage is opt-in: run `pytest --cov` when you want a report.
+# No fail_under gate — coverage is informational, not a CI requirement.
+[tool.coverage.run]
+source = ["src/mortgage_data_manager"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true

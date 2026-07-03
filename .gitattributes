@@ -1,0 +1,4 @@
+# Git LFS tracking for crosswalk parquet files
+crosswalk/mbs_umbs/*.parquet filter=lfs diff=lfs merge=lfs -text
+crosswalk/fhfa_hmda/*.parquet filter=lfs diff=lfs merge=lfs -text
+crosswalk/mbs_fhfa/*.parquet filter=lfs diff=lfs merge=lfs -text

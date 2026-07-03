@@ -1,0 +1,247 @@
+file_type,field_name,standardized_name
+sf_a,Enterprise Flag,enterprise
+sf_a,Record Number,record_num_mf_ctf
+sf_a,Metropolitan Statistical Area (MSA) Code,cbsa_metro_code
+sf_a,2000 Census Tract - Percent Minority,census_tract_percent_minority
+sf_a,Tract Income Ratio,tract_income_ratio
+sf_a,Borrower Income Ratio,income_ratio
+sf_a,Loan-to-Value Ratio (LTV) at Origination,loan-to-value_ratio_ltv_at_origination
+sf_a,Purpose of Loan,purpose_ctf
+sf_a,Federal Guarantee,fed_guarantee_ctf
+sf_a,"Borrower Race or National Origin, and Ethnicity",race_ethnicity_borr
+sf_a,"Co-Borrower Race or National Origin, and Ethnicity",race_ethnicity_coborr
+sf_a,Borrower Sex,sex_borr
+sf_a,Co-Borrower Sex,sex_coborr
+sf_a,Number of Units,units_num_cat
+sf_a,Unit - Affordability Category,afford_sf
+sf_a,Underserved Areas Indicator,i_underserved_areas
+sf_a,year,year
+sf_a,2010 Census Tract - Percent Minority,census_tract_percent_minority
+sf_a,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",ltv
+sf_a,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",loan-to-value_ratio_ltv_at_origination_or_combined_ltv_where_ava
+sf_a,2020 Census Tract - Percent Minority,tract_minority_pct
+sf_b,Enterprise Flag,enterprise
+sf_b,Record Number,record_num_mf_ctf
+sf_b,Metropolitan Statistical Area (MSA) Code,cbsa_metro_code
+sf_b,2020 Census Tract - Percent Minority,tract_minority_pct
+sf_b,Tract Income Ratio,tract_income_ratio
+sf_b,Borrower Income Ratio or Rent Affordability Category,income_cat
+sf_b,Date of Mortgage Note,same_year_acq
+sf_b,Purpose of Loan,purpose_ctf
+sf_b,Federal Guarantee,fed_guarantee_ctf
+sf_b,Type of Seller Institution,seller_type_mf_ctf
+sf_b,"Borrower Race or National Origin, and Ethnicity",race_ethnicity_borr
+sf_b,"Co-Borrower Race or National Origin, and Ethnicity",race_ethnicity_coborr
+sf_b,Borrower Sex,sex_borr
+sf_b,Co-Borrower Sex,sex_coborr
+sf_b,Occupancy Code,occupancy_sf_ctf
+sf_b,Number of Units,units_num_cat
+sf_b,Unit - Owner Occupied,unit_own_occ
+sf_b,Unit - Affordability Category,afford_sf
+sf_b,year,year
+sf_b,2010 Census Tract - Percent Minority,census_tract_percent_minority
+sf_b,2000 Census Tract - Percent Minority,census_tract_percent_minority
+sf_b,Underserved Areas Indicator,i_underserved_areas
+sf_c,Enterprise Flag,enterprise
+sf_c,Record Number,record_num_mf_ctf
+sf_c,US Postal State Code,state_fips
+sf_c,Metropolitan Statistical Area (MSA) Code,cbsa_metro_code
+sf_c,County - 2010 Census,county_2010_census
+sf_c,Census Tract - 2010 Census,census_tract_2010_census
+sf_c,2010 Census Tract - Percent Minority,census_tract_percent_minority
+sf_c,2010 Census Tract - Median Income,census_tract_median_income
+sf_c,Local Area Median Income,ami_local
+sf_c,Tract Income Ratio,tract_income_ratio
+sf_c,Borrower’s (or Borrowers’) Annual Income,income_annual
+sf_c,Area Median Family Income (2015),area_median_family_income_2015
+sf_c,Borrower Income Ratio,income_ratio
+sf_c,Acquisition Unpaid Principal Balance (UPB),upb_acq
+sf_c,Purpose of Loan,purpose_ctf
+sf_c,Federal Guarantee,fed_guarantee_ctf
+sf_c,Number of Borrowers,borr_num
+sf_c,First-Time Home Buyer,fthb
+sf_c,Borrower Race or National Origin 1,borrower_race_or_national_origin_1
+sf_c,Borrower Race or National Origin 2,borrower_race_or_national_origin_2
+sf_c,Borrower Race or National Origin 3,borrower_race_or_national_origin_3
+sf_c,Borrower Race or National Origin 4,borrower_race_or_national_origin_4
+sf_c,Borrower Race or National Origin 5,borrower_race_or_national_origin_5
+sf_c,Borrower Ethnicity,ethnicity_borr
+sf_c,Co-Borrower Race or National Origin 1,"race1_coborr, race2_coborr, race3_coborr, race4_coborr, race5_coborr"
+sf_c,Co-Borrower Race or National Origin 2,"race1_coborr, race2_coborr, race3_coborr, race4_coborr, race5_coborr"
+sf_c,Co-Borrower Race or National Origin 3,"race1_coborr, race2_coborr, race3_coborr, race4_coborr, race5_coborr"
+sf_c,Co-Borrower Race or National Origin 4,"race1_coborr, race2_coborr, race3_coborr, race4_coborr, race5_coborr"
+sf_c,Co-Borrower Race or National Origin 5,"race1_coborr, race2_coborr, race3_coborr, race4_coborr, race5_coborr"
+sf_c,Co-Borrower Ethnicity,ethnicity_coborr
+sf_c,Borrower Sex,sex_borr
+sf_c,Co-Borrower Sex,sex_coborr
+sf_c,Age of Borrower,age_borr_cat
+sf_c,Age of Co-Borrower,age_coborr_cat
+sf_c,Occupancy Code,occupancy_sf_ctf
+sf_c,Rate Spread,rate_spread
+sf_c,HOEPA Status,hoepa
+sf_c,Property Type,property_type
+sf_c,Lien Status,lien_status
+sf_c,year,year
+sf_c,County - 2020 Census,county_fips
+sf_c,Census Tract - 2020 Census,tract_2020
+sf_c,2020 Census Tract - Percent Minority,tract_minority_pct
+sf_c,2020 Census Tract - Median Income,tract_income_med
+sf_c,Area Median Family Income (2023),area_median_family_income_2023
+sf_c,Borrower Age 62 or older,age_borr_62_cat
+sf_c,Co-Borrower Age 62 or older,age_coborr_62_cat
+sf_c,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",ltv
+sf_c,Date of Mortgage Note,same_year_acq
+sf_c,Term of Mortgage at Origination,term_orig
+sf_c,Number of Units,units_num_cat
+sf_c,Interest Rate at Origination,rate_orig
+sf_c,Note Amount,upb_orig
+sf_c,Preapproval,preapproval
+sf_c,Application Channel,channel_apply
+sf_c,Automated Underwriting System (AUS) Name,aus
+sf_c,Credit Score Model - Borrower,score_borr_model
+sf_c,Credit Score Model - Co-Borrower,score_coborr_model
+sf_c,Debt-to-Income (DTI) Ratio,dti_cat
+sf_c,Discount Points,points
+sf_c,Introductory Rate Period,period_intro_rate
+sf_c,Manufactured Home - Land Property Interest,mh_land_interest
+sf_c,Property Value,property_value
+sf_c,Rural Census Tract,tract_rural
+sf_c,Lower Mississippi Delta County,county_lower_ms_delta
+sf_c,Middle Appalachia County,county_mid_appalachia
+sf_c,Persistent Poverty County,county_persistent_poverty
+sf_c,Area of Concentrated Poverty,area_concentrated_poverty
+sf_c,High Opportunity Area,area_high_opp
+sf_c,Colonias Tract,tract_colonias
+sf_c,Area Median Family Income (2022),area_median_family_income_2022
+sf_c,Area Median Family Income (2014),area_median_family_income_2014
+sf_c,Area Median Family Income (2020),area_median_family_income_2020
+sf_c,Qualified Opportunity Zone (QOZ) Census Tract,qualified_opportunity_zone_qoz_census_tract
+sf_c,Area Median Family Income (2016),area_median_family_income_2016
+sf_c,Area Median Family Income (2017),area_median_family_income_2017
+sf_c,Area Median Family Income (2021),area_median_family_income_2021
+sf_c,Area Median Family Income (2024),ami_hud
+sf_c,Borrower Race 1,"race1_borr, race2_borr, race3_borr, race4_borr, race5_borr"
+sf_c,Borrower Race 2,"race1_borr, race2_borr, race3_borr, race4_borr, race5_borr"
+sf_c,Borrower Race 3,"race1_borr, race2_borr, race3_borr, race4_borr, race5_borr"
+sf_c,Borrower Race 4,"race1_borr, race2_borr, race3_borr, race4_borr, race5_borr"
+sf_c,Borrower Race 5,"race1_borr, race2_borr, race3_borr, race4_borr, race5_borr"
+sf_c,Area Median Family Income (2012),area_median_family_income_2012
+sf_c,Area Median Family Income (2013),area_median_family_income_2013
+sf_c,County - 2000 Census,county_2000_census
+sf_c,Census Tract - 2000 Census,census_tract_2000_census
+sf_c,2000 Census Tract - Percent Minority,census_tract_percent_minority
+sf_c,2000 Census Tract - Median Income,census_tract_median_income
+sf_c,2000 Local Area Median Income,local_area_median_income
+sf_c,Area Median Family Income (2011),area_median_family_income_2011
+sf_c,Area Median Family Income (2018),area_median_family_income_2018
+sf_c,Area Median Family Income (2008),area_median_family_income_2008
+sf_c,Underserved Areas Indicator,i_underserved_areas
+sf_c,Area Median Family Income (2009),area_median_family_income_2009
+sf_c,Area Median Family Income (2019),area_median_family_income_2019
+sf_c,Area Median Family Income (2010),area_median_family_income_2010
+sf_d,Enterprise Flag,enterprise
+sf_d,Record Number,record_num_mf_ctf
+sf_d,2010 Census Tract - Percent Minority,census_tract_percent_minority
+sf_d,Tract Income Ratio,tract_income_ratio
+sf_d,Borrower Income Ratio,income_ratio
+sf_d,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV where available",loan-to-value_ratio_ltv_at_origination_or_combined_ltv_where_ava
+sf_d,Purpose of Loan,purpose_ctf
+sf_d,Federal Guarantee,fed_guarantee_ctf
+sf_d,Credit Score,score_cat
+sf_d,Product Type,product
+sf_d,Purchase Price,purchase_price
+sf_d,Interest Rate at Origination,rate_orig
+sf_d,Term of Mortgage at Origination,term_orig
+sf_d,Amortization Term,term_amort_cat
+sf_d,Portfolio Flag,portfolio
+sf_d,Percent Repurchased,repurchased_pct
+sf_d,year,year
+sf_d,2020 Census Tract - Percent Minority,tract_minority_pct
+sf_d,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",ltv
+sf_d,2000 Census Tract - Percent Minority,census_tract_percent_minority
+mf_property_b,Enterprise Flag,enterprise
+mf_property_b,Record Number,record_num_mf_ctf
+mf_property_b,2020 Census Tract - Percent Minority,tract_minority_pct
+mf_property_b,Tract Income Ratio,tract_income_ratio
+mf_property_b,Affordability Category,afford_mf
+mf_property_b,Date of Mortgage Note,same_year_acq
+mf_property_b,Purpose of Loan,purpose_ctf
+mf_property_b,Type of Seller Institution,seller_type_mf_ctf
+mf_property_b,Federal Guarantee,fed_guarantee_ctf
+mf_property_b,Total Number of Units,units_num_cat
+mf_property_b,year,year
+mf_property_b,2010 Census Tract - Percent Minority,census_tract_percent_minority
+mf_property_b,2000 Census Tract - Percent Minority,census_tract_percent_minority
+mf_property_b,Underserved Areas Indicator,i_underserved_areas
+mf_unit_b,Enterprise Flag,enterprise
+mf_unit_b,Record Number,record_num_mf_ctf
+mf_unit_b,Unit Type XX-Number of Bedrooms,type_bed_num
+mf_unit_b,Unit Type XX-Number of Units,type_units_num
+mf_unit_b,Unit Type XX-Affordability Level,type_afford_cat
+mf_unit_b,year,year
+mf_unit_b,Unit Type XX-Tenant Income Indicator,type_tenant_inc_basis
+mf_c,Enterprise Flag,enterprise
+mf_c,Record Number,record_num_mf_ctf
+mf_c,US Postal State Code,state_fips
+mf_c,Metropolitan Statistical Area (MSA) Code,cbsa_metro_code
+mf_c,County - 2020 Census,county_fips
+mf_c,Census Tract - 2020 Census,tract_2020
+mf_c,2020 Census Tract - Percent Minority,tract_minority_pct
+mf_c,2020 Census Tract - Median Income,tract_income_med
+mf_c,Local Area Median Income,ami_local
+mf_c,Tract Income Ratio,tract_income_ratio
+mf_c,Area Median Family Income (2024),ami_hud
+mf_c,Acquisition Unpaid Principal Balance (UPB),upb_acq
+mf_c,Purpose of Loan,purpose_ctf
+mf_c,Type of Seller Institution,seller_type_mf_ctf
+mf_c,Federal Guarantee,fed_guarantee_ctf
+mf_c,Lien Status,lien_status
+mf_c,"Loan-to-Value Ratio (LTV) at Origination, or Combined LTV (CLTV) where available",ltv
+mf_c,Date of Mortgage Note,same_year_acq
+mf_c,Term of Mortgage at Origination,term_orig
+mf_c,Number of Units,units_num_cat
+mf_c,Interest Rate at Origination,rate_orig
+mf_c,Note Amount,upb_orig
+mf_c,Property Value,property_value
+mf_c,Prepayment Penalty Term,term_prepay_penalty
+mf_c,Non-fully Amortizing Feature - Balloon,balloon
+mf_c,Non-fully Amortizing Feature - Interest-only,io
+mf_c,Non-fully Amortizing Feature - Negative Amortization,neg_am
+mf_c,Non-fully Amortizing Feature - Other,non_amort_other
+mf_c,Multifamily Affordable Units - Percent,afford_units_pct
+mf_c,Construction Method,construct_method
+mf_c,Rural Census Tract,tract_rural
+mf_c,Lower Mississippi Delta County,county_lower_ms_delta
+mf_c,Middle Appalachia County,county_mid_appalachia
+mf_c,Persistent Poverty County,county_persistent_poverty
+mf_c,Area of Concentrated Poverty,area_concentrated_poverty
+mf_c,High Opportunity Area,area_high_opp
+mf_c,Colonias Tract,tract_colonias
+mf_c,year,year
+mf_c,County - 2010 Census,county_2010_census
+mf_c,Census Tract - 2010 Census,census_tract_2010_census
+mf_c,2010 Census Tract - Percent Minority,census_tract_percent_minority
+mf_c,2010 Census Tract - Median Income,census_tract_median_income
+mf_c,Area Median Family Income (2012),area_median_family_income_2012
+mf_c,Area Median Family Income (2013),area_median_family_income_2013
+mf_c,County - 2000 Census,county_2000_census
+mf_c,Census Tract - 2000 Census,census_tract_2000_census
+mf_c,2000 Census Tract - Percent Minority,census_tract_percent_minority
+mf_c,2000 Census Tract - Median Income,census_tract_median_income
+mf_c,2000 Local Area Median Income,local_area_median_income
+mf_c,Area Median Family Income (2011),area_median_family_income_2011
+mf_c,Area Median Family Income (2018),area_median_family_income_2018
+mf_c,Qualified Opportunity Zone (QOZ) Census Tract,qualified_opportunity_zone_qoz_census_tract
+mf_c,Area Median Family Income (2008),area_median_family_income_2008
+mf_c,Underserved Areas Indicator,i_underserved_areas
+mf_c,Area Median Family Income (2009),area_median_family_income_2009
+mf_c,Area Median Family Income (2019),area_median_family_income_2019
+mf_c,Area Median Family Income (2010),area_median_family_income_2010
+mf_c,Area Median Family Income (2015),area_median_family_income_2015
+mf_c,Area Median Family Income (2023),area_median_family_income_2023
+mf_c,Area Median Family Income (2022),area_median_family_income_2022
+mf_c,Area Median Family Income (2014),area_median_family_income_2014
+mf_c,Area Median Family Income (2020),area_median_family_income_2020
+mf_c,Area Median Family Income (2016),area_median_family_income_2016
+mf_c,Area Median Family Income (2017),area_median_family_income_2017
+mf_c,Area Median Family Income (2021),area_median_family_income_2021

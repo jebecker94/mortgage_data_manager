@@ -1,0 +1,18 @@
+Item,Data Element,Type,Max Length,Format,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+01,Record Type = HR,Character,2,,File Header Record,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,HR,,
+02,Reporting Period,Numeric,6,YYYYMM,The monthly reporting period for the data in the file.,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,HR,,
+03,Create Date,Date,8,YYYYMMDD,The date that the file is produced.,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,HR,,
+01,Record Type = RS,Character,2,,REMIC Trust Social Detail Record,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,RS,,
+02,REMIC Trust,Character,13,"GNMA-
+YYYY-NNN",REMIC Trust Identifier,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,RS,,
+03,REMIC Trust Settlement Date,Date,8,YYYYMMDD,The date that the Trust was settled,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,RS,,
+04,Social Indicator,Character,1,,"The code to indicate if all collateral in the REMIC Trust contains a
+Social Language insert in its collateral pool prospectus.
+Values are:
+Y = REMIC Trust is identified as Social (all REMIC Trust collateral is
+Social)",REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,RS,,
+01,Record Type = TR,Character,2,,File Trailer Record,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,TR,,
+02,Reporting Period,Numeric,6,YYYYMM,The monthly reporting period for the data in the file.,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,TR,,
+03,File Create Date,Date,8,YYYYMMDD,The date that the file is produced.,REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,TR,,
+04,Detail Record Count,Numeric,8,,"Control total of the total number of records with Record Type =
+“RS” in the file.",REMICSocial_REMIC TRUST SOCIAL FILE Layout (Apr 2026 - Present).pdf,2026-04-01,2099-12-31,TR,,

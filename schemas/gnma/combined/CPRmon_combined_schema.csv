@@ -1,0 +1,41 @@
+Item,Data Element,Type,Max Length,Format,Definition,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+CH-01,Record Type = CH,Character,2,,File Header Record,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CH,,
+CH-02,Report Period,Numeric,6,YYYYMM,"Reporting Period of the data in the file (the “as of”
+month and year)",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CH,,
+CH-03,Date File Generated,Numeric,8,YYYYMMDD,The date the file was created,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CH,,
+CP-01,Record Type = CP,Character,2,,CPR Record,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-02,CUSIP Number,Character,9,,"The CUSIP is a unique identification number
+permanently assigned by the Committee on Uniform
+Securities Identification Procedures (CUSIP) to each
+publicly traded security at the time of issuance.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-03,Pool ID,Character,6,,The Pool identifier assigned by Ginnie Mae at pooling.,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-04,Pool Indicator,Character,1,,"Identifies the Issue Type of the pool. Values are X, C, or
+M",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-05,Pool Type,Character,2,,"Two-character pool type for the pool (see Ginnie Mae
+Guide, Chapter 1)",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-06,Pool Issue Date,Numeric,8,YYYYMMDD,The date the pool was issued,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-07,Conditional Prepayment Rate (CPR),Numeric,5,3.1,"The current month CPR. The rate at which the pool is
+paying off prematurely, measured on a monthly basis.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-08,3-Month CPR Rate,Numeric,5,3.1,"The average of the CPR Rates of the current month
+and the two previous months.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-09,Remaining Security RPB,Numeric,16,13.2,"The Remaining Principal Balance of the Security as of
+the end of the Reporting Period; (based on a
+computation of scheduled principal).",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-10,RPB Factor,Numeric,10,1.8,"The decimal value of the Security’s Remaining Principal
+Balance divided by the Original Aggregate Amount.
+The factor is 1 at issuance, and zero in the period of
+final payment.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-11,WA Interest Rate (WAC),Numeric,6,2.3,Weighted Average Interest Rate (Coupon) of loans in the pool. This is the gross WA Interest Rate (not the Security Rate).,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-12,WA Remaining Months to Maturity (WARM),Numeric,3,,"Weighted Average Remaining Maturity (remaining
+months to pay off the loans) for the loans in the pool.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-13,WA Loan Age (WALA),Numeric,3,,"Weighted Average Loan Age (age of loans in months
+from the first scheduled payment date) for the loans in
+the pool.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-14,WA Original Loan Term (WAOLT),Numeric,3,,"Weighted Average Original Loan Term (original term of
+loans in months) for the loans in the pool.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CP-15,As of Date,Numeric,6,CCYYMM,Reporting period for the data.,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,CP,,
+CT-01,Record Type = TT,Character,2,,File Trailer Record,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,TT,,
+CT-02,Report Period,Numeric,6,YYYYMM,Reporting Period of the data in the file,CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,TT,,
+CT-03,Pool Count,Numeric,9,,"The number of pools/CP Records contained in the
+file. This count does not include the “CH” or “CT”
+records.",CPRmon_CONDITIONAL PREPAYMENT RATE MONTHLY Layout (Aug 2025 - Present).pdf,2025-08-01,2099-12-31,TT,,

@@ -1,0 +1,23 @@
+mbs_column,umbs_column,standardized_name,match_type
+Loan Identifier,Loan Identifier,Loan Sequence Number,exact
+Channel,Channel,Channel,exact
+First Payment Date,First Payment Date,First Payment Date,exact
+Loan Purpose ,Loan Purpose,Loan Purpose,exact
+Property State,Property State,Property State,exact
+Original Interest Rate,Original Interest Rate,Original Interest Rate,exact
+Number of Borrowers,Number of Borrowers,Number of Borrowers,exact
+Number of Units,Number of Units,Number of Units,exact
+First Time Home Buyer Indicator,First Time Home Buyer Indicator,First Time Home Buyer Indicator,exact
+Property Type,Property Type,Property Type,exact
+Occupancy Status,Occupancy Status,Occupancy Status,exact
+Seller Name,Seller Name,Seller Name,exact
+Servicer Name,Servicer Name,Servicer Name,exact
+Original UPB,Mortgage Loan Amount,Mortgage Loan Amount,ambiguous
+Original Loan Term,Loan Term,Loan Term,ambiguous
+Original Loan to Value Ratio (LTV),Loan-To-Value (LTV),Loan-To-Value,ambiguous
+Original Combined Loan to Value Ratio (CLTV),Combined Loan-To-Value (CLTV),Combined Loan-To-Value,ambiguous
+Debt-To-Income (DTI),Debt-To-Income (DTI),Debt-To-Income,ambiguous
+Borrower Credit Score at Origination,Borrower Credit Score,Credit Score 1,ambiguous
+Co-Borrower Credit Score at Origination,,Credit Score 2,mbs_only
+Mortgage Insurance Percentage,Mortgage Insurance Percent,Mortgage Insurance Percentage,ambiguous
+Amortization Type,Amortization Type,Amortization Type,exact

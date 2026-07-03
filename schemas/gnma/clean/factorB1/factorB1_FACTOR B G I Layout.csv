@@ -1,0 +1,15 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+1,Pool Number,1,6,Character,6,X(6),factorB1_FACTOR B G I Layout.pdf,,,string,String
+2,Pool Indicator,7,7,Character,1,X,factorB1_FACTOR B G I Layout.pdf,,,string,String
+3,Issuer Number,8,11,Numeric,4,9(4),factorB1_FACTOR B G I Layout.pdf,,,Int64,Int64
+4,Filler,12,12,Character,1,X,factorB1_FACTOR B G I Layout.pdf,,,string,String
+5,Issuer Name,13,72,Character,60,X(60),factorB1_FACTOR B G I Layout.pdf,,,string,String
+6,Original Aggregate Amount,73,87,Numeric,15,9(13)v9(2),factorB1_FACTOR B G I Layout.pdf,,,float64,Float64
+7,Remaining Security RPB,88,102,Numeric,15,9(13)v9(2),factorB1_FACTOR B G I Layout.pdf,,,float64,Float64
+8,RPB Factor,103,111,Numeric,9,9(1)v9(8),factorB1_FACTOR B G I Layout.pdf,,,float64,Float64
+9,Pool Interest Rate,112,116,Numeric,5,9(2)v9(3),factorB1_FACTOR B G I Layout.pdf,,,float64,Float64
+10,Pool Type,117,118,Character,2,X(2),factorB1_FACTOR B G I Layout.pdf,,,string,String
+11,Pool Issue Date (MMDDYY),119,124,Numeric,6,9(6),factorB1_FACTOR B G I Layout.pdf,,,Int64,Int64
+12,Pool Maturity Date (MMDDYY),125,130,Numeric,6,9(6),factorB1_FACTOR B G I Layout.pdf,,,Int64,Int64
+13,Filler,131,162,Character,32,X(32),factorB1_FACTOR B G I Layout.pdf,,,string,String
+14,CUSIP Number,163,171,Character,9,X(9),factorB1_FACTOR B G I Layout.pdf,,,string,String

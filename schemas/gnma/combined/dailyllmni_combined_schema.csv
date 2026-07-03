@@ -1,0 +1,355 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,Record_Type,pandas_dtype,polars_dtype
+1,Record Type H = File Header,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,H,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,H,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,H,Int64,Int64
+4,Correction Flag (If a replacement of previous file),27,27,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,H,string,String
+5,As of Date (CCYYMM),28,33,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,H,Int64,Int64
+6,Date File Generated (CCYYMMDD),34,41,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,H,Int64,Int64
+1,Record Type P=Pool Information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,P,Int64,Int64
+1,Record Type L=Loan Level Details,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,string,String
+2,Pool ID,2,7,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,string,String
+3,Disclosure Sequence Number (A sequence number unique to loan level ),8,17,Numeric,10,10(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+4,Issuer ID (including for loan packages in MIP pool),18,21,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+5,"Agency (Agency Loan Type FHA, VA, RD, NA)",22,22,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,string,String
+6,Loan Purpose,23,23,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+7,Refinance Type,24,24,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+8,First Payment Date (First Scheduled Installment),25,32,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+9,Maturity Date of Loan (Last Scheduled Installment),33,40,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+10,Loan Interest Rate (current interest rate),41,45,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+11,Original Principal Balance (OPB at pool issuance),46,56,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+12,UPB at Issuance (UPB of the loan at pool issuance),57,67,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+13,Unpaid Principal Balance (UPB of the loan),68,78,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+14,"Original Loan Term, in Months",79,81,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+15,"Loan Age, in Months",82,84,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+16,"Remaining Loan Term (Remaining Maturity), in Months",85,87,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+17,"Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",88,88,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+18,"Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid )",89,89,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+19,Loan Gross Margin (ARM Loans only),90,93,Numeric,4,9v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+20,Loan To Value (LTV),94,98,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+21,Combined LTV (CLTV),99,103,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+22,Total Debt Expense Ratio Percent,104,108,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+23,Credit Score,109,111,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+24,Down Payment Assistance (Yes or No),112,112,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,string,String
+25,Buy Down Status (Loan Status) (Yes or No),113,113,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,string,String
+26,Upfront MIP (insurance premium rate),114,118,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+27,Annual MIP (insurance premium rate),119,123,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,float64,Float64
+28,Number of Borrowers,124,124,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+29,First Time Home Buyer (Yes or No),125,125,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,string,String
+30,Property Type (Number of Living Units),126,126,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+31,State (2 character State Code),127,128,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,string,String
+32,MSA,129,133,Numeric,5,9(5),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+33,Third-Party Origination Type,134,134,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,,
+34,As of Date (CCYYMM),135,140,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,L,Int64,Int64
+1,Record Type T=Pool Trailer information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,Int64,Int64
+9,Loan Count for the Pool,38,44,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,T,Int64,Int64
+1,Record Type Z = File Trailer,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,Z,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,Z,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,Z,Int64,Int64
+4,Pool Count (Control Total),27,33,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,Z,Int64,Int64
+5,Loan Count (Control Total),34,42,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,Z,Int64,Int64
+6,"Total Record Count in File (All Record Types, Including H and Z records)",43,51,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,Z,Int64,Int64
+7,As of Date (CCYYMM),52,57,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.0 (Sep 2013 - Nov 2013).pdf,2013-09-01,2013-11-01,Z,Int64,Int64
+1,Record Type H = File Header,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,H,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,H,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,H,Int64,Int64
+4,Correction Flag (If a replacement of previous file),27,27,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,H,string,String
+5,As of Date (CCYYMM),28,33,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,H,Int64,Int64
+6,Date File Generated (CCYYMMDD),34,41,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,H,Int64,Int64
+1,Record Type P=Pool Information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,P,Int64,Int64
+1,Record Type L=Loan Level Details,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+2,Pool ID,2,7,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+3,Disclosure Sequence Number (A sequence number unique to loan level ),8,17,Numeric,10,10(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+4,Issuer ID (including for loan packages in MIP pool),18,21,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+5,"Agency (Agency Loan Type FHA, VA, RD, NA)",22,22,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+6,Loan Purpose,23,23,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+7,Refinance Type,24,24,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+8,First Payment Date (First Scheduled Installment),25,32,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+9,Maturity Date of Loan (Last Scheduled Installment),33,40,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+10,Loan Interest Rate (current interest rate),41,45,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+11,Original Principal Balance (OPB at pool issuance),46,56,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+12,UPB at Issuance (UPB of the loan at pool issuance),57,67,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+13,Unpaid Principal Balance (UPB of the loan),68,78,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+14,"Original Loan Term, in Months",79,81,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+15,"Loan Age, in Months",82,84,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+16,"Remaining Loan Term (Remaining Maturity), in Months",85,87,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+17,"Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",88,88,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+18,"Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid )",89,89,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+19,Loan Gross Margin (ARM Loans only),90,93,Numeric,4,9v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+20,Loan To Value (LTV),94,98,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+21,Combined LTV (CLTV),99,103,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+22,Total Debt Expense Ratio Percent,104,108,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+23,Credit Score,109,111,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+24,Down Payment Assistance (Yes or No),112,112,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+25,Buy Down Status (Loan Status) (Yes or No),113,113,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+26,Upfront MIP (insurance premium rate),114,118,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+27,Annual MIP (insurance premium rate),119,123,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,float64,Float64
+28,Number of Borrowers,124,124,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+29,First Time Home Buyer (Yes or No),125,125,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+30,Property Type (Number of Living Units),126,126,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+31,State (2 character State Code),127,128,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+32,MSA,129,133,Numeric,5,9(5),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+33,Third-Party Origination Type,134,134,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+34,Current Month Liquidation Flag (Yes or No),135,135,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,string,String
+35,Removal Reason,136,136,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,,
+36,As of Date (CCYYMM),137,142,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,L,Int64,Int64
+1,Record Type T=Pool Trailer information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,Int64,Int64
+9,Loan Count for the Pool,38,44,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,T,Int64,Int64
+1,Record Type Z = File Trailer,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,Z,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,Z,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,Z,Int64,Int64
+4,Pool Count (Control Total),27,33,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,Z,Int64,Int64
+5,Loan Count (Control Total),34,42,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,Z,Int64,Int64
+6,"Total Record Count in File (All Record Types, Including H and Z records)",43,51,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,Z,Int64,Int64
+7,As of Date (CCYYMM),52,57,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.5 (Dec 2013 - Mar 2015).pdf,2013-12-01,2015-03-01,Z,Int64,Int64
+1,Record Type H = File Header,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,H,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,H,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,H,Int64,Int64
+4,Correction Flag (If a replacement of previous file),27,27,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,H,string,String
+5,As of Date (CCYYMM),28,33,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,H,Int64,Int64
+6,Date File Generated (CCYYMMDD),34,41,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,H,Int64,Int64
+1,Record Type P = Pool Information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,P,Int64,Int64
+1,Record Type L = Loan Level Details,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+2,Pool ID,2,7,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+3,Disclosure Sequence Number (A sequence number unique to loan level ),8,17,Numeric,10,10(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+4,Issuer ID (including for loan packages in MIP pool),18,21,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+5,"Agency (Agency Loan Type FHA, VA, RD, NA)",22,22,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+6,Loan Purpose,23,23,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+7,Refinance Type,24,24,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+8,First Payment Date (First Scheduled Installment),25,32,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+9,Maturity Date of Loan (Last Scheduled Installment),33,40,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+10,Loan Interest Rate (current interest rate),41,45,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+11,Original Principal Balance (OPB at pool issuance),46,56,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+12,UPB at Issuance (UPB of the loan at pool issuance),57,67,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+13,Unpaid Principal Balance (UPB of the loan),68,78,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+14,"Original Loan Term, in Months",79,81,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+15,"Loan Age, in Months",82,84,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+16,"Remaining Loan Term (Remaining Maturity), in Months",85,87,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+17,"Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",88,88,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+18,"Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid )",89,89,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+19,Loan Gross Margin (ARM Loans only),90,93,Numeric,4,9v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+20,Loan To Value (LTV),94,98,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+21,Combined LTV (CLTV),99,103,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+22,Total Debt Expense Ratio Percent,104,108,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+23,Credit Score,109,111,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+24,Down Payment Assistance (Yes or No),112,112,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+25,Buy Down Status (Loan Status) (Yes or No),113,113,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+26,Upfront MIP (insurance premium rate),114,118,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+27,Annual MIP (insurance premium rate),119,123,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,float64,Float64
+28,Number of Borrowers,124,124,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+29,First Time Home Buyer (Yes or No),125,125,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+30,Property Type (Number of Living Units),126,126,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+31,State (2 character State Code),127,128,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+32,MSA,129,133,Numeric,5,9(5),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+33,Third-Party Origination Type,134,134,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+34,Current Month Liquidation Flag (Yes or No),135,135,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,string,String
+35,Removal Reason,136,136,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,,
+36,As of Date (CCYYMM),137,142,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+37,Loan Origination Date,143,150,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+38,Seller Issuer ID,151,154,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,L,Int64,Int64
+1,Record Type T = Pool Trailer information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,Int64,Int64
+9,Loan Count for the Pool,38,44,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,T,Int64,Int64
+1,Record Type Z = File Trailer,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,Z,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,Z,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,Z,Int64,Int64
+4,Pool Count (Control Total),27,33,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,Z,Int64,Int64
+5,Loan Count (Control Total),34,42,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,Z,Int64,Int64
+6,"Total Record Count in File (All Record Types, Including H and Z records)",43,51,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,Z,Int64,Int64
+7,As of Date (CCYYMM),52,57,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.6 (Apr 2015 - Nov 2017).pdf,2015-04-01,2017-11-01,Z,Int64,Int64
+1,Record Type H = File Header,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,H,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,H,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,H,Int64,Int64
+4,Correction Flag (If a replacement of previous file),27,27,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,H,string,String
+5,As of Date (CCYYMM),28,33,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,H,Int64,Int64
+6,Date File Generated (CCYYMMDD),34,41,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,H,Int64,Int64
+1,Record Type P = Pool Information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,P,Int64,Int64
+1,Record Type L = Loan Level Details,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+2,Pool ID,2,7,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+3,Disclosure Sequence Number (A sequence number unique to loan level ),8,17,Numeric,10,10(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+4,Issuer ID (including for loan packages in MIP pool),18,21,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+5,"Agency (Agency Loan Type FHA, VA, RD, NA)",22,22,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+6,Loan Purpose,23,23,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+7,Refinance Type,24,24,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+8,First Payment Date (First Scheduled Installment),25,32,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+9,Maturity Date of Loan (Last Scheduled Installment),33,40,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+10,Loan Interest Rate (current interest rate),41,45,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+11,Original Principal Balance (OPB at pool issuance),46,56,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+12,UPB at Issuance (UPB of the loan at pool issuance),57,67,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+13,Unpaid Principal Balance (UPB of the loan),68,78,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+14,"Original Loan Term, in Months",79,81,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+15,"Loan Age, in Months",82,84,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+16,"Remaining Loan Term (Remaining Maturity), in Months",85,87,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+17,"Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",88,88,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+18,"Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid)",89,89,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+19,Loan Gross Margin (ARM Loans only),90,93,Numeric,4,9v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+20,Loan To Value (LTV),94,98,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+21,Combined LTV (CLTV),99,103,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+22,Total Debt Expense Ratio Percent,104,108,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+23,Credit Score,109,111,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+24,Down Payment Assistance (Yes or No),112,112,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+25,Buy Down Status (Loan Status) (Yes or No),113,113,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+26,Upfront MIP (insurance premium rate),114,118,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+27,Annual MIP (insurance premium rate),119,123,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+28,Number of Borrowers,124,124,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+29,First Time Home Buyer (Yes or No),125,125,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+30,Property Type (Number of Living Units),126,126,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+31,State (2 character State Code),127,128,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+32,MSA,129,133,Numeric,5,9(5),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+33,Third-Party Origination Type,134,134,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+34,Current Month Liquidation Flag (Yes or No),135,135,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+35,Removal Reason,136,136,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+36,As of Date (CCYYMM),137,142,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+37,Loan Origination Date,143,150,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+38,Seller Issuer ID,151,154,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+39,Index Type,155,159,Character,5,X(5),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,string,String
+40,Look-Back Period,160,161,Numeric,2,9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+41,Interest Rate Change Date,162,169,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,Int64,Int64
+42,Initial Interest Rate Cap,170,170,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+43,Subsequent Interest Rate Cap,171,171,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+44,Lifetime Interest Rate Cap,172,172,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,,
+45,Next Interest Rate Change Ceiling,173,177,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+46,Lifetime Interest Rate Ceiling,178,182,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+47,Lifetime Interest Rate Floor,183,187,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+48,Prospective Interest Rate,188,192,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,L,float64,Float64
+1,Record Type T = Pool Trailer information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,Int64,Int64
+9,Loan Count for the Pool,38,44,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,T,Int64,Int64
+1,Record Type Z = File Trailer,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,Z,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,Z,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,Z,Int64,Int64
+4,Pool Count (Control Total),27,33,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,Z,Int64,Int64
+5,Loan Count (Control Total),34,42,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,Z,Int64,Int64
+6,"Total Record Count in File (All Record Types, Including H and Z records)",43,51,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,Z,Int64,Int64
+7,As of Date (CCYYMM),52,57,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.7 (Dec 2017 - Jan 2021).pdf,2017-12-01,2021-01-01,Z,Int64,Int64
+1,Record Type H = File Header,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,H,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,H,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,H,Int64,Int64
+4,Correction Flag (If a replacement of previous file),27,27,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,H,string,String
+5,As of Date (CCYYMM),28,33,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,H,Int64,Int64
+6,Date File Generated (CCYYMMDD),34,41,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,H,Int64,Int64
+1,Record Type P = Pool Information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,P,Int64,Int64
+1,Record Type L = Loan Level Details,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+2,Pool ID,2,7,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+3,Disclosure Sequence Number (A sequence number unique to loan level),8,17,Numeric,10,10(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+4,Issuer ID (including for loan packages in MIP pool),18,21,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+5,"Agency (Agency Loan Type FHA, VA, RD, NA)",22,22,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+6,Loan Purpose,23,23,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+7,Refinance Type,24,24,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+8,First Payment Date (First Scheduled Installment),25,32,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+9,Maturity Date of Loan (Last Scheduled Installment),33,40,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+10,Loan Interest Rate (current interest rate),41,45,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+11,Original Principal Balance (OPB at pool issuance),46,56,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+12,UPB at Issuance (UPB of the loan at pool issuance),57,67,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+13,Unpaid Principal Balance (UPB of the loan),68,78,Numeric,11,9(9)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+14,"Original Loan Term, in Months",79,81,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+15,"Loan Age, in Months",82,84,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+16,"Remaining Loan Term (Remaining Maturity), in Months",85,87,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+17,"Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",88,88,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+18,"Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid)",89,89,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+19,Loan Gross Margin (ARM Loans only),90,93,Numeric,4,9v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+20,Loan To Value (LTV),94,98,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+21,Combined LTV (CLTV),99,103,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+22,Total Debt Expense Ratio Percent,104,108,Numeric,5,9(3)v9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+23,Credit Score,109,111,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+24,Down Payment Assistance (Yes or No),112,112,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+25,Buy Down Status (Loan Status) (Yes or No),113,113,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+26,Upfront MIP (insurance premium rate),114,118,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+27,Annual MIP (insurance premium rate),119,123,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+28,Number of Borrowers,124,124,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+29,First Time Home Buyer (Yes or No),125,125,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+30,Property Type (Number of Living Units),126,126,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+31,State (2 character State Code),127,128,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+32,MSA,129,133,Numeric,5,9(5),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+33,Third-Party Origination Type,134,134,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+34,Current Month Liquidation Flag (Yes or No),135,135,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+35,Removal Reason,136,136,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+36,As of Date (CCYYMM),137,142,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+37,Loan Origination Date,143,150,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+38,Seller Issuer ID,151,154,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+39,Index Type,155,159,Character,5,X(5),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,string,String
+40,Look-Back Period,160,161,Numeric,2,9(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+41,Interest Rate Change Date,162,169,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,Int64,Int64
+42,Initial Interest Rate Cap,170,170,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+43,Subsequent Interest Rate Cap,171,171,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+44,Lifetime Interest Rate Cap,172,172,Numeric,1,9,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,,
+45,Next Interest Rate Change Ceiling,173,177,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+46,Lifetime Interest Rate Ceiling,178,182,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+47,Lifetime Interest Rate Floor,183,187,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+48,Prospective Interest Rate,188,192,Numeric,5,9(2)v9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,L,float64,Float64
+1,Record Type T = Pool Trailer information,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,string,String
+2,CUSIP Number,2,10,Character,9,X(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,string,String
+3,Pool ID,11,16,Character,6,X(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,string,String
+4,"Issue Type (X, C, or M)",17,17,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,string,String
+5,Pool Type,18,19,Character,2,X(2),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,string,String
+6,Pool Issue Date,20,27,Numeric,8,9(8),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,Int64,Int64
+7,Issuer ID,28,31,Numeric,4,9(4),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,Int64,Int64
+8,As of Date (CCYYMM),32,37,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,Int64,Int64
+9,Loan Count for the Pool,38,44,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,T,Int64,Int64
+1,Record Type Z = File Trailer,1,1,Character,1,X,dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,Z,string,String
+2,File Name (GNMA_MBS_LL_XXX_CCYYMM),2,23,Character,22,X(22),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,Z,string,String
+3,File Number,24,26,Numeric,3,9(3),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,Z,Int64,Int64
+4,Pool Count (Control Total),27,33,Numeric,7,9(7),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,Z,Int64,Int64
+5,Loan Count (Control Total),34,42,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,Z,Int64,Int64
+6,"Total Record Count in File (All Record Types, Including H and Z records)",43,51,Numeric,9,9(9),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,Z,Int64,Int64
+7,As of Date (CCYYMM),52,57,Numeric,6,9(6),dailyllmni_MBS SF MONTHLY NEW ISSUES - LOAN LEVEL Layout V1.8 (Feb 2021 - Present).pdf,2021-02-01,2099-12-31,Z,Int64,Int64

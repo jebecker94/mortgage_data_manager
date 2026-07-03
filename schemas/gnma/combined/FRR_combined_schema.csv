@@ -1,0 +1,11 @@
+Item,Data Item,Begin,End,Type,Length,Remarks,File,Min_Date,Max_Date,pandas_dtype,polars_dtype
+1,Series,1,14,Character,14,GNMA-YYYY-NNN left justify hyphens included,FRR_layout.pdf,,,string,String
+2,Tranche Name,15,22,Character,8,alpha left justify,FRR_layout.pdf,,,string,String
+3,CUSIP,23,31,Character,9,S&P CUSIP left justify,FRR_layout.pdf,,,string,String
+4,Reset Rate,32,45,Numeric,14,X.XXXXX right justify leading blanks,FRR_layout.pdf,,,Float64,Float64
+5,Filler,46,47,Character,2,,FRR_layout.pdf,,,string,String
+6,Payment Date,48,55,Numeric,8,YYYYMMDD,FRR_layout.pdf,,,Int64,Int64
+7,Filler,56,57,Character,2,,FRR_layout.pdf,,,string,String
+8,Accrual Period Begins,58,65,Numeric,8,YYYYMMDD,FRR_layout.pdf,,,Int64,Int64
+9,Filler,66,67,Character,2,,FRR_layout.pdf,,,string,String
+10,Accrual Period Ends,68,75,Numeric,8,YYYYMMDD,FRR_layout.pdf,,,Int64,Int64
