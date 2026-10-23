@@ -17,22 +17,23 @@ carry exact terms, credit scores and performance, but no demographics. Each cros
 recovers the link from loan characteristics, keeps only pairs that are unambiguous, and is
 checked against fields the match did not use.
 
-| Crosswalk | Links | Years | Match rate |
-|---|---|---|---|
-| [hmda_fha](docs/matching/hmda_fha_matching.md) | HMDA ↔ FHA endorsements | 2010–2025 | 91% of HMDA FHA originations (2018–2025) |
-| [hmda_fhfa](docs/matching/hmda_fhfa_matching.md) | HMDA ↔ FHFA public use database | 2008–2025 | 97% of HMDA GSE sales (2018–2025) |
-| [hmda_gse](docs/matching/hmda_gse_matching.md) | HMDA ↔ Fannie Mae and Freddie Mac loan-level | 2018–2025 | 92% of HMDA GSE sales |
-| [hmda_gnma](docs/matching/hmda_gnma_matching.md) | HMDA ↔ Ginnie Mae loan-level | 2018–2025 | FHA 79%, VA 57%, USDA 69% |
-| [hmda_sellers_purchasers](docs/matching/hmda_sellers_purchasers_matching.md) | HMDA originations ↔ HMDA purchase records | 2007–2025 | 71% of purchase records (2018–2025) |
-| [hmda_fhlb](docs/matching/hmda_fhlb_matching.md) | HMDA ↔ FHLB Acquired Member Assets | 2009–2025 | 57–60% of AMA loans |
-| [fhfa_mbs](docs/matching/fhfa_mbs_matching.md) | FHFA ↔ GSE loan-level | 2018–2025 | 95–96% of FHFA loans |
-| [mbs_umbs](docs/matching/mbs_umbs_matching.md) | GSE loan-level ↔ UMBS disclosures | 2019–2025 | 99.6–99.8% of matchable loans |
-| [crt_mbs](docs/matching/crt_mbs_matching.md) | Freddie Mac CRT reference pools ↔ loan-level | 2013–2026 | 99.2% of CRT loans |
-| [fhlb_mbs](docs/matching/fhlb_mbs_matching.md) | FHLB AMA ↔ Ginnie Mae loan-level | 2009–2025 | 97% of the issuer's Ginnie Mae loans |
-| [master](docs/matching/master_crosswalk.md) | every post-2018 edge, one row per HMDA loan | 2018–2025 | 46.4M loans |
+Each matcher has a report covering its method, results and validation on held-out fields.
+Start with the **[matching overview](docs/matching/README.md)**: what links to what, and
+the denominator behind every rate.
 
-Start with the [matching overview](docs/matching/README.md): what links to what, and the
-denominator behind every rate. Each linked page gives the method, results and validation.
+| Crosswalk | Links | Years | Match rate | Report |
+|---|---|---|---|---|
+| hmda_fha | HMDA ↔ FHA endorsements | 2010–2025 | 91% of HMDA FHA originations (2018–2025) | [method & validation](docs/matching/hmda_fha_matching.md) |
+| hmda_fhfa | HMDA ↔ FHFA public use database | 2008–2025 | 97% of HMDA GSE sales (2018–2025) | [method & validation](docs/matching/hmda_fhfa_matching.md) |
+| hmda_gse | HMDA ↔ Fannie Mae and Freddie Mac loan-level | 2018–2025 | 92% of HMDA GSE sales | [method & validation](docs/matching/hmda_gse_matching.md) |
+| hmda_gnma | HMDA ↔ Ginnie Mae loan-level | 2018–2025 | FHA 79%, VA 57%, USDA 69% | [method & validation](docs/matching/hmda_gnma_matching.md) |
+| hmda_sellers_purchasers | HMDA originations ↔ HMDA purchase records | 2007–2025 | 71% of purchase records (2018–2025) | [method & validation](docs/matching/hmda_sellers_purchasers_matching.md) |
+| hmda_fhlb | HMDA ↔ FHLB Acquired Member Assets | 2009–2025 | 57–60% of AMA loans | [method & validation](docs/matching/hmda_fhlb_matching.md) |
+| fhfa_mbs | FHFA ↔ GSE loan-level | 2018–2025 | 95–96% of FHFA loans | [method & validation](docs/matching/fhfa_mbs_matching.md) |
+| mbs_umbs | GSE loan-level ↔ UMBS disclosures | 2019–2025 | 99.6–99.8% of matchable loans | [method & validation](docs/matching/mbs_umbs_matching.md) |
+| crt_mbs | Freddie Mac CRT reference pools ↔ loan-level | 2013–2026 | 99.2% of CRT loans | [method & validation](docs/matching/crt_mbs_matching.md) |
+| fhlb_mbs | FHLB AMA ↔ Ginnie Mae loan-level | 2009–2025 | 97% of the issuer's Ginnie Mae loans | [method & validation](docs/matching/fhlb_mbs_matching.md) |
+| master | every post-2018 edge, one row per HMDA loan | 2018–2025 | 46.4M loans | [method & validation](docs/matching/master_crosswalk.md) |
 
 The crosswalks themselves are not distributed. They are built from the source data on
 your own machine by `mortgage-data match <workflow> run`.

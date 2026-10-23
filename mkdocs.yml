@@ -62,7 +62,21 @@ markdown_extensions:
   - pymdownx.inlinehilite
 
 nav:
-  - Home: getting_started.md
+  - Home: index.md
+  - Matching workflows:
+      - Overview: matching/README.md
+      - hmda_fha: matching/hmda_fha_matching.md
+      - hmda_fhfa: matching/hmda_fhfa_matching.md
+      - hmda_fhlb: matching/hmda_fhlb_matching.md
+      - hmda_gnma: matching/hmda_gnma_matching.md
+      - hmda_gse: matching/hmda_gse_matching.md
+      - hmda_sellers_purchasers: matching/hmda_sellers_purchasers_matching.md
+      - crt_mbs: matching/crt_mbs_matching.md
+      - fhfa_mbs: matching/fhfa_mbs_matching.md
+      - fhlb_mbs: matching/fhlb_mbs_matching.md
+      - mbs_umbs: matching/mbs_umbs_matching.md
+      - master_crosswalk: matching/master_crosswalk.md
+  - Getting started: getting_started.md
   - Architecture: architecture.md
   - Configuration: configuration.md
   - CLI reference: cli_reference.md
@@ -82,16 +96,3 @@ nav:
       - combined: api/combined.md
       - analytics: api/analytics.md
       - matching: api/matching.md
-  - Matching workflows:
-      - Overview: matching/README.md
-      - hmda_fha: matching/hmda_fha_matching.md
-      - hmda_fhfa: matching/hmda_fhfa_matching.md
-      - hmda_fhlb: matching/hmda_fhlb_matching.md
-      - hmda_gnma: matching/hmda_gnma_matching.md
-      - hmda_gse: matching/hmda_gse_matching.md
-      - hmda_sellers_purchasers: matching/hmda_sellers_purchasers_matching.md
-      - crt_mbs: matching/crt_mbs_matching.md
-      - fhfa_mbs: matching/fhfa_mbs_matching.md
-      - fhlb_mbs: matching/fhlb_mbs_matching.md
-      - mbs_umbs: matching/mbs_umbs_matching.md
-      - master_crosswalk: matching/master_crosswalk.md
