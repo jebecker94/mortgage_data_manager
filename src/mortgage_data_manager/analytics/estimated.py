@@ -1,24 +1,28 @@
 """Model-based analytics: estimates and forecasts of future quantities.
 
-Unlike :mod:`analytics.calculated` (closed-form metrics on observed data),
-everything here requires a *model*. The implemented estimators target loan-level
-**prepayment**, ported from the standalone SMM-estimator study:
+Unlike `analytics.calculated` (closed-form metrics on observed data),
+everything here requires a *model*. The estimators target loan-level
+**prepayment** (ported from the standalone SMM-estimator study) and
+**default/credit loss** (built on the credit panel's zero-balance-code
+waterfall):
 
-- :func:`fit_model` — fit a logistic-regression or XGBoost prepayment model on a
-  training panel and return a reusable fitted bundle.
-- :func:`forecast_prepayment_probability` — apply a fitted bundle to a feature
+- `fit_model` — fit a logistic-regression or XGBoost binary-hazard model
+  on a training panel and return a reusable fitted bundle. ``target="y"``
+  (default) fits prepayment; ``target="y_default"`` on the credit panel
+  (``build_panel(include_delinquent=True)``) fits the default hazard.
+- `forecast_prepayment_probability` — apply a fitted bundle to a feature
   panel, producing the per-loan-month prepayment hazard (predicted SMM).
-- :func:`project_prepayment_speeds` — aggregate predicted hazards into a
+- `forecast_default_probability` — the credit mirror: the per-loan-month
+  default hazard (predicted MDR).
+- `project_prepayment_speeds` — aggregate predicted hazards into a
   cohort-by-age speed/survival curve.
-- :func:`run_crossfit` — K-fold cross-fitted XGBoost predictions
+- `estimate_lifetime_loss` — combine the default hazard with an optional
+  competing prepay hazard, scheduled-amortization EAD, and a parameterized LGD
+  into per-cohort cumulative default and lifetime-loss rates.
+- `run_crossfit` — K-fold cross-fitted XGBoost predictions
   (Chernozhukov et al. 2018): each fold's model is trained on the other folds
   and predicts its held-out loans, yielding unbiased first-stage SMM for every
   loan-month.
-
-:func:`forecast_default_probability` and :func:`estimate_lifetime_loss` remain
-scaffolds — the source study modeled prepayment only; a default/loss model needs
-the SF credit spine (zero-balance-code waterfall) which the analytics panel does
-not yet carry.
 
 ML dependencies (``xgboost``, ``statsmodels``) are in the ``[analytics]`` extra
 and lazily imported, so importing this module never requires them.
@@ -30,7 +34,7 @@ import gc
 import json
 import pickle
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import polars as pl
@@ -40,6 +44,7 @@ from mortgage_data_manager.analytics.schema import (
     BURNOUT_CUM,
     BURNOUT_X_INCENTIVE,
     COVID,
+    DLQ_STATUS,
     DTI,
     DYNAMIC_LTV,
     FICO,
@@ -53,7 +58,10 @@ from mortgage_data_manager.analytics.schema import (
     NUM_BORROWERS,
     NUM_UNITS,
     ORIG_DATE,
+    ORIG_QUARTER,
     ORIG_RATE,
+    ORIG_TERM,
+    ORIG_UPB,
     PERIOD,
     RATE_CHANGE_3M,
     SATO,
@@ -63,6 +71,7 @@ from mortgage_data_manager.analytics.schema import (
     YIELD_SPREAD,
     Y,
 )
+from mortgage_data_manager.analytics.servicing import scheduled_balance_factor_expr
 from mortgage_data_manager.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -121,6 +130,12 @@ XGB_FEATURES = [
     VINTAGE_YEAR,
 ]
 
+#: Feature set for the credit-event (default) hazard model: the prepayment set
+#: plus current delinquency status — the dominant state variable for default.
+#: Only meaningful on the credit panel (``build_panel(include_delinquent=True)``);
+#: the prepayment panel truncates ``dlq_status`` at 2.
+XGB_FEATURES_CREDIT = [*XGB_FEATURES, DLQ_STATUS]
+
 #: The logistic baseline (spline incentive + burnout) feature set.
 LOGIT_BASELINE_FEATURES = [
     LOAN_AGE,
@@ -176,7 +191,7 @@ def _prepare_data(
     available = [c for c in feature_cols if c in subset.columns]
     missing = set(feature_cols) - set(available)
     if missing:
-        logger.warning(f"Dropping absent features: {sorted(missing)}")
+        logger.warning("Dropping absent features: %s", sorted(missing))
     X = np.nan_to_num(
         subset.select(available).to_numpy().astype(np.float64), nan=0.0, posinf=0.0, neginf=0.0
     )
@@ -203,7 +218,7 @@ def _fit_logistic(
     # Prepend the constant explicitly (sm.add_constant skips if it detects one).
     X_const = np.column_stack([np.ones(X_std.shape[0]), X_std])
     names = ["const", *feature_names]
-    logger.info(f"Fitting {name}: {X_const.shape[1]} features, {len(y):,} obs")
+    logger.info("Fitting %s: %s features, %s obs", name, X_const.shape[1], f"{len(y):,}")
 
     result = sm.Logit(y, X_const).fit(disp=0, maxiter=200, method="lbfgs")
     final = result
@@ -275,14 +290,14 @@ def fit_model(panel: pl.LazyFrame, *, target: str = Y, spec: dict[str, Any] | No
         target: Outcome column name (default ``"y"``, voluntary prepayment).
         spec: Model specification. Recognized keys:
             ``model`` (``"xgboost"`` | ``"logit"``, default ``"xgboost"``),
-            ``features`` (feature list; defaults to :data:`XGB_FEATURES` or
-            :data:`LOGIT_BASELINE_FEATURES`), ``subsample`` (training row cap),
+            ``features`` (feature list; defaults to `XGB_FEATURES` or
+            `LOGIT_BASELINE_FEATURES`), ``subsample`` (training row cap),
             ``val_frac`` (XGBoost validation share), ``seed``.
 
     Returns:
         A fitted bundle dict (``kind``, the fitted object, ``feature_list``,
         and standardization stats for logit) consumable by
-        :func:`forecast_prepayment_probability`.
+        `forecast_prepayment_probability`.
 
     Raises:
         ValueError: If ``spec['model']`` is not recognized.
@@ -292,7 +307,7 @@ def fit_model(panel: pl.LazyFrame, *, target: str = Y, spec: dict[str, Any] | No
     seed = spec.get("seed", SEED)
     df = panel.collect() if isinstance(panel, pl.LazyFrame) else panel
     if target != Y:
-        df = df.rename({target: Y})
+        df = df.drop(Y, strict=False).rename({target: Y})
 
     if kind == "logit":
         features = spec.get("features", LOGIT_BASELINE_FEATURES)
@@ -326,11 +341,19 @@ def fit_model(panel: pl.LazyFrame, *, target: str = Y, spec: dict[str, Any] | No
 
 
 def save_model(bundle: dict[str, Any], path: Path) -> Path:
-    """Pickle a fitted model bundle to ``path`` (XGBoost is pickle-safe)."""
+    """Pickle a fitted model bundle to ``path`` (XGBoost is pickle-safe).
+
+    Args:
+        bundle: The fitted model bundle to persist.
+        path: Destination path; parent directories are created.
+
+    Returns:
+        The path written.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "wb") as f:
         pickle.dump(bundle, f)
-    logger.info(f"Saved {bundle.get('kind')} model -> {path}")
+    logger.info("Saved %s model -> %s", bundle.get("kind"), path)
     return path
 
 
@@ -343,12 +366,12 @@ def _resolve_bundle(model: Any) -> dict[str, Any]:
         if not path.suffix:
             path = AnalyticsConfig.ANALYTICS_MODELS_DIR / f"{model}.pkl"
         with open(path, "rb") as f:
-            return pickle.load(f)
+            return cast("dict[str, Any]", pickle.load(f))
     raise TypeError(f"Cannot resolve model from {type(model)!r}")
 
 
 def _predict_bundle(bundle: dict[str, Any], df: pl.DataFrame) -> np.ndarray:
-    """Predict P(prepay) for every row of ``df`` from a fitted bundle."""
+    """Predict the positive-class probability for every row of ``df`` from a bundle."""
     features = bundle["feature_list"]
     available = [c for c in features if c in df.columns]
     X = np.nan_to_num(
@@ -377,10 +400,10 @@ def forecast_prepayment_probability(
 
     Applies a fitted model to a feature panel, producing the one-month
     voluntary-prepayment probability for every loan-month — the building block
-    of any multi-month projection (see :func:`project_prepayment_speeds`).
+    of any multi-month projection (see `project_prepayment_speeds`).
 
     Args:
-        panel: Feature panel (the output of :func:`analytics.features`).
+        panel: Feature panel (the output of `analytics.features`).
         horizon_months: Accepted for API stability; the baseline returns the
             one-month hazard rather than a per-future-month vector.
         model: A fitted bundle, a pickle path, or a model-key string resolved
@@ -414,7 +437,7 @@ def project_prepayment_speeds(
         cohorts: Feature panel (must carry ``loan_age`` and the cohort column).
         horizon_months: Maximum loan age retained in the curve.
         model: Fitted bundle / path / key (see
-            :func:`forecast_prepayment_probability`).
+            `forecast_prepayment_probability`).
         cohort_col: Cohort grouping column (default ``orig_quarter``).
 
     Returns:
@@ -435,53 +458,192 @@ def project_prepayment_speeds(
     return hazard.with_columns(
         (1.0 - (1.0 - pl.col("mean_smm")) ** 12).alias("cpr"),
         (1.0 - pl.col("mean_smm")).cum_prod().over("cohort").alias("survival"),
-    )
+    ).lazy()
 
 
 def forecast_default_probability(
-    panel: pl.LazyFrame, *, horizon_months: int = 12, model: str = "baseline"
+    panel: pl.LazyFrame, *, horizon_months: int = 12, model: Any = "credit_baseline"
 ) -> pl.LazyFrame:
-    """Estimate forward default (credit-event) probability per loan/pool.
+    """Estimate the per-loan-month default (credit-event) hazard.
 
-    Scaffold: the ported study modeled prepayment only. A default model needs
-    the SF credit spine (zero-balance-code waterfall distinguishing voluntary
-    prepay from credit events), which the analytics panel does not yet carry.
-
-    Args:
-        panel: Loan/pool feature panel.
-        horizon_months: Months ahead to project.
-        model: Model spec identifier.
-
-    Returns:
-        A LazyFrame of per-entity, per-future-month default probabilities.
-
-    Raises:
-        NotImplementedError: Placeholder pending a credit-event panel.
-    """
-    raise NotImplementedError(
-        "forecast_default_probability needs the SF credit-event panel (not yet wired)."
-    )
-
-
-def estimate_lifetime_loss(panel: pl.LazyFrame, *, model: str = "baseline") -> pl.LazyFrame:
-    """Estimate lifetime credit loss (PD x LGD x EAD) per loan/pool.
-
-    Scaffold: depends on :func:`forecast_default_probability` plus LGD/EAD
-    inputs that the analytics panel does not yet carry.
+    The credit mirror of `forecast_prepayment_probability`: applies a
+    fitted credit-event model (`fit_model` with ``target="y_default"``
+    on the credit panel, i.e. ``build_panel(include_delinquent=True)`` +
+    feature engineering) to a feature panel, producing the one-month
+    conditional default probability — the loan-level MDR — for every
+    loan-month. A credit event is a zero-balance termination in
+    `analytics.schema.CREDIT_EVENT_ZB_CODES` (third-party sale, short
+    sale/charge-off, REO disposition).
 
     Args:
-        panel: Loan/pool feature panel.
-        model: Model spec identifier.
+        panel: Feature panel built from the credit panel.
+        horizon_months: Accepted for API stability; the baseline returns the
+            one-month hazard rather than a per-future-month vector. Aggregate
+            hazards into multi-month quantities with
+            `estimate_lifetime_loss`.
+        model: A fitted bundle, a pickle path, or a model-key string resolved
+            under ``AnalyticsConfig.ANALYTICS_MODELS_DIR``.
 
     Returns:
-        A LazyFrame of per-entity lifetime-loss estimates.
-
-    Raises:
-        NotImplementedError: Placeholder pending a credit-loss panel.
+        A LazyFrame of ``loan_id``, ``period``, ``predicted_mdr``.
     """
-    raise NotImplementedError(
-        "estimate_lifetime_loss depends on a default/LGD model that is not yet built."
+    del horizon_months  # one-month hazard; multi-horizon aggregation is separate
+    bundle = _resolve_bundle(model)
+    df = panel.collect() if isinstance(panel, pl.LazyFrame) else panel
+    preds = _predict_bundle(bundle, df)
+    return df.select([LOAN_ID, PERIOD]).with_columns(pl.Series("predicted_mdr", preds)).lazy()
+
+
+def estimate_lifetime_loss(
+    panel: pl.LazyFrame,
+    *,
+    model: Any = "credit_baseline",
+    prepay_model: Any | None = None,
+    lgd: float = 0.30,
+    horizon_months: int = 360,
+    discount_rate: float | None = None,
+    cohort_col: str = ORIG_QUARTER,
+) -> pl.LazyFrame:
+    """Estimate per-cohort lifetime credit loss (PD x LGD x EAD).
+
+    Follows the cohort-curve approach of `project_prepayment_speeds`:
+    the fitted default model predicts the per-loan-month hazard, hazards are
+    averaged by ``(cohort, loan_age)``, and losses accumulate over the
+    observed age support as ``sum_age S(age) * MDR(age) * EAD(age) * LGD``
+    where
+
+    - ``S(age)`` is competing-risks survival to the start of the age month,
+      ``prod(1 - MDR - SMM)`` over earlier ages (SMM enters only when
+      ``prepay_model`` is supplied — omitting it overstates how much balance
+      survives to default at later ages),
+    - ``EAD(age)`` is the scheduled (level-payment) remaining-balance factor
+      at the start of the month, computed per loan-month from each loan's own
+      note rate and term and averaged jointly with the hazard, and
+    - ``LGD`` is a constant severity assumption (GSE realized severities have
+      historically run roughly 20-40% of defaulted UPB).
+
+    Rates are per dollar of *origination* balance. The sum runs over ages the
+    panel actually observes (capped at ``horizon_months``), so cohorts with
+    short histories carry losses accrued to their observed age, not to
+    maturity — read ``max_age_observed`` alongside the rates.
+
+    Args:
+        panel: Feature panel built from the credit panel
+            (``build_panel(include_delinquent=True)`` + feature engineering).
+        model: Fitted default-hazard bundle / pickle path / model key (see
+            `forecast_default_probability`).
+        prepay_model: Optional fitted prepayment bundle for the competing
+            risk, in the same three forms.
+        lgd: Loss severity as a fraction of defaulted UPB.
+        horizon_months: Maximum loan age included in the accumulation.
+        discount_rate: Optional annual rate; discounts each age's loss
+            contribution by ``(1 + rate/12)**-age``. ``None`` = undiscounted.
+        cohort_col: Cohort grouping column (default ``orig_quarter``).
+
+    Returns:
+        A LazyFrame with one row per cohort: ``cohort``, ``n_loans``,
+        ``avg_orig_upb``, ``max_age_observed``, ``cum_default_rate``,
+        ``cum_prepay_rate``, ``expected_loss_rate``,
+        ``expected_loss_per_loan``, ``lgd``.
+    """
+    bundle = _resolve_bundle(model)
+    df = panel.collect() if isinstance(panel, pl.LazyFrame) else panel
+    mdr = _predict_bundle(bundle, df)
+    smm = (
+        _predict_bundle(_resolve_bundle(prepay_model), df)
+        if prepay_model is not None
+        else np.zeros(len(mdr))
     )
+
+    rows = (
+        df.select(
+            pl.col(cohort_col).alias("cohort"),
+            pl.col(LOAN_ID).alias("_loan_id"),
+            pl.col(LOAN_AGE).alias("loan_age"),
+            pl.col(ORIG_RATE).alias("_rate"),
+            pl.col(ORIG_TERM).alias("_term"),
+            pl.col(ORIG_UPB).alias("_upb"),
+        )
+        .with_columns(
+            pl.Series("predicted_mdr", mdr),
+            pl.Series("predicted_smm", smm),
+        )
+        .filter(pl.col("loan_age").is_between(0, horizon_months) & pl.col("cohort").is_not_null())
+    )
+    # Terminal rows MUST carry a valid age or their hazard vanishes from the
+    # curve (FNMA blanks Loan Age on zero-balance rows; the panel harmonizer
+    # fills it — warn loudly if a panel without that fix sneaks through).
+    n_null_age = df.select(pl.col(LOAN_AGE).is_null().sum()).item()
+    if n_null_age:
+        logger.warning(
+            "%s loan-months with null loan_age excluded from the cohort "
+            "curve — if these are terminal rows, cumulative rates will be understated",
+            f"{n_null_age:,}",
+        )
+    # EAD at the start of the default month: scheduled balance after age-1
+    # payments, from the loan's own rate/term, averaged jointly with the
+    # hazard (per-row product) rather than as a product of averages.
+    rows = rows.with_columns(
+        (pl.col("loan_age") - 1).clip(lower_bound=0).alias("_age_prev")
+    ).with_columns(
+        (
+            pl.col("predicted_mdr") * scheduled_balance_factor_expr("_rate", "_term", "_age_prev")
+        ).alias("_mdr_x_ead")
+    )
+
+    curve = (
+        rows.group_by(["cohort", "loan_age"])
+        .agg(
+            pl.col("predicted_mdr").mean().alias("mean_mdr"),
+            pl.col("predicted_smm").mean().alias("mean_smm"),
+            pl.col("_mdr_x_ead").mean().alias("mean_mdr_x_ead"),
+        )
+        .sort(["cohort", "loan_age"])
+    )
+    discount = (
+        (1.0 + discount_rate / 12.0) ** (-pl.col("loan_age"))
+        if discount_rate is not None
+        else pl.lit(1.0)
+    )
+    curve = curve.with_columns(
+        (pl.col("mean_mdr") + pl.col("mean_smm")).clip(upper_bound=1.0).alias("_total_hazard")
+    ).with_columns(
+        (1.0 - pl.col("_total_hazard"))
+        .cum_prod()
+        .shift(1)
+        .over("cohort")
+        .fill_null(1.0)
+        .alias("survival_start")
+    )
+    curve = curve.with_columns(
+        (pl.col("survival_start") * pl.col("mean_mdr")).alias("_default_contrib"),
+        (pl.col("survival_start") * pl.col("mean_smm")).alias("_prepay_contrib"),
+        (pl.col("survival_start") * pl.col("mean_mdr_x_ead") * lgd * discount).alias(
+            "_loss_contrib"
+        ),
+    )
+
+    loans = (
+        rows.unique(subset=["_loan_id"])
+        .group_by("cohort")
+        .agg(pl.len().alias("n_loans"), pl.col("_upb").mean().alias("avg_orig_upb"))
+    )
+    summary = (
+        curve.group_by("cohort")
+        .agg(
+            pl.col("loan_age").max().alias("max_age_observed"),
+            pl.col("_default_contrib").sum().alias("cum_default_rate"),
+            pl.col("_prepay_contrib").sum().alias("cum_prepay_rate"),
+            pl.col("_loss_contrib").sum().alias("expected_loss_rate"),
+        )
+        .join(loans, on="cohort", how="left")
+        .with_columns(
+            (pl.col("expected_loss_rate") * pl.col("avg_orig_upb")).alias("expected_loss_per_loan"),
+            pl.lit(lgd).alias("lgd"),
+        )
+        .sort("cohort")
+    )
+    return summary.lazy()
 
 
 # ---------------------------------------------------------------------------
@@ -530,7 +692,7 @@ def assign_folds(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     loans.write_parquet(output_path)
     for fk in range(k):
-        logger.info(f"Fold {fk}: {int((loans['fold'] == fk).sum()):,} loans")
+        logger.info("Fold %s: %s loans", fk, f"{int((loans['fold'] == fk).sum()):,}")
     return loans
 
 
@@ -613,7 +775,7 @@ def _train_fold(
     with open(output_dir / "metadata.json", "w") as f:
         json.dump(metadata, f, indent=2)
     logger.info(
-        f"Fold {fold_k}: val_auc={booster.best_score:.4f} (best_iter={booster.best_iteration})"
+        "Fold %s: val_auc=%.4f (best_iter=%s)", fold_k, booster.best_score, booster.best_iteration
     )
     del dtrain, dval, booster
     gc.collect()
@@ -662,7 +824,7 @@ def _predict_fold(
     tmp = output_path.with_suffix(".tmp")
     result.write_parquet(tmp)
     tmp.rename(output_path)
-    logger.info(f"Fold {fold_k}: predicted {n_rows:,} loan-months")
+    logger.info("Fold %s: predicted %s loan-months", fold_k, f"{n_rows:,}")
     del df, preds, result
     gc.collect()
 
@@ -680,7 +842,7 @@ def _assemble_predictions(crossfit_dir: Path, k: int = K_FOLDS) -> Path:
         )
     out = crossfit_dir / "crossfit_predictions.parquet"
     combined.write_parquet(out)
-    logger.info(f"Assembled {combined.height:,} cross-fit predictions -> {out}")
+    logger.info("Assembled %s cross-fit predictions -> %s", f"{combined.height:,}", out)
     return out
 
 

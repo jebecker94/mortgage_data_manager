@@ -7,16 +7,16 @@ from mortgage_data_manager.core.config import MortgageDataConfig
 
 def test_get_subpackage_data_dir():
     """Test getting subpackage data directory."""
-    hmda_dir = MortgageDataConfig.get_subpackage_data_dir('hmda')
-    assert hmda_dir.name == 'hmda'
-    assert 'data' in str(hmda_dir)
+    hmda_dir = MortgageDataConfig.get_subpackage_data_dir("hmda")
+    assert hmda_dir.name == "hmda"
+    assert "data" in str(hmda_dir)
 
 
 def test_get_medallion_dir():
     """Test getting medallion stage directory."""
-    silver_dir = MortgageDataConfig.get_medallion_dir('hmda', 'silver')
-    assert 'hmda' in str(silver_dir)
-    assert 'silver' in str(silver_dir)
+    silver_dir = MortgageDataConfig.get_medallion_dir("hmda", "silver")
+    assert "hmda" in str(silver_dir)
+    assert "silver" in str(silver_dir)
 
 
 def test_get_medallion_dir_all_stages():
@@ -24,9 +24,9 @@ def test_get_medallion_dir_all_stages():
     stages = ["raw", "bronze", "silver", "gold"]
 
     for stage in stages:
-        stage_dir = MortgageDataConfig.get_medallion_dir('fha', stage)
+        stage_dir = MortgageDataConfig.get_medallion_dir("fha", stage)
         assert stage in str(stage_dir)
-        assert 'fha' in str(stage_dir)
+        assert "fha" in str(stage_dir)
 
 
 def test_ensure_directories_creates_root(temp_project_dir, monkeypatch):
@@ -41,16 +41,14 @@ def test_ensure_directories_creates_root(temp_project_dir, monkeypatch):
     assert data_dir.exists()
 
 
-def test_ensure_directories_creates_subpackage_dirs(temp_project_dir, monkeypatch):
-    """Test that ensure_directories creates subpackage medallion directories."""
+def test_ensure_directories_creates_data_root(temp_project_dir, monkeypatch):
+    """Test that ensure_directories creates the data root."""
     data_dir = temp_project_dir / "data"
     monkeypatch.setattr(MortgageDataConfig, "DATA_DIR", data_dir)
 
-    MortgageDataConfig.ensure_directories('hmda')
+    MortgageDataConfig.ensure_directories()
 
-    assert (data_dir / 'hmda' / 'raw').exists()
-    assert (data_dir / 'hmda' / 'bronze').exists()
-    assert (data_dir / 'hmda' / 'silver').exists()
+    assert data_dir.is_dir()
 
 
 def test_get_project_root():

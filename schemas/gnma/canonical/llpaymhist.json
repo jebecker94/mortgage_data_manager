@@ -1,0 +1,483 @@
+{
+  "prefix": "llpaymhist",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "HH": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = HH",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "int64",
+          "pdf_text": "Date File Generated",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "LL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = LL",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "disclosure_sequence_number",
+          "arrow_type": "int64",
+          "pdf_text": "Disclosure Sequence Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "months_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Months Delinquent",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 48
+            }
+          ]
+        }
+      ]
+    },
+    "PH": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PH",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        }
+      ]
+    },
+    "PT": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PT",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "loan_count_for_the_pool",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Count for the Pool",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 9
+            }
+          ]
+        }
+      ]
+    },
+    "TT": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TT",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "int64",
+          "pdf_text": "Date File Generated",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "pool_count",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Count (File)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 7
+            }
+          ]
+        },
+        {
+          "id": "loan_count",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Count (File)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "total_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Total Record Count (File)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 9
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

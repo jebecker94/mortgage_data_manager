@@ -36,9 +36,9 @@ def test_cpr_to_smm_matches_known_value():
 @pytest.mark.parametrize(
     ("monthly_rate", "term", "age", "expected"),
     [
-        (0.004, 360, 0, 1.0),     # age 0 -> full balance remaining
-        (0.004, 360, 360, 0.0),   # age >= term -> paid off
-        (0.0, 360, 180, 0.5),     # zero-rate degenerate -> straight-line
+        (0.004, 360, 0, 1.0),  # age 0 -> full balance remaining
+        (0.004, 360, 360, 0.0),  # age >= term -> paid off
+        (0.0, 360, 180, 0.5),  # zero-rate degenerate -> straight-line
     ],
 )
 def test_scheduled_balance_factor_np(monthly_rate, term, age, expected):

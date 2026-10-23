@@ -1,564 +1,188 @@
-# Configuration Guide
+# Configuration
 
-Complete guide to configuring the Mortgage Data Manager.
+Every setting has a default, so most installs need at most one line of configuration.
+Settings are read with `python-decouple`, which checks in this order:
 
-## Table of Contents
+1. **Environment variables** set in the shell
+2. **A `.env` file** in the project root
+3. **The default** built into the code
 
-- [Overview](#overview)
-- [Environment Variables](#environment-variables)
-- [Configuration Files](#configuration-files)
-- [Directory Structure](#directory-structure)
-- [Per-Subpackage Configuration](#per-subpackage-configuration)
-- [Common Configuration Patterns](#common-configuration-patterns)
-- [Troubleshooting](#troubleshooting)
+Values are read once, when a config module is imported. Setting an environment variable
+after `mortgage_data_manager.*.config` has been imported has no effect; change `.env` or
+the environment before the process starts.
 
----
+## Environment variables
 
-## Overview
+### Core
 
-The Mortgage Data Manager uses a hierarchical configuration system:
+These set the base directories that every subpackage's paths are derived from.
 
-1. **Default values** - Built into the code
-2. **Environment variables** - Override defaults
-3. **Configuration files** - Workflow-specific settings (matching, etc.)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MORTGAGE_DATA_PROJECT_DIR` | Project root directory | Auto-detected |
+| `MORTGAGE_DATA_DIR` | Root data directory | `{PROJECT_DIR}/data` |
+| `MORTGAGE_DATA_CROSSWALK_DIR` | Final crosswalks, one folder per workflow | `{PROJECT_DIR}/crosswalk` |
+| `MORTGAGE_DATA_REFERENCE_DIR` | Downloaded reference files (Census, lender file, macro series) | `{MORTGAGE_DATA_DIR}/reference` |
+| `MORTGAGE_DATA_SCHEMAS_DIR` | Hand-maintained tables shipped with the package | `{PROJECT_DIR}/schemas` |
+| `MORTGAGE_OUTPUT_DIR` | Root output directory | `{PROJECT_DIR}/output` |
+| `DOWNLOAD_LEDGER_DIR` | Raw download ledger (`{source}.jsonl` per source) | `{MORTGAGE_DATA_DIR}/download_ledger` |
 
-All configuration is managed through Python's `decouple` library, which reads from `.env` files or environment variables.
+### Downloads
 
----
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MORTGAGE_DATA_USER_AGENT` | HTTP User-Agent for downloads | A desktop browser string |
+| `DOWNLOAD_RETRIES` | Retry attempts per file | `3` |
+| `DOWNLOAD_TIMEOUT` | Request timeout, seconds | `30` |
+| `DOWNLOAD_PAUSE` | Pause between files in a batch, seconds (`--pause` overrides it) | `5.0` |
+| `DOWNLOAD_BACKOFF_FACTOR` | Exponential backoff multiplier between retries | `2.0` |
+| `DOWNLOAD_CHUNK_SIZE` | Streaming chunk size, bytes | `8192` |
 
-## Environment Variables
+### Credentials
 
-### Core Configuration
+Two downloads need credentials, and each fails with a message naming the missing key.
 
-These variables control the base directories for all subpackages.
+| Variable | Used by |
+|----------|---------|
+| `GNMA_EMAIL`, `GNMA_ANSWER` | `mortgage-data gnma download` (see [Manual Downloads](manual_downloads.md#ginnie-mae-disclosure-data)) |
+| `USPS_CROSSWALK_API_KEY` | `mortgage-data usps-crosswalk download` (a free HUD USPS API token) |
+| `FRED_API_KEY` | Optional: FRED series in `core.reference.macro` use the `fredapi` client when it is set, and FRED's public CSV endpoint when it is not |
+| `MACRO_USER_AGENT` | Optional: the User-Agent `core.reference.macro` sends to BLS, FHFA and FRED |
 
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `MORTGAGE_DATA_PROJECT_DIR` | Project root directory | Auto-detected | `/Users/you/mortgage_data_manager` |
-| `MORTGAGE_DATA_DIR` | Root data directory | `{PROJECT_DIR}/data` | `/data/mortgage_data` |
-| `MORTGAGE_OUTPUT_DIR` | Root output directory | `{PROJECT_DIR}/output` | `/output/mortgage_data` |
-| `MORTGAGE_DATA_CROSSWALK_DIR` | Crosswalk output directory | `{PROJECT_DIR}/crosswalk` | `/data/crosswalk` |
+### Per subpackage
 
-**Example `.env` file:**
+Each subpackage has its own directory under `{MORTGAGE_DATA_DIR}`, set by a
+`{SOURCE}_DATA_DIR` key: `HMDA_DATA_DIR`, `FHA_DATA_DIR`, `GNMA_DATA_DIR`,
+`FHFA_DATA_DIR`, `FNMA_DATA_DIR`, `FHLMC_DATA_DIR`, `UMBS_DATA_DIR`, `FHLB_DATA_DIR`,
+`HUD_DATA_DIR`, `USPS_CROSSWALK_DATA_DIR`, `COMBINED_DATA_DIR` and `ANALYTICS_DATA_DIR`.
+There is no shared `MBS_DATA_DIR`; each agency is separate.
 
-```bash
-# .env
-MORTGAGE_DATA_PROJECT_DIR=/Users/username/mortgage_data_manager
-MORTGAGE_DATA_DIR=/data/mortgage_data
-MORTGAGE_OUTPUT_DIR=/output/mortgage_data
-```
+Each layer can also be moved on its own with `{SOURCE}_RAW_DIR`, `{SOURCE}_BRONZE_DIR`
+or `{SOURCE}_SILVER_DIR`, plus `{SOURCE}_GOLD_DIR` for the sources that have a gold
+layer (FHFA, FHLB, FHLMC, FNMA, GNMA and UMBS). Each source's `info` command prints the
+paths it resolved.
 
-### HMDA Configuration
+These keys move a source for its own commands only. Several matching workflows find
+their HMDA, GNMA and UMBS inputs under `{MORTGAGE_DATA_DIR}/{source}/` directly, so
+to keep one source on another drive, symlink its directory into the data root instead
+(see [Common setups](#common-setups)).
 
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `HMDA_DATA_DIR` | HMDA data directory | `{MORTGAGE_DATA_DIR}/hmda` | `/data/hmda` |
+### Matching
 
-### FHA Configuration
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MATCHING_DATA_DIR` | Intermediate matching data | `{MORTGAGE_DATA_DIR}/matching` |
+| `MATCHING_CACHE_DIR` | Matching cache | `{MATCHING_DATA_DIR}/cache` |
 
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `FHA_DATA_DIR` | FHA data directory | `{MORTGAGE_DATA_DIR}/fha` | `/data/fha` |
+Final crosswalks are written outside the data root, under
+`{MORTGAGE_DATA_CROSSWALK_DIR}/{workflow}/`.
 
-### MBS Configuration
+## The `.env` file
 
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `MBS_DATA_DIR` | MBS data directory | `{MORTGAGE_DATA_DIR}/mbs` | `/data/mbs` |
-
-### FHLB Configuration
-
-FHLB is a subpackage with its own data directory under `{MORTGAGE_DATA_DIR}/fhlb/`. Like every subpackage, it supports per-directory environment overrides of the form `FHLB_DATA_DIR`, `FHLB_RAW_DIR`, `FHLB_BRONZE_DIR`, `FHLB_SILVER_DIR`, `FHLB_GOLD_DIR` (e.g. `FHLB_RAW_DIR=/custom/fhlb/raw`).
-
-### Matching Configuration
-
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `MATCHING_DATA_DIR` | Matching workflows data directory | `{MORTGAGE_DATA_DIR}/matching` | `/data/matching` |
-| `MATCHING_OUTPUT_DIR` | Matching output directory | `{MATCHING_DATA_DIR}/output` | `/data/matching/output` |
-| `MATCHING_CACHE_DIR` | Matching cache directory | `{MATCHING_DATA_DIR}/cache` | `/data/matching/cache` |
-
----
-
-## Configuration Files
-
-### Creating a .env File
-
-Create a `.env` file in your project root:
+Put a `.env` file in the project root and set only what you want to change:
 
 ```bash
 # .env
-# Base configuration
-MORTGAGE_DATA_DIR=/data/mortgage_data
-
-# Subpackage-specific (optional, uses defaults if not set)
-HMDA_DATA_DIR=/data/hmda
-FHA_DATA_DIR=/data/fha
-MATCHING_DATA_DIR=/data/matching
-```
-
-### Environment Variable Priority
-
-1. **System environment variables** (highest priority)
-2. **`.env` file** in current directory
-3. **Default values** in code (lowest priority)
-
-### Example: Multiple Environments
-
-You can use different `.env` files for different environments:
-
-**Development** (`.env.development`):
-```bash
-MORTGAGE_DATA_DIR=/Users/username/data
-```
-
-**Production** (`.env.production`):
-```bash
 MORTGAGE_DATA_DIR=/data/mortgage_data
 ```
 
-Load the appropriate file:
+The file is found by searching upward from the installed package, so it works for a
+source checkout or editable install. A regular (non-editable) install has no project
+root; set the variables in the environment instead.
+
+## Directory layout
+
+The `data/` directory is not part of the repository. Directories are created when a CLI
+command first writes to them, or up front with a config's `ensure_directories()`:
 
 ```python
-from decouple import Config, RepositoryEnv
+from mortgage_data_manager.sources.hmda.config import HMDAConfig
 
-# Load production config
-config = Config(RepositoryEnv('.env.production'))
+HMDAConfig.ensure_directories()
 ```
 
----
-
-## Directory Structure
-
-### Default Directory Layout
-
-The `data/` directory is not included in the repository. Directories are created automatically when you use the configuration classes or run CLI commands.
+With the defaults, the tree looks like this:
 
 ```
 {MORTGAGE_DATA_DIR}/
 ├── hmda/
 │   ├── raw/
 │   ├── bronze/
-│   ├── silver/
-│   └── gold/
-├── fha/
-│   ├── raw/
-│   ├── bronze/
 │   └── silver/
+├── fha/
 ├── gnma/
 ├── fhfa/
 ├── fnma/
 ├── fhlmc/
 ├── umbs/
+├── usps_crosswalk/     # raw + bronze only; this source has no silver
 ├── hud/
-├── hud_mf/
 ├── fhlb/
+├── combined/           # cross-source master datasets
+├── analytics/
+├── reference/          # downloaded reference files
+├── download_ledger/
 └── matching/
-    ├── fha_hmda/
-    ├── fhfa_hmda/
-    ├── hmda_sellers_and_purchasers/
-    ├── output/
+    ├── {workflow}/     # intermediates for one workflow
     └── cache/
 ```
 
-### Creating Directories
+## Reading paths in code
 
-Directories are created automatically when you use the configuration classes:
-
-```python
-from mortgage_data_manager.hmda.config import HMDAConfig
-
-# Ensure HMDA directories exist
-HMDAConfig.ensure_directories()
-```
-
----
-
-## Per-Subpackage Configuration
-
-### HMDA Configuration
+Use the config classes directly; they are never instantiated.
 
 ```python
-from mortgage_data_manager.hmda.config import HMDAConfig
-
-config = HMDAConfig()
-
-# Access configuration
-print(config.HMDA_DATA_DIR)      # /data/hmda
-print(config.HMDA_RAW_DIR)       # /data/hmda/raw
-print(config.HMDA_BRONZE_DIR)    # /data/hmda/bronze
-print(config.HMDA_SILVER_DIR)    # /data/hmda/silver
-
-# Get medallion directory
-silver = config.get_medallion_dir('hmda', 'silver')
-```
-
-### FHA Configuration
-
-```python
-from mortgage_data_manager.fha.config import FHAConfig
-
-config = FHAConfig()
-
-# Access configuration
-print(config.FHA_DATA_DIR)       # /data/fha
-print(config.FHA_RAW_DIR)        # /data/fha/raw
-print(config.FHA_BRONZE_DIR)     # /data/fha/bronze
-print(config.FHA_SILVER_DIR)     # /data/fha/silver
-```
-
-### MBS Configuration
-
-```python
-from mortgage_data_manager.gnma.config import MBSConfig
-
-config = MBSConfig()
-
-# Get agency-specific directories
-gnma_dir = config.get_agency_data_dir('gnma')   # /data/mbs/gnma
-fhfa_dir = config.get_agency_data_dir('fhfa')   # /data/mbs/fhfa
-```
-
-### FHLB Configuration
-
-FHLB has its own config class:
-
-```python
-from mortgage_data_manager.fhlb.config import FHLBConfig
-
-# Access FHLB-specific directories
-fhlb_dir = FHLBConfig.FHLB_DATA_DIR   # /data/fhlb
-```
-
-### Matching Configuration
-
-```python
+from mortgage_data_manager.sources.hmda.config import HMDAConfig
 from mortgage_data_manager.matching.config import MatchingConfig
 
-config = MatchingConfig()
-
-# Access configuration
-print(config.MATCHING_DATA_DIR)      # /data/matching
-print(config.MATCHING_OUTPUT_DIR)    # /data/matching/output
-print(config.MATCHING_CACHE_DIR)     # /data/matching/cache
-
-# Get workflow-specific directory
-fha_hmda_dir = config.get_matching_type_dir('fha_hmda')  # /data/matching/fha_hmda
+HMDAConfig.HMDA_SILVER_DIR                           # {MORTGAGE_DATA_DIR}/hmda/silver
+MatchingConfig.get_matching_type_dir("hmda_fha")     # {MATCHING_DATA_DIR}/hmda_fha
+MatchingConfig.get_crosswalk_type_dir("hmda_fha")    # {MORTGAGE_DATA_CROSSWALK_DIR}/hmda_fha
 ```
 
----
+Every subpackage follows the same naming: `FHAConfig.FHA_RAW_DIR`,
+`GNMAConfig.GNMA_SILVER_DIR`, `FHLBConfig.FHLB_DATA_DIR`, and so on.
 
-## Common Configuration Patterns
+## Common setups
 
-### Pattern 1: Centralized Data Directory
-
-Store all data in one location:
+**One data root.** Set `MORTGAGE_DATA_DIR` and let every subpackage take a
+subdirectory of it. This is the normal case.
 
 ```bash
 # .env
 MORTGAGE_DATA_DIR=/data/mortgage_data
 ```
 
-All subpackages use subdirectories of `/data/mortgage_data/`:
-- `/data/mortgage_data/hmda/`
-- `/data/mortgage_data/fha/`
-- `/data/mortgage_data/mbs/`
-- etc.
+**External volume by symlink.** `ln -s /Volumes/ExternalSSD/mortgage_data data`
+works without any configuration. If the drive is not mounted, reads raise
+`FileNotFoundError`.
 
-### Pattern 2: Distributed Data Directories
-
-Store each subpackage in a separate location:
+**Split across drives.** Keep one data root and symlink the sources that live elsewhere
+into it, such as a fast SSD for what you query constantly and bulk storage for the
+archives:
 
 ```bash
-# .env
-HMDA_DATA_DIR=/data/hmda
-FHA_DATA_DIR=/mnt/fha_data
-MBS_DATA_DIR=/ssd/mbs_data
+ln -s /hdd/fhlmc /data/mortgage_data/fhlmc
 ```
-
-**Use case:** Different storage devices for different data types (SSD for frequently accessed, HDD for archives).
-
-### Pattern 3: Development vs. Production
-
-Use different directories for development and production:
-
-**Development:**
-```bash
-# .env.development
-MORTGAGE_DATA_DIR=/Users/username/dev_data
-```
-
-**Production:**
-```bash
-# .env.production
-MORTGAGE_DATA_DIR=/data/mortgage_data
-```
-
-### Pattern 4: External Drive with Symlink
-
-Store data on an external drive and symlink into the project:
-
-```bash
-# Copy data to external drive
-rsync -av data/ /Volumes/ExternalSSD/mortgage_data/
-
-# Remove local data and create symlink
-rm -rf data/
-ln -s /Volumes/ExternalSSD/mortgage_data data
-```
-
-The symlink is transparent — all reads and writes work as if the data were local. If the drive is not mounted, file operations will raise `FileNotFoundError`.
-
-### Pattern 5: Network Storage
-
-Store data on network/cloud storage:
-
-```bash
-# .env
-MORTGAGE_DATA_DIR=/mnt/network_share/mortgage_data
-# or
-MORTGAGE_DATA_DIR=/Volumes/CloudStorage/mortgage_data
-```
-
----
-
-## Advanced Configuration
-
-### Custom Path Resolution
-
-Override specific paths programmatically:
-
-```python
-from mortgage_data_manager.core.config import MortgageDataConfig
-from pathlib import Path
-
-class CustomConfig(MortgageDataConfig):
-    # Override with custom path
-    DATA_DIR = Path("/custom/data/path")
-
-config = CustomConfig()
-```
-
-### Dynamic Configuration
-
-Load configuration based on runtime conditions:
-
-```python
-import os
-from mortgage_data_manager.hmda.config import HMDAConfig
-
-# Choose configuration based on environment
-env = os.getenv("ENVIRONMENT", "development")
-
-if env == "production":
-    os.environ["HMDA_DATA_DIR"] = "/data/hmda"
-else:
-    os.environ["HMDA_DATA_DIR"] = "/Users/dev/hmda_data"
-
-config = HMDAConfig()
-```
-
-### Validation
-
-Validate paths before use:
-
-```python
-from mortgage_data_manager.core.config import MortgageDataConfig
-
-config = MortgageDataConfig()
-
-# Validate paths are accessible
-try:
-    config.validate_paths()
-    print("✓ All paths are valid")
-except PermissionError as e:
-    print(f"✗ Permission error: {e}")
-```
-
----
 
 ## Troubleshooting
 
-### Problem: Configuration Not Loading
+**Environment variables are not being read.** `.env` must be in the project root
+(the directory `MORTGAGE_DATA_PROJECT_DIR` resolves to), and `KEY=value` takes no
+spaces around the `=`. `mortgage-data info` prints the project and data directories
+that resolved, and `mortgage-data <source> info` prints one source's paths.
 
-**Symptom:** Environment variables not being read
+**`FileNotFoundError` on a path that should exist.** Check the configured value
+before assuming the data is missing:
 
-**Solutions:**
+```python
+from mortgage_data_manager.sources.hmda.config import HMDAConfig
 
-1. Check `.env` file location (must be in current directory)
-   ```bash
-   ls -la .env
-   ```
-
-2. Verify environment variable syntax
-   ```bash
-   # Correct
-   HMDA_DATA_DIR=/data/hmda
-
-   # Incorrect
-   HMDA_DATA_DIR = /data/hmda  # No spaces around =
-   ```
-
-3. Check for typos in variable names
-   ```python
-   from mortgage_data_manager.hmda.config import HMDAConfig
-   config = HMDAConfig()
-   print(config.HMDA_DATA_DIR)  # Should print your custom path
-   ```
-
-### Problem: Permission Denied
-
-**Symptom:** Cannot create directories or write files
-
-**Solutions:**
-
-1. Check directory permissions
-   ```bash
-   ls -ld /data/mortgage_data
-   ```
-
-2. Ensure write permissions
-   ```bash
-   chmod 755 /data/mortgage_data
-   ```
-
-3. Use a directory you own
-   ```bash
-   # .env
-   MORTGAGE_DATA_DIR=/Users/username/mortgage_data
-   ```
-
-### Problem: Disk Space
-
-**Symptom:** Running out of disk space
-
-**Solutions:**
-
-1. Check disk usage
-   ```bash
-   du -sh /data/mortgage_data/*
-   ```
-
-2. Use compression
-   ```python
-   # Already enabled by default in silver layer
-   write_hive_partitioned(df, output_dir, compression="snappy")
-   ```
-
-3. Delete raw layer after processing
-   ```bash
-   rm -rf /data/hmda/raw/*
-   ```
-
-4. Use different drives for different subpackages
-   ```bash
-   # .env
-   HMDA_DATA_DIR=/ssd/hmda      # Fast SSD for frequently accessed
-   MBS_DATA_DIR=/hdd/mbs        # Large HDD for archives
-   ```
-
-### Problem: Path Not Found
-
-**Symptom:** `FileNotFoundError` when accessing data
-
-**Solutions:**
-
-1. Ensure directories are created
-   ```python
-   from mortgage_data_manager.core.config import MortgageDataConfig
-   MortgageDataConfig.ensure_directories('hmda')
-   ```
-
-2. Check configuration
-   ```python
-   from mortgage_data_manager.hmda.config import HMDAConfig
-   config = HMDAConfig()
-   print(f"HMDA data dir: {config.HMDA_DATA_DIR}")
-   print(f"Exists: {config.HMDA_DATA_DIR.exists()}")
-   ```
-
-3. Create directories manually
-   ```bash
-   mkdir -p /data/mortgage_data/hmda/{raw,bronze,silver}
-   ```
-
----
-
-## Configuration Examples
-
-### Example 1: Single Machine
-
-```bash
-# .env
-MORTGAGE_DATA_DIR=/data/mortgage_data
+print(HMDAConfig.HMDA_DATA_DIR, HMDAConfig.HMDA_DATA_DIR.exists())
 ```
 
-**Directory structure:**
-```
-/data/mortgage_data/
-├── hmda/
-├── fha/
-├── gnma/
-└── matching/
-```
+If the drive holding the data root is not mounted, every path under it fails this
+way.
 
-### Example 2: Multiple Drives
-
-```bash
-# .env
-# Fast SSD for frequently accessed data
-HMDA_DATA_DIR=/ssd/hmda
-FHA_DATA_DIR=/ssd/fha
-
-# Large HDD for less frequently accessed data
-MATCHING_DATA_DIR=/hdd/matching
-```
-
-### Example 3: Network Storage
-
-```bash
-# .env
-# All data on network share
-MORTGAGE_DATA_DIR=/mnt/nfs/mortgage_data
-
-# Or specific subpackages
-HMDA_DATA_DIR=/mnt/nfs/hmda
-FHA_DATA_DIR=/mnt/nfs/fha
-```
-
-### Example 4: Docker Container
-
-```bash
-# .env
-# Mount volumes to /data in container
-MORTGAGE_DATA_DIR=/data
-HMDA_DATA_DIR=/data/hmda
-FHA_DATA_DIR=/data/fha
-```
-
-**docker-compose.yml:**
-```yaml
-services:
-  mortgage-data:
-    image: mortgage-data-manager
-    volumes:
-      - ./data:/data
-    environment:
-      - MORTGAGE_DATA_DIR=/data
-```
-
----
-
-## Best Practices
-
-1. **Use .env files**: Keep configuration separate from code
-2. **Version control**: Add `.env` to `.gitignore`, commit `.env.example`
-3. **Document paths**: Comment your `.env` file
-4. **Validate early**: Check paths exist before processing
-5. **Use defaults**: Only override when necessary
-6. **Consistent naming**: Follow `{SUBPACKAGE}_DATA_DIR` pattern
-
-## See Also
-
-- [Architecture Documentation](architecture.md) - System design
-- [Core API](api/core.md) - Configuration classes
+**Running out of space.** The raw layer is the largest, and the easiest to replace
+because it can be downloaded again. `du -sh {MORTGAGE_DATA_DIR}/*` shows where the space went.

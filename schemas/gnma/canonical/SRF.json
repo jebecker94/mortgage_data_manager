@@ -1,0 +1,181 @@
+{
+  "prefix": "SRF",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "series",
+          "arrow_type": "string",
+          "pdf_text": "Series",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 15,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "payment_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Payment Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 16,
+              "end": 23,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "factor",
+          "arrow_type": "float64",
+          "pdf_text": "Factor",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 24,
+              "end": 34,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "settlement_date",
+          "arrow_type": "int64",
+          "pdf_text": "Settlement Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 35,
+              "end": 43,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "first_accrual_date",
+          "arrow_type": "int64",
+          "pdf_text": "First Accrual Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 44,
+              "end": 52,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "original_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Original Balance",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 53,
+              "end": 69,
+              "length": 17
+            }
+          ]
+        },
+        {
+          "id": "current_wac",
+          "arrow_type": "float64",
+          "pdf_text": "Current WAC",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 70,
+              "end": 76,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "current_warm",
+          "arrow_type": "int64",
+          "pdf_text": "Current WARM",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 77,
+              "end": 80,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "current_wala",
+          "arrow_type": "int64",
+          "pdf_text": "Current WALA",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 81,
+              "end": 84,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "current_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Current Balance",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 85,
+              "end": 101,
+              "length": 17
+            }
+          ]
+        },
+        {
+          "id": "filler",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 102,
+              "end": 110,
+              "length": 9
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

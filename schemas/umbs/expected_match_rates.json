@@ -1,0 +1,27 @@
+{
+  "_comment": "Drift-guard floors for `mortgage-data match mbs-umbs check`. Pinned 2026-07-05 from the post-fix runs (FNMA 22,049,149 pairs, r1_share 0.989, FPD-2019 98.5%, 2020-24 99.8-99.9%; FHLMC 16,459,858, r1_share 0.995, 2019 97.5%, 2020-24 99.1-99.6%). Floors are deliberately loose: they catch the catastrophic collapses that upstream encoding drift produces (rates falling by tens of points, round 1 emptying out), not sub-point fluctuations. The 2019 floor guards the snapshot seam windowing; the round1_share floor guards MIP null-vs-0 harmonization (round 2 absorbs what round 1 loses, so totals alone would not flag it). Update deliberately when a genuine improvement shifts the plateau; recency-affected years are not pinned.",
+  "fnma": {
+    "total_pairs_floor": 21500000,
+    "round1_share_floor": 0.8,
+    "fpd_year_rate_floors": {
+      "2019": 0.96,
+      "2020": 0.985,
+      "2021": 0.985,
+      "2022": 0.985,
+      "2023": 0.985,
+      "2024": 0.985
+    }
+  },
+  "fhlmc": {
+    "total_pairs_floor": 16200000,
+    "round1_share_floor": 0.8,
+    "fpd_year_rate_floors": {
+      "2019": 0.95,
+      "2020": 0.98,
+      "2021": 0.98,
+      "2022": 0.98,
+      "2023": 0.98,
+      "2024": 0.98
+    }
+  }
+}

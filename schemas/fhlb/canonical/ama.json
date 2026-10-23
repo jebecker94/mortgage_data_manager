@@ -1,0 +1,1683 @@
+{
+  "dataset": "ama",
+  "layout_kind": "named",
+  "period_grain": "year",
+  "provenance": {
+    "source": "FHLBank Public Use Database annual AMA export; per-vintage field definitions in schemas/fhlb/*.xls|*.pdf",
+    "generated_from": "raw CSV headers 2009-2024 + FHLB_COLUMN_MAPPING + bronze dtypes"
+  },
+  "fields": [
+    {
+      "id": "AcqTyp",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "AcqTyp"
+        }
+      ]
+    },
+    {
+      "id": "Aff1",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Aff1"
+        }
+      ]
+    },
+    {
+      "id": "Aff2",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Aff2"
+        }
+      ]
+    },
+    {
+      "id": "Aff3",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Aff3"
+        }
+      ]
+    },
+    {
+      "id": "Aff4",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Aff4"
+        }
+      ]
+    },
+    {
+      "id": "Bank",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2015",
+          "to": "2016",
+          "source": "FHLBank"
+        },
+        {
+          "from": "2017",
+          "to": null,
+          "source": "Bank"
+        }
+      ]
+    },
+    {
+      "id": "Bed1",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Bed1"
+        }
+      ]
+    },
+    {
+      "id": "Bed2",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Bed2"
+        }
+      ]
+    },
+    {
+      "id": "Bed3",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Bed3"
+        }
+      ]
+    },
+    {
+      "id": "Bed4",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Bed4"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1AgeAtApplicationYears",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "BoAge"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1AgeAtApplicationYears"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1CreditScoreValue",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "Borrower Credit Score"
+        },
+        {
+          "from": "2015",
+          "to": "2015",
+          "source": "BoCreditScor"
+        },
+        {
+          "from": "2016",
+          "to": "2016",
+          "source": "BoCreditScore"
+        },
+        {
+          "from": "2017",
+          "to": "2017",
+          "source": "BoCreditScor"
+        },
+        {
+          "from": "2018",
+          "to": "2018",
+          "source": "BoCreditScore"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1CreditScoreValue"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1EthnicityType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "BoEth"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1EthnicityType"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1Race1Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "BoRace"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1Race1Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1Race2Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Race2"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1Race2Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1Race3Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Race3"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1Race3Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1Race4Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Race4"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1Race4Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1Race5Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Race5"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1Race5Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower1SexType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "BoSex"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower1SexType"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2AgeAtApplicationYears",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "CoAge"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2AgeAtApplicationYears"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2CreditScoreValue",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2009",
+          "source": "Co Borrower Credit Score"
+        },
+        {
+          "from": "2010",
+          "to": "2013",
+          "source": "Co-Borrower Credit Score"
+        },
+        {
+          "from": "2014",
+          "to": "2014",
+          "source": "CoBorrower Credit Score"
+        },
+        {
+          "from": "2015",
+          "to": "2015",
+          "source": "CoCreditScor"
+        },
+        {
+          "from": "2016",
+          "to": "2016",
+          "source": "CoCreditScore"
+        },
+        {
+          "from": "2017",
+          "to": "2017",
+          "source": "CoBoCreditScor"
+        },
+        {
+          "from": "2018",
+          "to": "2018",
+          "source": "CoBoCreditScore"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2CreditScoreValue"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2EthnicityType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "CoEth"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2EthnicityType"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2Race1Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "CoRace"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2Race1Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2Race2Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "Corace2"
+        },
+        {
+          "from": "2015",
+          "to": "2015",
+          "source": "CoRace2"
+        },
+        {
+          "from": "2016",
+          "to": "2018",
+          "source": "Corace2"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2Race2Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2Race3Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "Corace3"
+        },
+        {
+          "from": "2015",
+          "to": "2015",
+          "source": "CoRace3"
+        },
+        {
+          "from": "2016",
+          "to": "2018",
+          "source": "Corace3"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2Race3Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2Race4Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "Corace4"
+        },
+        {
+          "from": "2015",
+          "to": "2015",
+          "source": "CoRace4"
+        },
+        {
+          "from": "2016",
+          "to": "2018",
+          "source": "Corace4"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2Race4Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2Race5Type",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "Corace5"
+        },
+        {
+          "from": "2015",
+          "to": "2015",
+          "source": "CoRace5"
+        },
+        {
+          "from": "2016",
+          "to": "2018",
+          "source": "Corace5"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2Race5Type"
+        }
+      ]
+    },
+    {
+      "id": "Borrower2SexType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "CoSex"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "Borrower2SexType"
+        }
+      ]
+    },
+    {
+      "id": "BorrowerCount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "NumBor"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "BorrowerCount"
+        }
+      ]
+    },
+    {
+      "id": "BorrowerFirstTimeHomebuyer",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "First"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "BorrowerFirstTimeHomebuyer"
+        }
+      ]
+    },
+    {
+      "id": "CICA",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "CICA"
+        }
+      ]
+    },
+    {
+      "id": "CensusTractIdentifier",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Tract"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "CensusTractIdentifier"
+        }
+      ]
+    },
+    {
+      "id": "CensusTractMedFamIncomeAmount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "TraMedY"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "CensusTractMedFamIncomeAmount"
+        }
+      ]
+    },
+    {
+      "id": "CensusTractMinorityRatioPercent",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "MinPer"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "CensusTractMinorityRatioPercent"
+        }
+      ]
+    },
+    {
+      "id": "Coop",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Coop"
+        }
+      ]
+    },
+    {
+      "id": "CoreBasedStatisticalAreaCode",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "MSA"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "CoreBasedStatisticalAreaCode"
+        }
+      ]
+    },
+    {
+      "id": "EmploymentBorrowerSelfEmployed",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Self"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "EmploymentBorrowerSelfEmployed"
+        }
+      ]
+    },
+    {
+      "id": "FHFBID",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "FHFBID"
+        }
+      ]
+    },
+    {
+      "id": "FHLBankID",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2010",
+          "to": "2014",
+          "source": "FHLBankID"
+        }
+      ]
+    },
+    {
+      "id": "FIPSCountyCode",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": null,
+          "source": "FIPSCountyCode"
+        }
+      ]
+    },
+    {
+      "id": "FIPSStateNumericCode",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "FIPSStateCode"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "FIPSStateNumericCode"
+        }
+      ]
+    },
+    {
+      "id": "FeatureID",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "FeatureID"
+        }
+      ]
+    },
+    {
+      "id": "FedFinStbltyPlan",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "FedFinStbltyPlan"
+        }
+      ]
+    },
+    {
+      "id": "GSEREO",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "GSEREO"
+        }
+      ]
+    },
+    {
+      "id": "Geog",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Geog"
+        }
+      ]
+    },
+    {
+      "id": "HOEPALoanStatusType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "HOEPA"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "HOEPALoanStatusType"
+        }
+      ]
+    },
+    {
+      "id": "HUDMedianIncomeAmount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "CurAreY"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "HUDMedianIncomeAmount"
+        }
+      ]
+    },
+    {
+      "id": "HousingExpenseRatioPercent",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Front"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "HousingExpenseRatioPercent"
+        }
+      ]
+    },
+    {
+      "id": "IncRat",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "IncRat"
+        }
+      ]
+    },
+    {
+      "id": "IndexSourceType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "ArmIndex"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "IndexSourceType"
+        }
+      ]
+    },
+    {
+      "id": "LTVRatioPercent",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "LTV"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "LTVRatioPercent"
+        }
+      ]
+    },
+    {
+      "id": "LienPriorityType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "LienStatus"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "LienPriorityType"
+        }
+      ]
+    },
+    {
+      "id": "LoanAcquisitionActualUPBAmt",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "UPB"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "LoanAcquisitionActualUPBAmt"
+        }
+      ]
+    },
+    {
+      "id": "LoanAcquisitionDate",
+      "arrow_type": "int32",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "AcquDate"
+        },
+        {
+          "from": "2015",
+          "to": "2016",
+          "source": "AcqDate"
+        },
+        {
+          "from": "2017",
+          "to": "2018",
+          "source": "AcquDate"
+        },
+        {
+          "from": "2019",
+          "to": "2020",
+          "source": "LoanAcquistionDate"
+        },
+        {
+          "from": "2021",
+          "to": "2021",
+          "source": "LoanAcquisitionDate"
+        },
+        {
+          "from": "2022",
+          "to": "2022",
+          "source": "LoanAcquistionDate"
+        },
+        {
+          "from": "2023",
+          "to": null,
+          "source": "LoanAcquisitionDate"
+        }
+      ],
+      "notes": "Bare acquisition year, not a date."
+    },
+    {
+      "id": "LoanAmortizationMaxTermMonths",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "AmorTerm"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "LoanAmortizationMaxTermMonths"
+        }
+      ]
+    },
+    {
+      "id": "LoanCharacteristicsID",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2009",
+          "source": "LoanNumber"
+        },
+        {
+          "from": "2010",
+          "to": "2014",
+          "source": "Loan Number"
+        },
+        {
+          "from": "2015",
+          "to": "2016",
+          "source": "AssignedID"
+        },
+        {
+          "from": "2017",
+          "to": "2017",
+          "source": "Assigned ID"
+        },
+        {
+          "from": "2018",
+          "to": "2018",
+          "source": "AssignedID"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "LoanCharacteristicsID"
+        }
+      ]
+    },
+    {
+      "id": "LoanPurposeType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Purpose"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "LoanPurposeType"
+        }
+      ]
+    },
+    {
+      "id": "LocalAreaMedianIncomeAmount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "LocMedY"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "LocalAreaMedianIncomeAmount"
+        }
+      ]
+    },
+    {
+      "id": "MarginRatePercent",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "ArmMarg"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "MarginRatePercent"
+        }
+      ]
+    },
+    {
+      "id": "MortgageLoanSellerInstType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "SellType"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "MortgageLoanSellerInstType"
+        }
+      ]
+    },
+    {
+      "id": "MortgageType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "FedGuar"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "MortgageType"
+        }
+      ]
+    },
+    {
+      "id": "NoteAmount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Amount"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "NoteAmount"
+        }
+      ]
+    },
+    {
+      "id": "NoteDate",
+      "arrow_type": "int32",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "MortDate"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "NoteDate"
+        }
+      ],
+      "notes": "Bare origination year, not a date."
+    },
+    {
+      "id": "NoteRatePercent",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Rate"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "NoteRatePercent"
+        }
+      ]
+    },
+    {
+      "id": "PMICoveragePercent",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64",
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "PMI"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "PMICoveragePercent"
+        }
+      ]
+    },
+    {
+      "id": "PrepaymentPenaltyExpirationDate",
+      "arrow_type": "date32",
+      "derived_arrow_types": [
+        "date32",
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "PrepayP",
+          "pattern": "%m/%d/%Y"
+        },
+        {
+          "from": "2019",
+          "to": "2023",
+          "source": "PrepaymentPenaltyExpirationDate",
+          "pattern": "%m/%d/%Y"
+        },
+        {
+          "from": "2024",
+          "to": null,
+          "source": "PrepaymentPenaltyExpirationDate",
+          "pattern": "%Y-%m-%d"
+        }
+      ],
+      "decode": {
+        "kind": "date",
+        "per_window": true
+      },
+      "null_values": [
+        "12/31/9999",
+        "9999-12-31"
+      ],
+      "all_sentinel": true,
+      "notes": "9999-12-31 is a 'no prepayment penalty' sentinel and is the ONLY value present in all 16 vintages (858,105 of 858,105 rows), so the column carries no information. Nulled here; the guard fires if a real date ever appears."
+    },
+    {
+      "id": "ProductCategoryName",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Product"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "ProductCategoryName"
+        }
+      ]
+    },
+    {
+      "id": "Program",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "Program"
+        }
+      ]
+    },
+    {
+      "id": "PropertyType",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "PropType"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "PropertyType"
+        }
+      ]
+    },
+    {
+      "id": "PropertyUnitCount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "NumUnits"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "PropertyUnitCount"
+        }
+      ]
+    },
+    {
+      "id": "PropertyUsageType",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Occup"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "PropertyUsageType"
+        }
+      ]
+    },
+    {
+      "id": "Rent1",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Rent1"
+        }
+      ]
+    },
+    {
+      "id": "Rent2",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Rent2"
+        }
+      ]
+    },
+    {
+      "id": "Rent3",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Rent3"
+        }
+      ]
+    },
+    {
+      "id": "Rent4",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Rent4"
+        }
+      ]
+    },
+    {
+      "id": "RentUt1",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "RentUt1"
+        }
+      ]
+    },
+    {
+      "id": "RentUt2",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "RentUt2"
+        }
+      ]
+    },
+    {
+      "id": "RentUt3",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "RentUt3"
+        }
+      ]
+    },
+    {
+      "id": "RentUt4",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "RentUt4"
+        }
+      ]
+    },
+    {
+      "id": "ScheduledTotalPaymentCount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Term"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "ScheduledTotalPaymentCount"
+        }
+      ]
+    },
+    {
+      "id": "SellCity",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "SellCity"
+        }
+      ]
+    },
+    {
+      "id": "SellSt",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "SellSt"
+        }
+      ]
+    },
+    {
+      "id": "Seller",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2014",
+          "source": "Seller"
+        }
+      ]
+    },
+    {
+      "id": "SpcHsgGoals",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "SpcHsgGoals"
+        }
+      ]
+    },
+    {
+      "id": "TotalDebtExpenseRatioPercent",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Back"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "TotalDebtExpenseRatioPercent"
+        }
+      ]
+    },
+    {
+      "id": "TotalMonthlyIncomeAmount",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Income"
+        },
+        {
+          "from": "2019",
+          "to": null,
+          "source": "TotalMonthlyIncomeAmount"
+        }
+      ]
+    },
+    {
+      "id": "TractRat",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": "2018",
+          "source": "Tractrat"
+        }
+      ]
+    },
+    {
+      "id": "Year",
+      "arrow_type": "int64",
+      "derived_arrow_types": [
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009",
+          "to": null,
+          "source": "Year"
+        }
+      ]
+    },
+    {
+      "id": "data_year",
+      "arrow_type": "int64",
+      "derived": true,
+      "layouts": [
+        {
+          "from": "2009",
+          "to": null,
+          "source": null
+        }
+      ],
+      "notes": "Added by the builder from the vintage year, not read from the source."
+    }
+  ]
+}

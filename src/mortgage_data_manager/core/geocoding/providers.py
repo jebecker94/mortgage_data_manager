@@ -90,7 +90,18 @@ def geocode_oneline(
     """Geocode a list of address dicts via the Census one-line endpoint.
 
     Each input dict needs keys: ``address_id``, ``street``, ``city``, ``state``, ``zip``.
-    Returns one result dict per input (same order) with the keys in RESULT_FIELDS.
+
+    Args:
+        addresses: The address dicts to geocode.
+        provider: Provider key selecting the Census benchmark/vintage.
+        session: Requests session to reuse, or None for a fresh one.
+        max_workers: Thread-pool size for concurrent requests.
+        timeout_seconds: Per-request timeout.
+        progress: Log progress as results arrive.
+        progress_every: How many results between progress lines.
+
+    Returns:
+        One result dict per input, in the same order, with the RESULT_FIELDS keys.
     """
     if provider not in BENCHMARKS:
         raise ValueError(f"Unknown provider: {provider}")
@@ -138,7 +149,7 @@ def geocode_oneline(
             completed += 1
             if progress and completed % progress_every == 0:
                 rate = completed / max(time.time() - t0, 1e-9)
-                logger.info(f"  geocoded {completed}/{n} ({rate:.1f}/s) via {provider}")
+                logger.info("  geocoded %s/%s (%.1f/s) via %s", completed, n, rate, provider)
 
     return results
 
@@ -146,8 +157,9 @@ def geocode_oneline(
 def _batch_post(rows: list[dict], benchmark: str, timeout_seconds: int) -> list[dict] | None:
     """One POST to the Census batch endpoint. ``rows`` capped to 10k by caller.
 
-    Returns one result per input row (same order) or None on a hard failure
-    (in which case the caller should fall through to one-line).
+    Returns:
+        One result per input row in the same order, or None on a hard failure —
+        in which case the caller should fall through to one-line.
     """
     buf = io.StringIO()
     writer = csv.writer(buf)
@@ -171,7 +183,9 @@ def _batch_post(rows: list[dict], benchmark: str, timeout_seconds: int) -> list[
         )
         r.raise_for_status()
     except Exception as e:
-        logger.warning(f"Census batch POST failed ({type(e).__name__}): {e}; will fall through to one-line")
+        logger.warning(
+            "Census batch POST failed (%s): %s; will fall through to one-line", type(e).__name__, e
+        )
         return None
 
     # Response is CSV: id, input_address, match_indicator, match_type, matched_address, coords, tigerline_id, side
@@ -219,6 +233,16 @@ def geocode_batch(
     """Geocode a list of address dicts via the Census batch endpoint.
 
     Falls through to one-line for any chunk that the batch endpoint refuses.
+
+    Args:
+        addresses: The address dicts to geocode.
+        provider: Provider key selecting the Census benchmark/vintage.
+        chunk_size: Rows per batch POST; the endpoint caps this at 10k.
+        timeout_seconds: Per-request timeout.
+        progress: Log progress as chunks complete.
+
+    Returns:
+        One result dict per input, in the same order, with the RESULT_FIELDS keys.
     """
     if provider not in BENCHMARKS:
         raise ValueError(f"Unknown provider: {provider}")
@@ -238,5 +262,11 @@ def geocode_batch(
         out.extend(chunk_results)
         if progress:
             elapsed = time.time() - t0
-            logger.info(f"  batch {len(out)}/{len(addresses)} ({len(out) / max(elapsed, 1e-9):.1f}/s) via {provider}")
+            logger.info(
+                "  batch %s/%s (%.1f/s) via %s",
+                len(out),
+                len(addresses),
+                len(out) / max(elapsed, 1e-9),
+                provider,
+            )
     return out

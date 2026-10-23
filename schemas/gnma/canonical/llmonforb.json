@@ -1,0 +1,701 @@
+{
+  "prefix": "llmonforb",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "F": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (F=Loan Level Forbearance)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 2,
+              "end": 7,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "disclosure_sequence_number",
+          "arrow_type": "string",
+          "pdf_text": "Disclosure Sequence Number",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 8,
+              "end": 17,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID (including for loans in MIP pool)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 18,
+              "end": 21,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "number_of_months_forbearance",
+          "arrow_type": "string",
+          "pdf_text": "Number of Months Forbearance (Term)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 22,
+              "end": 23,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "covid_flag",
+          "arrow_type": "string",
+          "pdf_text": "COVID Flag",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 24,
+              "end": 24,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "begin_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Begin Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 25,
+              "end": 32,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "end_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "End Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 33,
+              "end": 40,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "forbearance_exit_code",
+          "arrow_type": "string",
+          "pdf_text": "Forbearance \u201cExit\u201d Code",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 41,
+              "end": 41,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "current_month_liquidation_flag",
+          "arrow_type": "string",
+          "pdf_text": "Current Month Liquidation Flag (Yes or No)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 42,
+              "end": 42,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As-Of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 43,
+              "end": 48,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "unmapped_tail",
+          "arrow_type": "string",
+          "decode": null,
+          "pdf_text": "Undocumented single-char trailing field added 2025-05 (observed values '3'/'4'); name/meaning TBD",
+          "layouts": [
+            {
+              "from": "2025-05",
+              "to": null,
+              "begin": 49,
+              "end": 49,
+              "length": 1
+            }
+          ]
+        }
+      ]
+    },
+    "H": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (H = File Header)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_text": "File Name",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "file_correction_flag",
+          "arrow_type": "string",
+          "pdf_text": "File Correction Flag (Y/N)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 27,
+              "end": 27,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 28,
+              "end": 33,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Date File Generated (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 34,
+              "end": 41,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    },
+    "P": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (P = Pool Header Information)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 2,
+              "end": 10,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 11,
+              "end": 16,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "issue_type",
+          "arrow_type": "string",
+          "pdf_text": "Issue Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 17,
+              "end": 17,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 18,
+              "end": 19,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Pool Issue Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 20,
+              "end": 27,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 28,
+              "end": 31,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 32,
+              "end": 37,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    },
+    "T": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (T=Pool Trailer Information)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 2,
+              "end": 10,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 11,
+              "end": 16,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "issue_type",
+          "arrow_type": "string",
+          "pdf_text": "Issue Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 17,
+              "end": 17,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 18,
+              "end": 19,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 20,
+              "end": 27,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 28,
+              "end": 31,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 32,
+              "end": 37,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "loan_count_for_the_pool",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Count for the Pool",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 38,
+              "end": 44,
+              "length": 7
+            }
+          ]
+        }
+      ]
+    },
+    "Z": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (Z = File Trailer)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_text": "File Name",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "count_of_pools_in_this_file",
+          "arrow_type": "int64",
+          "pdf_text": "Count of Pools in this file (Control Total)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 27,
+              "end": 33,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "count_of_loans_with_forbearance_in_this_file",
+          "arrow_type": "int64",
+          "pdf_text": "Count of Loans with Forbearance in this file (Control Total)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 34,
+              "end": 42,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "total_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Total Record Count (Control Total including all headers and trailers)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 43,
+              "end": 51,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "begin": 52,
+              "end": 57,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": [],
+  "scope_note": "F (Loan Level Forbearance) record gained a 1-char trailing field at position 49 (observed values '3'/'4') starting 2025-05; F width is 48 through 2025-04 and 49 from 2025-05. It is not in the V1.1 combined CSV (transcribed from an older PDF), so it is carried here as 'unmapped_tail' (string, decode null) with a from:2025-05 window. Rename once a newer GNMA layout documents it."
+}

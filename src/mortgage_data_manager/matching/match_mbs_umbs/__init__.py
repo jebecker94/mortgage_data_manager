@@ -2,61 +2,41 @@
 
 Matches MBS loan-level disclosure data to UMBS issuance data, per-GSE:
 
-- FNMA-UMBS matching: Links Fannie Mae silver/issuances to UMBS FNM_ILLD data
-  (fnma_match.py), using a two-round process (with then without MIP).
-- FHLMC-UMBS matching: Links Freddie Mac bronze/origination to UMBS FRE_ILLD data
-  (fhlmc_match.py), using a three-round process that relaxes MIP then drops credit
-  score to handle the VantageScore 4.0 / Classic FICO transition.
+- FNMA-UMBS matching: Links Fannie Mae silver/issuances to UMBS FNM_ILLD data.
+- FHLMC-UMBS matching: Links Freddie Mac silver/origination to UMBS FRE_ILLD data.
 
-Shared helpers combine matched issuances and merge the per-GSE crosswalks
-(utils.py), and validation utilities assess match quality (validation.py).
+Both use a four-round process: relax MIP, then drop credit score to handle the
+VantageScore 4.0 / Classic FICO transition, then resolve the leftovers' contested
+candidate groups on exactness over LTV/CLTV/DTI/Term (ties dropped, never broken).
+The rounds are one engine and one round table (matching.py), with a spec per GSE; the shared load
+side (rename maps, date window, standardized frame loading, the core-exactness score)
+lives in utils.py, dtype/encoding normalization in inputs.py,
+run metrics and the drift/staleness guards in metrics.py, and validation utilities in
+validation.py.
 
-Example - FNMA matching:
-    >>> from mortgage_data_manager.matching.match_mbs_umbs import match_fnma_mbs_umbs
-    >>> df = match_fnma_mbs_umbs(mbs_dir, umbs_dir, crosswalk_file, variable_file)
-
-Example - FHLMC matching:
-    >>> from mortgage_data_manager.matching.match_mbs_umbs import match_fhlmc_mbs_umbs
-    >>> df = match_fhlmc_mbs_umbs(mbs_dir, umbs_dir, crosswalk_file, variable_file)
+Example:
+    >>> from mortgage_data_manager.matching.match_mbs_umbs import run_matching
+    >>> df = run_matching("fnma")
 """
 
-from mortgage_data_manager.matching.match_mbs_umbs.config import (
-    CROSSWALK_OUTPUT_DIR,
-    DATA_DIR,
-    OUTPUT_DIR,
-    MBSUMBSConfig,
-    get_fhlmc_config,
-    get_fnma_config,
-    get_umbs_bronze_dir,
-)
-from mortgage_data_manager.matching.match_mbs_umbs.fhlmc_match import match_fhlmc_mbs_umbs
-from mortgage_data_manager.matching.match_mbs_umbs.fnma_match import (
-    explore_fnma_credit_scores,
-    match_fnma_mbs_umbs,
-)
+from mortgage_data_manager.matching.match_mbs_umbs.config import MBSUMBSMatchingConfig
+from mortgage_data_manager.matching.match_mbs_umbs.matching import run_matching
 from mortgage_data_manager.matching.match_mbs_umbs.utils import (
-    combine_crosswalks,
-    combine_issuances,
+    build_rename_maps,
+    compute_date_window,
+    load_standardized_frame,
 )
 from mortgage_data_manager.matching.match_mbs_umbs.validation import run_validation
 
 __all__ = [
     # Config
-    "MBSUMBSConfig",
-    "DATA_DIR",
-    "OUTPUT_DIR",
-    "CROSSWALK_OUTPUT_DIR",
-    "get_fhlmc_config",
-    "get_fnma_config",
-    "get_umbs_bronze_dir",
-    # FNMA matching
-    "match_fnma_mbs_umbs",
-    "explore_fnma_credit_scores",
-    # FHLMC matching
-    "match_fhlmc_mbs_umbs",
+    "MBSUMBSMatchingConfig",
+    # Matching
+    "run_matching",
     # Shared utilities
-    "combine_issuances",
-    "combine_crosswalks",
+    "build_rename_maps",
+    "compute_date_window",
+    "load_standardized_frame",
     # Validation
     "run_validation",
 ]

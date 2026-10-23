@@ -1,0 +1,928 @@
+{
+  "prefix": "LoanPerf",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "HH": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2023-06",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = HH",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_frequency",
+          "arrow_type": "int64",
+          "pdf_text": "File Frequency",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "int64",
+          "pdf_text": "Date File Generated",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "LP": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2023-06",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = LP",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "disclosure_sequence_number",
+          "arrow_type": "int64",
+          "pdf_text": "Disclosure Sequence Number",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer ID (including for loan packages in MIP pool)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "agency",
+          "arrow_type": "string",
+          "pdf_text": "Agency (Agency Loan Type FHA, VA, RD, NA)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_purpose",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Purpose",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "refinance_type",
+          "arrow_type": "int64",
+          "pdf_text": "Refinance Type",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "first_payment_date",
+          "arrow_type": "int64",
+          "pdf_text": "First Payment Date (First Scheduled Installment)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "maturity_date_of_loan",
+          "arrow_type": "int64",
+          "pdf_text": "Maturity Date of Loan (Last Scheduled Installment)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "loan_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Loan Interest Rate (current interest rate)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 5,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "original_principal_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Original Principal Balance (OPB at pool issuance)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 15,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_at_issuance",
+          "arrow_type": "float64",
+          "pdf_text": "UPB at Issuance (UPB of the loan at pool issuance)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 16,
+              "max_length": 15,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "unpaid_principal_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Unpaid Principal Balance (UPB of the loan)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 17,
+              "max_length": 15,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "original_loan_term_in_months",
+          "arrow_type": "int64",
+          "pdf_text": "Original Loan Term, in Months",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 18,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "loan_age_in_months",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Age, in Months",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 19,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "remaining_loan_term_in_months",
+          "arrow_type": "int64",
+          "pdf_text": "Remaining Loan Term (Remaining Maturity), in Months",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 20,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "months_delinquent",
+          "arrow_type": "int64",
+          "pdf_text": "Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 21,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "months_pre_paid",
+          "arrow_type": "int64",
+          "pdf_text": "Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 22,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_gross_margin",
+          "arrow_type": "float64",
+          "pdf_text": "Loan Gross Margin (ARM Loans only)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 23,
+              "max_length": 4,
+              "format": "1.3"
+            }
+          ]
+        },
+        {
+          "id": "loan_to_value",
+          "arrow_type": "float64",
+          "pdf_text": "Loan To Value (LTV)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 24,
+              "max_length": 5,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "combined_ltv",
+          "arrow_type": "float64",
+          "pdf_text": "Combined LTV (CLTV)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 25,
+              "max_length": 5,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "total_debt_expense_ratio_percent",
+          "arrow_type": "float64",
+          "pdf_text": "Total Debt Expense Ratio Percent",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 26,
+              "max_length": 5,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "credit_score",
+          "arrow_type": "int64",
+          "pdf_text": "Credit Score",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 27,
+              "max_length": 3,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "down_payment_assistance",
+          "arrow_type": "string",
+          "pdf_text": "Down Payment Assistance (Yes or No)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 28,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "buy_down_status",
+          "arrow_type": "string",
+          "pdf_text": "Buy Down Status (Loan Status) (Yes or No)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 29,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upfront_mip",
+          "arrow_type": "float64",
+          "pdf_text": "Upfront MIP (insurance premium rate)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 30,
+              "max_length": 5,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "annual_mip",
+          "arrow_type": "float64",
+          "pdf_text": "Annual MIP (insurance premium rate)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 31,
+              "max_length": 5,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "number_of_borrowers",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Borrowers",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 32,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "first_time_home_buyer",
+          "arrow_type": "string",
+          "pdf_text": "First Time Home Buyer (Yes or No)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 33,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "property_type",
+          "arrow_type": "int64",
+          "pdf_text": "Property Type (Number of Living Units)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 34,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "state",
+          "arrow_type": "string",
+          "pdf_text": "State (2 character State Code)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 35,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "msa",
+          "arrow_type": "int64",
+          "pdf_text": "MSA",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 36,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "third_party_origination_type",
+          "arrow_type": "int64",
+          "pdf_text": "Third-Party Origination Type",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 37,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "current_month_liquidation_flag",
+          "arrow_type": "string",
+          "pdf_text": "Current Month Liquidation Flag (Yes or No)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 38,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "removal_reason",
+          "arrow_type": "int64",
+          "pdf_text": "Removal Reason",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 39,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "int64",
+          "pdf_text": "As of Date",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 40,
+              "max_length": 6,
+              "format": "CCYYMM"
+            }
+          ]
+        },
+        {
+          "id": "loan_origination_date",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Origination Date",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 41,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "seller_issuer_id",
+          "arrow_type": "int64",
+          "pdf_text": "Seller Issuer ID",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 42,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "index_type",
+          "arrow_type": "string",
+          "pdf_text": "Index Type",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 43,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "look_back_period",
+          "arrow_type": "int64",
+          "pdf_text": "Look-Back Period",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 44,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "interest_rate_change_date",
+          "arrow_type": "int64",
+          "pdf_text": "Interest Rate Change Date",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 45,
+              "max_length": 8
+            }
+          ]
+        },
+        {
+          "id": "initial_interest_rate_cap",
+          "arrow_type": "int64",
+          "pdf_text": "Initial Interest Rate Cap",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 46,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "subsequent_interest_rate_cap",
+          "arrow_type": "int64",
+          "pdf_text": "Subsequent Interest Rate Cap",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 47,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_cap",
+          "arrow_type": "int64",
+          "pdf_text": "Lifetime Interest Rate Cap",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 48,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "next_interest_rate_change_ceiling",
+          "arrow_type": "int64",
+          "pdf_text": "Next Interest Rate Change Ceiling",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 49,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_ceiling",
+          "arrow_type": "int64",
+          "pdf_text": "Lifetime Interest Rate Ceiling",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 50,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_floor",
+          "arrow_type": "int64",
+          "pdf_text": "Lifetime Interest Rate Floor",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 51,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "prospective_interest_rate",
+          "arrow_type": "int64",
+          "pdf_text": "Prospective Interest Rate",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 52,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "liquidation_balance",
+          "arrow_type": "int64",
+          "pdf_text": "Liquidation Balance (principal pass through)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 53,
+              "max_length": 16
+            }
+          ]
+        },
+        {
+          "id": "number_of_months_forbearance",
+          "arrow_type": "string",
+          "pdf_text": "Number of Months Forbearance (Term)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 54,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "covid_flag",
+          "arrow_type": "string",
+          "pdf_text": "COVID Flag",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 55,
+              "max_length": 1,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "begin_date",
+          "arrow_type": "int64",
+          "pdf_text": "Begin Date",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 56,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "end_date",
+          "arrow_type": "int64",
+          "pdf_text": "End Date",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 57,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "forbearance_exit_code",
+          "arrow_type": "string",
+          "pdf_text": "Forbearance \u201cExit\u201d Code",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 58,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "months_delinquent_2",
+          "arrow_type": "string",
+          "pdf_text": "Months Delinquent (up to previous 24 months)",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 59,
+              "max_length": 48
+            }
+          ]
+        }
+      ]
+    },
+    "TT": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2023-06",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TT",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "loan_count",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Count",
+          "layouts": [
+            {
+              "from": "2023-06",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 9
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

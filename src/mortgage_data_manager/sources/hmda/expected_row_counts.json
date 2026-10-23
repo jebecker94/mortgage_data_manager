@@ -1,0 +1,21 @@
+{
+  "_comment": "Pinned row counts for post-2018 HMDA bronze files and silver partitions, keyed dataset -> activity year -> file_type (a=three-year, b=one-year, c=snapshot, e=MLAR). Enforced at build time by check_expected_row_count (import_bronze/import_silver) and re-verified against the live parquet footers by tests/test_hmda/test_row_count_guard.py. Pinned 2026-08-31 from bronze parquet footers, cross-checked row-exact against an independent read of the raw archives. Bronze and silver carry identical counts for these datasets (no row drops between layers). Update an entry only deliberately - when the CFPB republishes a file and the new count has been verified against the raw archive; a SHORT count always means a truncated write.",
+  "loans": {
+    "2018": { "a": 15138510, "c": 15119651 },
+    "2019": { "a": 17573963, "b": 17563200, "c": 17545457 },
+    "2020": { "a": 25699043, "b": 25666745, "c": 25551868 },
+    "2021": { "a": 26269980, "b": 26227364, "c": 26124552 },
+    "2022": { "a": 16125975, "b": 16099307, "c": 16080210 },
+    "2023": { "b": 11564178, "c": 11483889 },
+    "2024": { "b": 12259199, "c": 12229298 },
+    "2025": { "c": 13543606, "e": 13534156 }
+  },
+  "panel": {
+    "2018": { "a": 5735, "c": 5683 },
+    "2019": { "a": 5571, "b": 5565, "c": 5508 },
+    "2020": { "a": 4527, "b": 4512, "c": 4475 },
+    "2021": { "b": 4370, "c": 4333 },
+    "2022": { "b": 4480, "c": 4467 },
+    "2023": { "c": 5113 }
+  }
+}

@@ -12,10 +12,10 @@ any matching workflow) needs to contextualize loan behavior:
 - ``yield_curve``: 10Y-2Y Treasury spread (FRED ``T10Y2Y``) — daily, averaged
   to monthly.
 
-Each series is cached as parquet under ``MortgageDataConfig.DATA_DIR /
-"reference" / "macro"`` following the :mod:`core.reference` convention. Unlike
+Each series is cached as parquet under ``MortgageDataConfig.REFERENCE_DIR /
+"macro"`` following the `core.reference` convention. Unlike
 the Census tables in this package, these series are *refreshed regularly* by
-their publishers — call :func:`refresh_macro_series` (or pass
+their publishers — call `refresh_macro_series` (or pass
 ``overwrite=True``) to re-pull, otherwise the cached parquet is reused.
 
 FRED access falls back to the public CSV endpoint (no key required); set
@@ -27,7 +27,7 @@ from __future__ import annotations
 import io
 from datetime import date
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 import polars as pl
 import requests
@@ -35,6 +35,7 @@ from decouple import config
 
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.reference.states import FIPS_TO_STATE, TERRITORIES
 
 logger = get_logger(__name__)
 
@@ -43,65 +44,15 @@ MACRO_START: date = date(2017, 1, 1)
 
 MacroSeries = Literal["pmms", "hpi", "unemployment", "yield_curve"]
 
-# FIPS code -> 2-letter state abbreviation (50 states + DC), used to key the
-# BLS LAUS series to the same ``state`` abbreviation the GSE silver uses.
-FIPS_TO_STATE: dict[str, str] = {
-    "01": "AL",
-    "02": "AK",
-    "04": "AZ",
-    "05": "AR",
-    "06": "CA",
-    "08": "CO",
-    "09": "CT",
-    "10": "DE",
-    "11": "DC",
-    "12": "FL",
-    "13": "GA",
-    "15": "HI",
-    "16": "ID",
-    "17": "IL",
-    "18": "IN",
-    "19": "IA",
-    "20": "KS",
-    "21": "KY",
-    "22": "LA",
-    "23": "ME",
-    "24": "MD",
-    "25": "MA",
-    "26": "MI",
-    "27": "MN",
-    "28": "MS",
-    "29": "MO",
-    "30": "MT",
-    "31": "NE",
-    "32": "NV",
-    "33": "NH",
-    "34": "NJ",
-    "35": "NM",
-    "36": "NY",
-    "37": "NC",
-    "38": "ND",
-    "39": "OH",
-    "40": "OK",
-    "41": "OR",
-    "42": "PA",
-    "44": "RI",
-    "45": "SC",
-    "46": "SD",
-    "47": "TN",
-    "48": "TX",
-    "49": "UT",
-    "50": "VT",
-    "51": "VA",
-    "53": "WA",
-    "54": "WV",
-    "55": "WI",
-    "56": "WY",
+# BLS LAUS and FRED publish state series for the 50 states + DC only, keyed to the
+# same ``state`` abbreviation the GSE silver uses.
+_BLS_FIPS_TO_STATE: dict[str, str] = {
+    fips: state for fips, state in FIPS_TO_STATE.items() if state not in TERRITORIES
 }
 
 
 def _cache_dir() -> Path:
-    return MortgageDataConfig.DATA_DIR / "reference" / "macro"
+    return MortgageDataConfig.REFERENCE_DIR / "macro"
 
 
 def _parquet_path(series: MacroSeries) -> Path:
@@ -110,7 +61,7 @@ def _parquet_path(series: MacroSeries) -> Path:
 
 def _user_agent() -> str:
     """Honest research User-Agent for BLS/FHFA (kept out of the bot-default)."""
-    return config("MACRO_USER_AGENT", default="mortgage-data-manager/0.1 (research)")
+    return cast(str, config("MACRO_USER_AGENT", default="mortgage-data-manager/0.1 (research)"))
 
 
 def _fetch_fred_csv(series_id: str) -> pl.DataFrame:
@@ -140,10 +91,10 @@ def _fetch_fred_csv(series_id: str) -> pl.DataFrame:
                 pl.col("value").cast(pl.Float64),
             )
         except Exception as exc:  # noqa: BLE001 - fall back to the CSV endpoint
-            logger.warning(f"fredapi failed for {series_id} ({exc}); using CSV endpoint")
+            logger.warning("fredapi failed for %s (%s); using CSV endpoint", series_id, exc)
 
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
-    logger.info(f"Downloading FRED series {series_id} from {url}")
+    logger.info("Downloading FRED series %s from %s", series_id, url)
     resp = requests.get(url, timeout=60, headers={"User-Agent": _user_agent()})
     resp.raise_for_status()
 
@@ -200,7 +151,7 @@ def _build_hpi_from_fhfa() -> pl.DataFrame:
     qtr_month_map = {1: 1, 2: 4, 3: 7, 4: 10}
     for url in urls:
         try:
-            logger.info(f"Trying FHFA state HPI bulk CSV: {url}")
+            logger.info("Trying FHFA state HPI bulk CSV: %s", url)
             resp = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
             if resp.status_code != 200:
                 continue
@@ -233,10 +184,10 @@ def _build_hpi_from_fhfa() -> pl.DataFrame:
                 .filter(pl.col("state").str.len_chars() == 2)
                 .sort("state", "date")
             )
-            logger.info(f"FHFA state HPI: {len(df):,} rows")
+            logger.info("FHFA state HPI: %s rows", f"{len(df):,}")
             return df
         except Exception as exc:  # noqa: BLE001 - try the next mirror
-            logger.warning(f"FHFA HPI URL failed ({exc})")
+            logger.warning("FHFA HPI URL failed (%s)", exc)
     raise RuntimeError("All FHFA state-HPI URLs failed.")
 
 
@@ -244,12 +195,12 @@ def _build_hpi_from_fred() -> pl.DataFrame:
     """Fallback: per-state FRED ``{ST}STHPI`` series, concatenated."""
     logger.info("Falling back to FRED per-state HPI ({ST}STHPI)")
     frames: list[pl.DataFrame] = []
-    for st in sorted(set(FIPS_TO_STATE.values())):
+    for st in sorted(set(_BLS_FIPS_TO_STATE.values())):
         try:
             df = _fetch_fred_csv(f"{st}STHPI").rename({"value": "hpi"})
             frames.append(df.with_columns(pl.lit(st).alias("state")).select("state", "date", "hpi"))
         except Exception as exc:  # noqa: BLE001 - skip a missing state series
-            logger.warning(f"Failed to download {st}STHPI: {exc}")
+            logger.warning("Failed to download %sSTHPI: %s", st, exc)
     if not frames:
         raise RuntimeError("Failed to download any state HPI series from FRED.")
     return pl.concat(frames, how="diagonal").sort("state", "date")
@@ -278,7 +229,7 @@ def _build_hpi() -> pl.DataFrame:
 def _build_unemployment() -> pl.DataFrame:
     """BLS LAUS state-level unemployment rate, monthly."""
     url = "https://download.bls.gov/pub/time.series/la/la.data.3.AllStatesS"
-    logger.info(f"Downloading BLS LAUS state unemployment: {url}")
+    logger.info("Downloading BLS LAUS state unemployment: %s", url)
     resp = requests.get(url, timeout=120, headers={"User-Agent": _user_agent()})
     resp.raise_for_status()
 
@@ -295,7 +246,7 @@ def _build_unemployment() -> pl.DataFrame:
     ).with_columns(pl.col("series_id").str.slice(5, 2).alias("fips"))
 
     fips_df = pl.DataFrame(
-        {"fips": list(FIPS_TO_STATE.keys()), "state": list(FIPS_TO_STATE.values())}
+        {"fips": list(_BLS_FIPS_TO_STATE.keys()), "state": list(_BLS_FIPS_TO_STATE.values())}
     )
     raw = raw.join(fips_df, on="fips", how="inner")
     return (
@@ -351,27 +302,55 @@ def load_macro_series(series: MacroSeries, *, overwrite: bool = False) -> pl.Dat
     df: pl.DataFrame = _BUILDERS[series]()  # type: ignore[operator]
     path.parent.mkdir(parents=True, exist_ok=True)
     df.write_parquet(path)
-    logger.info(f"Cached macro series {series}: {len(df):,} rows -> {path}")
+    logger.info("Cached macro series %s: %s rows -> %s", series, f"{len(df):,}", path)
     return df
 
 
 def load_pmms(*, overwrite: bool = False) -> pl.DataFrame:
-    """PMMS 30-year fixed mortgage rate (``date``, ``mortgage_rate``)."""
+    """Load the PMMS 30-year fixed mortgage rate series.
+
+    Args:
+        overwrite: Refetch and rebuild the cached parquet.
+
+    Returns:
+        Columns ``date`` and ``mortgage_rate``.
+    """
     return load_macro_series("pmms", overwrite=overwrite)
 
 
 def load_hpi(*, overwrite: bool = False) -> pl.DataFrame:
-    """FHFA state HPI (``state``, ``date``, ``hpi``, ``hpa_4q``)."""
+    """Load the FHFA state house-price index.
+
+    Args:
+        overwrite: Refetch and rebuild the cached parquet.
+
+    Returns:
+        Columns ``state``, ``date``, ``hpi`` and ``hpa_4q``.
+    """
     return load_macro_series("hpi", overwrite=overwrite)
 
 
 def load_unemployment(*, overwrite: bool = False) -> pl.DataFrame:
-    """BLS LAUS state unemployment rate (``state``, ``date``, ``unemp_rate``)."""
+    """Load the BLS LAUS state unemployment rate.
+
+    Args:
+        overwrite: Refetch and rebuild the cached parquet.
+
+    Returns:
+        Columns ``state``, ``date`` and ``unemp_rate``.
+    """
     return load_macro_series("unemployment", overwrite=overwrite)
 
 
 def load_yield_curve(*, overwrite: bool = False) -> pl.DataFrame:
-    """10Y-2Y Treasury spread (``date``, ``yield_spread``)."""
+    """Load the 10Y-2Y Treasury spread.
+
+    Args:
+        overwrite: Refetch and rebuild the cached parquet.
+
+    Returns:
+        Columns ``date`` and ``yield_spread``.
+    """
     return load_macro_series("yield_curve", overwrite=overwrite)
 
 

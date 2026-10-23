@@ -7,17 +7,14 @@ Matches MBS loan-level data to UMBS issuance data for FNMA and FHLMC.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal, cast
 
 import typer
 from rich.console import Console
 from rich.table import Table
 
 from mortgage_data_manager.core.logging import configure_logging, get_logger
-from mortgage_data_manager.matching.match_mbs_umbs.config import (
-    CROSSWALK_OUTPUT_DIR,
-    MBSUMBSConfig,
-    get_umbs_bronze_dir,
-)
+from mortgage_data_manager.matching.match_mbs_umbs.config import MBSUMBSMatchingConfig as Config
 
 # Create Typer app
 app = typer.Typer(
@@ -30,6 +27,43 @@ app = typer.Typer(
 console = Console()
 logger = get_logger(__name__)
 
+EXACT_ROUND_HELP = (
+    "Run round 4, which resolves leftover candidate groups on exactness over "
+    "LTV/CLTV/DTI/Term and drops every tie. --no-exact-attribute-round reverts to the "
+    "three-round matcher."
+)
+
+
+def _staleness_lines(gse: str) -> list[str]:
+    """Staleness warnings for one GSE's crosswalk, or a note if the inputs are unreachable."""
+    from mortgage_data_manager.matching.match_mbs_umbs.metrics import check_input_staleness
+
+    try:
+        return check_input_staleness(
+            gse,
+            Config.MBS_UMBS_CROSSWALK_DIR,
+            Config.get_mbs_dir(gse),
+            Config.get_umbs_illd_dir(gse),
+            Config.get_umbs_snapshot_file(gse),
+            Config.get_mbs_harp_file(gse),
+        )
+    except Exception as e:  # unreadable inputs must not take the command down
+        logger.warning("%s: input-size check skipped (%s)", gse, e)
+        return [f"{gse}: input-size check skipped ({e})"]
+
+
+def _print_staleness(gses: list[str]) -> None:
+    """Print each GSE's input-size warnings (never fatal — a stale crosswalk still loads)."""
+    warned = False
+    for g in gses:
+        for line in _staleness_lines(g):
+            warned = True
+            console.print(f"  [yellow]![/yellow] {line}")
+    if not warned:
+        console.print(
+            f"  [green]✓[/green] Input row counts match the crosswalk sidecars ({', '.join(gses)})"
+        )
+
 
 @app.callback()
 def callback():
@@ -41,14 +75,48 @@ def callback():
     configure_logging(level="INFO")
 
 
+Agency = Literal["fnma", "fhlmc"]
+AGENCIES: tuple[Agency, ...] = ("fnma", "fhlmc")
+
+
+def _agencies(agency: str) -> list[Agency]:
+    """The GSEs one ``--agency`` value selects; exits on an unknown value."""
+    key = agency.lower()
+    if key == "all":
+        return list(AGENCIES)
+    if key not in AGENCIES:
+        console.print(f"[red]Invalid agency '{agency}'. Use fnma, fhlmc, or all.[/red]")
+        raise typer.Exit(code=1)
+    return [cast(Agency, key)]
+
+
 @app.command()
-def fnma(
+def run(
+    agency: str = typer.Option("all", "--agency", "-a", help="GSE to match: fnma, fhlmc, or all"),
     snapshot: bool = typer.Option(
         True,
         "--snapshot/--no-snapshot",
-        help="Recover pre-2019 loans from the first monthly snapshot (FNM_MLLD). "
+        help="Recover pre-2019 loans from the first monthly snapshot (MLLD/FU). "
         "--no-snapshot reverts to the post-2019 ILLD-only matcher.",
     ),
+    harp: bool = typer.Option(
+        True,
+        "--harp/--no-harp",
+        help="Include Fannie's separately-released HARP/Refi Plus population in the MBS "
+        "universe (FNMA only; Freddie has no equivalent release).",
+    ),
+    null_tolerant: bool = typer.Option(
+        True,
+        "--null-tolerant/--no-null-tolerant",
+        help="Let a tolerance check pass when either side's value is missing, so one "
+        "absent attribute cannot veto an otherwise-agreeing candidate. "
+        "--no-null-tolerant is the null-vetoing baseline.",
+    ),
+    exact_attribute_round: bool = typer.Option(
+        True,
+        "--exact-attribute-round/--no-exact-attribute-round",
+        help=EXACT_ROUND_HELP,
+    ),
     verbose: bool = typer.Option(
         False,
         "--verbose",
@@ -56,163 +124,47 @@ def fnma(
         help="Show detailed progress output",
     ),
 ):
-    """Run FNMA (Fannie Mae) MBS to UMBS matching.
+    """Match GSE single-family loans (the MBS side) to UMBS disclosures.
 
-    Matches FNMA single-family loan-level data (silver/issuances) to UMBS data. By default the
-    UMBS side combines post-2019 ILLD (FNM_ILLD) with the first monthly snapshot (FNM_MLLD),
-    recovering loans originated before ILLD coverage began (2019-06).
+    Both sides are two releases by default. The MBS side adds Fannie's separately
+    published HARP/Refi Plus population (silver/harp) to the quarterly files; the UMBS side
+    adds the first monthly snapshot (MLLD/FU) to post-2019 ILLD, recovering loans
+    originated before ILLD coverage began (2019-06).
 
-    Output: fnma_crosswalk.parquet with matched loan IDs.
+    Output: crosswalk/mbs_umbs/mbs_umbs_crosswalk_{agency}.parquet, with a metrics sidecar.
 
     Examples:
-      mortgage-data match mbs-umbs fnma
-      mortgage-data match mbs-umbs fnma --no-snapshot
+      mortgage-data match mbs-umbs run
+      mortgage-data match mbs-umbs run --agency fnma
+      mortgage-data match mbs-umbs run --agency fnma --no-harp
+      mortgage-data match mbs-umbs run --no-snapshot --no-exact-attribute-round
     """
-    from mortgage_data_manager.core.config import MortgageDataConfig
-    from mortgage_data_manager.matching.match_mbs_umbs.fnma_match import match_fnma_mbs_umbs
+    from mortgage_data_manager.matching.match_mbs_umbs.matching import run_matching
 
     configure_logging(level="DEBUG" if verbose else "INFO")
-
-    try:
-        # Get paths
-        mbs_dir = MortgageDataConfig.get_subpackage_data_dir("fnma") / "silver" / "issuances"
-        umbs_dir = get_umbs_bronze_dir() / "FNMA" / "FNM_ILLD"
-        snapshot_file = MBSUMBSConfig.get_umbs_snapshot_file("fnma") if snapshot else None
-        crosswalk_file = CROSSWALK_OUTPUT_DIR / "fnma_crosswalk.parquet"
-        variable_file = Path(__file__).parent / "fnma_column_mapping.csv"
-
-        console.print("[cyan]Running FNMA MBS matching...[/cyan]")
-        console.print(f"  MBS data: {mbs_dir}")
-        console.print(f"  UMBS data: {umbs_dir}")
+    for gse in _agencies(agency):
+        crosswalk_file = Config.get_crosswalk_path(gse)
+        console.print(f"[cyan]Running {gse.upper()} MBS-UMBS matching...[/cyan]")
+        console.print(f"  MBS data: {Config.get_mbs_dir(gse)}")
+        harp_file = Config.get_mbs_harp_file(gse) if harp else None
+        console.print(f"  MBS HARP: {harp_file if harp_file else '(none)'}")
+        console.print(f"  UMBS data: {Config.get_umbs_illd_dir(gse)}")
+        snapshot_file = Config.get_umbs_snapshot_file(gse) if snapshot else None
         console.print(f"  UMBS snapshot: {snapshot_file if snapshot_file else '(disabled)'}")
         console.print(f"  Output: {crosswalk_file}")
-
-        # Ensure output directory exists
-        CROSSWALK_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-        # Run matching
-        df = match_fnma_mbs_umbs(
-            mbs_dir=mbs_dir,
-            umbs_dir=umbs_dir,
-            crosswalk_file=crosswalk_file,
-            variable_file=variable_file,
-            snapshot_file=snapshot_file,
-        )
-
-        console.print("\n[green]FNMA matching complete![/green]")
-        console.print(f"  Total matches: {len(df):,}")
-        console.print(f"  Output saved to: {crosswalk_file}")
-
-    except Exception as e:
-        console.print(f"[red]FNMA matching failed: {e}[/red]")
-        logger.exception("FNMA matching error")
-        raise typer.Exit(code=1)
-
-
-@app.command()
-def fhlmc(
-    snapshot: bool = typer.Option(
-        True,
-        "--snapshot/--no-snapshot",
-        help="Recover pre-2019 loans from the first monthly snapshot (FU). "
-        "--no-snapshot reverts to the post-2019 FRE_ILLD-only matcher.",
-    ),
-    verbose: bool = typer.Option(
-        False,
-        "--verbose",
-        "-v",
-        help="Show detailed progress output",
-    ),
-):
-    """Run FHLMC (Freddie Mac) MBS to UMBS matching.
-
-    Matches FHLMC single-family loan-level data (bronze/origination) to UMBS data. By default
-    the UMBS side combines post-2019 ILLD (FRE_ILLD) with the first monthly snapshot (FU),
-    recovering loans originated before ILLD coverage began (2019-06).
-
-    Output: fhlmc_crosswalk.parquet with matched loan IDs.
-
-    Examples:
-      mortgage-data match mbs-umbs fhlmc
-      mortgage-data match mbs-umbs fhlmc --no-snapshot
-    """
-    from mortgage_data_manager.matching.match_mbs_umbs.config import get_fhlmc_config
-    from mortgage_data_manager.matching.match_mbs_umbs.fhlmc_match import match_fhlmc_mbs_umbs
-
-    configure_logging(level="DEBUG" if verbose else "INFO")
-
-    try:
-        # Get paths
-        fhlmc_config = get_fhlmc_config()
-        mbs_dir = fhlmc_config.FHLMC_BRONZE_ORIGINATION
-        umbs_dir = get_umbs_bronze_dir() / "FHLMC" / "FRE_ILLD"
-        snapshot_file = MBSUMBSConfig.get_umbs_snapshot_file("fhlmc") if snapshot else None
-        crosswalk_file = CROSSWALK_OUTPUT_DIR / "fhlmc_crosswalk.parquet"
-        variable_file = Path(__file__).parent / "fhlmc_column_mapping.csv"
-
-        console.print("[cyan]Running FHLMC MBS matching...[/cyan]")
-        console.print(f"  MBS data: {mbs_dir}")
-        console.print(f"  UMBS data: {umbs_dir}")
-        console.print(f"  UMBS snapshot: {snapshot_file if snapshot_file else '(disabled)'}")
-        console.print(f"  Output: {crosswalk_file}")
-
-        # Ensure output directory exists
-        CROSSWALK_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-        # Run matching
-        df = match_fhlmc_mbs_umbs(
-            mbs_dir=mbs_dir,
-            umbs_dir=umbs_dir,
-            crosswalk_file=crosswalk_file,
-            variable_file=variable_file,
-            snapshot_file=snapshot_file,
-        )
-
-        console.print("\n[green]FHLMC matching complete![/green]")
-        console.print(f"  Total matches: {len(df):,}")
-        console.print(f"  Output saved to: {crosswalk_file}")
-
-    except Exception as e:
-        console.print(f"[red]FHLMC matching failed: {e}[/red]")
-        logger.exception("FHLMC matching error")
-        raise typer.Exit(code=1)
-
-
-@app.command()
-def all(
-    snapshot: bool = typer.Option(
-        True,
-        "--snapshot/--no-snapshot",
-        help="Recover pre-2019 loans from the first monthly snapshot (MLLD/FU) for both GSEs.",
-    ),
-    verbose: bool = typer.Option(
-        False,
-        "--verbose",
-        "-v",
-        help="Show detailed progress output",
-    ),
-):
-    """Run both FNMA and FHLMC MBS matching.
-
-    Executes matching for both GSEs sequentially.
-
-    Examples:
-      mortgage-data match mbs-umbs all
-      mortgage-data match mbs-umbs all --no-snapshot
-    """
-    console.print("[bold cyan]Running MBS matching for all GSEs...[/bold cyan]\n")
-
-    # Run FNMA
-    console.print("[bold]1. FNMA Matching[/bold]")
-    fnma(snapshot=snapshot, verbose=verbose)
-
-    console.print()
-
-    # Run FHLMC
-    console.print("[bold]2. FHLMC Matching[/bold]")
-    fhlmc(snapshot=snapshot, verbose=verbose)
-
-    console.print("\n[bold green]All MBS matching complete![/bold green]")
+        try:
+            df = run_matching(
+                gse,
+                snapshot=snapshot,
+                harp=harp,
+                null_tolerant=null_tolerant,
+                exact_attribute_round=exact_attribute_round,
+            )
+        except Exception as e:
+            console.print(f"[red]{gse.upper()} matching failed: {e}[/red]")
+            logger.exception("%s MBS-UMBS matching error", gse.upper())
+            raise typer.Exit(code=1)
+        console.print(f"[green]{gse.upper()} matching complete:[/green] {len(df):,} pairs\n")
 
 
 @app.command()
@@ -225,7 +177,6 @@ def info():
       mortgage-data match mbs-umbs info
     """
     from mortgage_data_manager.core.config import MortgageDataConfig
-    from mortgage_data_manager.matching.match_mbs_umbs.config import get_fhlmc_config
 
     table = Table(
         title="MBS-UMBS Matching Configuration", show_header=True, header_style="bold cyan"
@@ -233,25 +184,32 @@ def info():
     table.add_column("Setting", style="cyan")
     table.add_column("Value", style="white")
 
-    table.add_row("[bold]Crosswalk Output Dir[/bold]", str(CROSSWALK_OUTPUT_DIR))
+    table.add_row("[bold]Crosswalk Output Dir[/bold]", str(Config.MBS_UMBS_CROSSWALK_DIR))
 
     table.add_row("", "")
     table.add_row("[bold]FNMA Paths[/bold]", "")
     fnma_mbs = MortgageDataConfig.get_subpackage_data_dir("fnma") / "silver" / "issuances"
-    fnma_umbs = get_umbs_bronze_dir() / "FNMA" / "FNM_ILLD"
+    fnma_umbs = Config.get_umbs_illd_dir("fnma")
     table.add_row("  MBS Data (silver/issuances)", str(fnma_mbs))
     table.add_row("  UMBS Data (FNM_ILLD)", str(fnma_umbs))
 
     table.add_row("", "")
     table.add_row("[bold]FHLMC Paths[/bold]", "")
-    try:
-        fhlmc_config = get_fhlmc_config()
-        fhlmc_mbs = fhlmc_config.BRONZE_ORIGINATION
-    except ImportError:
-        fhlmc_mbs = MortgageDataConfig.get_subpackage_data_dir("fhlmc") / "bronze" / "origination"
-    fhlmc_umbs = get_umbs_bronze_dir() / "FHLMC" / "FRE_ILLD"
-    table.add_row("  MBS Data (bronze/origination)", str(fhlmc_mbs))
+    fhlmc_mbs = Config.get_fhlmc_config().FHLMC_SILVER_DIR / "origination"
+    fhlmc_umbs = Config.get_umbs_illd_dir("fhlmc")
+    table.add_row("  MBS Data (silver/origination)", str(fhlmc_mbs))
     table.add_row("  UMBS Data (FRE_ILLD)", str(fhlmc_umbs))
+
+    from mortgage_data_manager.matching.match_mbs_umbs.rounds import ROUNDS
+
+    table.add_row("", "")
+    table.add_row("[bold]Matching Rounds[/bold] (rounds.py)", "")
+    for number, rnd in enumerate(ROUNDS, start=1):
+        rules = ["MIP exact" if rnd.mip else "no MIP"]
+        rules.append("credit score" if rnd.credit_score else "no credit score")
+        if rnd.exact_attribute:
+            rules.append("contested groups resolved on exact LTV/CLTV/DTI/term")
+        table.add_row(f"  Round {number}: {rnd.label}", ", ".join(rules))
 
     console.print(table)
 
@@ -260,7 +218,7 @@ def info():
 
     def check_parquet_files(path: Path, label: str):
         if path.exists():
-            files = list(path.glob("*.parquet"))
+            files = list(path.rglob("*.parquet"))  # silver may be hive-partitioned
             if files:
                 console.print(f"  [green]✓[/green] {label}: {len(files)} files")
             else:
@@ -277,8 +235,8 @@ def info():
 
     # Check output files
     console.print("\n[bold]Output Files:[/bold]")
-    fnma_output = CROSSWALK_OUTPUT_DIR / "fnma_crosswalk.parquet"
-    fhlmc_output = CROSSWALK_OUTPUT_DIR / "fhlmc_crosswalk.parquet"
+    fnma_output = Config.get_crosswalk_path("fnma")
+    fhlmc_output = Config.get_crosswalk_path("fhlmc")
 
     if fnma_output.exists():
         import polars as pl
@@ -296,35 +254,78 @@ def info():
     else:
         console.print("  [yellow]![/yellow] FHLMC crosswalk: not yet generated")
 
+    # Structural staleness: mtimes cannot detect an input that grew without a newer file.
+    console.print("\n[bold]Crosswalk freshness (input row counts vs the sidecars):[/bold]")
+    _print_staleness(["fnma", "fhlmc"])
+
+
+@app.command()
+def check(
+    agency: str = typer.Option("all", "--agency", "-a", help="GSE to check: fnma, fhlmc, or all"),
+):
+    """Check the latest matcher run against pinned match-rate floors (drift guard).
+
+    Every matcher run writes a metrics sidecar (mbs_umbs_crosswalk_{agency}_metrics.json)
+    next to the crosswalk. This command compares it against the floors pinned in
+    expected_match_rates.json and exits non-zero on any breach — run it after regenerating
+    a crosswalk, especially following upstream import-layer rebuilds (fnma/fhlmc/umbs).
+
+    It also re-counts the matcher's input globs and reports any crosswalk whose inputs have
+    changed size since it was built. That is a warning, not a breach: the crosswalk is not
+    wrong, it is behind. Mtimes do not catch it — an input directory can grow while every
+    file in it stays older than the crosswalk.
+
+    Examples:
+      mortgage-data match mbs-umbs check
+      mortgage-data match mbs-umbs check --agency fnma
+    """
+    from mortgage_data_manager.matching.match_mbs_umbs.metrics import check_against_baseline
+
+    gses: list[str] = list(_agencies(agency))
+
+    console.print("[bold]Crosswalk freshness (input row counts vs the sidecars):[/bold]")
+    _print_staleness(gses)
+    console.print()
+
+    breaches: list[str] = []
+    for g in gses:
+        breaches.extend(check_against_baseline(g, Config.MBS_UMBS_CROSSWALK_DIR))
+
+    if breaches:
+        console.print("[red bold]Match-rate drift guard FAILED:[/red bold]")
+        for b in breaches:
+            console.print(f"  [red]✗[/red] {b}")
+        console.print(
+            "\nIf an upstream import layer changed, diagnose before accepting the new "
+            "crosswalk; if the new rates are correct, update expected_match_rates.json."
+        )
+        raise typer.Exit(code=1)
+    console.print(f"[green]✓ Match metrics within pinned floors ({', '.join(gses)})[/green]")
+
 
 @app.command()
 def validate(
-    gse: str = typer.Option(
-        "fnma",
-        "--gse",
-        "-g",
-        help="GSE to validate: fnma or fhlmc",
-    ),
     show_plots: bool = typer.Option(
         False,
         "--show-plots",
         "-s",
-        help="Show plots interactively",
+        help="Show the figure interactively",
     ),
     save_plots: bool = typer.Option(
         True,
         "--save/--no-save",
-        help="Save plots to docs/matching/figures/mbs_umbs/",
+        help="Save the figure to docs/matching/figures/",
     ),
 ):
-    """Run validation analysis on MBS-UMBS matches.
+    """Run validation analysis on MBS-UMBS matches (both GSEs).
 
-    Generates diagnostic figures analyzing match quality for
-    FNMA or FHLMC crosswalks.
+    Prints the match-statistics sections for FNMA and FHLMC and renders the single
+    combined diagnostic figure (mbs_umbs_match_rates_panel.png): match rates by month,
+    interest rate, FICO, LTV, and DTI, with loan distributions and underwriting cut
+    points on each characteristic panel.
 
     Examples:
       mortgage-data match mbs-umbs validate
-      mortgage-data match mbs-umbs validate --gse fhlmc
       mortgage-data match mbs-umbs validate --show-plots
       mortgage-data match mbs-umbs validate --no-save
     """
@@ -332,23 +333,12 @@ def validate(
         run_validation as _run_validation,
     )
 
-    gse_lower = gse.lower()
-    if gse_lower not in ("fnma", "fhlmc"):
-        console.print(f"[red]Invalid GSE '{gse}'. Use fnma or fhlmc.[/red]")
-        raise typer.Exit(code=1)
-
     try:
-        console.print(f"[cyan]Running MBS-UMBS validation ({gse_lower})...[/cyan]")
-        results = _run_validation(
-            gse=gse_lower,
+        console.print("[cyan]Running MBS-UMBS validation (fnma + fhlmc)...[/cyan]")
+        _run_validation(
             save_plots=save_plots,
             show_plots=show_plots,
         )
-
-        if "error" in results:
-            console.print(f"[red]Validation error: {results['error']}[/red]")
-            raise typer.Exit(code=1)
-
         console.print("[green]Validation complete![/green]")
 
     except Exception as e:

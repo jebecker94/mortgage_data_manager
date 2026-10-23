@@ -1,6 +1,6 @@
 """Public geocoding API.
 
-The single entrypoint subpackages call is :func:`geocode_addresses`. It:
+The single entrypoint subpackages call is `geocode_addresses`. It:
 
   1. Hashes every input address.
   2. Looks up the global cache and short-circuits any hits.
@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from datetime import date
+from typing import Any
 
 import polars as pl
 
@@ -105,7 +106,7 @@ def geocode_addresses(
     """
     _validate_input(df)
     if df.is_empty():
-        empty = {c: [] for c in OUTPUT_COLUMNS}
+        empty: dict[str, list[Any]] = {c: [] for c in OUTPUT_COLUMNS}
         return df.with_columns([pl.Series(c, []) for c in empty])
 
     # Attach normalized fields + hash
@@ -121,7 +122,10 @@ def geocode_addresses(
     n_todo = n - n_cached
     if progress:
         logger.info(
-            f"geocode_addresses: {n:,} rows, {n_cached:,} cache hits, {n_todo:,} new addresses to geocode"
+            "geocode_addresses: %s rows, %s cache hits, %s new addresses to geocode",
+            f"{n:,}",
+            f"{n_cached:,}",
+            f"{n_todo:,}",
         )
 
     # Walk provider chain for cache misses
@@ -149,12 +153,14 @@ def geocode_addresses(
         resolved_results: list[dict] = [None] * len(unresolved_addrs)  # type: ignore[list-item]
 
         for tier in provider_chain:
-            remaining_idx = [i for i, r in enumerate(resolved_results) if r is None or not r.get("matched")]
+            remaining_idx = [
+                i for i, r in enumerate(resolved_results) if r is None or not r.get("matched")
+            ]
             if not remaining_idx:
                 break
             sub = [unresolved_addrs[i] for i in remaining_idx]
             if progress:
-                logger.info(f"  trying tier {tier!r} for {len(sub):,} addresses")
+                logger.info("  trying tier %s for %s addresses", tier, f"{len(sub):,}")
             if len(sub) > batch_threshold:
                 tier_results = geocode_batch(sub, provider=tier, progress=progress)
             else:
@@ -192,16 +198,22 @@ def geocode_addresses(
         if write_cache:
             written = cachemod.append_cache(new_cache_rows)
             if progress:
-                logger.info(f"  cache now {written:,} rows ({len(new_cache_rows):,} new this run)")
+                logger.info(
+                    "  cache now %s rows (%s new this run)",
+                    f"{written:,}",
+                    f"{len(new_cache_rows):,}",
+                )
 
         # Merge the new resolutions back into the keyed frame, by address_hash.
         joined = joined.drop(hit_cols).join(
-            pl.concat([cache, new_cache_rows], how="diagonal_relaxed").select(["address_hash", *hit_cols]),
+            pl.concat([cache, new_cache_rows], how="diagonal_relaxed").select(
+                ["address_hash", *hit_cols]
+            ),
             on="address_hash",
             how="left",
         )
 
-    out_columns = [
+    out_columns: list[str | pl.Expr] = [
         "geocode_lat",
         "geocode_lon",
         pl.col("geocode_matched").fill_null(False).alias("geocode_matched"),

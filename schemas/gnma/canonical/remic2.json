@@ -1,0 +1,415 @@
+{
+  "prefix": "remic2",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "1": {
+      "role": "header",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "int64",
+          "pdf_text": "Record Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "filler",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 2,
+              "end": 7,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "rundate",
+          "arrow_type": "string",
+          "pdf_text": "RunDate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 8,
+              "end": 19,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "record_date",
+          "arrow_type": "string",
+          "pdf_text": "Record Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 20,
+              "end": 31,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "label1",
+          "arrow_type": "string",
+          "pdf_text": "Label1",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 32,
+              "end": 50,
+              "length": 19
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "int64",
+          "pdf_text": "Record Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "series",
+          "arrow_type": "string",
+          "pdf_text": "Series",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 2,
+              "end": 16,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "tranchename",
+          "arrow_type": "string",
+          "pdf_text": "TrancheName",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 17,
+              "end": 25,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "Cusip",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 26,
+              "end": 34,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "tranchefactor",
+          "arrow_type": "float64",
+          "pdf_text": "TrancheFactor",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 35,
+              "end": 45,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "couponrate",
+          "arrow_type": "float64",
+          "pdf_text": "CouponRate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 46,
+              "end": 56,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "finaldistributiondate",
+          "arrow_type": "int64",
+          "pdf_text": "FinalDistributionDate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 57,
+              "end": 65,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "originalbalance",
+          "arrow_type": "float64",
+          "pdf_text": "OriginalBalance",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 66,
+              "end": 82,
+              "length": 17
+            }
+          ]
+        },
+        {
+          "id": "currentbalance",
+          "arrow_type": "float64",
+          "pdf_text": "CurrentBalance",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 83,
+              "end": 99,
+              "length": 17
+            }
+          ]
+        },
+        {
+          "id": "paymentdate",
+          "arrow_type": "int64",
+          "pdf_text": "PaymentDate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 100,
+              "end": 108,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "firstaccrualdate",
+          "arrow_type": "int64",
+          "pdf_text": "FirstAccrualdate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 109,
+              "end": 117,
+              "length": 9
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "role": "trailer",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "int64",
+          "pdf_text": "Record Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "filler",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 2,
+              "end": 7,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "label1",
+          "arrow_type": "string",
+          "pdf_text": "LABEL1",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 8,
+              "end": 23,
+              "length": 16
+            }
+          ]
+        },
+        {
+          "id": "total_aggregate_original_balance",
+          "arrow_type": "float64",
+          "pdf_text": "TOTAL AGGREGATE ORIGINAL BALANCE",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 24,
+              "end": 38,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "label2",
+          "arrow_type": "string",
+          "pdf_text": "LABEL2",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 39,
+              "end": 55,
+              "length": 17
+            }
+          ]
+        },
+        {
+          "id": "total_current_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Total Current Balance",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 56,
+              "end": 70,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "label3",
+          "arrow_type": "string",
+          "pdf_text": "LABEL3",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 71,
+              "end": 93,
+              "length": 23
+            }
+          ]
+        },
+        {
+          "id": "total_pool_count",
+          "arrow_type": "int64",
+          "pdf_text": "Total Pool Count",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 94,
+              "end": 108,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "unmapped_tail_1",
+          "arrow_type": "string",
+          "pdf_text": "",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 109,
+              "end": 109,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "unmapped_tail_2",
+          "arrow_type": "string",
+          "pdf_text": "",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 110,
+              "end": 110,
+              "length": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": [
+    "RT1 (header): realigned to bronze — RunDate 8-19, Record Date 20-31, Label1 32-50 (was 8-20/21-33/34-53, Label1 straddled the 50-char record). RunDate/Record Date retyped int64->string (MM/DD/YYYY text, per combined-CSV polars_dtype=String).",
+    "RT3 (trailer): grand-total summary line whose embedded number lengths float, so record width oscillates 108/109/110 (magnitude-driven, not date-clean) and the fixed positions are exact only at the narrowest 108-char width. Added unmapped_tail_1 (109) + unmapped_tail_2 (110) as single-char string fillers to cover the wider months without any field straddling the 108/109 record ends. On shifted (109/110) months the numeric total_* fields decode to null (inherent to the floating format)."
+  ],
+  "scope_note": "RT3 is a floating-position grand-total trailer; its numeric fields (total_aggregate_original_balance, total_current_balance, total_pool_count) are reliable only in the 108-char-width months and null out where the record widens to 109/110. Same layout applies to remic1 (widths 108-109) and remic2 (widths 108-110)."
+}

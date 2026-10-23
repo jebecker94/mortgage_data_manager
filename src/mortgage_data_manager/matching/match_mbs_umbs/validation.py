@@ -9,38 +9,41 @@ different disclosure formats:
 Key validation analyses:
 1. Match Statistics Summary
 2. Temporal Analysis (match/unmatched rates by month)
-3. Match Rates by LTV (interesting behavior at extremes expected)
-4. Match Rates by DTI (interesting behavior at extremes expected)
-5. Match Rates by FICO (interesting behavior at extremes expected)
+3. Match Rates by Interest Rate, FICO, LTV, DTI (interesting behavior at extremes expected)
 
-Usage:
-    from mortgage_data_manager.matching.match_mbs_umbs.validation import run_validation
-
-    # FNMA validation
-    results = run_validation(gse="fnma")
-
-    # FHLMC validation
-    results = run_validation(gse="fhlmc")
+Output is a single combined figure (``mbs_umbs_match_rates_panel.png``): five rows
+(months, interest rate, FICO, LTV, DTI) by two columns (FNMA, FHLMC), with the
+characteristic panels showing both the greyed-out loan distribution and the standard
+underwriting cut points.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 import numpy as np
 import polars as pl
 
 from mortgage_data_manager.core.config import MortgageDataConfig
-from mortgage_data_manager.matching.match_mbs_umbs.config import (
-    CROSSWALK_OUTPUT_DIR,
-    MBSUMBSConfig,
-    get_fhlmc_config,
-    get_umbs_bronze_dir,
+from mortgage_data_manager.matching.match_mbs_umbs.config import MBSUMBSMatchingConfig as Config
+from mortgage_data_manager.matching.validation_common import (
+    COLORS,
+    HAS_MATPLOTLIB,
+    Side,
+    binned,
+    get_pyplot,
+    matched_ids,
+    print_section,
+    rate_by_sides,
+    save_and_close,
 )
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 # First month of ILLD issuance disclosure; pre-this loans come from the monthly snapshot.
-ISSUANCE_START_YM = MBSUMBSConfig.UMBS_ISSUANCE_START[:7]  # "2019-06"
+ISSUANCE_START_YM = Config.UMBS_ISSUANCE_START[:7]  # "2019-06"
 
 # =============================================================================
 # Configuration
@@ -48,19 +51,22 @@ ISSUANCE_START_YM = MBSUMBSConfig.UMBS_ISSUANCE_START[:7]  # "2019-06"
 
 # Project directories
 PROJECT_DIR = MortgageDataConfig.PROJECT_DIR
-DATA_DIR = CROSSWALK_OUTPUT_DIR
+DATA_DIR = Config.MBS_UMBS_CROSSWALK_DIR
 
 # FNMA data paths
 FNMA_MBS_DIR = MortgageDataConfig.get_subpackage_data_dir("fnma") / "silver" / "issuances"
-FNMA_UMBS_DIR = MortgageDataConfig.get_subpackage_data_dir("umbs") / "bronze" / "FNMA" / "FNM_ILLD"
+# Silver, as the matcher reads it: one file per month, with any R-prefixed reissue already
+# merged in. Bronze also holds a revised-month file beside its original (FNM_ILLD_202507 and
+# _202507_REV), so globbing bronze counts that month's loans twice.
+FNMA_UMBS_DIR = Config.get_umbs_illd_dir("fnma")
 
 # FHLMC data paths
-FHLMC_CONFIG = get_fhlmc_config()
-FHLMC_MBS_DIR = FHLMC_CONFIG.FHLMC_BRONZE_ORIGINATION
-FHLMC_UMBS_DIR = get_umbs_bronze_dir() / "FHLMC" / "FRE_ILLD"
+FHLMC_CONFIG = Config.get_fhlmc_config()
+FHLMC_MBS_DIR = FHLMC_CONFIG.FHLMC_SILVER_DIR / "origination"
+FHLMC_UMBS_DIR = Config.get_umbs_illd_dir("fhlmc")
 
 # Output directory for figures
-VALIDATION_OUTPUT_DIR = PROJECT_DIR / "docs" / "matching" / "figures" / "mbs_umbs"
+VALIDATION_OUTPUT_DIR = PROJECT_DIR / "docs" / "matching" / "figures"
 
 
 def get_gse_paths(gse: str) -> tuple[Path, Path, Path]:
@@ -74,53 +80,32 @@ def get_gse_paths(gse: str) -> tuple[Path, Path, Path]:
     """
     gse = gse.lower()
     if gse == "fnma":
-        return FNMA_MBS_DIR, FNMA_UMBS_DIR, CROSSWALK_OUTPUT_DIR / "fnma_crosswalk.parquet"
+        return (
+            FNMA_MBS_DIR,
+            FNMA_UMBS_DIR,
+            Config.MBS_UMBS_CROSSWALK_DIR / "mbs_umbs_crosswalk_fnma.parquet",
+        )
     elif gse == "fhlmc":
-        return FHLMC_MBS_DIR, FHLMC_UMBS_DIR, CROSSWALK_OUTPUT_DIR / "fhlmc_crosswalk.parquet"
+        return (
+            FHLMC_MBS_DIR,
+            FHLMC_UMBS_DIR,
+            Config.MBS_UMBS_CROSSWALK_DIR / "mbs_umbs_crosswalk_fhlmc.parquet",
+        )
     else:
         raise ValueError(f"Unknown GSE: {gse}. Must be 'fnma' or 'fhlmc'")
 
 
-# Color palette (Jonathan's palette)
-MIDNIGHT_BLUE = "#0E2F44"
-HUNTER_GREEN = "#145A32"
-BURNISHED_GOLD = "#D4AC0D"
-TERRACOTTA = "#BA4A00"
-MULBERRY = "#900C3F"
-IMPERIAL_PURPLE = "#5B2C6F"
-DEEP_TEAL = "#117864"
-BLUE_GREY = "#85929E"
-SLATE = "#566573"
+# Color palette
+HUNTER_GREEN = COLORS["hunter"]
+BURNISHED_GOLD = COLORS["gold"]
+DEEP_TEAL = COLORS["teal"]
+BLUE_GREY = COLORS["grey"]
+SLATE = COLORS["slate"]
 
 # Dataset-specific colors (primary: Hunter Green & Gold)
 MBS_COLOR = HUNTER_GREEN
 UMBS_COLOR = BURNISHED_GOLD
-MATCHED_COLOR = HUNTER_GREEN
-UNMATCHED_COLOR = TERRACOTTA
 DENSITY_COLOR = BLUE_GREY
-REFERENCE_COLOR_1 = TERRACOTTA
-REFERENCE_COLOR_2 = MIDNIGHT_BLUE
-
-# Check for matplotlib availability
-try:
-    import matplotlib
-
-    HAS_MATPLOTLIB = True
-except ImportError:
-    HAS_MATPLOTLIB = False
-    matplotlib = None  # type: ignore
-
-
-def _get_pyplot(interactive: bool = True):
-    """Get pyplot with appropriate backend."""
-    if not HAS_MATPLOTLIB:
-        return None
-    if not interactive:
-        matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
-    return plt
-
 
 # =============================================================================
 # Data Loading
@@ -132,6 +117,9 @@ def load_crosswalk(gse: str = "fnma") -> pl.DataFrame:
 
     Args:
         gse: Either "fnma" or "fhlmc"
+
+    Returns:
+        That GSE's MBS-UMBS crosswalk.
     """
     _, _, crosswalk_path = get_gse_paths(gse)
     if not crosswalk_path.exists():
@@ -140,6 +128,31 @@ def load_crosswalk(gse: str = "fnma") -> pl.DataFrame:
             f"Run the matching first: mortgage-data match mbs-umbs {gse}"
         )
     return pl.read_parquet(crosswalk_path)
+
+
+def scan_mbs_universe(gse: str) -> pl.LazyFrame:
+    """Scan every loan the matcher's MBS side sees, as one frame.
+
+    For Freddie that is the quarterly origination files alone. For Fannie it is those
+    plus the separately-released HARP/Refi Plus population, whose silver layout is
+    column- and dtype-identical, so it unions directly. Validation has to read the same
+    universe the matcher matched or the denominator omits loans the crosswalk contains.
+
+    Args:
+        gse: ``"fnma"`` or ``"fhlmc"``.
+
+    Returns:
+        LazyFrame over the GSE's full MBS-side universe, source columns unrenamed.
+    """
+    mbs_dir, _, _ = get_gse_paths(gse)
+    lf = pl.scan_parquet(
+        str(mbs_dir / "**/*.parquet"), missing_columns="insert", extra_columns="ignore"
+    )
+    harp_file = Config.get_mbs_harp_file(gse)
+    if harp_file is not None:
+        harp = pl.scan_parquet(str(harp_file), missing_columns="insert", extra_columns="ignore")
+        lf = pl.concat([lf, harp], how="diagonal_relaxed")
+    return lf
 
 
 def load_mbs_data(gse: str = "fnma") -> pl.LazyFrame:
@@ -176,6 +189,7 @@ def load_mbs_data(gse: str = "fnma") -> pl.LazyFrame:
             "Original Combined Loan to Value Ratio (CLTV)": "CLTV",
             "Debt-To-Income (DTI)": "DTI",
             "Borrower Credit Score at Origination": "FICO",
+            "Original Interest Rate": "Rate",
         }
     else:  # fhlmc
         # FHLMC column names
@@ -196,29 +210,37 @@ def load_mbs_data(gse: str = "fnma") -> pl.LazyFrame:
             "Original Combined Loan-to-Value (CLTV)": "CLTV",
             "Original Debt-to-Income (DTI) Ratio": "DTI",
             "Credit Score": "FICO",
+            "Original Interest Rate": "Rate",
         }
 
-    lf = pl.scan_parquet(
-        str(mbs_dir / "**/*.parquet"),
-        missing_columns="insert",
-        extra_columns="ignore",
-    )
+    lf = scan_mbs_universe(gse)
 
     # Get available columns
     available = set(lf.collect_schema().names())
     use_cols = [c for c in cols if c in available]
 
     lf = lf.select(use_cols).rename(rename_map)
+    # Characteristic columns must be numeric for binning; dtype can drift to string
+    # across import-layer rebuilds.
+    lf = lf.with_columns(
+        [
+            pl.col(c).cast(pl.Float64, strict=False)
+            for c in ("LTV", "CLTV", "DTI", "FICO", "Rate")
+            if c in lf.collect_schema().names()
+        ]
+    )
 
     # Normalized First Payment year-month ("YYYY-MM") so non-temporal validation stats can be
-    # restricted to the clean full-data window (First Payment Date >= 2019-06). FNMA stores it
-    # as an MMYYYY string; FHLMC as a Date.
-    if "First Payment Date" in lf.collect_schema().names():
-        if gse.lower() == "fnma":
+    # restricted to the clean full-data window (First Payment Date >= 2019-06). The column's
+    # dtype drifts with silver rebuilds (packed MMYYYY string vs pl.Date), so branch on the
+    # actual dtype, not the GSE.
+    schema = lf.collect_schema()
+    if "First Payment Date" in schema.names():
+        if schema["First Payment Date"] == pl.Date:
+            ym = pl.col("First Payment Date").dt.strftime("%Y-%m")
+        else:
             fpd = pl.col("First Payment Date").cast(pl.Utf8).str.zfill(6)
             ym = fpd.str.slice(2, 4) + "-" + fpd.str.slice(0, 2)
-        else:
-            ym = pl.col("First Payment Date").dt.strftime("%Y-%m")
         lf = lf.with_columns(ym.alias("first_payment_ym"))
 
     return lf
@@ -231,15 +253,18 @@ def load_umbs_data(gse: str = "fnma") -> pl.DataFrame:
         gse: Either "fnma" or "fhlmc"
 
     Returns:
-        DataFrame (not LazyFrame) due to schema inconsistencies across files.
-        UMBS data uses 'First Payment Date' in MMYYYY integer format.
-        Returns columns: Loan Identifier, year_month, LTV, CLTV, DTI, FICO
+        DataFrame (not LazyFrame) due to schema inconsistencies across files, one row per
+        loan, with columns Loan Identifier, year_month, LTV, CLTV, DTI, FICO, Rate.
 
     Filters:
     - Excludes modifications (Loan Purpose = 'M')
     - Combines the post-2019 ILLD population with the first monthly snapshot (FNM_MLLD / FU),
-      split on First Payment Date (ILLD >= 2019-06, snapshot < 2019-06) so the UMBS universe
-      mirrors the combined matcher and spans pre-2019 cohorts.
+      mirroring the matcher's universe: ILLD keeps First Payment Date >= 2019-06; the snapshot
+      contributes every loan NOT already in ILLD (anti-join, ILLD preferred) — the pre-2019
+      cohorts plus the 2019-H2 seam cohort (FPD >= 2019-06 in pools issued before June 2019).
+    - A loan disclosed in more than one ILLD month (~2.4k Fannie loans from 2019-20 reappear
+      in later files) keeps one row when the copies are identical and is dropped when they
+      differ, as the matcher's ``drop_conflicting_duplicates`` drops it.
     """
     _, umbs_dir, _ = get_gse_paths(gse)
 
@@ -249,7 +274,7 @@ def load_umbs_data(gse: str = "fnma") -> pl.DataFrame:
     # ILLD monthly files (post-2019) plus the first monthly snapshot (pre-2019 recovery). Each
     # source is tagged so we can apply the complementary First Payment Date filter below.
     sources = [(f, False) for f in sorted(umbs_dir.glob("*.parquet"))]
-    snapshot_file = MBSUMBSConfig.get_umbs_snapshot_file(gse)
+    snapshot_file = Config.get_umbs_snapshot_file(gse)
     if snapshot_file is not None:
         sources.append((snapshot_file, True))
     files = sources
@@ -262,6 +287,7 @@ def load_umbs_data(gse: str = "fnma") -> pl.DataFrame:
         "Combined Loan-To-Value (CLTV)",
         "Debt-To-Income (DTI)",
         "Borrower Credit Score",
+        "Original Interest Rate",
         "Loan Purpose",  # For filtering out modifications
     ]
 
@@ -273,9 +299,11 @@ def load_umbs_data(gse: str = "fnma") -> pl.DataFrame:
         "CLTV",
         "DTI",
         "FICO",
+        "Rate",
     ]
 
-    dfs = []
+    illd_dfs: list[pl.DataFrame] = []
+    snapshot_dfs: list[pl.DataFrame] = []
     for file, is_snapshot in files:
         df = pl.read_parquet(file)
 
@@ -292,27 +320,15 @@ def load_umbs_data(gse: str = "fnma") -> pl.DataFrame:
                 (pl.col("Loan Purpose") != "M") | pl.col("Loan Purpose").is_null()
             )
 
-        # Convert First Payment Date to year_month format
-        df_subset = (
-            df_subset.with_columns(pl.col("First Payment Date").cast(pl.Utf8).alias("fpm_str"))
-            .with_columns(
-                [
-                    pl.col("fpm_str").str.tail(4).alias("year"),
-                    pl.col("fpm_str")
-                    .str.head(pl.col("fpm_str").str.len_chars() - 4)
-                    .str.pad_start(2, "0")
-                    .alias("month"),
-                ]
-            )
-            .with_columns((pl.col("year") + "-" + pl.col("month")).alias("year_month"))
-            .drop(["fpm_str", "year", "month", "First Payment Date"])
-        )
+        # Silver stores First Payment Date as pl.Date for both GSEs; report it as "YYYY-MM".
+        df_subset = df_subset.with_columns(
+            pl.col("First Payment Date").dt.strftime("%Y-%m").alias("year_month")
+        ).drop("First Payment Date")
 
-        # Split on the ILLD boundary: the snapshot supplies pre-2019, ILLD supplies the rest,
-        # so the two sources never double-count loans issued around June 2019.
-        if is_snapshot:
-            df_subset = df_subset.filter(pl.col("year_month") < ISSUANCE_START_YM)
-        else:
+        # ILLD keeps its own coverage window; the snapshot is NOT date-filtered — it is
+        # deduplicated against ILLD below (matcher parity: ILLD preferred, snapshot adds the
+        # pre-2019 population plus the 2019-H2 seam cohort).
+        if not is_snapshot:
             df_subset = df_subset.filter(pl.col("year_month") >= ISSUANCE_START_YM)
 
         # Drop Loan Purpose if it exists (no longer needed)
@@ -325,6 +341,7 @@ def load_umbs_data(gse: str = "fnma") -> pl.DataFrame:
             "Combined Loan-To-Value (CLTV)": "CLTV",
             "Debt-To-Income (DTI)": "DTI",
             "Borrower Credit Score": "FICO",
+            "Original Interest Rate": "Rate",
         }
         rename_map = {k: v for k, v in rename_map.items() if k in df_subset.columns}
         df_subset = df_subset.rename(rename_map)
@@ -334,869 +351,516 @@ def load_umbs_data(gse: str = "fnma") -> pl.DataFrame:
             if col not in df_subset.columns:
                 df_subset = df_subset.with_columns(pl.lit(None).alias(col))
 
-        dfs.append(df_subset.select(final_cols))
+        # Characteristic columns are binned as Float64; silver stores them as Int16/Float32,
+        # and the whole-row dedup below needs one dtype per column across files.
+        df_subset = df_subset.with_columns(
+            [
+                pl.col(c).cast(pl.Float64, strict=False)
+                for c in ("LTV", "CLTV", "DTI", "FICO", "Rate")
+            ]
+        )
 
-    return pl.concat(dfs, how="diagonal")
+        (snapshot_dfs if is_snapshot else illd_dfs).append(df_subset.select(final_cols))
+
+    illd = pl.concat(illd_dfs, how="diagonal")
+    if snapshot_dfs:
+        snapshot = pl.concat(snapshot_dfs, how="diagonal").join(
+            illd.select("Loan Identifier").unique(), on="Loan Identifier", how="anti"
+        )
+        illd = pl.concat([illd, snapshot], how="diagonal")
+    # Identical re-disclosures collapse (whole-row unique picks nothing); a loan whose
+    # copies still differ is dropped rather than counted under one copy's values.
+    return illd.unique().unique(subset=["Loan Identifier"], keep="none")
 
 
-def get_mbs_monthly_counts() -> pl.DataFrame:
-    """Get MBS loan counts by monthly reporting period (issuances only)."""
-    lf = pl.scan_parquet(
-        str(FNMA_MBS_DIR / "**/*.parquet"),
-        missing_columns="insert",
-        extra_columns="ignore",
+# =============================================================================
+# Sides and dimensions
+# =============================================================================
+
+MBS_ID = "Loan Sequence Number (MBS)"
+UMBS_ID = "Loan Sequence Number (UMBS)"
+
+
+def sides(crosswalk: pl.DataFrame, mbs: pl.LazyFrame, umbs: pl.DataFrame) -> tuple[Side, Side]:
+    """The two measured sides, keyed on ``Loan Identifier`` as a string.
+
+    UMBS stores its loan identifier as Int64 while the crosswalk stores strings, so
+    the cast is load-bearing: drop it and every UMBS loan reads as unmatched.
+
+    Args:
+        crosswalk: The MBS-UMBS crosswalk.
+        mbs: The MBS side's loan rows (monthly, so a loan repeats).
+        umbs: The UMBS side's loan universe.
+
+    Returns:
+        ``(mbs_side, umbs_side)``.
+    """
+    as_text = pl.col("Loan Identifier").cast(pl.Utf8)
+    return (
+        Side(
+            mbs.with_columns(as_text),
+            matched_ids(crosswalk, MBS_ID, as_cols="Loan Identifier"),
+            "Loan Identifier",
+            "mbs",
+        ),
+        Side(
+            umbs.lazy().with_columns(as_text),
+            matched_ids(crosswalk, UMBS_ID, as_cols="Loan Identifier"),
+            "Loan Identifier",
+            "umbs",
+        ),
     )
 
-    return (
-        lf.select(["Loan Identifier", "Monthly Reporting Period"])
-        .unique()
-        .with_columns(
-            # Convert MMYYYY to YYYY-MM for proper sorting
-            (
-                pl.col("Monthly Reporting Period").str.slice(2, 4)
-                + "-"
-                + pl.col("Monthly Reporting Period").str.slice(0, 2)
-            ).alias("year_month")
-        )
-        .group_by("year_month")
-        .agg(pl.len().alias("mbs_count"))
-        .sort("year_month")
-        .collect()
+
+class Characteristic(NamedTuple):
+    """One loan characteristic the report bins match rates over.
+
+    Attributes:
+        key: Results key (``{key}_rates``).
+        column: The standardized characteristic column on both sides.
+        bin_size: Bin width, in the column's units.
+        lo: Smallest value included.
+        hi: Largest value included.
+        xlabel: Axis label.
+        cut_points: Standard underwriting thresholds drawn as dashed lines.
+    """
+
+    key: str
+    column: str
+    bin_size: float
+    lo: float
+    hi: float
+    xlabel: str
+    cut_points: tuple[float, ...] = ()
+
+
+CHARACTERISTICS = (
+    Characteristic("rate", "Rate", 0.125, 1.5, 8.5, "Interest Rate (%)"),
+    Characteristic("fico", "FICO", 1, 580, 850, "FICO Score", (620, 740)),
+    Characteristic("ltv", "LTV", 1, 20, 105, "LTV (%)", (80, 95)),
+    Characteristic("dti", "DTI", 1, 0, 65, "DTI (%)", (43, 50)),
+)
+
+
+def _one_row_per_loan(column: str) -> Callable[[pl.LazyFrame], pl.LazyFrame]:
+    """Collapse monthly rows to one per loan carrying ``column``; a null month is not a value."""
+    return lambda lf: (
+        lf.filter(pl.col(column).is_not_null())
+        .select("Loan Identifier", column)
+        .unique(subset=["Loan Identifier"])
     )
 
 
 # =============================================================================
-# Match Rate Analysis
+# Statistics
 # =============================================================================
 
 
 def compute_match_statistics(
-    crosswalk: pl.DataFrame,
-    mbs_data: pl.LazyFrame,
-    umbs_data: pl.DataFrame,
+    crosswalk: pl.DataFrame, mbs_data: pl.LazyFrame, umbs_data: pl.DataFrame
 ) -> dict[str, Any]:
-    """Compute overall match statistics within the provided (already windowed) data.
+    """Overall match statistics within the provided (already windowed) data.
 
-    Match counts are the intersection of the provided loans with the crosswalk, so the rate
-    is matched-in-window / total-in-window. Callers pass clean-window data (First Payment Date
-    >= 2019-06) for the headline non-temporal stats, giving an interpretable denominator.
+    Match counts are the intersection of the provided loans with the crosswalk, so the
+    rate is matched-in-window / total-in-window. Callers pass clean-window data (First
+    Payment Date >= 2019-06) for the headline stats, giving an interpretable denominator.
+
+    Args:
+        crosswalk: The MBS-UMBS crosswalk.
+        mbs_data: The MBS side's loan rows (monthly; deduplicated here).
+        umbs_data: The UMBS side's loan universe.
+
+    Returns:
+        Headline counts and the match rate from each side.
     """
-    matched_mbs_ids = set(crosswalk["Loan Sequence Number (MBS)"].to_list())
-    matched_umbs_ids = set(crosswalk["Loan Sequence Number (UMBS)"].to_list())
-
+    matched_mbs = set(crosswalk[MBS_ID].to_list())
+    matched_umbs = set(crosswalk[UMBS_ID].to_list())
     mbs_ids = (
         mbs_data.select(pl.col("Loan Identifier").cast(pl.Utf8))
         .unique()
         .collect()["Loan Identifier"]
     )
     umbs_ids = umbs_data.select(pl.col("Loan Identifier").cast(pl.Utf8)).unique()["Loan Identifier"]
-
-    n_total_mbs = mbs_ids.len()
-    n_total_umbs = umbs_ids.len()
-    n_matched_mbs = int(mbs_ids.is_in(matched_mbs_ids).sum())
-    n_matched_umbs = int(umbs_ids.is_in(matched_umbs_ids).sum())
-
+    n_total_mbs, n_total_umbs = mbs_ids.len(), umbs_ids.len()
+    n_matched_mbs, n_matched_umbs = (
+        int(mbs_ids.is_in(matched_mbs).sum()),
+        int(umbs_ids.is_in(matched_umbs).sum()),
+    )
     return {
-        # In-window matched pairs (1:1 matches => matched MBS loans in window == pairs in window).
+        # 1:1 matches, so matched MBS loans in window == pairs in window.
         "n_matched_pairs": n_matched_mbs,
         "n_matched_mbs": n_matched_mbs,
         "n_matched_umbs": n_matched_umbs,
         "n_total_mbs": n_total_mbs,
         "n_total_umbs": n_total_umbs,
-        "mbs_match_rate": n_matched_mbs / n_total_mbs if n_total_mbs > 0 else 0,
-        "umbs_match_rate": n_matched_umbs / n_total_umbs if n_total_umbs > 0 else 0,
+        "mbs_match_rate": n_matched_mbs / n_total_mbs if n_total_mbs else 0,
+        "umbs_match_rate": n_matched_umbs / n_total_umbs if n_total_umbs else 0,
     }
 
 
 def compute_match_rates_by_characteristic(
-    crosswalk: pl.DataFrame,
-    mbs_data: pl.LazyFrame,
-    umbs_data: pl.DataFrame,
-    mbs_column: str,
-    umbs_column: str,
-    bin_size: int | float,
-    min_val: float | None = None,
-    max_val: float | None = None,
+    both: tuple[Side, Side], characteristic: Characteristic
 ) -> pl.DataFrame:
-    """Compute match rates by a loan characteristic from both MBS and UMBS perspectives.
+    """Both sides' match rates across one binned loan characteristic.
 
     Args:
-        crosswalk: The MBS-UMBS crosswalk
-        mbs_data: MBS data with loan characteristics
-        umbs_data: UMBS data with loan characteristics
-        mbs_column: Column name in MBS data to bin by
-        umbs_column: Column name in UMBS data to bin by
-        bin_size: Size of bins
-        min_val: Minimum value to include
-        max_val: Maximum value to include
+        both: The two sides, from `sides`.
+        characteristic: Which characteristic, with its bin width and range.
 
     Returns:
-        DataFrame with columns: bin, mbs_total, umbs_total, matched,
-                                mbs_match_rate, umbs_match_rate
+        One row per bin (column ``bin``) the MBS side populates -- its density is the
+        panel's background -- with each side's counts and rate.
     """
-    # Get MBS data with the characteristic
-    mbs_with_char = (
-        mbs_data.filter(pl.col(mbs_column).is_not_null())
-        .select(["Loan Identifier", mbs_column])
-        .unique(subset=["Loan Identifier"])
-        .collect()
+    col = characteristic.column
+    return rate_by_sides(
+        both,
+        "bin",
+        prepare=lambda lf: (
+            _one_row_per_loan(col)(lf)
+            .filter(pl.col(col).is_between(characteristic.lo, characteristic.hi))
+            .with_columns(binned(col, characteristic.bin_size, name="bin"))
+        ),
+    ).filter(pl.col("bin").is_not_null() & pl.col("mbs_total").is_not_null())
+
+
+def _mbs_first_payment_months(gse: str) -> pl.LazyFrame:
+    """MBS loans with their First Payment year-month, one row per loan.
+
+    Re-read from the issuance files with just the two columns: the temporal axis is
+    the origination cohort, which is where the pre-2019 survivorship gradient shows.
+    The date dtype drifts with silver rebuilds (packed MMYYYY string vs pl.Date), so
+    branch on the actual dtype.
+    """
+    id_col = "Loan Identifier" if gse == "fnma" else "Loan Sequence Number"
+    lf = (
+        scan_mbs_universe(gse)
+        .select([id_col, "First Payment Date"])
+        .rename({id_col: "Loan Identifier"})
+        .unique()
     )
-
-    # Apply range filter if specified
-    if min_val is not None:
-        mbs_with_char = mbs_with_char.filter(pl.col(mbs_column) >= min_val)
-    if max_val is not None:
-        mbs_with_char = mbs_with_char.filter(pl.col(mbs_column) <= max_val)
-
-    # Create bins for MBS loans
-    mbs_with_char = mbs_with_char.with_columns(
-        ((pl.col(mbs_column) / bin_size).floor() * bin_size).alias("bin")
-    )
-
-    # Get matched IDs for filtering
-    matched_mbs_ids = set(crosswalk["Loan Sequence Number (MBS)"].to_list())
-    matched_umbs_ids = set(crosswalk["Loan Sequence Number (UMBS)"].to_list())
-
-    # Count MBS perspective: total MBS loans and matched MBS loans per bin
-    mbs_counts = (
-        mbs_with_char.with_columns(
-            pl.col("Loan Identifier").is_in(matched_mbs_ids).alias("is_matched")
-        )
-        .group_by("bin")
-        .agg(
-            [
-                pl.len().alias("mbs_total"),
-                pl.col("is_matched").sum().alias("mbs_matched"),
-            ]
-        )
-    )
-
-    # Load ALL UMBS data with the characteristic
-    umbs_with_char = (
-        umbs_data.filter(pl.col(umbs_column).is_not_null())
-        .select(["Loan Identifier", umbs_column])
-        .unique(subset=["Loan Identifier"])
-    )
-
-    # Apply range filter
-    if min_val is not None:
-        umbs_with_char = umbs_with_char.filter(pl.col(umbs_column) >= min_val)
-    if max_val is not None:
-        umbs_with_char = umbs_with_char.filter(pl.col(umbs_column) <= max_val)
-
-    # Create bins for UMBS loans
-    umbs_with_char = umbs_with_char.with_columns(
-        ((pl.col(umbs_column) / bin_size).floor() * bin_size).alias("bin")
-    )
-
-    # Count UMBS perspective: total UMBS loans and matched UMBS loans per bin
-    umbs_counts = (
-        umbs_with_char.with_columns(
-            pl.col("Loan Identifier").cast(pl.Utf8).is_in(matched_umbs_ids).alias("is_matched")
-        )
-        .group_by("bin")
-        .agg(
-            [
-                pl.len().alias("umbs_total"),
-                pl.col("is_matched").sum().alias("umbs_matched"),
-            ]
-        )
-    )
-
-    # Merge both perspectives and filter out null bins
-    result = (
-        mbs_counts.join(umbs_counts, on="bin", how="full")
-        .filter(pl.col("bin").is_not_null())
-        .with_columns(
-            [
-                (pl.col("mbs_matched") / pl.col("mbs_total")).alias("mbs_match_rate"),
-                (pl.col("umbs_matched") / pl.col("umbs_total")).alias("umbs_match_rate"),
-                pl.col("mbs_matched").alias("matched"),  # For backwards compatibility
-            ]
-        )
-        .sort("bin")
-    )
-
-    return result
+    if lf.collect_schema()["First Payment Date"] == pl.Date:
+        ym = pl.col("First Payment Date").dt.strftime("%Y-%m")
+    else:
+        fpd = pl.col("First Payment Date").cast(pl.Utf8).str.zfill(6)
+        ym = fpd.str.slice(2, 4) + "-" + fpd.str.slice(0, 2)
+    return lf.with_columns(ym.alias("year_month"))
 
 
 def compute_match_rates_by_month(
-    crosswalk: pl.DataFrame,
-    umbs_data: pl.DataFrame,
-    gse: str = "fnma",
+    crosswalk: pl.DataFrame, umbs_data: pl.DataFrame, gse: str = "fnma"
 ) -> pl.DataFrame:
-    """Compute match rates by month from both MBS and UMBS perspectives.
+    """Both sides' match rates by First Payment month, over months both sides carry.
 
     Args:
-        crosswalk: The MBS-UMBS crosswalk
-        umbs_data: UMBS data with year_month column
-        gse: Either "fnma" or "fhlmc"
-
-    Returns both MBS match rate (matched_mbs / total_mbs) and
-    UMBS match rate (matched_umbs / total_umbs) for each month,
-    along with a first_payment_date column (derived from year_month).
-    """
-    gse = gse.lower()
-    mbs_dir, _, _ = get_gse_paths(gse)
-
-    # Load MBS issuance data keyed on origination (First Payment Date) so the temporal axis is
-    # the origination cohort — that is where the pre-2019 survivorship gradient shows up.
-    # FNMA First Payment Date is MMYYYY string; FHLMC is a date.
-    if gse == "fnma":
-        mbs_with_date = (
-            pl.scan_parquet(
-                str(mbs_dir / "**/*.parquet"), missing_columns="insert", extra_columns="ignore"
-            )
-            .select(["Loan Identifier", "First Payment Date"])
-            .unique()
-            .with_columns(
-                # Convert MMYYYY to YYYY-MM format for proper sorting
-                (
-                    pl.col("First Payment Date").str.slice(2, 4)
-                    + "-"
-                    + pl.col("First Payment Date").str.slice(0, 2)
-                ).alias("year_month")
-            )
-            .collect()
-        )
-    else:  # fhlmc
-        mbs_with_date = (
-            pl.scan_parquet(
-                str(mbs_dir / "**/*.parquet"), missing_columns="insert", extra_columns="ignore"
-            )
-            .select(["Loan Sequence Number", "First Payment Date"])
-            .rename({"Loan Sequence Number": "Loan Identifier"})
-            .unique()
-            .with_columns(
-                # First Payment Date is a date type, convert to YYYY-MM format
-                pl.col("First Payment Date").dt.strftime("%Y-%m").alias("year_month")
-            )
-            .collect()
-        )
-
-    # UMBS data already has year_month column from load_umbs_data and now spans pre-2019 via the
-    # snapshot, so no lower-bound filter — the inner join on year_month below intersects months.
-    umbs_with_date = umbs_data.unique(subset=["Loan Identifier"])
-
-    # Join crosswalk with MBS dates to get matched loan dates
-    crosswalk.join(
-        mbs_with_date.select(["Loan Identifier", "year_month"]),
-        left_on="Loan Sequence Number (MBS)",
-        right_on="Loan Identifier",
-        how="inner",
-    )
-
-    # Get matched IDs
-    matched_mbs_ids = set(crosswalk["Loan Sequence Number (MBS)"].to_list())
-    matched_umbs_ids = set(crosswalk["Loan Sequence Number (UMBS)"].to_list())
-
-    # MBS perspective: count all MBS loans and matched MBS loans by month
-    mbs_counts = (
-        mbs_with_date.with_columns(
-            pl.col("Loan Identifier").is_in(matched_mbs_ids).alias("is_matched")
-        )
-        .group_by("year_month")
-        .agg(
-            [
-                pl.len().alias("mbs_total"),
-                pl.col("is_matched").sum().alias("mbs_matched"),
-            ]
-        )
-    )
-
-    # UMBS perspective: count ALL UMBS loans by month and identify matched ones
-    # Note: UMBS Loan Identifier is Int64, crosswalk has String, so convert for comparison
-    umbs_counts = (
-        umbs_with_date.with_columns(
-            pl.col("Loan Identifier").cast(pl.Utf8).is_in(matched_umbs_ids).alias("is_matched")
-        )
-        .group_by("year_month")
-        .agg(
-            [
-                pl.len().alias("umbs_total"),
-                pl.col("is_matched").sum().alias("umbs_matched"),
-            ]
-        )
-    )
-
-    # Merge and compute rates
-    # Use inner join to only include months where both MBS and UMBS data exist
-    result = (
-        mbs_counts.join(umbs_counts, on="year_month", how="inner")
-        .with_columns(
-            [
-                (pl.col("mbs_matched") / pl.col("mbs_total")).alias("mbs_match_rate"),
-                (pl.col("umbs_matched") / pl.col("umbs_total")).alias("umbs_match_rate"),
-                # Create first_payment_date column (YYYY-MM-01 format for x-axis)
-                (pl.col("year_month") + "-01").alias("first_payment_date"),
-            ]
-        )
-        .sort("year_month")
-    )
-
-    return result
-
-
-# Legacy function names for backwards compatibility
-def compute_match_rates_by_year(
-    crosswalk: pl.DataFrame,
-    source_data: pl.LazyFrame,
-) -> pl.DataFrame:
-    """Calculate match rates by year.
-
-    For MBS-UMBS matching, use compute_match_rates_by_month instead.
-    """
-    umbs_data = load_umbs_data()
-    monthly_data = compute_match_rates_by_month(crosswalk, umbs_data)
-
-    # Aggregate to yearly
-    return (
-        monthly_data.with_columns(pl.col("year_month").str.slice(0, 4).alias("year"))
-        .group_by("year")
-        .agg(
-            [
-                pl.col("mbs_total").sum(),
-                pl.col("mbs_matched").sum(),
-                pl.col("umbs_total").sum(),
-                pl.col("umbs_matched").sum(),
-            ]
-        )
-        .with_columns(
-            [
-                (pl.col("mbs_matched") / pl.col("mbs_total")).alias("mbs_match_rate"),
-                (pl.col("umbs_matched") / pl.col("umbs_total")).alias("umbs_match_rate"),
-            ]
-        )
-        .sort("year")
-    )
-
-
-def compute_match_rates_by_state(
-    crosswalk: pl.DataFrame,
-    source_data: pl.LazyFrame,
-) -> pl.DataFrame:
-    """Calculate match rates by state.
-
-    Note: State-level analysis is limited for MBS-UMBS matching since
-    both sources are from FNMA and should have identical state distributions.
-    """
-    # Get MBS data with state
-    mbs_with_state = (
-        source_data.filter(pl.col("Property State").is_not_null())
-        .select(["Loan Identifier", "Property State"])
-        .unique(subset=["Loan Identifier"])
-        .collect()
-    )
-
-    # Get matched IDs
-    matched_mbs_ids = set(crosswalk["Loan Sequence Number (MBS)"].to_list())
-
-    # Count by state
-    result = (
-        mbs_with_state.with_columns(
-            pl.col("Loan Identifier").is_in(matched_mbs_ids).alias("is_matched")
-        )
-        .group_by("Property State")
-        .agg(
-            [
-                pl.len().alias("total"),
-                pl.col("is_matched").sum().alias("matched"),
-            ]
-        )
-        .with_columns((pl.col("matched") / pl.col("total")).alias("match_rate"))
-        .sort("total", descending=True)
-    )
-
-    return result
-
-
-def load_data(
-    crosswalk_path: Path | None = None,
-) -> tuple[pl.DataFrame, pl.LazyFrame, pl.DataFrame]:
-    """Load crosswalk and source data.
+        crosswalk: The MBS-UMBS crosswalk.
+        umbs_data: UMBS loans with ``year_month``, from `load_umbs_data`.
+        gse: Either "fnma" or "fhlmc".
 
     Returns:
-        Tuple of (crosswalk, mbs_data, umbs_data)
+        One row per month, chronological, with ``first_payment_date`` (``YYYY-MM-01``)
+        for the figure's axis.
     """
-    crosswalk = load_crosswalk()
-    mbs_data = load_mbs_data()
-    umbs_data = load_umbs_data()
-    return crosswalk, mbs_data, umbs_data
+    mbs_side, umbs_side = sides(
+        crosswalk,
+        _mbs_first_payment_months(gse.lower()),
+        umbs_data,
+    )
+    return (
+        rate_by_sides((mbs_side, umbs_side), "year_month")
+        .filter(pl.col("mbs_total").is_not_null() & pl.col("umbs_total").is_not_null())
+        .with_columns((pl.col("year_month") + "-01").alias("first_payment_date"))
+    )
 
 
-# =============================================================================
-# Plotting Functions
-# =============================================================================
+def compute_mbs_coverage_end(
+    monthly_data: pl.DataFrame, threshold: float = 0.95, min_umbs: int = 5_000
+) -> str:
+    """Last First-Payment month with full MBS-side coverage (the analysis window end).
 
-
-def plot_match_rates_by_month(
-    monthly_data: pl.DataFrame,
-    gse: str = "fnma",
-    output_path: Path | None = None,
-    interactive: bool = True,
-) -> None:
-    """Plot match rates by first payment date (both MBS and UMBS perspectives).
+    The MBS SF loan-level files are released on a longer lag than UMBS ILLD, so the
+    UMBS side always frontruns the MBS side: the final MBS months are only partially
+    populated and their match rates are recency artifacts, not matcher quality. The
+    window end is the last month (>= 2019-06) where the MBS-side loan count keeps pace
+    with the UMBS side. Empirically the ratio sits at ~0.98-1.00 and then falls off a
+    cliff, so the cut is insensitive to the threshold.
 
     Args:
-        monthly_data: DataFrame with mbs_match_rate, umbs_match_rate, first_payment_date
-        gse: Either "fnma" or "fhlmc" (used for title)
-        output_path: Path to save the figure
-        interactive: Whether to display the plot interactively
+        monthly_data: Output of `compute_match_rates_by_month`.
+        threshold: Minimum MBS/UMBS monthly count ratio to call a month fully covered.
+        min_umbs: Minimum UMBS loans in the month for the ratio to be meaningful.
+
+    Returns:
+        The last fully-covered month as ``"YYYY-MM"``.
     """
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None:
-        print("matplotlib not available, skipping plots")
-        return
+    ok = monthly_data.filter(
+        (pl.col("year_month") >= ISSUANCE_START_YM)
+        & (pl.col("umbs_total") >= min_umbs)
+        & (pl.col("mbs_total") >= threshold * pl.col("umbs_total"))
+    )
+    return ISSUANCE_START_YM if ok.is_empty() else str(ok["year_month"].max())
 
-    gse_upper = gse.upper()
-    fig, ax = plt.subplots(figsize=(14, 6))
 
-    # Extract dates and rates
-    dates = []
-    mbs_valid = []
-    umbs_valid = []
+# =============================================================================
+# Figure
+# =============================================================================
 
+
+GSE_LABEL = {"fnma": "Fannie Mae (FNMA)", "fhlmc": "Freddie Mac (FHLMC)"}
+
+
+def _plot_month_panel(ax, monthly_data: pl.DataFrame, coverage_end: str) -> None:
+    """One panel of match rates by First Payment Date month (both perspectives).
+
+    The full-coverage analysis window (2019-06 through the agency's MBS coverage end)
+    is shaded in the background, recession-shading style — the characteristic panels
+    below are computed on exactly this window.
+    """
+    dates: list[str] = []
+    mbs_rates: list[float | None] = []
+    umbs_rates: list[float | None] = []
     for row in monthly_data.iter_rows(named=True):
-        fpd = row.get("first_payment_date")
-        mbs_rate = row.get("mbs_match_rate")
-        embs_rate = row.get("umbs_match_rate")
-
-        if fpd is not None:
-            dates.append(str(fpd))
-            mbs_valid.append(mbs_rate * 100 if mbs_rate is not None else None)
-            umbs_valid.append(embs_rate * 100 if embs_rate is not None else None)
-
+        if row.get("first_payment_date") is None:
+            continue
+        dates.append(str(row["first_payment_date"]))
+        mbs = row.get("mbs_match_rate")
+        umbs = row.get("umbs_match_rate")
+        mbs_rates.append(mbs * 100 if mbs is not None else None)
+        umbs_rates.append(umbs * 100 if umbs is not None else None)
     if not dates:
-        print("No valid date data found for plotting")
         return
 
-    # Plot both lines (no fill)
-    ax.plot(dates, mbs_valid, color=MBS_COLOR, linewidth=2, alpha=0.8, label="MBS Match Rate")
-    ax.plot(dates, umbs_valid, color=UMBS_COLOR, linewidth=2, alpha=0.8, label="UMBS Match Rate")
+    # shade the analysis window (dates are sorted "YYYY-MM-01" strings, plotted
+    # categorically, so window edges map to list positions)
+    window = [
+        i for i, d in enumerate(dates) if f"{ISSUANCE_START_YM}-01" <= d <= f"{coverage_end}-01"
+    ]
+    if window:
+        ax.axvspan(window[0] - 0.5, window[-1] + 0.5, color=DEEP_TEAL, alpha=0.10, linewidth=0)
 
+    ax.plot(dates, mbs_rates, color=MBS_COLOR, linewidth=1.6)
+    ax.plot(dates, umbs_rates, color=UMBS_COLOR, linewidth=1.6)
+    step = max(1, len(dates) // 10)
+    ax.set_xticks(range(0, len(dates), step))
+    ax.set_xticklabels(
+        [dates[i] for i in range(0, len(dates), step)], rotation=45, ha="right", fontsize=8
+    )
     ax.set_xlabel("First Payment Date")
-    ax.set_ylabel("Match Rate (%)")
-    ax.set_title(f"{gse_upper} MBS-UMBS Match Rates by First Payment Date")
-
-    # Rotate x-axis labels
-    n_labels = len(dates)
-    step = max(1, n_labels // 20)
-    ax.set_xticks(range(0, n_labels, step))
-    ax.set_xticklabels([dates[i] for i in range(0, n_labels, step)], rotation=45, ha="right")
-
-    ax.grid(True, alpha=0.3)
-    ax.set_ylim(80, 100)  # Start y-axis at 80%
-    ax.legend()
-
-    plt.tight_layout()
-    if output_path:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
+    ax.set_ylim(80, 100.5)
 
 
-def plot_match_rates_by_characteristic(
-    rates_df: pl.DataFrame,
-    xlabel: str,
-    title: str,
-    output_path: Path | None = None,
-    interactive: bool = True,
-    x_scale: float = 1.0,
-    show_density: bool = True,
+def _plot_characteristic_panel(
+    ax, rates_df: pl.DataFrame, xlabel: str, cut_points: tuple[float, ...]
 ) -> None:
-    """Plot match rates by characteristic (both MBS and UMBS perspectives)."""
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None:
-        print("matplotlib not available, skipping plots")
-        return
+    """One panel of match rates by a loan characteristic.
 
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    x = np.array(rates_df["bin"].to_list()) * x_scale
-    mbs_match_rates = np.array(
+    Combines the two previous figure styles: the loan distribution greyed out in the
+    background (MBS totals, right axis without ticks — context only) and dashed
+    vertical lines at the standard underwriting cut points.
+    """
+    x = np.array(rates_df["bin"].to_list())
+    mbs_y = np.array(
         [r * 100 if r is not None else np.nan for r in rates_df["mbs_match_rate"].to_list()]
     )
-    umbs_match_rates = np.array(
+    umbs_y = np.array(
         [r * 100 if r is not None else np.nan for r in rates_df["umbs_match_rate"].to_list()]
     )
-    mbs_totals = np.array(rates_df["mbs_total"].to_list())
+    totals = np.array(rates_df["mbs_total"].to_list(), dtype=float)
 
-    # Secondary axis for density (using MBS totals)
-    if show_density:
-        ax2 = ax.twinx()
-        pdf = mbs_totals / mbs_totals.sum()
-        ax2.fill_between(x, pdf, alpha=0.2, color=DENSITY_COLOR, label="Density")
-        ax2.set_ylabel("Density (PDF)", color=DENSITY_COLOR)
-        ax2.tick_params(axis="y", labelcolor=DENSITY_COLOR)
-        ax2.set_ylim(0, pdf.max() * 1.5)
+    ax2 = ax.twinx()
+    pdf = totals / totals.sum() if totals.sum() else totals
+    ax2.fill_between(x, pdf, alpha=0.2, color=DENSITY_COLOR, linewidth=0)
+    ax2.set_ylim(0, max(float(pdf.max()), 1e-9) * 1.6)
+    ax2.set_yticks([])
 
-    # Plot both match rates (no markers - too many points with fine bins)
-    ax.plot(x, mbs_match_rates, color=MBS_COLOR, linewidth=1.5, label="MBS Match Rate")
-    ax.plot(x, umbs_match_rates, color=UMBS_COLOR, linewidth=1.5, label="UMBS Match Rate")
+    for cp in cut_points:
+        ax.axvline(cp, color=SLATE, linestyle="--", linewidth=1.0, alpha=0.7)
 
+    ax.plot(x, mbs_y, color=MBS_COLOR, linewidth=1.5)
+    ax.plot(x, umbs_y, color=UMBS_COLOR, linewidth=1.5)
     ax.set_xlabel(xlabel)
-    ax.set_ylabel("Match Rate (%)")
-    ax.set_title(title)
-
-    # Set reasonable y-limits
-    all_rates = np.concatenate([mbs_match_rates, umbs_match_rates])
-    valid_rates = all_rates[~np.isnan(all_rates)]
-    if len(valid_rates) > 0:
-        y_min = max(0, valid_rates.min() - 5)
-        y_max = min(100, valid_rates.max() + 5)
-        ax.set_ylim(y_min, y_max)
-
-    ax.grid(True, alpha=0.3)
-    ax.legend(loc="best")
-
-    plt.tight_layout()
-    if output_path:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
+    valid = np.concatenate([mbs_y[~np.isnan(mbs_y)], umbs_y[~np.isnan(umbs_y)]])
+    if valid.size:
+        ax.set_ylim(max(0, valid.min() - 5), min(100.0, valid.max() + 5) + 0.5)
+    # rates draw above the background density
+    ax.set_zorder(ax2.get_zorder() + 1)
+    ax.patch.set_visible(False)
 
 
-def plot_match_rates_extremes_comparison(
-    ltv_rates: pl.DataFrame,
-    dti_rates: pl.DataFrame,
-    fico_rates: pl.DataFrame,
-    gse: str = "fnma",
+def plot_match_rates_panel(
+    results: dict[str, dict[str, Any]],
     output_path: Path | None = None,
-    interactive: bool = True,
+    interactive: bool = False,
 ) -> None:
-    """Plot a 3-panel comparison of match rates at extremes (both perspectives).
+    """Render the combined validation figure: 5 rows x 2 columns.
+
+    Columns are FNMA (left) and FHLMC (right); rows are match rates by First Payment
+    Date month, interest rate, FICO, LTV, and DTI. The characteristic panels carry
+    both the greyed-out loan distribution and the dashed underwriting cut points.
 
     Args:
-        ltv_rates: DataFrame with LTV match rates
-        dti_rates: DataFrame with DTI match rates
-        fico_rates: DataFrame with FICO match rates
-        gse: Either "fnma" or "fhlmc" (used for title)
-        output_path: Path to save the figure
-        interactive: Whether to display the plot interactively
+        results: ``{"fnma": ..., "fhlmc": ...}`` as returned by the per-GSE
+            computation, each carrying ``monthly_data`` and the ``*_rates`` frames.
+        output_path: Where to save the figure (PNG). Skipped if ``None``.
+        interactive: Whether to display the figure interactively.
     """
-    plt = _get_pyplot(interactive=interactive)
+    plt = get_pyplot(interactive=interactive)
     if plt is None:
         print("matplotlib not available, skipping plots")
         return
 
-    gse_upper = gse.upper()
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig, axes = plt.subplots(5, 2, figsize=(14, 18))
+    for col, gse in enumerate(("fnma", "fhlmc")):
+        r = results[gse]
+        coverage_end = r.get("coverage_end", ISSUANCE_START_YM)
+        ax = axes[0][col]
+        _plot_month_panel(ax, r["monthly_data"], coverage_end)
+        ax.set_title(
+            f"{GSE_LABEL[gse]} — by First Payment Date"
+            f" (window: {ISSUANCE_START_YM} .. {coverage_end})",
+            fontsize=11,
+        )
+        ax.set_ylabel("Match Rate (%)")
+        ax.grid(True, alpha=0.3)
+        for row_i, c in enumerate(CHARACTERISTICS, start=1):
+            ax = axes[row_i][col]
+            _plot_characteristic_panel(ax, r[f"{c.key}_rates"], c.xlabel, c.cut_points)
+            ax.set_title(f"{GSE_LABEL[gse]} — by {c.xlabel.split(' (')[0]}", fontsize=11)
+            ax.set_ylabel("Match Rate (%)")
+            ax.grid(True, alpha=0.3)
 
-    # LTV
-    ax = axes[0]
-    x = np.array(ltv_rates["bin"].to_list())
-    mbs_y = np.array(
-        [r * 100 if r is not None else np.nan for r in ltv_rates["mbs_match_rate"].to_list()]
+    handles = [
+        plt.Line2D([], [], color=MBS_COLOR, linewidth=2, label="MBS match rate"),
+        plt.Line2D([], [], color=UMBS_COLOR, linewidth=2, label="UMBS match rate"),
+        plt.Rectangle(
+            (0, 0), 1, 1, color=DEEP_TEAL, alpha=0.10, label="full-coverage analysis window"
+        ),
+        plt.Rectangle(
+            (0, 0), 1, 1, color=DENSITY_COLOR, alpha=0.2, label="loan distribution (MBS)"
+        ),
+        plt.Line2D(
+            [], [], color=SLATE, linestyle="--", linewidth=1.2, label="underwriting cut points"
+        ),
+    ]
+    fig.legend(handles=handles, loc="lower center", ncol=5, frameon=False, fontsize=10)
+    fig.suptitle(
+        "MBS-UMBS match-rate validation"
+        " (characteristic panels use the shaded full-coverage window)",
+        fontsize=13,
     )
-    umbs_y = np.array(
-        [r * 100 if r is not None else np.nan for r in ltv_rates["umbs_match_rate"].to_list()]
-    )
+    fig.tight_layout(rect=(0, 0.02, 1, 0.985))
 
-    ax.plot(x, mbs_y, color=MBS_COLOR, linewidth=1.5, label="MBS Match Rate")
-    ax.plot(x, umbs_y, color=UMBS_COLOR, linewidth=1.5, label="UMBS Match Rate")
-    ax.axvline(80, color=REFERENCE_COLOR_1, linestyle="--", alpha=0.5)
-    ax.axvline(95, color=REFERENCE_COLOR_2, linestyle="--", alpha=0.5)
-    ax.set_xlabel("LTV (%)")
-    ax.set_ylabel("Match Rate (%)")
-    ax.set_title("Match Rate by LTV")
-    ax.legend(fontsize=8)
-    ax.grid(True, alpha=0.3)
-
-    # DTI
-    ax = axes[1]
-    x = np.array(dti_rates["bin"].to_list())
-    mbs_y = np.array(
-        [r * 100 if r is not None else np.nan for r in dti_rates["mbs_match_rate"].to_list()]
-    )
-    umbs_y = np.array(
-        [r * 100 if r is not None else np.nan for r in dti_rates["umbs_match_rate"].to_list()]
-    )
-
-    ax.plot(x, mbs_y, color=MBS_COLOR, linewidth=1.5, label="MBS Match Rate")
-    ax.plot(x, umbs_y, color=UMBS_COLOR, linewidth=1.5, label="UMBS Match Rate")
-    ax.axvline(43, color=REFERENCE_COLOR_1, linestyle="--", alpha=0.5)
-    ax.axvline(50, color=REFERENCE_COLOR_2, linestyle="--", alpha=0.5)
-    ax.set_xlabel("DTI (%)")
-    ax.set_ylabel("Match Rate (%)")
-    ax.set_title("Match Rate by DTI")
-    ax.legend(fontsize=8)
-    ax.grid(True, alpha=0.3)
-
-    # FICO
-    ax = axes[2]
-    x = np.array(fico_rates["bin"].to_list())
-    mbs_y = np.array(
-        [r * 100 if r is not None else np.nan for r in fico_rates["mbs_match_rate"].to_list()]
-    )
-    umbs_y = np.array(
-        [r * 100 if r is not None else np.nan for r in fico_rates["umbs_match_rate"].to_list()]
-    )
-
-    ax.plot(x, mbs_y, color=MBS_COLOR, linewidth=1.5, label="MBS Match Rate")
-    ax.plot(x, umbs_y, color=UMBS_COLOR, linewidth=1.5, label="UMBS Match Rate")
-    ax.axvline(620, color=REFERENCE_COLOR_1, linestyle="--", alpha=0.5)
-    ax.axvline(740, color=REFERENCE_COLOR_2, linestyle="--", alpha=0.5)
-    ax.set_xlabel("FICO Score")
-    ax.set_ylabel("Match Rate (%)")
-    ax.set_title("Match Rate by FICO")
-    ax.legend(fontsize=8)
-    ax.grid(True, alpha=0.3)
-
-    plt.suptitle(f"{gse_upper} MBS-UMBS Match Rates at Characteristic Extremes", fontsize=12)
-    plt.tight_layout()
-
-    if output_path:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
+    save_and_close(fig, output_path, interactive)
 
 
 # =============================================================================
-# Main Entry Point
+# Report
 # =============================================================================
 
-
-def print_section(title: str) -> None:
-    """Print a section header."""
-    print(f"\n{'=' * 70}")
-    print(f" {title}")
-    print(f"{'=' * 70}\n")
+#: Where each characteristic's report calls out the extremes: (label, low bound, high bound).
+EXTREMES = {"ltv": (60, 90), "dti": (25, 45), "fico": (660, 760)}
 
 
-def run_validation(
-    gse: str = "fnma",
-    output_dir: Path | None = None,
-    save_plots: bool = True,
-    show_plots: bool = False,
-) -> dict[str, Any]:
-    """Run all validation analyses for MBS-UMBS matching.
+def _print_extremes(key: str, rates: pl.DataFrame) -> None:
+    low_hi = EXTREMES.get(key)
+    if low_hi is None:
+        return
+    low, high = low_hi
+    print(f"\n{key.upper()} extremes:")
+    for label, part in (
+        (f"<= {low}", rates.filter(pl.col("bin") <= low)),
+        (f">= {high}", rates.filter(pl.col("bin") >= high)),
+    ):
+        if len(part):
+            print(
+                f"  {label}: MBS={cast(float, part['mbs_match_rate'].mean()):.1%}, UMBS={cast(float, part['umbs_match_rate'].mean()):.1%}"
+            )
+
+
+def compute_gse_validation(gse: str) -> dict[str, Any]:
+    """Compute every validation statistic for one GSE (no plotting).
 
     Args:
-        gse: Either "fnma" or "fhlmc"
-        output_dir: Directory to save figures. Defaults to VALIDATION_OUTPUT_DIR.
-        save_plots: Whether to save plots to disk
-        show_plots: Whether to display matplotlib plots interactively
+        gse: Which GSE to load.
 
     Returns:
-        Dictionary with all computed statistics and DataFrames
+        ``monthly_data``, ``coverage_end``, ``stats`` and one ``{key}_rates`` frame per
+        characteristic, as `plot_match_rates_panel` consumes them.
     """
     gse = gse.lower()
-    gse_upper = gse.upper()
-
-    if output_dir is None:
-        output_dir = VALIDATION_OUTPUT_DIR
-
-    if save_plots:
-        output_dir.mkdir(parents=True, exist_ok=True)
-        print(f"Saving figures to: {output_dir}")
-
-    results = {}
-
-    # --- Section 1: Load Data ---
-    print_section(f"1. Loading Data ({gse_upper})")
-
-    print("Loading crosswalk...")
+    print_section(f"1. Loading Data ({gse.upper()})")
     crosswalk = load_crosswalk(gse)
     print(f"  Crosswalk: {len(crosswalk):,} matched pairs")
-    print(f"  Columns: {list(crosswalk.schema.keys())}")
-
-    print("Loading MBS data...")
     mbs_data = load_mbs_data(gse)
-
-    print("Loading UMBS data...")
     umbs_data = load_umbs_data(gse)
 
-    # Clean full-data window for all NON-TEMPORAL stats: First Payment Date >= UMBS issuance
-    # start (2019-06). Before then ILLD does not exist and the snapshot / MBS series have
-    # asymmetric coverage, so an unrestricted denominator is not interpretable. The temporal
-    # by-month analysis below deliberately keeps the FULL range to show match rate over time.
-    clean = ISSUANCE_START_YM
-    mbs_clean = mbs_data.filter(pl.col("first_payment_ym") >= clean)
-    umbs_clean = umbs_data.filter(pl.col("year_month") >= clean)
-
-    # --- Section 2: Match Statistics ---
-    print_section("2. Match Statistics Summary")
-
-    stats = compute_match_statistics(crosswalk, mbs_clean, umbs_clean)
-    print(
-        f"(clean window: First Payment Date >= {clean}; pre-{clean} excluded for full-data denominator)"
-    )
-    print(f"Matched pairs (in window): {stats['n_matched_pairs']:,}")
-    print("\nMBS Perspective:")
-    print(f"  Total MBS loans: {stats['n_total_mbs']:,}")
-    print(f"  Matched MBS loans: {stats['n_matched_mbs']:,}")
-    print(f"  MBS match rate: {stats['mbs_match_rate']:.1%}")
-    print("\nUMBS Perspective:")
-    print(f"  Total UMBS loans: {stats['n_total_umbs']:,}")
-    print(f"  Matched UMBS loans: {stats['n_matched_umbs']:,}")
-    print(f"  UMBS match rate: {stats['umbs_match_rate']:.1%}")
-    results["stats"] = stats
-
-    # --- Section 3: Temporal Analysis ---
-    print_section("3. Temporal Analysis (Match Rates by Month)")
-
-    print("Computing match rates by month...")
+    print_section("2. Temporal Analysis (Match Rates by Month)")
     monthly_data = compute_match_rates_by_month(crosswalk, umbs_data, gse=gse)
     print(f"  {len(monthly_data)} monthly periods")
 
-    if len(monthly_data) > 0:
-        avg_mbs_match = monthly_data["mbs_match_rate"].mean()
-        avg_umbs_match = monthly_data["umbs_match_rate"].mean()
-        print(f"  Average match rate (MBS): {avg_mbs_match:.1%}")
-        print(f"  Average match rate (UMBS): {avg_umbs_match:.1%}")
-    results["monthly_data"] = monthly_data
-
-    # --- Section 4: Match Rates by LTV ---
-    print_section("4. Match Rates by LTV")
-
-    print("Computing match rates by LTV...")
-    ltv_rates = compute_match_rates_by_characteristic(
-        crosswalk,
-        mbs_clean,
-        umbs_clean,
-        mbs_column="LTV",
-        umbs_column="LTV",
-        bin_size=1,
-        min_val=20,
-        max_val=105,
+    # Clean full-data window for every non-temporal statistic: bounded below by the
+    # UMBS issuance start (before it ILLD does not exist and the snapshot / MBS series
+    # have asymmetric coverage) and above by the MBS coverage end (the last MBS months
+    # are only partially populated and would read as recency artifacts). The by-month
+    # frame deliberately keeps the full range; the window is shaded on its panel.
+    coverage_end = compute_mbs_coverage_end(monthly_data)
+    print(f"  Full-coverage analysis window: {ISSUANCE_START_YM} .. {coverage_end}")
+    mbs_clean = mbs_data.filter(
+        pl.col("first_payment_ym").is_between(pl.lit(ISSUANCE_START_YM), pl.lit(coverage_end))
     )
-    print(ltv_rates)
-    results["ltv_rates"] = ltv_rates
-
-    # --- Section 5: Match Rates by DTI ---
-    print_section("5. Match Rates by DTI")
-
-    print("Computing match rates by DTI...")
-    dti_rates = compute_match_rates_by_characteristic(
-        crosswalk,
-        mbs_clean,
-        umbs_clean,
-        mbs_column="DTI",
-        umbs_column="DTI",
-        bin_size=1,
-        min_val=0,
-        max_val=65,
+    umbs_clean = umbs_data.filter(
+        pl.col("year_month").is_between(pl.lit(ISSUANCE_START_YM), pl.lit(coverage_end))
     )
-    print(dti_rates)
-    results["dti_rates"] = dti_rates
 
-    # --- Section 6: Match Rates by FICO ---
-    print_section("6. Match Rates by FICO Score")
-
-    print("Computing match rates by FICO...")
-    fico_rates = compute_match_rates_by_characteristic(
-        crosswalk,
-        mbs_clean,
-        umbs_clean,
-        mbs_column="FICO",
-        umbs_column="FICO",
-        bin_size=1,
-        min_val=580,
-        max_val=850,
+    print_section("3. Match Statistics Summary")
+    stats = compute_match_statistics(crosswalk, mbs_clean, umbs_clean)
+    print(f"(analysis window: {ISSUANCE_START_YM} <= First Payment Date <= {coverage_end})")
+    print(f"Matched pairs (in window): {stats['n_matched_pairs']:,}")
+    print(
+        f"MBS:  {stats['n_matched_mbs']:,} of {stats['n_total_mbs']:,} loans matched ({stats['mbs_match_rate']:.1%})"
     )
-    print(fico_rates)
-    results["fico_rates"] = fico_rates
+    print(
+        f"UMBS: {stats['n_matched_umbs']:,} of {stats['n_total_umbs']:,} loans matched ({stats['umbs_match_rate']:.1%})"
+    )
 
-    # --- Section 7: Key Findings ---
-    print_section("7. Key Findings")
+    results: dict[str, Any] = {
+        "monthly_data": monthly_data,
+        "coverage_end": coverage_end,
+        "stats": stats,
+    }
+    both = sides(crosswalk, mbs_clean, umbs_clean)
+    for i, c in enumerate(CHARACTERISTICS, start=4):
+        print_section(f"{i}. Match Rates by {c.xlabel.split(' (')[0]}")
+        results[f"{c.key}_rates"] = compute_match_rates_by_characteristic(both, c)
+        print(results[f"{c.key}_rates"])
 
-    # Analyze extremes
-    print("LTV Extremes:")
-    low_ltv = ltv_rates.filter(pl.col("bin") <= 60)
-    high_ltv = ltv_rates.filter(pl.col("bin") >= 90)
-    if len(low_ltv) > 0:
-        print(
-            f"  Low LTV (<=60): MBS={low_ltv['mbs_match_rate'].mean():.1%}, UMBS={low_ltv['umbs_match_rate'].mean():.1%}"
-        )
-    if len(high_ltv) > 0:
-        print(
-            f"  High LTV (>=90): MBS={high_ltv['mbs_match_rate'].mean():.1%}, UMBS={high_ltv['umbs_match_rate'].mean():.1%}"
-        )
+    print_section(f"{4 + len(CHARACTERISTICS)}. Key Findings")
+    for c in CHARACTERISTICS:
+        _print_extremes(c.key, results[f"{c.key}_rates"])
+    print(f"\n{gse.upper()} statistics complete.")
+    return results
 
-    print("\nDTI Extremes:")
-    low_dti = dti_rates.filter(pl.col("bin") <= 25)
-    high_dti = dti_rates.filter(pl.col("bin") >= 45)
-    if len(low_dti) > 0:
-        print(
-            f"  Low DTI (<=25): MBS={low_dti['mbs_match_rate'].mean():.1%}, UMBS={low_dti['umbs_match_rate'].mean():.1%}"
-        )
-    if len(high_dti) > 0:
-        print(
-            f"  High DTI (>=45): MBS={high_dti['mbs_match_rate'].mean():.1%}, UMBS={high_dti['umbs_match_rate'].mean():.1%}"
-        )
 
-    print("\nFICO Extremes:")
-    low_fico = fico_rates.filter(pl.col("bin") <= 660)
-    high_fico = fico_rates.filter(pl.col("bin") >= 760)
-    if len(low_fico) > 0:
-        print(
-            f"  Low FICO (<=660): MBS={low_fico['mbs_match_rate'].mean():.1%}, UMBS={low_fico['umbs_match_rate'].mean():.1%}"
-        )
-    if len(high_fico) > 0:
-        print(
-            f"  High FICO (>=760): MBS={high_fico['mbs_match_rate'].mean():.1%}, UMBS={high_fico['umbs_match_rate'].mean():.1%}"
-        )
+def run_validation(
+    output_dir: Path | None = None, save_plots: bool = True, show_plots: bool = False
+) -> dict[str, Any]:
+    """Run the validation for both GSEs and render the combined figure.
 
-    # --- Section 8: Generate Plots ---
+    Args:
+        output_dir: Directory for the figure. Defaults to ``VALIDATION_OUTPUT_DIR``.
+        save_plots: Whether to write the figure.
+        show_plots: Whether to display the figure interactively.
+
+    Returns:
+        ``{"fnma": ..., "fhlmc": ...}`` with each GSE's statistics and rate frames.
+    """
+    output_dir = output_dir or VALIDATION_OUTPUT_DIR
+    results = {gse: compute_gse_validation(gse) for gse in ("fnma", "fhlmc")}
     if (show_plots or save_plots) and HAS_MATPLOTLIB:
-        print_section("8. Generating Visualizations")
-
-        print("1. Plotting match rates by month...")
-        plot_match_rates_by_month(
-            monthly_data,
-            gse=gse,
-            output_path=output_dir / f"{gse}_match_rates_by_month.png" if save_plots else None,
+        print_section("Generating Visualization")
+        plot_match_rates_panel(
+            results,
+            output_path=(output_dir / "mbs_umbs_match_rates_panel.png") if save_plots else None,
             interactive=show_plots,
         )
-
-        print("2. Plotting match rates by LTV...")
-        plot_match_rates_by_characteristic(
-            ltv_rates,
-            xlabel="LTV (%)",
-            title=f"{gse_upper} MBS-UMBS Match Rates by LTV (FPD >= 2019-06)",
-            output_path=output_dir / f"{gse}_match_rates_by_ltv.png" if save_plots else None,
-            interactive=show_plots,
-        )
-
-        print("3. Plotting match rates by DTI...")
-        plot_match_rates_by_characteristic(
-            dti_rates,
-            xlabel="DTI (%)",
-            title=f"{gse_upper} MBS-UMBS Match Rates by DTI (FPD >= 2019-06)",
-            output_path=output_dir / f"{gse}_match_rates_by_dti.png" if save_plots else None,
-            interactive=show_plots,
-        )
-
-        print("4. Plotting match rates by FICO...")
-        plot_match_rates_by_characteristic(
-            fico_rates,
-            xlabel="FICO Score",
-            title=f"{gse_upper} MBS-UMBS Match Rates by FICO Score (FPD >= 2019-06)",
-            output_path=output_dir / f"{gse}_match_rates_by_fico.png" if save_plots else None,
-            interactive=show_plots,
-        )
-
-        print("5. Plotting extremes comparison panel...")
-        plot_match_rates_extremes_comparison(
-            ltv_rates,
-            dti_rates,
-            fico_rates,
-            gse=gse,
-            output_path=output_dir / f"{gse}_match_rates_extremes.png" if save_plots else None,
-            interactive=show_plots,
-        )
-
-    print("\nDone! Validation complete.")
-    if save_plots:
-        print(f"Figures saved to: {output_dir}")
-
+    print("\nValidation complete.")
     return results

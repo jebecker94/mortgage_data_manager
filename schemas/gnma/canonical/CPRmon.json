@@ -1,0 +1,334 @@
+{
+  "prefix": "CPRmon",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "CH": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2025-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = CH",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "int64",
+          "pdf_text": "Date File Generated",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "CP": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2025-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = CP",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "conditional_prepayment_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Conditional Prepayment Rate (CPR)",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5,
+              "format": "3.1"
+            }
+          ]
+        },
+        {
+          "id": "3_month_cpr_rate",
+          "arrow_type": "float64",
+          "pdf_text": "3-Month CPR Rate",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 5,
+              "format": "3.1"
+            }
+          ]
+        },
+        {
+          "id": "remaining_security_rpb",
+          "arrow_type": "float64",
+          "pdf_text": "Remaining Security RPB",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "rpb_factor",
+          "arrow_type": "float64",
+          "pdf_text": "RPB Factor",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 10,
+              "format": "1.8"
+            }
+          ]
+        },
+        {
+          "id": "wa_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "WA Interest Rate (WAC)",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_remaining_months_to_maturity",
+          "arrow_type": "int64",
+          "pdf_text": "WA Remaining Months to Maturity (WARM)",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_loan_age",
+          "arrow_type": "int64",
+          "pdf_text": "WA Loan Age (WALA)",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_original_loan_term",
+          "arrow_type": "int64",
+          "pdf_text": "WA Original Loan Term (WAOLT)",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "int64",
+          "pdf_text": "As of Date",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 6,
+              "format": "CCYYMM"
+            }
+          ]
+        }
+      ]
+    },
+    "TT": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2025-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TT",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "pool_count",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Count",
+          "layouts": [
+            {
+              "from": "2025-07",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 9
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "control_record_types": [
+    "CT"
+  ],
+  "corrections": []
+}

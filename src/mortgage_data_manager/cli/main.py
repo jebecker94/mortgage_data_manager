@@ -30,14 +30,8 @@ def main():
     • FHA (Federal Housing Administration)
     • MBS Agencies: GNMA, FHFA, FNMA, FHLMC, UMBS
     • FHLB (Federal Home Loan Bank)
-    • Matching workflows
-
-    Regulatory/financial-institution sources (FDIC, NCUA, FFIEC, CRA, FCA, FRB,
-    SEC, BPS, NSI, NFIP, SBA) attach via the optional mortgage-data-regulatory plugin.
-
-    [bold]Phase 6 Complete[/bold]
-    All data sources and matching workflows are now available.
-    Phase 7 (Documentation & Polish) in progress.
+    • HUD multifamily and the HUD USPS ZIP crosswalk
+    • Matching workflows and combined cross-source datasets
     """
     pass
 
@@ -49,8 +43,7 @@ def version():
 
     version_text = Text()
     version_text.append("Mortgage Data Manager\n", style="bold cyan")
-    version_text.append(f"Version: {__version__}\n", style="white")
-    version_text.append("\nPhase 1: Foundation (Core utilities implemented)", style="yellow")
+    version_text.append(f"Version: {__version__}", style="white")
 
     console.print(Panel(version_text, title="Version Info", border_style="cyan"))
 
@@ -69,66 +62,72 @@ def info():
     info_text.append(f"  Data Dir:     {MortgageDataConfig.DATA_DIR}\n", style="white")
     info_text.append(f"  Output Dir:   {MortgageDataConfig.OUTPUT_DIR}\n\n", style="white")
 
-    # Implementation status
-    info_text.append("Implementation Status:\n", style="bold white")
-    info_text.append("  ✓ Phase 1: Foundation (Core utilities)\n", style="green")
-    info_text.append("  ✓ Phase 2: HMDA Migration\n", style="green")
-    info_text.append("  ✓ Phase 3: FHA Migration\n", style="green")
-    info_text.append("  ✓ Phase 4: MBS Migration\n", style="green")
-    info_text.append("  ✓ Phase 5: Financial Institutions\n", style="green")
-    info_text.append("  ✓ Phase 6: Matching Integration\n", style="green")
-    info_text.append("  ○ Phase 7: Documentation & Polish\n\n", style="dim")
+    rows = [
+        (
+            "Data sources",
+            [
+                ("hmda", "Home Mortgage Disclosure Act loan-level data"),
+                ("fha", "FHA single-family snapshots"),
+                ("fhfa", "FHFA Public Use Databases"),
+                ("fhlb", "Federal Home Loan Bank AMA data"),
+                ("gnma", "Ginnie Mae disclosure data"),
+                ("fnma", "Fannie Mae loan performance data"),
+                ("fhlmc", "Freddie Mac loan-level data"),
+                ("umbs", "Fannie Mae / Freddie Mac UMBS disclosures"),
+                ("hud", "HUD multifamily housing (FHA-insured + Section 8)"),
+                ("usps-crosswalk", "HUD USPS ZIP crosswalks"),
+            ],
+        ),
+        (
+            "Cross-source",
+            [
+                ("match", "Matching workflows that link records across sources"),
+                ("combined", "Combined cross-source master datasets"),
+                ("analytics", "MBS analytics (library, no CLI)"),
+            ],
+        ),
+        (
+            "Utilities",
+            [
+                ("raw", "Raw download ledger"),
+                ("geocode", "Geocoder cache"),
+            ],
+        ),
+    ]
+    for heading, entries in rows:
+        info_text.append(f"{heading}:\n", style="bold white")
+        for name, description in entries:
+            info_text.append(f"  • {name:<15}- {description}\n", style="green")
+        info_text.append("\n")
 
-    # Available modules
-    info_text.append("Available Core Modules:\n", style="bold white")
-    info_text.append("  • config     - Base configuration management\n", style="white")
-    info_text.append("  • medallion  - Medallion architecture utilities\n", style="white")
-    info_text.append("  • io         - File download and I/O operations\n", style="white")
-    info_text.append("  • logging    - Standardized logging setup\n\n", style="white")
-
-    info_text.append("Available Data Sources:\n", style="bold white")
-    info_text.append("  • hmda       - Home Mortgage Disclosure Act data\n", style="green")
-    info_text.append("  • fha        - Federal Housing Administration data\n", style="green")
-    info_text.append("  • gnma       - GNMA (Ginnie Mae) data\n", style="green")
-    info_text.append("  • fhfa       - FHFA data\n", style="green")
-    info_text.append("  • fnma       - Fannie Mae data\n", style="green")
-    info_text.append("  • fhlmc      - Freddie Mac data\n", style="green")
-    info_text.append("  • umbs       - UMBS data\n", style="green")
-    info_text.append("  • match      - Matching workflows for linking records\n", style="green")
-    info_text.append("  • hud        - HUD USPS ZIP Code crosswalk data\n", style="green")
-    info_text.append("  • hud-mf     - HUD multifamily housing (FHA-insured + Section 8) data\n", style="green")
-    info_text.append("\nDerived datasets:\n", style="bold white")
-    info_text.append("  • combined   - Cross-source master datasets (scaffold)\n", style="green")
-    info_text.append("  • analytics  - Calculated + estimated MBS analytics (library, scaffold)\n", style="green")
-    info_text.append("\nFI Agencies:\n", style="bold white")
-    info_text.append("  • fhlb       - Federal Home Loan Bank data\n", style="green")
-    info_text.append(
-        "\n(Regulatory sources via the optional mortgage-data-regulatory plugin.)\n",
-        style="dim",
-    )
-
+    info_text.rstrip()
     console.print(Panel(info_text, title="Project Info", border_style="cyan"))
 
 
-def cli_main():
-    """Entry point for the unified CLI.
+def _register_subcommands() -> None:
+    """Attach every public subpackage CLI to ``app``.
 
-    This function will be called when users run 'mortgage-data' from the command line.
+    Runs at import so the fully assembled app is visible to tooling that inspects
+    the module (``typer mortgage_data_manager.cli.main utils docs`` generates
+    ``docs/cli_reference.md`` from it). Plugins are attached separately in
+    :func:`cli_main` so the public reference never lists private commands.
     """
-    # Register HMDA subcommands (Phase 2)
-    from mortgage_data_manager.hmda.cli import app as hmda_app
+    # Register HMDA subcommands
+    from mortgage_data_manager.sources.hmda.cli import app as hmda_app
+
     app.add_typer(hmda_app, name="hmda", help="HMDA data operations")
 
-    # Register FHA subcommands (Phase 3)
-    from mortgage_data_manager.fha.cli import app as fha_app
+    # Register FHA subcommands
+    from mortgage_data_manager.sources.fha.cli import app as fha_app
+
     app.add_typer(fha_app, name="fha", help="FHA data operations")
 
-    # Register MBS agencies individually (Phase 4)
-    from mortgage_data_manager.fhfa.cli import app as fhfa_app
-    from mortgage_data_manager.fhlmc.cli import app as fhlmc_app
-    from mortgage_data_manager.fnma.cli import app as fnma_app
-    from mortgage_data_manager.gnma.cli import app as gnma_app
-    from mortgage_data_manager.umbs.cli import app as umbs_app
+    # Register MBS agencies individually
+    from mortgage_data_manager.sources.fhfa.cli import app as fhfa_app
+    from mortgage_data_manager.sources.fhlmc.cli import app as fhlmc_app
+    from mortgage_data_manager.sources.fnma.cli import app as fnma_app
+    from mortgage_data_manager.sources.gnma.cli import app as gnma_app
+    from mortgage_data_manager.sources.umbs.cli import app as umbs_app
 
     app.add_typer(gnma_app, name="gnma", help="GNMA (Ginnie Mae) data operations")
     app.add_typer(fhfa_app, name="fhfa", help="FHFA data operations")
@@ -136,43 +135,54 @@ def cli_main():
     app.add_typer(fhlmc_app, name="fhlmc", help="Freddie Mac data operations")
     app.add_typer(umbs_app, name="umbs", help="UMBS data operations")
 
-    # Register Matching subcommands (Phase 6)
+    # Register Matching subcommands
     from mortgage_data_manager.matching.cli import app as matching_app
+
     app.add_typer(matching_app, name="match", help="Matching workflows for linking records")
 
-    # Register HUD crosswalk data
-    from mortgage_data_manager.hud.cli import app as hud_app
-    app.add_typer(hud_app, name="hud", help="HUD USPS crosswalk data operations")
+    # Register USPS ZIP crosswalk data
+    from mortgage_data_manager.sources.usps_crosswalk.cli import app as usps_crosswalk_app
+
+    app.add_typer(
+        usps_crosswalk_app, name="usps-crosswalk", help="USPS ZIP crosswalk data operations"
+    )
 
     # Register HUD multifamily housing data
-    from mortgage_data_manager.hud_mf.cli import app as hud_mf_app
-    app.add_typer(hud_mf_app, name="hud-mf", help="HUD multifamily housing data operations")
+    from mortgage_data_manager.sources.hud.cli import app as hud_app
+
+    app.add_typer(hud_app, name="hud", help="HUD multifamily housing data operations")
 
     # Register combined cross-source master datasets
     from mortgage_data_manager.combined.cli import app as combined_app
+
     app.add_typer(combined_app, name="combined", help="Combined cross-source master datasets")
 
-    # Register FHLB (Bucket A mortgage source)
-    from mortgage_data_manager.fhlb.cli import app as fhlb_app
+    # Register FHLB
+    from mortgage_data_manager.sources.fhlb.cli import app as fhlb_app
+
     app.add_typer(fhlb_app, name="fhlb", help="FHLB data operations")
-
-    # Register Manifest CLI (data catalog)
-    from mortgage_data_manager.cli.manifest import app as manifest_app
-
-    app.add_typer(manifest_app, name="manifest", help="Data manifest catalog operations")
 
     # Register top-level geocode CLI (cache management)
     from mortgage_data_manager.cli.geocode import app as geocode_app
 
     app.add_typer(geocode_app, name="geocode", help="Inspect/manage the global geocoder cache")
 
-    # Register optional private/proprietary plugins. Installed companion
-    # packages declare a 'mortgage_data_manager.plugins' entry point so their
-    # sub-commands attach here. Kept deliberately generic: the public repo never
-    # names proprietary sources, and a plugin is only present if separately
-    # installed against an external (non-public) data root.
-    _register_plugins()
+    # Raw download ledger (register / audit / changes / info)
+    from mortgage_data_manager.cli.raw import app as raw_app
 
+    app.add_typer(raw_app, name="raw", help="Raw download ledger: register, audit, changes, info")
+
+
+def cli_main() -> None:
+    """Entry point for the unified CLI (the ``mortgage-data`` console script).
+
+    Attaches optional private/proprietary plugins, then runs the app. Installed
+    companion packages declare a ``mortgage_data_manager.plugins`` entry point so
+    their sub-commands attach here. Kept deliberately generic: the public repo
+    never names proprietary sources, and a plugin is only present if separately
+    installed against an external (non-public) data root.
+    """
+    _register_plugins()
     app()
 
 
@@ -192,9 +202,10 @@ def _register_plugins() -> None:
             register = ep.load()
             register(app)
         except Exception as exc:  # noqa: BLE001 - a bad plugin must not kill the CLI
-            console.print(
-                f"[yellow]Warning:[/] could not load plugin '{ep.name}': {exc}"
-            )
+            console.print(f"[yellow]Warning:[/] could not load plugin '{ep.name}': {exc}")
+
+
+_register_subcommands()
 
 
 if __name__ == "__main__":

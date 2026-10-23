@@ -1,44 +1,22 @@
-"""HMDA-FHLB Match Validation Module.
+"""Validation for the HMDA-FHLB matching workflow.
 
-This module provides two types of validation for the HMDA-FHLB matching workflow:
+Two kinds live here. **Pre-match data validation** (schema and unit-magnitude checks
+the workflow runs on its cleaned inputs) and the **post-match validation report**:
+headline statistics, match counts by year, match rates by loan amount from each
+side, the HMDA purchaser-type distribution of the matches, and a lender (PFI)
+summary, for both eras together in one figure.
 
-1. DATA VALIDATION (Pre-match):
-   - Schema validation: Ensures required columns exist
-   - Magnitude checks: Verifies units are correct (dollars vs thousands, etc.)
-
-2. MATCH QUALITY VALIDATION (Post-match):
-   - Match statistics summary
-   - Temporal analysis (match counts by year)
-   - Loan characteristics analysis (match rates by loan amount)
-   - Purchaser type distribution
-   - Lender (PFI) analysis
-
-Key Context for HMDA-FHLB Matching:
-- Match rates of 40-55% are EXPECTED and do NOT indicate methodology problems
-- FHLBs only acquire a subset of loans from their member institutions
-- Not all FHLB member originations are sold to FHLBs
-- The key insight is identifying which lenders (PFIs) sell loans to FHLBs
-
-Usage:
-    # Data validation (before matching)
-    from mortgage_data_manager.matching.match_hmda_fhlb.validation import (
-        validate_hmda_post2018,
-        validate_fhlb_post2018,
-        validate_datasets,
-    )
-
-    # Match quality validation (after matching)
-    from mortgage_data_manager.matching.match_hmda_fhlb.validation import (
-        run_validation,
-        load_post2018_data,
-        compute_overall_stats,
-    )
+Match rates in this workflow are a property of FHLB acquisition behaviour, not of
+the matcher: FHLBs acquire only a subset of their members' originations, so a
+member's unmatched loans are mostly loans that were never sold to an FHLB. The
+informative output is which lenders sell to FHLBs and what they sell.
 """
 
 from __future__ import annotations
 
+from functools import partial
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import numpy as np
 import polars as pl
@@ -48,6 +26,21 @@ from mortgage_data_manager.matching.match_hmda_fhlb.config import (
     DATA_DIR,
     PROJECT_ROOT,
 )
+from mortgage_data_manager.matching.validation_common import (
+    COLORS,
+    Side,
+    binned,
+    get_pyplot,
+    matched_count,
+    matched_ids,
+    panel_gridspec,
+    print_section,
+    rate_by,
+    save_and_close,
+)
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 logger = get_logger(__name__)
 
@@ -57,32 +50,15 @@ logger = get_logger(__name__)
 
 # Year range for analysis
 MIN_YEAR_POST2018 = 2018
-MAX_YEAR_POST2018 = 2024
+MAX_YEAR_POST2018 = 2025
 MIN_YEAR_PRE2018 = 2009
 MAX_YEAR_PRE2018 = 2017
 
 # Output directory for figures
-VALIDATION_OUTPUT_DIR = PROJECT_ROOT / "docs" / "matching" / "figures" / "hmda_fhlb"
+VALIDATION_OUTPUT_DIR = PROJECT_ROOT / "docs" / "matching" / "figures"
 
-# Color palette (Jonathan's authoritative academic palette)
-PALETTE = {
-    # Primary anchors
-    "midnight": "#0E2F44",  # Headers, dominant elements
-    "hunter": "#145A32",  # Large datasets, key series
-    # Secondary highlights
-    "gold": "#D4AC0D",  # Focus data, callouts
-    "terracotta": "#BA4A00",  # Trend lines, emphasis
-    # Tertiary extensions
-    "mulberry": "#900C3F",  # High-cardinality categories
-    "purple": "#5B2C6F",  # Additional categories
-    "teal": "#117864",  # Additional categories
-    # Neutrals
-    "grey": "#85929E",  # Context, axes, benchmarks
-    "slate": "#566573",  # Borders, secondary text
-    # Background & text
-    "canvas": "#F8F9F9",  # Background (off-white)
-    "ink": "#1B2631",  # All standard text
-}
+# Shared chart palette; CATEGORICAL below keeps this workflow's own ordering.
+PALETTE = COLORS
 
 # Categorical sequence (hunter green + gold as primary pair)
 CATEGORICAL = [
@@ -99,33 +75,48 @@ CATEGORICAL = [
 HMDA_COLOR = PALETTE["hunter"]
 FHLB_COLOR = PALETTE["gold"]
 
-# Check for matplotlib availability
-try:
-    import matplotlib
 
-    HAS_MATPLOTLIB = True
-except ImportError:
-    HAS_MATPLOTLIB = False
-    matplotlib = None  # type: ignore
+class Era(NamedTuple):
+    """One analysis period: how it is keyed in ``results`` and how it is drawn."""
 
-# Check for scipy availability
-try:
-    from scipy.stats import spearmanr
-
-    HAS_SCIPY = True
-except ImportError:
-    HAS_SCIPY = False
+    key: str
+    label: str
+    color: str
+    marker: str
 
 
-def _get_pyplot(interactive: bool = True):
-    """Get pyplot with appropriate backend."""
-    if not HAS_MATPLOTLIB:
-        return None
-    if not interactive:
-        matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+ERAS = (
+    Era(
+        "pre2018",
+        f"Pre-2018 ({MIN_YEAR_PRE2018}-{MAX_YEAR_PRE2018})",
+        PALETTE["midnight"],
+        "o",
+    ),
+    Era(
+        "post2018",
+        f"Post-2018 ({MIN_YEAR_POST2018}-{MAX_YEAR_POST2018})",
+        PALETTE["gold"],
+        "s",
+    ),
+)
 
-    return plt
+# Standing interpretation printed at the end of every run: the match rate here is a
+# property of FHLB acquisition behaviour, not of the matcher, and readers reliably
+# mistake it for one.
+INTERPRETATION = """
+IMPORTANT CONTEXT FOR HMDA-FHLB MATCHING:
+
+1. A partial match rate is EXPECTED and does NOT indicate a methodology problem.
+   FHLBs acquire only a subset of their members' originations, so most unmatched
+   member loans were never sold to an FHLB.
+
+2. The informative output is which lenders (PFIs) sell loans to FHLBs, what types
+   of loans FHLBs acquire, and how that varies over time.
+
+3. Purchaser type: FHLBs have no dedicated HMDA purchaser code, so most matches
+   report purchaser_type=9 ("Other"), with the remainder spread over the bank and
+   not-applicable codes.
+"""
 
 
 # =============================================================================
@@ -166,15 +157,17 @@ def check_magnitudes(df: pl.DataFrame, col_map: dict[str, str], dataset_name: st
     passed = True
 
     # Calculate means for numeric columns, ignoring nulls and common HMDA sentinels
-    stats = df.select([
-        pl.col(actual_col)
-        .fill_nan(None)
-        .replace(-99999, None)  # Treat HMDA sentinel as null
-        .mean()
-        .alias(f"mean_{logic_col}")
-        for logic_col, actual_col in col_map.items()
-        if actual_col in df.columns
-    ]).to_dict(as_series=False)
+    stats = df.select(
+        [
+            pl.col(actual_col)
+            .fill_nan(None)
+            .replace(-99999, None)  # Treat HMDA sentinel as null
+            .mean()
+            .alias(f"mean_{logic_col}")
+            for logic_col, actual_col in col_map.items()
+            if actual_col in df.columns
+        ]
+    ).to_dict(as_series=False)
 
     for logic_col, actual_col in col_map.items():
         if actual_col not in df.columns:
@@ -193,27 +186,53 @@ def check_magnitudes(df: pl.DataFrame, col_map: dict[str, str], dataset_name: st
         if expected_min is not None:
             if not (expected_min <= mean_val <= expected_max):
                 logger.error(
-                    f"[{dataset_name}] Magnitude Check FAILED for '{actual_col}' ({logic_col}). "
-                    f"Mean: {mean_val:,.2f}. Expected range: {expected_min:,.0f} - {expected_max:,.0f}."
+                    "[%s] Magnitude Check FAILED for '%s' (%s). Mean: %s. Expected range: %s - %s.",
+                    dataset_name,
+                    actual_col,
+                    logic_col,
+                    f"{mean_val:,.2f}",
+                    f"{expected_min:,.0f}",
+                    f"{expected_max:,.0f}",
                 )
                 passed = False
             else:
-                logger.info(f"[{dataset_name}] Magnitude OK: '{actual_col}' mean = {mean_val:,.2f}")
+                logger.info(
+                    "[%s] Magnitude OK: '%s' mean = %s",
+                    dataset_name,
+                    actual_col,
+                    f"{mean_val:,.2f}",
+                )
 
     return passed
 
 
 def check_schema(df: pl.DataFrame, required_cols: list[str], dataset_name: str) -> bool:
-    """Verify existence of required columns."""
+    """Verify existence of required columns.
+
+    Args:
+        df: The frame to validate.
+        required_cols: Column names that must be present.
+        dataset_name: Dataset name, used in the failure message.
+
+    Returns:
+        True when every required column is present.
+    """
     missing = [c for c in required_cols if c not in df.columns]
     if missing:
-        logger.error(f"[{dataset_name}] Schema Check FAILED. Missing columns: {missing}")
+        logger.error("[%s] Schema Check FAILED. Missing columns: %s", dataset_name, missing)
         return False
     return True
 
 
 def validate_hmda_post2018(df: pl.DataFrame) -> bool:
-    """Validate HMDA Post-2018 Data schema and magnitudes."""
+    """Validate HMDA Post-2018 Data schema and magnitudes.
+
+    Args:
+        df: The frame to validate.
+
+    Returns:
+        True when the schema and magnitude checks pass.
+    """
     logger.info("Validating HMDA Data (Post-2018)")
 
     # 1. Schema Check
@@ -247,7 +266,14 @@ def validate_hmda_post2018(df: pl.DataFrame) -> bool:
 
 
 def validate_fhlb_post2018(df: pl.DataFrame) -> bool:
-    """Validate FHLB Post-2018 Data schema and magnitudes."""
+    """Validate FHLB Post-2018 Data schema and magnitudes.
+
+    Args:
+        df: The frame to validate.
+
+    Returns:
+        True when the schema and magnitude checks pass.
+    """
     logger.info("Validating FHLB Data (Post-2018)")
 
     # 1. Schema Check
@@ -282,7 +308,11 @@ def validate_fhlb_post2018(df: pl.DataFrame) -> bool:
 
 
 def validate_datasets(match_folder: Path) -> None:
-    """Run validation on cleaned parquet files before matching."""
+    """Run validation on cleaned parquet files before matching.
+
+    Args:
+        match_folder: Directory holding the cleaned parquet files.
+    """
     hmda_path = match_folder / "hmda_fhlb_members_post2018.parquet"
     fhlb_path = match_folder / "fhlb_acquisitions_post2018.parquet"
 
@@ -296,67 +326,94 @@ def validate_datasets(match_folder: Path) -> None:
         if not validate_hmda_post2018(hmda):
             logger.warning("HMDA Validation FAILED. Proceeding with caution")
     except Exception as e:
-        logger.error(f"Error validating HMDA data: {e}")
+        logger.error("Error validating HMDA data: %s", e)
 
     try:
         fhlb = pl.scan_parquet(fhlb_path).limit(10000).collect()
         if not validate_fhlb_post2018(fhlb):
             logger.warning("FHLB Validation FAILED. Proceeding with caution")
     except Exception as e:
-        logger.error(f"Error validating FHLB data: {e}")
+        logger.error("Error validating FHLB data: %s", e)
 
 
 # =============================================================================
-# MATCH QUALITY VALIDATION (Post-match) - Data Loading
+# MATCH QUALITY VALIDATION (Post-match) - Data
 # =============================================================================
 
 
-def load_post2018_data() -> tuple[pl.DataFrame, pl.DataFrame | None, pl.DataFrame | None]:
-    """Load post-2018 matching data.
+def load_era_data(era: Era) -> tuple[pl.DataFrame, pl.DataFrame | None, pl.DataFrame | None]:
+    """Load one era's matches and the two sides they were matched from.
+
+    Args:
+        era: Which analysis period to load; its ``key`` is the filename suffix.
 
     Returns:
-        Tuple of (matches, hmda_members, fhlb_acquisitions) DataFrames
-    """
-    matches_path = DATA_DIR / "fhlb_hmda_matches_post2018.parquet"
-    hmda_path = DATA_DIR / "hmda_fhlb_members_post2018.parquet"
-    fhlb_path = DATA_DIR / "fhlb_acquisitions_post2018.parquet"
+        ``(matches, hmda_members, fhlb_acquisitions)``. The two side frames are None
+        when the workflow did not persist them; the rates that need them are skipped.
 
+    Raises:
+        FileNotFoundError: If the era's matches file has not been built.
+    """
+    matches_path = DATA_DIR / f"hmda_fhlb_matches_{era.key}.parquet"
+    hmda_path = DATA_DIR / f"hmda_fhlb_members_{era.key}.parquet"
+    fhlb_path = DATA_DIR / f"fhlb_acquisitions_{era.key}.parquet"
     if not matches_path.exists():
         raise FileNotFoundError(f"Matches file not found: {matches_path}")
-
-    matches = pl.read_parquet(matches_path)
-    hmda = pl.read_parquet(hmda_path) if hmda_path.exists() else None
-    fhlb = pl.read_parquet(fhlb_path) if fhlb_path.exists() else None
-
-    return matches, hmda, fhlb
-
-
-def load_pre2018_data() -> tuple[pl.DataFrame, pl.DataFrame | None, pl.DataFrame | None]:
-    """Load pre-2018 matching data.
-
-    Returns:
-        Tuple of (matches, hmda_members, fhlb_acquisitions) DataFrames
-    """
-    matches_path = DATA_DIR / "fhlb_hmda_matches_pre2018.parquet"
-    hmda_path = DATA_DIR / "hmda_fhlb_members_pre2018.parquet"
-    fhlb_path = DATA_DIR / "fhlb_acquisitions_pre2018.parquet"
-
-    if not matches_path.exists():
-        raise FileNotFoundError(f"Matches file not found: {matches_path}")
-
-    matches = pl.read_parquet(matches_path)
-    hmda = pl.read_parquet(hmda_path) if hmda_path.exists() else None
-    fhlb = pl.read_parquet(fhlb_path) if fhlb_path.exists() else None
-
-    return matches, hmda, fhlb
+    return (
+        pl.read_parquet(matches_path),
+        pl.read_parquet(hmda_path) if hmda_path.exists() else None,
+        pl.read_parquet(fhlb_path) if fhlb_path.exists() else None,
+    )
 
 
 def load_lender_statistics() -> pl.DataFrame | None:
-    """Load lender match statistics."""
-    stats_path = DATA_DIR / "lender_match_statistics.csv"
-    if stats_path.exists():
-        return pl.read_csv(stats_path)
-    return None
+    """The post-2018 per-LEI match statistics, or None when they have not been built.
+
+    Only the post-2018 era is keyed by LEI; the pre-2018 file uses respondent ids,
+    which the lender summary does not mix in.
+    """
+    stats_path = DATA_DIR / "lender_match_statistics_post2018.csv"
+    return pl.read_csv(stats_path) if stats_path.exists() else None
+
+
+def era_sides(
+    era: Era, matches: pl.DataFrame, hmda: pl.DataFrame | None, fhlb: pl.DataFrame | None
+) -> dict[str, Side]:
+    """The measured sides one era's persisted inputs allow.
+
+    The FHLB loan id is only unique within a year before 2018, so that era's FHLB key
+    is ``(year, LoanCharacteristicsID)``; the matches carry the year as
+    ``activity_year`` and the acquisitions as ``data_year``.
+
+    The post-2018 acquisitions file is the matcher's candidate table, not a loan list:
+    a loan whose note amount is an exact $10k multiple is copied (``i_Duplicate = 1``)
+    so it can meet HMDA in either neighbouring amount bin. The copies are dropped here,
+    or every such loan would count twice in the FHLB-side denominator and, when
+    matched, twice in the numerator.
+
+    Args:
+        era: The analysis period.
+        matches: The era's matched pairs (both sides' columns).
+        hmda: The HMDA member originations, or None if not persisted.
+        fhlb: The FHLB acquisitions, or None if not persisted.
+
+    Returns:
+        ``{"hmda": Side, "fhlb": Side}`` minus any side whose universe is missing.
+    """
+    out: dict[str, Side] = {}
+    if hmda is not None:
+        out["hmda"] = Side(hmda, matched_ids(matches, "HMDAIndex"), "HMDAIndex", "hmda")
+    if fhlb is not None:
+        if "i_Duplicate" in fhlb.columns:
+            fhlb = fhlb.filter(pl.col("i_Duplicate") == 0)
+        if era.key == "pre2018":
+            key = ["data_year", "LoanCharacteristicsID"]
+            matched = matched_ids(matches, ["activity_year", "LoanCharacteristicsID"], as_cols=key)
+        else:
+            key = ["LoanCharacteristicsID"]
+            matched = matched_ids(matches, key)
+        out["fhlb"] = Side(fhlb, matched, key, "fhlb")
+    return out
 
 
 # =============================================================================
@@ -364,63 +421,47 @@ def load_lender_statistics() -> pl.DataFrame | None:
 # =============================================================================
 
 
-def compute_overall_stats(
-    matches: pl.DataFrame,
-    hmda: pl.DataFrame | None,
-    fhlb: pl.DataFrame | None,
-    hmda_id_col: str = "HMDAIndex",
-    fhlb_id_col: str = "LoanCharacteristicsID",
-) -> dict[str, Any]:
-    """Compute overall match statistics."""
-    n_matches = len(matches)
+def compute_overall_stats(matches: pl.DataFrame, sides: dict[str, Side]) -> dict[str, Any]:
+    """Headline counts and the match rate from each available side.
 
-    # HMDA-side stats
-    if hmda is not None and hmda_id_col in matches.columns and hmda_id_col in hmda.columns:
-        matched_hmda_ids = matches.select(hmda_id_col).unique()
-        n_hmda = len(hmda)
-        n_hmda_matched = len(hmda.join(matched_hmda_ids, on=hmda_id_col, how="inner"))
-        hmda_match_rate = n_hmda_matched / n_hmda if n_hmda > 0 else 0
-    else:
-        n_hmda = None
-        n_hmda_matched = None
-        hmda_match_rate = None
+    Args:
+        matches: The matched pairs.
+        sides: The era's measured sides, from `era_sides`.
 
-    # FHLB-side stats
-    if fhlb is not None and fhlb_id_col in matches.columns and fhlb_id_col in fhlb.columns:
-        matched_fhlb_ids = matches.select(fhlb_id_col).unique()
-        n_fhlb = len(fhlb)
-        n_fhlb_matched = len(fhlb.join(matched_fhlb_ids, on=fhlb_id_col, how="inner"))
-        fhlb_match_rate = n_fhlb_matched / n_fhlb if n_fhlb > 0 else 0
-    else:
-        n_fhlb = None
-        n_fhlb_matched = None
-        fhlb_match_rate = None
-
-    return {
-        "n_matches": n_matches,
-        "n_hmda": n_hmda,
-        "n_hmda_matched": n_hmda_matched,
-        "hmda_match_rate": hmda_match_rate,
-        "n_fhlb": n_fhlb,
-        "n_fhlb_matched": n_fhlb_matched,
-        "fhlb_match_rate": fhlb_match_rate,
-    }
+    Returns:
+        ``n_matches`` plus, per side, ``n_{side}``, ``n_{side}_matched`` and
+        ``{side}_match_rate`` (None when that side's universe is missing).
+    """
+    stats: dict[str, Any] = {"n_matches": len(matches)}
+    for name in ("hmda", "fhlb"):
+        side = sides.get(name)
+        n = (
+            len(side.universe)
+            if side is not None and isinstance(side.universe, pl.DataFrame)
+            else None
+        )
+        matched = matched_count(side) if side is not None else None
+        stats[f"n_{name}"] = n
+        stats[f"n_{name}_matched"] = matched
+        stats[f"{name}_match_rate"] = (matched / n if n else 0) if matched is not None else None
+    return stats
 
 
-def compute_yearly_match_counts(
-    matches: pl.DataFrame,
-    year_col: str = "activity_year",
-) -> pl.DataFrame:
-    """Compute match counts by year."""
-    if year_col not in matches.columns:
-        # Try to find an alternative year column
-        for col in ["year", "origination_year", "Year"]:
-            if col in matches.columns:
-                year_col = col
-                break
-        else:
-            return pl.DataFrame({"year": [], "matches": []})
+def compute_yearly_match_counts(matches: pl.DataFrame) -> pl.DataFrame:
+    """Match counts by year.
 
+    Args:
+        matches: The matched pairs.
+
+    Returns:
+        One row per year, with its match count; empty if no year column is present.
+    """
+    year_col = next(
+        (c for c in ("activity_year", "year", "origination_year", "Year") if c in matches.columns),
+        None,
+    )
+    if year_col is None:
+        return pl.DataFrame({"year": [], "matches": []})
     return (
         matches.group_by(year_col)
         .agg(pl.len().alias("matches"))
@@ -430,1022 +471,506 @@ def compute_yearly_match_counts(
 
 
 def compute_match_rates_by_loan_amount(
-    matches: pl.DataFrame,
-    hmda: pl.DataFrame,
-    hmda_id_col: str = "HMDAIndex",
-    bin_size: int = 25000,
-    max_amount: int = 750000,
+    side: Side, amount: pl.Expr, bin_size: int = 25_000, max_amount: int = 750_000
 ) -> pl.DataFrame:
-    """Compute match rates by loan amount bins."""
-    if "loan_amount" not in hmda.columns:
-        return pl.DataFrame()
-
-    matched_ids = matches.select(hmda_id_col).unique()
-
-    hmda_with_bin = hmda.filter(
-        (pl.col("loan_amount") >= 0) & (pl.col("loan_amount") <= max_amount)
-    ).with_columns(
-        ((pl.col("loan_amount") / bin_size).floor() * bin_size + bin_size / 2)
-        .cast(pl.Int64)
-        .alias("loan_amount_bin")
-    )
-
-    totals = hmda_with_bin.group_by("loan_amount_bin").agg(pl.len().alias("total"))
-    matched = (
-        hmda_with_bin.join(matched_ids, on=hmda_id_col, how="inner")
-        .group_by("loan_amount_bin")
-        .agg(pl.len().alias("matched"))
-    )
-
-    result = (
-        totals.join(matched, on="loan_amount_bin", how="left")
-        .with_columns(
-            pl.col("matched").fill_null(0),
-            (pl.col("matched") / pl.col("total")).alias("match_rate"),
-        )
-        .sort("loan_amount_bin")
-    )
-
-    return result
-
-
-def compute_match_rates_by_loan_amount_fhlb(
-    matches: pl.DataFrame,
-    fhlb: pl.DataFrame,
-    bin_size: int = 25000,
-    max_amount: int = 750000,
-) -> pl.DataFrame:
-    """Compute match rates by loan amount bins from FHLB perspective.
+    """One side's match rate by loan-amount bin (bin midpoints).
 
     Args:
-        matches: Matched records (contains both HMDA and FHLB columns)
-        fhlb: FHLB acquisitions data
-        bin_size: Bin size in dollars (default 25000)
-        max_amount: Maximum loan amount to include (default 750000)
+        side: The side to measure.
+        amount: Expression giving that side's loan amount in dollars.
+        bin_size: Bin width in dollars.
+        max_amount: Largest amount included.
 
     Returns:
-        Match rates by loan amount bin with columns:
-        - loan_amount_bin: bin midpoint
-        - total: total FHLB loans in bin
-        - matched: matched FHLB loans in bin
-        - match_rate: matched / total
+        One row per bin with the side's counts and rate.
     """
-    # Determine loan amount column and unique key based on period
-    if "Note Date" in matches.columns:
-        # Pre-2018: amounts in thousands, LoanCharacteristicsID unique within year
-        loan_amt_col = "Round Loan Amount"
-        year_col_fhlb = "data_year"
-        year_col_matches = "activity_year"
-
-        fhlb_with_amount = fhlb.with_columns(
-            (pl.col(loan_amt_col) * 1000).cast(pl.Int64).alias("loan_amount_dollars")
-        )
-
-        # Add bins to FHLB data
-        fhlb_with_bin = fhlb_with_amount.filter(
-            (pl.col("loan_amount_dollars") >= 0) & (pl.col("loan_amount_dollars") <= max_amount)
-        ).with_columns(
-            ((pl.col("loan_amount_dollars") / bin_size).floor() * bin_size + bin_size / 2)
-            .cast(pl.Int64)
-            .alias("loan_amount_bin")
-        )
-
-        # Pre-2018: Use (year, LoanCharacteristicsID) composite key
-        matched_fhlb = matches.select([year_col_matches, "LoanCharacteristicsID"]).unique()
-
-        matched_in_bins = (
-            fhlb_with_bin.join(
-                matched_fhlb,
-                left_on=[year_col_fhlb, "LoanCharacteristicsID"],
-                right_on=[year_col_matches, "LoanCharacteristicsID"],
-                how="inner"
-            )
-            .group_by("loan_amount_bin")
-            .agg(pl.len().alias("matched"))
-        )
-
-        totals = fhlb_with_bin.group_by("loan_amount_bin").agg(pl.len().alias("total"))
-
-    else:
-        # Post-2018: amounts already in dollars, LoanCharacteristicsID globally unique
-        loan_amt_col = "LoanAcquisitionActualUPBAmt"
-        fhlb_with_amount = fhlb.with_columns(
-            pl.col(loan_amt_col).cast(pl.Int64).alias("loan_amount_dollars")
-        )
-
-        # Add bins to FHLB data
-        fhlb_with_bin = fhlb_with_amount.filter(
-            (pl.col("loan_amount_dollars") >= 0) & (pl.col("loan_amount_dollars") <= max_amount)
-        ).with_columns(
-            ((pl.col("loan_amount_dollars") / bin_size).floor() * bin_size + bin_size / 2)
-            .cast(pl.Int64)
-            .alias("loan_amount_bin")
-        )
-
-        # Post-2018: Use LoanCharacteristicsID alone (globally unique)
-        matched_fhlb = matches.select("LoanCharacteristicsID").unique()
-
-        matched_in_bins = (
-            fhlb_with_bin.join(
-                matched_fhlb,
-                on="LoanCharacteristicsID",
-                how="inner"
-            )
-            .group_by("loan_amount_bin")
-            .agg(pl.len().alias("matched"))
-        )
-
-        totals = fhlb_with_bin.group_by("loan_amount_bin").agg(pl.len().alias("total"))
-
-    # Combine
-    result = (
-        totals.join(matched_in_bins, on="loan_amount_bin", how="left")
+    universe = (
+        side.universe.lazy()
+        .with_columns(amount.cast(pl.Int64).alias("loan_amount_dollars"))
+        .filter(pl.col("loan_amount_dollars").is_between(0, max_amount))
         .with_columns(
-            pl.col("matched").fill_null(0),
-            (pl.col("matched") / pl.col("total")).alias("match_rate"),
+            binned(
+                "loan_amount_dollars",
+                bin_size,
+                mode="midpoint",
+                dtype=pl.Int64,
+                name="loan_amount_bin",
+            )
         )
-        .sort("loan_amount_bin")
     )
+    return rate_by(
+        universe,
+        side.matched,
+        side.on,
+        "loan_amount_bin",
+        prefix=side.prefix,
+        sort_by="loan_amount_bin",
+        descending=False,
+    ).collect()
 
-    return result
+
+#: How each era's FHLB acquisitions report the note amount.
+FHLB_AMOUNT_DOLLARS = {
+    "pre2018": pl.col("Round Loan Amount") * 1000,
+    "post2018": pl.col("LoanAcquisitionActualUPBAmt"),
+}
+
+# HMDA purchaser_type across both eras: pre-2018 code 7 pooled life insurers, credit
+# unions, mortgage banks and finance companies; from 2018 it splits into 71 and 72.
+PURCHASER_LABELS = {
+    0: "Not Applicable",
+    1: "Fannie Mae",
+    2: "Ginnie Mae",
+    3: "Freddie Mac",
+    4: "Farmer Mac",
+    5: "Private Securitizer",
+    6: "Commercial Bank/Savings",
+    7: "Life Insurer/Credit Union/Mortgage Bank/Finance Co",
+    71: "Credit Union/Mortgage Co/Finance Co",
+    72: "Life Insurance Co",
+    8: "Affiliate Institution",
+    9: "Other",
+}
 
 
 def compute_purchaser_type_distribution(matches: pl.DataFrame) -> pl.DataFrame:
-    """Compute distribution of purchaser types in matched records."""
-    purchaser_col = None
-    for col in ["purchaser_type", "purchaser_type_s", "purchaser_type_h"]:
-        if col in matches.columns:
-            purchaser_col = col
-            break
+    """HMDA purchaser types among the matched records.
 
-    if purchaser_col is None:
+    Args:
+        matches: The matched pairs.
+
+    Returns:
+        One row per purchaser type with its count and share, largest first; empty if
+        the matches carry no purchaser column.
+    """
+    col = next(
+        (
+            c
+            for c in ("purchaser_type", "purchaser_type_s", "purchaser_type_h")
+            if c in matches.columns
+        ),
+        None,
+    )
+    if col is None:
         return pl.DataFrame()
-
-    purchaser_labels = {
-        0: "Not Applicable",
-        1: "Fannie Mae",
-        2: "Ginnie Mae",
-        3: "Freddie Mac",
-        4: "Farmer Mac or Other",
-        5: "Private Securitizer",
-        6: "Commercial Bank/Savings",
-        7: "Credit Union/Mortgage Co",
-        8: "Life Insurance Co",
-        9: "Other",
-    }
-
-    result = (
-        matches.group_by(purchaser_col)
+    return (
+        matches.group_by(col)
         .agg(pl.len().alias("count"))
         .with_columns(
             (pl.col("count") / pl.col("count").sum()).alias("pct"),
-            pl.col(purchaser_col)
-            .replace_strict(purchaser_labels, default="Unknown")
+            pl.col(col)
+            .replace_strict(PURCHASER_LABELS, default="Unknown")
             .alias("purchaser_label"),
         )
         .sort("count", descending=True)
+        .rename({col: "purchaser_type"})
     )
-
-    return result.rename({purchaser_col: "purchaser_type"})
 
 
 def analyze_lender_statistics(stats_df: pl.DataFrame) -> dict[str, Any]:
-    """Analyze lender match statistics."""
+    """Summarize the per-lender match statistics.
+
+    Args:
+        stats_df: Per-lender (and possibly per-year) match statistics.
+
+    Returns:
+        Active-lender count, the top 20 lenders by matches, and a yearly summary when
+        the statistics carry a year column.
+    """
     if stats_df is None or len(stats_df) == 0:
         return {}
 
-    # Find the relevant columns
-    lei_col = None
-    for col in ["lei", "LEI", "lender_id"]:
-        if col in stats_df.columns:
-            lei_col = col
-            break
+    def first_present(candidates: tuple[str, ...]) -> str | None:
+        return next((c for c in candidates if c in stats_df.columns), None)
 
-    match_col = None
-    for col in ["matched_loans", "total_matches", "matches"]:
-        if col in stats_df.columns:
-            match_col = col
-            break
-
-    year_col = None
-    for col in ["activity_year", "year", "Year"]:
-        if col in stats_df.columns:
-            year_col = col
-            break
-
+    lei_col = first_present(("lei", "LEI", "lender_id"))
+    match_col = first_present(("matched_loans", "total_matches", "matches"))
+    year_col = first_present(("activity_year", "year", "Year"))
     if lei_col is None or match_col is None:
         return {"error": "Required columns not found in lender statistics"}
 
-    # Active lenders with matches
-    active_lenders = stats_df.filter(pl.col(match_col) > 0)
-    n_active = active_lenders[lei_col].n_unique()
-
-    # Top lenders by total matches
-    top_lenders = (
-        stats_df.group_by(lei_col)
-        .agg(pl.col(match_col).sum().alias("total_matches"))
-        .sort("total_matches", descending=True)
-        .head(20)
-    )
-
-    result = {
-        "n_active_lenders": n_active,
-        "top_lenders": top_lenders,
+    active = stats_df.filter(pl.col(match_col) > 0)
+    result: dict[str, Any] = {
+        "n_active_lenders": active[lei_col].n_unique(),
+        "top_lenders": (
+            stats_df.group_by(lei_col)
+            .agg(pl.col(match_col).sum().alias("total_matches"))
+            .sort("total_matches", descending=True)
+            .head(20)
+        ),
     }
-
-    # Yearly summary if year column exists
     if year_col is not None:
-        yearly_summary = (
-            active_lenders.group_by(year_col)
-            .agg([
+        result["yearly_summary"] = (
+            active.group_by(year_col)
+            .agg(
                 pl.col(lei_col).n_unique().alias("active_lenders"),
                 pl.col(match_col).sum().alias("total_matches"),
-            ])
+            )
             .sort(year_col)
         )
-        result["yearly_summary"] = yearly_summary
-
     return result
 
 
 # =============================================================================
-# MATCH QUALITY VALIDATION (Post-match) - Plotting
+# MATCH QUALITY VALIDATION (Post-match) - Figure
+#
+# One figure, built by ``plot_validation_panel``. Each panel draws into an axis it is
+# handed; a panel whose era or dataset did not load blanks its own axis.
 # =============================================================================
 
+# The two loan-amount panels: the results prefix they read, the column prefix inside
+# those frames, and the axis label that names the direction.
+LOAN_AMOUNT_SIDES = {
+    "hmda": ("loan_amount_rates", "Match Rate (HMDA -> FHLB)"),
+    "fhlb": ("loan_amount_rates_fhlb", "Match Rate (FHLB -> HMDA)"),
+}
 
-def plot_yearly_match_counts(
-    yearly_df: pl.DataFrame,
-    output_path: Path | None = None,
-    interactive: bool = True,
-    title_suffix: str = "",
-) -> None:
-    """Plot match counts by year."""
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or len(yearly_df) == 0:
-        print("matplotlib not available or no data, skipping plots")
-        return
+# Vertical inches allotted to one grid row; the canvas is sized from the row count.
+PANEL_HEIGHT_IN = 5.0
 
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    years = yearly_df["year"].to_list()
-    counts = yearly_df["matches"].to_list()
-
-    ax.bar(years, counts, color=HMDA_COLOR, alpha=0.8)
-
-    for year, count in zip(years, counts):
-        ax.text(year, count, f"{count:,}", ha="center", va="bottom", fontsize=9)
-
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Number of Matches")
-    ax.set_title(f"HMDA-FHLB Match Counts by Year{title_suffix}")
-    ax.grid(True, alpha=0.3, axis="y")
-
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
+PURCHASER_NOTE = (
+    "FHLBs have no dedicated HMDA purchaser code; most matches show purchaser_type=9 ('Other')."
+)
 
 
-def plot_yearly_match_counts_combined(
-    yearly_pre: pl.DataFrame,
-    yearly_post: pl.DataFrame,
-    output_path: Path | None = None,
-    interactive: bool = True,
-) -> None:
-    """Plot match counts by year for both pre-2018 and post-2018 combined."""
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or (len(yearly_pre) == 0 and len(yearly_post) == 0):
-        print("matplotlib not available or no data, skipping plots")
-        return
-
-    fig, ax = plt.subplots(figsize=(14, 6))
-
-    # Combine data and mark periods
-    years_pre = yearly_pre["year"].to_list()
-    counts_pre = yearly_pre["matches"].to_list()
-    years_post = yearly_post["year"].to_list()
-    counts_post = yearly_post["matches"].to_list()
-
-    # Plot pre-2018 in one color, post-2018 in another
-    ax.bar(years_pre, counts_pre, color=PALETTE["midnight"], alpha=0.8, label="Pre-2018 (2009-2017)")
-    ax.bar(years_post, counts_post, color=PALETTE["gold"], alpha=0.8, label="Post-2018 (2018-2024)")
-
-    # Add value labels
-    for year, count in zip(years_pre, counts_pre):
-        ax.text(year, count, f"{count:,}", ha="center", va="bottom", fontsize=8)
-    for year, count in zip(years_post, counts_post):
-        ax.text(year, count, f"{count:,}", ha="center", va="bottom", fontsize=8)
-
-    # Add vertical line to mark 2018 transition
-    if years_pre and years_post:
-        ax.axvline(x=2017.5, color="gray", linestyle="--", alpha=0.5, linewidth=1.5)
-        ax.text(2017.5, ax.get_ylim()[1] * 0.95, "2018 HMDA\nRedesign",
-                ha="center", va="top", fontsize=9, style="italic", color="gray")
-
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Number of Matches")
-    ax.set_title("HMDA-FHLB Match Counts by Year (2009-2024)")
-    ax.legend(loc="upper left")
-    ax.grid(True, alpha=0.3, axis="y")
-
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
-
-
-def plot_match_rates_by_loan_amount(
-    loan_amount_df: pl.DataFrame,
-    output_path: Path | None = None,
-    interactive: bool = True,
-    title_suffix: str = "",
-) -> None:
-    """Plot match rates by loan amount with density overlay."""
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or len(loan_amount_df) == 0:
-        print("matplotlib not available or no data, skipping plots")
-        return
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    x = loan_amount_df["loan_amount_bin"].to_numpy() / 1000
-    totals = loan_amount_df["total"].to_numpy().astype(float)
-    rates = loan_amount_df["match_rate"].to_list()
-
-    pdf = totals / totals.sum()
-    ax2 = ax.twinx()
-    ax2.fill_between(x, pdf, alpha=0.15, color=HMDA_COLOR, label="Loan Distribution")
-    ax2.set_ylabel("Density (PDF)", color=PALETTE["grey"])
-    ax2.tick_params(axis="y", labelcolor=PALETTE["grey"])
-    ax2.set_ylim(0, max(pdf) * 1.3)
-
-    ax.plot(
-        x,
-        rates,
-        color=HMDA_COLOR,
-        linewidth=2,
-        marker="o",
-        markersize=5,
-        label="Match Rate",
-        zorder=10,
-    )
-
-    ax.set_xlabel("Loan Amount ($K)")
-    ax.set_ylabel("Match Rate")
-    ax.set_title(f"HMDA-FHLB Match Rates by Loan Amount{title_suffix}")
-    ax.legend(loc="upper left")
-    ax.grid(True, alpha=0.3)
-
-    valid_rates = [r for r in rates if r is not None and not np.isnan(r)]
-    if valid_rates:
-        y_min = max(0, min(valid_rates) - 0.05)
-        y_max = min(1.0, max(valid_rates) + 0.05)
-        ax.set_ylim(y_min, y_max)
-
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
-
-
-def plot_match_rates_by_loan_amount_fhlb(
-    loan_amount_df: pl.DataFrame,
-    output_path: Path | None = None,
-    interactive: bool = True,
-    title_suffix: str = "",
-) -> None:
-    """Plot FHLB match rates by loan amount with FHLB density overlay.
-
-    This shows the matching from FHLB perspective: what % of FHLB acquisitions
-    can be matched to HMDA records.
-    """
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or len(loan_amount_df) == 0:
-        print("matplotlib not available or no data, skipping plots")
-        return
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    x = loan_amount_df["loan_amount_bin"].to_numpy() / 1000
-    totals = loan_amount_df["total"].to_numpy().astype(float)
-    rates = loan_amount_df["match_rate"].to_list()
-
-    # Use FHLB loan distribution for density overlay
-    pdf = totals / totals.sum()
-    ax2 = ax.twinx()
-    ax2.fill_between(x, pdf, alpha=0.15, color=FHLB_COLOR, label="FHLB Distribution")
-    ax2.set_ylabel("Density (PDF)", color=PALETTE["grey"])
-    ax2.tick_params(axis="y", labelcolor=PALETTE["grey"])
-    ax2.set_ylim(0, max(pdf) * 1.3)
-
-    # Use FHLB color for match rate line
-    ax.plot(
-        x,
-        rates,
-        color=FHLB_COLOR,
-        linewidth=2,
-        marker="o",
-        markersize=5,
-        label="Match Rate",
-        zorder=10,
-    )
-
-    ax.set_xlabel("Loan Amount ($K)")
-    ax.set_ylabel("Match Rate (FHLB Acquisitions → HMDA)")
-    ax.set_title(f"FHLB-to-HMDA Match Rates by Loan Amount{title_suffix}")
-    ax.legend(loc="upper left")
-    ax.grid(True, alpha=0.3)
-
-    valid_rates = [r for r in rates if r is not None and not np.isnan(r)]
-    if valid_rates:
-        y_min = max(0, min(valid_rates) - 0.05)
-        y_max = min(1.0, max(valid_rates) + 0.05)
-        ax.set_ylim(y_min, y_max)
-
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
-
-
-def plot_match_rates_by_loan_amount_combined(
-    loan_amount_pre: pl.DataFrame,
-    loan_amount_post: pl.DataFrame,
-    output_path: Path | None = None,
-    interactive: bool = True,
-    fhlb_perspective: bool = False,
-) -> None:
-    """Plot match rates by loan amount for both pre-2018 and post-2018 combined.
+def era_frame(results: dict[str, Any], prefix: str, era: Era) -> pl.DataFrame | None:
+    """One era's frame for a statistic, or None when that era has no rows.
 
     Args:
-        loan_amount_pre: Pre-2018 match rates by loan amount
-        loan_amount_post: Post-2018 match rates by loan amount
-        output_path: Path to save figure
-        interactive: Whether to show plot interactively
-        fhlb_perspective: If True, uses FHLB colors and perspective labels
+        results: The assembled validation results.
+        prefix: Statistic name prefix to look up.
+        era: Which era's frame to return.
+
+    Returns:
+        That era's frame, or None.
     """
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or (len(loan_amount_pre) == 0 and len(loan_amount_post) == 0):
-        print("matplotlib not available or no data, skipping plots")
+    df: pl.DataFrame | None = results.get(f"{prefix}_{era.key}")
+    return None if df is None or len(df) == 0 else df
+
+
+def _panel_yearly_counts(ax: Any, results: dict[str, Any]) -> None:
+    """Match counts per year, one bar series per era."""
+    drawn = 0
+    for era in ERAS:
+        df = era_frame(results, "yearly", era)
+        if df is None:
+            continue
+        years, counts = df["year"].to_list(), df["matches"].to_list()
+        ax.bar(years, counts, color=era.color, alpha=0.8, label=era.label)
+        for year, count in zip(years, counts):
+            ax.text(year, count, f"{count:,}", ha="center", va="bottom", fontsize=7)
+        drawn += 1
+    if drawn == 0:
+        ax.set_axis_off()
         return
-
-    fig, ax = plt.subplots(figsize=(14, 6))
-
-    # Plot pre-2018
-    if len(loan_amount_pre) > 0:
-        x_pre = loan_amount_pre["loan_amount_bin"].to_numpy() / 1000
-        rates_pre = loan_amount_pre["match_rate"].to_list()
-        ax.plot(
-            x_pre,
-            rates_pre,
-            color=PALETTE["midnight"],
-            linewidth=2.5,
-            marker="o",
-            markersize=6,
-            label="Pre-2018 (2009-2017)",
-            zorder=10,
+    if drawn == len(ERAS):
+        # Mark the reporting break: the two eras are matched on different HMDA schemas.
+        boundary = MIN_YEAR_POST2018 - 0.5
+        ax.axvline(boundary, color=PALETTE["grey"], linestyle="--", alpha=0.5, linewidth=1.5)
+        ax.text(
+            boundary,
+            ax.get_ylim()[1] * 0.95,
+            "2018 HMDA\nredesign",
+            ha="center",
+            va="top",
+            fontsize=8,
+            style="italic",
+            color=PALETTE["grey"],
         )
-
-    # Plot post-2018
-    if len(loan_amount_post) > 0:
-        x_post = loan_amount_post["loan_amount_bin"].to_numpy() / 1000
-        rates_post = loan_amount_post["match_rate"].to_list()
-        ax.plot(
-            x_post,
-            rates_post,
-            color=PALETTE["gold"],
-            linewidth=2.5,
-            marker="s",
-            markersize=6,
-            label="Post-2018 (2018-2024)",
-            zorder=10,
-        )
-
-    ax.set_xlabel("Loan Amount ($K)")
-
-    if fhlb_perspective:
-        ax.set_ylabel("Match Rate (FHLB Acquisitions → HMDA)")
-        ax.set_title("FHLB-to-HMDA Match Rates by Loan Amount (2009-2024)")
-    else:
-        ax.set_ylabel("Match Rate (HMDA → FHLB)")
-        ax.set_title("HMDA-to-FHLB Match Rates by Loan Amount (2009-2024)")
-
-    ax.legend(loc="best")
-    ax.grid(True, alpha=0.3)
-    ax.set_ylim(0, 1.0)
-
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
-
-
-def plot_purchaser_type_distribution(
-    purchaser_df: pl.DataFrame,
-    output_path: Path | None = None,
-    interactive: bool = True,
-    title_suffix: str = "",
-) -> None:
-    """Plot distribution of purchaser types in matched records."""
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or len(purchaser_df) == 0:
-        print("matplotlib not available or no data, skipping plots")
-        return
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    labels = purchaser_df["purchaser_label"].to_list()
-    pcts = purchaser_df["pct"].to_list()
-    counts = purchaser_df["count"].to_list()
-
-    x = np.arange(len(labels))
-    ax.bar(x, pcts, color=HMDA_COLOR, alpha=0.8)
-
-    for i, (pct, count) in enumerate(zip(pcts, counts)):
-        ax.text(i, pct + 0.01, f"{pct:.1%}\n({count:,})", ha="center", va="bottom", fontsize=8)
-
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=45, ha="right")
-    ax.set_ylabel("Percentage of Matches")
-    ax.set_title(
-        f"Purchaser Type Distribution in HMDA-FHLB Matches{title_suffix}\n"
-        "Note: FHLBs have no dedicated purchaser code; most show as 'Other' (9)"
-    )
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Number of Matches")
+    ax.set_title("Match counts by year")
     ax.grid(True, alpha=0.3, axis="y")
 
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
 
-
-def plot_purchaser_type_distribution_combined(
-    purchaser_pre: pl.DataFrame,
-    purchaser_post: pl.DataFrame,
-    output_path: Path | None = None,
-    interactive: bool = True,
-) -> None:
-    """Plot purchaser type distribution for both pre-2018 and post-2018 side-by-side."""
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or (len(purchaser_pre) == 0 and len(purchaser_post) == 0):
-        print("matplotlib not available or no data, skipping plots")
+def _panel_loan_amount(ax: Any, results: dict[str, Any], side: str) -> None:
+    """Match rates across the loan-amount distribution, with that era's density behind."""
+    prefix, ylabel = LOAN_AMOUNT_SIDES[side]
+    density_ax = None
+    rates_seen: list[float] = []
+    for era in ERAS:
+        df = era_frame(results, prefix, era)
+        if df is None:
+            continue
+        x = df["loan_amount_bin"].to_numpy() / 1000
+        totals = df[f"{side}_total"].to_numpy().astype(float)
+        rates = df[f"{side}_match_rate"].to_list()
+        if totals.sum() > 0:
+            density_ax = density_ax if density_ax is not None else ax.twinx()
+            density_ax.fill_between(x, totals / totals.sum(), color=era.color, alpha=0.12)
+        ax.plot(
+            x,
+            rates,
+            color=era.color,
+            linewidth=2,
+            marker=era.marker,
+            markersize=4,
+            label=era.label,
+            zorder=10,
+        )
+        rates_seen += [r for r in rates if r is not None and not np.isnan(r)]
+    if not rates_seen:
+        ax.set_axis_off()
         return
+    if density_ax is not None:
+        density_ax.set_ylabel("Density (PDF)", color=PALETTE["grey"], fontsize=9)
+        density_ax.tick_params(axis="y", labelcolor=PALETTE["grey"], labelsize=8)
+        density_ax.set_ylim(0, density_ax.get_ylim()[1] * 1.3)
+    ax.set_xlabel("Loan Amount ($K)")
+    ax.set_ylabel(ylabel)
+    ax.set_title(f"Match rates by loan amount ({side.upper()} side)")
+    ax.set_ylim(max(0.0, min(rates_seen) - 0.05), min(1.0, max(rates_seen) + 0.05))
+    ax.grid(True, alpha=0.3)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 
-    # Pre-2018 (left panel)
-    if len(purchaser_pre) > 0:
-        purchaser_pre = purchaser_pre.sort("pct", descending=True).head(10)
-        labels_pre = purchaser_pre["purchaser_label"].to_list()
-        pcts_pre = purchaser_pre["pct"].to_list()
-        counts_pre = purchaser_pre["count"].to_list()
+def _panel_purchaser(ax: Any, results: dict[str, Any], era: Era) -> None:
+    """Top-10 HMDA purchaser types among one era's matches."""
+    df = era_frame(results, "purchaser_distribution", era)
+    if df is None:
+        ax.set_axis_off()
+        return
+    df = df.sort("pct", descending=True).head(10)
+    pcts, counts = df["pct"].to_list(), df["count"].to_list()
+    x = np.arange(len(df))
+    ax.bar(x, pcts, color=era.color, alpha=0.8)
+    for i, (pct, count) in enumerate(zip(pcts, counts)):
+        ax.text(i, pct + 0.01, f"{pct:.1%}\n({count:,})", ha="center", va="bottom", fontsize=7)
+    ax.set_xticks(x)
+    ax.set_xticklabels(df["purchaser_label"].to_list(), rotation=45, ha="right", fontsize=8)
+    ax.set_ylabel("Percentage of Matches")
+    ax.set_ylim(0, max(pcts) * 1.25)
+    ax.set_title(f"Purchaser type distribution -- {era.label}")
+    ax.grid(True, alpha=0.3, axis="y")
 
-        x_pre = np.arange(len(labels_pre))
-        ax1.bar(x_pre, pcts_pre, color=PALETTE["midnight"], alpha=0.8)
 
-        for i, (pct, count) in enumerate(zip(pcts_pre, counts_pre)):
-            ax1.text(i, pct + 0.01, f"{pct:.1%}\n({count:,})", ha="center", va="bottom", fontsize=7)
-
-        ax1.set_xticks(x_pre)
-        ax1.set_xticklabels(labels_pre, rotation=45, ha="right", fontsize=9)
-        ax1.set_ylabel("Percentage of Matches")
-        ax1.set_title("Pre-2018 (2009-2017)")
-        ax1.grid(True, alpha=0.3, axis="y")
-
-    # Post-2018 (right panel)
-    if len(purchaser_post) > 0:
-        purchaser_post = purchaser_post.sort("pct", descending=True).head(10)
-        labels_post = purchaser_post["purchaser_label"].to_list()
-        pcts_post = purchaser_post["pct"].to_list()
-        counts_post = purchaser_post["count"].to_list()
-
-        x_post = np.arange(len(labels_post))
-        ax2.bar(x_post, pcts_post, color=PALETTE["gold"], alpha=0.8)
-
-        for i, (pct, count) in enumerate(zip(pcts_post, counts_post)):
-            ax2.text(i, pct + 0.01, f"{pct:.1%}\n({count:,})", ha="center", va="bottom", fontsize=7)
-
-        ax2.set_xticks(x_post)
-        ax2.set_xticklabels(labels_post, rotation=45, ha="right", fontsize=9)
-        ax2.set_ylabel("Percentage of Matches")
-        ax2.set_title("Post-2018 (2018-2024)")
-        ax2.grid(True, alpha=0.3, axis="y")
-
-    # Match y-axis limits
-    if len(purchaser_pre) > 0 and len(purchaser_post) > 0:
-        max_y = max(max(pcts_pre), max(pcts_post)) * 1.15
-        ax1.set_ylim(0, max_y)
-        ax2.set_ylim(0, max_y)
-
-    fig.suptitle(
-        "Purchaser Type Distribution in HMDA-FHLB Matches (2009-2024)\n"
-        "Note: FHLBs have no dedicated purchaser code; most show as 'Other' (9)",
-        fontsize=12,
-        y=1.0
+def _panel_lender_histogram(ax: Any, lender_stats: dict[str, Any]) -> None:
+    """How matches spread across the top PFIs."""
+    top_lenders = lender_stats.get("top_lenders")
+    if top_lenders is None or len(top_lenders) == 0:
+        ax.set_axis_off()
+        return
+    ax.hist(
+        top_lenders["total_matches"].to_numpy(),
+        bins=20,
+        color=HMDA_COLOR,
+        alpha=0.8,
+        edgecolor="white",
     )
-
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150, bbox_inches="tight")
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
+    ax.set_xlabel("Total Matches per Lender")
+    ax.set_ylabel("Number of Lenders")
+    ax.set_title("Matches per lender (top 20 PFIs)")
+    ax.grid(True, alpha=0.3)
 
 
-def plot_lender_distribution(
-    lender_stats: dict[str, Any],
-    output_path: Path | None = None,
-    interactive: bool = True,
+def _panel_lender_concentration(ax: Any, lender_stats: dict[str, Any]) -> None:
+    """Cumulative share of matches held by the largest PFIs."""
+    top_lenders = lender_stats.get("top_lenders")
+    if top_lenders is None or len(top_lenders) == 0:
+        ax.set_axis_off()
+        return
+    sorted_counts = np.sort(top_lenders["total_matches"].to_numpy())[::-1]
+    cumulative = np.cumsum(sorted_counts) / sorted_counts.sum()
+    ax.plot(
+        np.arange(1, len(cumulative) + 1), cumulative, color=HMDA_COLOR, linewidth=2, marker="o"
+    )
+    ax.axhline(0.5, color=PALETTE["grey"], linestyle="--", alpha=0.7, label="50% of matches")
+    ax.axhline(0.9, color=PALETTE["grey"], linestyle=":", alpha=0.7, label="90% of matches")
+    ax.set_xlabel("Number of Top Lenders")
+    ax.set_ylabel("Cumulative Share of Matches")
+    ax.set_title("Match concentration among top lenders")
+    ax.legend(fontsize=8)
+    ax.grid(True, alpha=0.3)
+
+
+def _figure_rows(results: dict[str, Any]) -> list[Sequence[Callable[[Any], None]]]:
+    """The grid rows to draw, in order, skipping any with no data behind them.
+
+    A row is one full-width panel or a side-by-side pair. Rows are dropped rather than
+    drawn blank so a partial run still produces a figure with no dead space.
+
+    Returns:
+        The rows, each a sequence of panel drawers taking an axis.
+    """
+    rows: list[Sequence[Callable[[Any], None]]] = []
+    if any(era_frame(results, "yearly", era) is not None for era in ERAS):
+        rows.append([partial(_panel_yearly_counts, results=results)])
+    loan_amount_panels = [
+        partial(_panel_loan_amount, results=results, side=side)
+        for side, (prefix, _) in LOAN_AMOUNT_SIDES.items()
+        if any(era_frame(results, prefix, era) is not None for era in ERAS)
+    ]
+    if loan_amount_panels:
+        rows.append(loan_amount_panels)
+    purchaser_panels = [
+        partial(_panel_purchaser, results=results, era=era)
+        for era in ERAS
+        if era_frame(results, "purchaser_distribution", era) is not None
+    ]
+    if purchaser_panels:
+        rows.append(purchaser_panels)
+    lender_stats = results.get("lender_analysis") or {}
+    top_lenders = lender_stats.get("top_lenders")
+    if top_lenders is not None and len(top_lenders) > 0:
+        rows.append(
+            [
+                partial(_panel_lender_histogram, lender_stats=lender_stats),
+                partial(_panel_lender_concentration, lender_stats=lender_stats),
+            ]
+        )
+    return rows
+
+
+def plot_validation_panel(
+    results: dict[str, Any], output_path: Path | None = None, interactive: bool = False
 ) -> None:
-    """Plot distribution of matches across lenders."""
-    plt = _get_pyplot(interactive=interactive)
-    if plt is None or "top_lenders" not in lender_stats:
-        print("matplotlib not available or no data, skipping plots")
+    """Render the validation figure as one stacked grid.
+
+    Rows, in order: match counts by year (full width), match rates by loan amount
+    (HMDA side | FHLB side), purchaser-type distribution (one column per era), and
+    lender concentration. Both eras share every rate panel so they can be read
+    against each other; rows with no data are omitted and the canvas shrinks.
+
+    Args:
+        results: The accumulated ``run_validation`` results.
+        output_path: Where to save the figure (PNG). Skipped if ``None``.
+        interactive: Whether to display the figure interactively.
+    """
+    plt = get_pyplot(interactive=interactive)
+    if plt is None:
+        print("matplotlib not available, skipping plots")
+        return
+    rows = _figure_rows(results)
+    if not rows:
+        print("No validation results to plot")
         return
 
-    top_lenders = lender_stats["top_lenders"]
-    if len(top_lenders) == 0:
-        return
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
-
-    # Histogram of match counts
-    match_counts = top_lenders["total_matches"].to_numpy()
-    ax1.hist(match_counts, bins=20, color=HMDA_COLOR, alpha=0.8, edgecolor="white")
-    ax1.set_xlabel("Total Matches per Lender")
-    ax1.set_ylabel("Number of Lenders")
-    ax1.set_title("Distribution of Matches Across Top 20 Lenders")
-    ax1.grid(True, alpha=0.3)
-
-    # Cumulative share
-    sorted_counts = np.sort(match_counts)[::-1]
-    cumsum = np.cumsum(sorted_counts) / sorted_counts.sum()
-    x = np.arange(1, len(cumsum) + 1)
-
-    ax2.plot(x, cumsum, color=HMDA_COLOR, linewidth=2, marker="o")
-    ax2.axhline(0.5, color=PALETTE["grey"], linestyle="--", alpha=0.7, label="50% of matches")
-    ax2.axhline(0.9, color=PALETTE["grey"], linestyle=":", alpha=0.7, label="90% of matches")
-
-    ax2.set_xlabel("Number of Top Lenders")
-    ax2.set_ylabel("Cumulative Share of Matches")
-    ax2.set_title("Concentration of Matches Among Top Lenders")
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
-
-    plt.tight_layout()
-    if output_path:
-        plt.savefig(output_path, dpi=150)
-        print(f"Saved: {output_path}")
-    if interactive:
-        plt.show()
-    plt.close(fig)
+    fig = plt.figure(figsize=(15, PANEL_HEIGHT_IN * len(rows) + 1.5))
+    grid = panel_gridspec(
+        fig,
+        len(rows),
+        2,
+        title=f"HMDA-FHLB match validation ({MIN_YEAR_PRE2018}-{MAX_YEAR_POST2018})\n{PURCHASER_NOTE}",
+        title_in=1.2,
+        margin_in=0.9,
+        # The bottom row's purchaser labels are rotated, and the era legend sits
+        # below them; both are drawn into this margin.
+        bottom_in=2.3,
+        hspace=0.45,
+    )
+    for row, panels in enumerate(rows):
+        if len(panels) == 1:
+            panels[0](fig.add_subplot(grid[row, :]))
+        else:
+            for col, draw in enumerate(panels):
+                draw(fig.add_subplot(grid[row, col]))
+    handles = [
+        plt.Line2D([], [], color=era.color, marker=era.marker, linewidth=2, label=era.label)
+        for era in ERAS
+    ]
+    fig.legend(handles=handles, loc="lower center", ncol=len(ERAS), frameon=False, fontsize=10)
+    save_and_close(fig, output_path, interactive)
 
 
 # =============================================================================
-# Main Entry Point
+# MATCH QUALITY VALIDATION (Post-match) - Report
 # =============================================================================
 
 
-def print_section(title: str) -> None:
-    """Print a section header."""
-    print(f"\n{'=' * 70}")
-    print(f" {title}")
-    print(f"{'=' * 70}\n")
+def _analyze_era(era: Era, results: dict[str, Any]) -> None:
+    """Compute and print one era's statistics, writing them into ``results``.
+
+    Every key is suffixed with the era, which is also how the panels find them. An
+    era whose matches have not been built is reported and skipped.
+    """
+    print_section(f"Match statistics -- {era.label}")
+    try:
+        matches, hmda, fhlb = load_era_data(era)
+    except FileNotFoundError as e:
+        print(f"{era.label} data not found: {e}")
+        return
+    print(f"Loaded {len(matches):,} matches")
+    sides = era_sides(era, matches, hmda, fhlb)
+
+    stats = compute_overall_stats(matches, sides)
+    results[f"stats_{era.key}"] = stats
+    print(f"\n  Total matched pairs: {stats['n_matches']:,}")
+    for name, label in (("hmda", "HMDA member"), ("fhlb", "FHLB acquisition")):
+        if stats[f"{name}_match_rate"] is not None:
+            print(
+                f"  {label} match rate: {stats[f'{name}_match_rate']:.1%} ({stats[f'n_{name}_matched']:,} / {stats[f'n_{name}']:,})"
+            )
+
+    print_section(f"Match counts by year -- {era.label}")
+    yearly = compute_yearly_match_counts(matches)
+    results[f"yearly_{era.key}"] = yearly
+    print(yearly)
+
+    if "hmda" in sides:
+        print_section(f"Match rates by loan amount, HMDA side -- {era.label}")
+        results[f"loan_amount_rates_{era.key}"] = compute_match_rates_by_loan_amount(
+            sides["hmda"], pl.col("loan_amount")
+        )
+    if "fhlb" in sides:
+        print_section(f"Match rates by loan amount, FHLB side -- {era.label}")
+        results[f"loan_amount_rates_fhlb_{era.key}"] = compute_match_rates_by_loan_amount(
+            sides["fhlb"], FHLB_AMOUNT_DOLLARS[era.key]
+        )
+
+    print_section(f"Purchaser type distribution -- {era.label}")
+    purchaser = compute_purchaser_type_distribution(matches)
+    results[f"purchaser_distribution_{era.key}"] = purchaser
+    if len(purchaser) > 0:
+        print(purchaser)
+        print(f"\nNote: {PURCHASER_NOTE}")
+
+
+def _analyze_lenders(results: dict[str, Any]) -> None:
+    """Compute and print the PFI-level summary, writing it into ``results``."""
+    print_section("Lender (PFI) analysis")
+    stats_df = load_lender_statistics()
+    if stats_df is None:
+        print("Lender statistics file not found.")
+        return
+    analysis = analyze_lender_statistics(stats_df)
+    results["lender_analysis"] = analysis
+    if "yearly_summary" in analysis:
+        print("Yearly summary of active PFIs:")
+        print(analysis["yearly_summary"])
+    print(f"\nTotal unique PFIs: {analysis.get('n_active_lenders', 'N/A')}")
+    if "top_lenders" in analysis:
+        print("\nTop 10 lenders by total matches:")
+        print(analysis["top_lenders"].head(10))
 
 
 def run_validation(
-    output_dir: Path | None = None,
-    save_plots: bool = True,
-    show_plots: bool = False,
+    output_dir: Path | None = None, save_plots: bool = True, show_plots: bool = False
 ) -> dict[str, Any]:
-    """Run all match quality validation analyses.
+    """Run the post-match validation for both eras and draw the combined figure.
 
     Args:
-        output_dir: Directory to save figures. Defaults to VALIDATION_OUTPUT_DIR.
-        save_plots: Whether to save plots to disk
-        show_plots: Whether to display matplotlib plots interactively
+        output_dir: Directory for the figure. Defaults to ``VALIDATION_OUTPUT_DIR``.
+        save_plots: Whether to write the figure.
+        show_plots: Whether to display the figure interactively.
 
     Returns:
-        Dictionary with all computed statistics and DataFrames
+        Every computed frame and statistic, keyed by statistic and era
+        (``yearly_post2018``).
     """
-    if output_dir is None:
-        output_dir = VALIDATION_OUTPUT_DIR
+    output_dir = output_dir or VALIDATION_OUTPUT_DIR
+    results: dict[str, Any] = {}
+    for era in ERAS:
+        _analyze_era(era, results)
+    _analyze_lenders(results)
 
-    if save_plots:
-        output_dir.mkdir(parents=True, exist_ok=True)
-        print(f"Saving figures to: {output_dir}")
+    if save_plots or show_plots:
+        print_section("Validation figure")
+        plot_validation_panel(
+            results,
+            output_path=output_dir / "hmda_fhlb_validation.png" if save_plots else None,
+            interactive=show_plots,
+        )
 
-    results = {}
-
-    # POST-2018 Analysis
-    print_section("1. Post-2018 Match Statistics")
-
-    try:
-        matches_post, hmda_post, fhlb_post = load_post2018_data()
-        print(f"Loaded {len(matches_post):,} post-2018 matches")
-
-        stats = compute_overall_stats(matches_post, hmda_post, fhlb_post)
-        results["post2018_stats"] = stats
-
-        print("\nOverall Statistics (Post-2018):")
-        print(f"  Total matched pairs: {stats['n_matches']:,}")
-        if stats["hmda_match_rate"] is not None:
-            print(
-                f"  HMDA member match rate: {stats['hmda_match_rate']:.1%} "
-                f"({stats['n_hmda_matched']:,} / {stats['n_hmda']:,})"
-            )
-        if stats["fhlb_match_rate"] is not None:
-            print(
-                f"  FHLB acquisition match rate: {stats['fhlb_match_rate']:.1%} "
-                f"({stats['n_fhlb_matched']:,} / {stats['n_fhlb']:,})"
-            )
-
-        print_section("2. Post-2018 Match Counts by Year")
-        yearly_post = compute_yearly_match_counts(matches_post)
-        results["yearly_post2018"] = yearly_post
-        print(yearly_post)
-
-        if (save_plots or show_plots) and len(yearly_post) > 0:
-            plot_yearly_match_counts(
-                yearly_post,
-                output_path=output_dir / "yearly_match_counts_post2018.png" if save_plots else None,
-                interactive=show_plots,
-                title_suffix=" (Post-2018)",
-            )
-
-        if hmda_post is not None:
-            print_section("3. Match Rates by Loan Amount (Post-2018, HMDA Perspective)")
-            loan_amount_rates = compute_match_rates_by_loan_amount(matches_post, hmda_post)
-            results["loan_amount_rates"] = loan_amount_rates
-
-            if len(loan_amount_rates) > 0 and (save_plots or show_plots):
-                plot_match_rates_by_loan_amount(
-                    loan_amount_rates,
-                    output_path=output_dir / "match_rates_by_loan_amount.png" if save_plots else None,
-                    interactive=show_plots,
-                )
-
-        if fhlb_post is not None:
-            print_section("3b. Match Rates by Loan Amount (Post-2018, FHLB Perspective)")
-            loan_amount_rates_fhlb = compute_match_rates_by_loan_amount_fhlb(matches_post, fhlb_post)
-            results["loan_amount_rates_fhlb"] = loan_amount_rates_fhlb
-
-            if len(loan_amount_rates_fhlb) > 0 and (save_plots or show_plots):
-                plot_match_rates_by_loan_amount_fhlb(
-                    loan_amount_rates_fhlb,
-                    output_path=output_dir / "match_rates_by_loan_amount_fhlb.png" if save_plots else None,
-                    interactive=show_plots,
-                    title_suffix=" (Post-2018: 2018-2024)",
-                )
-
-        print_section("4. Purchaser Type Distribution (Post-2018)")
-        purchaser_dist = compute_purchaser_type_distribution(matches_post)
-        results["purchaser_distribution"] = purchaser_dist
-
-        if len(purchaser_dist) > 0:
-            print(purchaser_dist)
-            print("\nNote: FHLBs have no dedicated HMDA purchaser code.")
-            print("Most matched loans show purchaser_type=9 ('Other'), which is expected.")
-
-            if save_plots or show_plots:
-                plot_purchaser_type_distribution(
-                    purchaser_dist,
-                    output_path=output_dir / "purchaser_type_distribution.png" if save_plots else None,
-                    interactive=show_plots,
-                )
-
-    except FileNotFoundError as e:
-        print(f"Post-2018 data not found: {e}")
-
-    # PRE-2018 Analysis
-    print_section("5. Pre-2018 Match Statistics")
-
-    try:
-        matches_pre, hmda_pre, fhlb_pre = load_pre2018_data()
-        print(f"Loaded {len(matches_pre):,} pre-2018 matches")
-
-        # 5a. Overall statistics
-        stats_pre = compute_overall_stats(matches_pre, hmda_pre, fhlb_pre)
-        results["pre2018_stats"] = stats_pre
-
-        print("\nOverall Statistics (Pre-2018, 2009-2017):")
-        print(f"  Total matched pairs: {stats_pre['n_matches']:,}")
-        if stats_pre["hmda_match_rate"] is not None:
-            print(
-                f"  HMDA member match rate: {stats_pre['hmda_match_rate']:.1%} "
-                f"({stats_pre['n_hmda_matched']:,} / {stats_pre['n_hmda']:,})"
-            )
-        if stats_pre["fhlb_match_rate"] is not None:
-            print(
-                f"  FHLB acquisition match rate: {stats_pre['fhlb_match_rate']:.1%} "
-                f"({stats_pre['n_fhlb_matched']:,} / {stats_pre['n_fhlb']:,})"
-            )
-
-        # 5b. Yearly match counts
-        print_section("6. Pre-2018 Match Counts by Year")
-        yearly_pre = compute_yearly_match_counts(matches_pre)
-        results["yearly_pre2018"] = yearly_pre
-        print(yearly_pre)
-
-        print("\nNote: Pre-2018 match counts increase over time (2009-2017)")
-        print("This reflects improving data quality in both HMDA and FHLB sources.")
-
-        if (save_plots or show_plots) and len(yearly_pre) > 0:
-            plot_yearly_match_counts(
-                yearly_pre,
-                output_path=output_dir / "yearly_match_counts_pre2018.png" if save_plots else None,
-                interactive=show_plots,
-                title_suffix=" (Pre-2018: 2009-2017)",
-            )
-
-        # 5c. Match rates by loan amount (HMDA perspective)
-        if hmda_pre is not None:
-            print_section("7. Match Rates by Loan Amount (Pre-2018, HMDA Perspective)")
-            loan_amount_rates_pre = compute_match_rates_by_loan_amount(matches_pre, hmda_pre)
-            results["loan_amount_rates_pre2018"] = loan_amount_rates_pre
-
-            if len(loan_amount_rates_pre) > 0 and (save_plots or show_plots):
-                plot_match_rates_by_loan_amount(
-                    loan_amount_rates_pre,
-                    output_path=output_dir / "match_rates_by_loan_amount_pre2018.png" if save_plots else None,
-                    interactive=show_plots,
-                    title_suffix=" (Pre-2018: 2009-2017)",
-                )
-
-        # 5c2. Match rates by loan amount (FHLB perspective)
-        if fhlb_pre is not None:
-            print_section("7b. Match Rates by Loan Amount (Pre-2018, FHLB Perspective)")
-            loan_amount_rates_pre_fhlb = compute_match_rates_by_loan_amount_fhlb(matches_pre, fhlb_pre)
-            results["loan_amount_rates_pre2018_fhlb"] = loan_amount_rates_pre_fhlb
-
-            if len(loan_amount_rates_pre_fhlb) > 0 and (save_plots or show_plots):
-                plot_match_rates_by_loan_amount_fhlb(
-                    loan_amount_rates_pre_fhlb,
-                    output_path=output_dir / "match_rates_by_loan_amount_pre2018_fhlb.png" if save_plots else None,
-                    interactive=show_plots,
-                    title_suffix=" (Pre-2018: 2009-2017)",
-                )
-
-        # 5d. Purchaser type distribution
-        print_section("8. Purchaser Type Distribution (Pre-2018)")
-        purchaser_dist_pre = compute_purchaser_type_distribution(matches_pre)
-        results["purchaser_distribution_pre2018"] = purchaser_dist_pre
-
-        if len(purchaser_dist_pre) > 0:
-            print(purchaser_dist_pre)
-            print("\nNote: FHLBs have no dedicated HMDA purchaser code.")
-            print("Most matched loans show purchaser_type=9 ('Other'), which is expected.")
-
-            if save_plots or show_plots:
-                plot_purchaser_type_distribution(
-                    purchaser_dist_pre,
-                    output_path=output_dir / "purchaser_type_distribution_pre2018.png" if save_plots else None,
-                    interactive=show_plots,
-                    title_suffix=" (Pre-2018: 2009-2017)",
-                )
-
-    except FileNotFoundError as e:
-        print(f"Pre-2018 data not found: {e}")
-
-    # Lender Analysis
-    print_section("9. Lender (PFI) Analysis")
-
-    lender_stats = load_lender_statistics()
-
-    if lender_stats is not None:
-        lender_analysis = analyze_lender_statistics(lender_stats)
-        results["lender_analysis"] = lender_analysis
-
-        if "yearly_summary" in lender_analysis:
-            print("Yearly summary of active PFIs:")
-            print(lender_analysis["yearly_summary"])
-
-        print(f"\nTotal unique PFIs: {lender_analysis.get('n_active_lenders', 'N/A')}")
-
-        if "top_lenders" in lender_analysis:
-            print("\nTop 10 lenders by total matches:")
-            print(lender_analysis["top_lenders"].head(10))
-
-        if save_plots or show_plots:
-            plot_lender_distribution(
-                lender_analysis,
-                output_path=output_dir / "lender_distribution.png" if save_plots else None,
-                interactive=show_plots,
-            )
-    else:
-        print("Lender statistics file not found.")
-
-    # COMBINED PLOTS (Pre-2018 + Post-2018)
-    print_section("10. Combined Analyses (2009-2024)")
-
-    # Check if we have both datasets
-    has_pre = "yearly_pre2018" in results and len(results["yearly_pre2018"]) > 0
-    has_post = "yearly_post2018" in results and len(results["yearly_post2018"]) > 0
-
-    if has_pre and has_post:
-        print("Creating combined plots for pre-2018 and post-2018 data...")
-
-        # Combined yearly match counts
-        if save_plots or show_plots:
-            plot_yearly_match_counts_combined(
-                results["yearly_pre2018"],
-                results["yearly_post2018"],
-                output_path=output_dir / "yearly_match_counts_combined.png" if save_plots else None,
-                interactive=show_plots,
-            )
-
-        # Combined match rates by loan amount (HMDA perspective)
-        if "loan_amount_rates_pre2018" in results and "loan_amount_rates" in results:
-            if len(results["loan_amount_rates_pre2018"]) > 0 and len(results["loan_amount_rates"]) > 0:
-                if save_plots or show_plots:
-                    plot_match_rates_by_loan_amount_combined(
-                        results["loan_amount_rates_pre2018"],
-                        results["loan_amount_rates"],
-                        output_path=output_dir / "match_rates_by_loan_amount_combined.png" if save_plots else None,
-                        interactive=show_plots,
-                        fhlb_perspective=False,
-                    )
-
-        # Combined match rates by loan amount (FHLB perspective)
-        if "loan_amount_rates_pre2018_fhlb" in results and "loan_amount_rates_fhlb" in results:
-            if len(results["loan_amount_rates_pre2018_fhlb"]) > 0 and len(results["loan_amount_rates_fhlb"]) > 0:
-                if save_plots or show_plots:
-                    plot_match_rates_by_loan_amount_combined(
-                        results["loan_amount_rates_pre2018_fhlb"],
-                        results["loan_amount_rates_fhlb"],
-                        output_path=output_dir / "match_rates_by_loan_amount_combined_fhlb.png" if save_plots else None,
-                        interactive=show_plots,
-                        fhlb_perspective=True,
-                    )
-
-        # Combined purchaser type distribution
-        if "purchaser_distribution_pre2018" in results and "purchaser_distribution" in results:
-            if len(results["purchaser_distribution_pre2018"]) > 0 and len(results["purchaser_distribution"]) > 0:
-                if save_plots or show_plots:
-                    plot_purchaser_type_distribution_combined(
-                        results["purchaser_distribution_pre2018"],
-                        results["purchaser_distribution"],
-                        output_path=output_dir / "purchaser_type_distribution_combined.png" if save_plots else None,
-                        interactive=show_plots,
-                    )
-
-        print("\nCombined plots complete!")
-    else:
-        print("Skipping combined plots (need both pre-2018 and post-2018 data)")
-
-    # Interpretation
-    print_section("11. Interpretation & Key Findings")
-
-    print(
-        """
-IMPORTANT CONTEXT FOR HMDA-FHLB MATCHING:
-
-1. Match rates of 40-55% are EXPECTED and do NOT indicate methodology problems.
-   - FHLBs only acquire a subset of loans from member institutions
-   - Not all FHLB member originations are sold to FHLBs
-   - FHLBs are selective in their acquisitions
-
-2. The key insight from this matching is identifying:
-   - Which lenders (PFIs) actively sell loans to FHLBs
-   - What types of loans FHLBs acquire
-   - How FHLB acquisition patterns vary over time
-
-3. Purchaser type distribution:
-   - Most matches show purchaser_type=9 ("Other")
-   - This is expected because FHLBs have no dedicated HMDA code
-   - ~10-11% show purchaser_type=6 (Commercial Banks)
-   - ~10% show purchaser_type=0 (Not Applicable)
-
-4. Pre-2018 match growth:
-   - Match counts increase significantly over time
-   - This reflects improving data quality in both datasets
-   - Earlier years had less complete reporting
-"""
-    )
-
+    print_section("Interpretation & key findings")
+    print(INTERPRETATION)
     print("\nValidation complete!")
-    if save_plots:
-        print(f"Figures saved to: {output_dir}")
-
     return results
-
-

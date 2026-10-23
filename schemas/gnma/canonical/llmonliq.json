@@ -1,0 +1,343 @@
+{
+  "prefix": "llmonliq",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "HH": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2018-09",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = HH",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "int64",
+          "pdf_text": "Date File Generated",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "LR": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2018-09",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = LR",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": "2021-01",
+              "ordinal": 4,
+              "max_length": 1
+            },
+            {
+              "from": "2021-02",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "disclosure_sequence_number",
+          "arrow_type": "int64",
+          "pdf_text": "Disclosure Sequence Number",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": "2019-02",
+              "ordinal": 8,
+              "max_length": 4,
+              "format": "Col4"
+            },
+            {
+              "from": "2019-03",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "agency_type",
+          "arrow_type": "string",
+          "pdf_text": "Agency Type",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_purpose",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Purpose",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "original_principal_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Original Principal Balance (OPB)",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "unpaid_principal_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Unpaid Principal Balance (UPB)",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "liquidation_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Liquidation Balance (principal pass through)",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "removal_reason_code",
+          "arrow_type": "int64",
+          "pdf_text": "Removal Reason Code",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 1
+            }
+          ]
+        }
+      ]
+    },
+    "TT": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2018-09",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TT",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "loan_count",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Count",
+          "layouts": [
+            {
+              "from": "2018-09",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 9
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

@@ -1,0 +1,114 @@
+Field Position,Field Name,Type,Max Length
+1,Reference Pool ID,ALPHA-NUMERIC,X(4)
+2,Loan Identifier,ALPHA-NUMERIC,X(12)
+3,Monthly Reporting Period,DATE,MMYYYY
+4,Channel,ALPHA-NUMERIC,X(1)
+5,Seller Name,ALPHA-NUMERIC,X(50)
+6,Servicer Name,ALPHA-NUMERIC,X(50)
+7,Master Servicer,ALPHA-NUMERIC,X(10)
+8,Original Interest Rate,NUMERIC,9(2).999
+9,Current Interest Rate,NUMERIC,9(2).999
+10,Original UPB,NUMERIC,9(10).99
+11,UPB at Issuance,NUMERIC,9(10).99
+12,Current Actual UPB,NUMERIC,9(10).99
+13,Original Loan Term,NUMERIC,9(3)
+14,Origination Date,DATE,MMYYYY
+15,First Payment Date,DATE,MMYYYY
+16,Loan Age,NUMERIC,9(3)
+17,Remaining Months to Legal Maturity,NUMERIC,9(3)
+18,Remaining Months To Maturity,NUMERIC,9(3)
+19,Maturity Date,DATE,MMYYYY
+20,Original Loan to Value Ratio (LTV),NUMERIC,9(3)
+21,Original Combined Loan to Value Ratio (CLTV),NUMERIC,9(3)
+22,Number of Borrowers,NUMERIC,9(2)
+23,Debt-To-Income (DTI),NUMERIC,9(2)
+24,Borrower Credit Score at Origination,NUMERIC,9(3)
+25,Co-Borrower Credit Score at Origination,NUMERIC,9(3)
+26,First Time Home Buyer Indicator,ALPHA-NUMERIC,X(1)
+27,Loan Purpose ,ALPHA-NUMERIC,X(1)
+28,Property Type,ALPHA-NUMERIC,X(2)
+29,Number of Units,NUMERIC,9(1)
+30,Occupancy Status,ALPHA-NUMERIC,X(1)
+31,Property State,ALPHA-NUMERIC,X(2)
+32,Metropolitan Statistical Area (MSA) or Metropolitan Statistical Division Area (MSDA),ALPHA-NUMERIC,X(5)
+33,Zip Code Short,ALPHA-NUMERIC,X(3)
+34,Mortgage Insurance Percentage,NUMERIC,9(3).99
+35,Amortization Type,ALPHA-NUMERIC,X(3)
+36,Prepayment Penalty Indicator,ALPHA-NUMERIC,X(1)
+37,Interest Only Loan Indicator,ALPHA-NUMERIC,X(1)
+38,Interest Only First Principal And Interest Payment Date,DATE,MMYYYY
+39,Months to Amortization,NUMERIC,9(3)
+40,Current Loan Delinquency Status,ALPHA-NUMERIC,X(2)
+41,Loan Payment History,ALPHA-NUMERIC,X(48)
+42,Modification Flag,ALPHA-NUMERIC,X(1)
+43,Mortgage Insurance Cancellation Indicator,ALPHA-NUMERIC,X (2)
+44,Zero Balance Code,ALPHA-NUMERIC,X(3)
+45,Zero Balance Effective Date,DATE,MMYYYY
+46,UPB at the Time of Removal,NUMERIC,9(10).99
+47,Repurchase Date,DATE,MMYYYY
+48,Scheduled Principal Current,NUMERIC,9(10).99
+49,Total Principal Current,NUMERIC,9(10).99
+50,Unscheduled Principal Current,NUMERIC,9(10).99
+51,Last Paid Installment Date,DATE,MMYYYY
+52,Foreclosure Date,DATE,MMYYYY
+53,Disposition Date,DATE,MMYYYY
+54,Foreclosure Costs,NUMERIC,9(10).99
+55,Property Preservation and Repair Costs,NUMERIC,9(10).99
+56,Asset Recovery Costs,NUMERIC,9(10).99
+57,Miscellaneous Holding Expenses and Credits,NUMERIC,9(10).99
+58,Associated Taxes for Holding Property,NUMERIC,9(10).99
+59,Net Sales Proceeds,NUMERIC,9(10).99
+60,Credit Enhancement Proceeds,NUMERIC,9(10).99
+61,Repurchase Make Whole Proceeds,NUMERIC,9(10).99
+62,Other Foreclosure Proceeds,NUMERIC,9(10).99
+63,Modification-Related Non-Interest Bearing UPB,NUMERIC,9(10).99
+64,Principal Forgiveness Amount,NUMERIC,9(10).99
+65,Original List Start Date,DATE,MMYYYY
+66,Original List Price,NUMERIC,9(10).99
+67,Current List Start Date,DATE,MMYYYY
+68,Current List Price,NUMERIC,9(10).99
+69,Borrower Credit Score At Issuance,NUMERIC,9(3)
+70,Co-Borrower Credit Score At Issuance,NUMERIC ,9(3)
+71,Borrower Credit Score Current ,NUMERIC,9(3)
+72,Co-Borrower Credit Score Current,NUMERIC,9(3)
+73,Mortgage Insurance Type,ALPHA-NUMERIC,X(1)
+74,Servicing Activity Indicator,ALPHA-NUMERIC,X(1)
+75,Current Period Modification Loss Amount,NUMERIC,9(10).99
+76,Cumulative Modification Loss Amount,NUMERIC,9(10).99
+77,Current Period Credit Event Net Gain or Loss,NUMERIC,9(10).99
+78,Cumulative Credit Event Net Gain or Loss,NUMERIC,9(10).99
+79,Special Eligibility Program,ALPHA-NUMERIC,X(1)
+80,Foreclosure Principal Write-off Amount,NUMERIC,9(10).99
+81,Relocation Mortgage Indicator,ALPHA-NUMERIC,X(1)
+82,Zero Balance Code Change Date,DATE,MMYYYY
+83,Loan Holdback Indicator,ALPHA-NUMERIC,X(1)
+84,Loan Holdback Effective Date,DATE,MMYYYY
+85,Delinquent Accrued Interest,NUMERIC,9(10).99
+86,Property Valuation Method ,ALPHA-NUMERIC,X(1)
+87,High Balance Loan Indicator ,ALPHA-NUMERIC,X(1)
+88,ARM Initial Fixed-Rate Period  ≤ 5 YR Indicator,ALPHA-NUMERIC,X(1)
+89,ARM Product Type,ALPHA-NUMERIC,X(100)
+90,Initial Fixed-Rate Period ,NUMERIC,9(4)
+91,Interest Rate Adjustment Frequency,NUMERIC,9(4)
+92,Next Interest Rate Adjustment Date,DATE,MMYYYY
+93,Next Payment Change Date,DATE,MMYYYY
+94,Index,ALPHA-NUMERIC,X(100)
+95,ARM Cap Structure,ALPHA-NUMERIC,X(10)
+96,Initial Interest Rate Cap Up Percent,NUMERIC,9(2).9999
+97,Periodic Interest Rate Cap Up Percent,NUMERIC,9(2).9999
+98,Lifetime Interest Rate Cap Up Percent,NUMERIC,9(2).9999
+99,Mortgage Margin,NUMERIC,9.(2).9999
+100,ARM Balloon Indicator,ALPHA-NUMERIC,X(1)
+101,ARM Plan Number,NUMERIC,9(4)
+102,Borrower Assistance Plan,ALPHA-NUMERIC,X(1)
+103,High Loan to Value (HLTV) Refinance Option Indicator,ALPHA-NUMERIC,X(1)
+104,Deal Name,ALPHA-NUMERIC,X(200)
+105,Repurchase Make Whole Proceeds Flag,ALPHA-NUMERIC,X(1)
+106,Alternative Delinquency Resolution,ALPHA-NUMERIC,X(1)
+107,Alternative Delinquency  Resolution Count,NUMERIC,9(3)
+108,Total Deferral Amount ,NUMERIC,9(10).99
+109,Payment Deferral Modification Event Indicator,ALPHA-NUMERIC,X(1)
+110,Interest Bearing UPB,NUMERIC,9(10).99
+111,Origination Classic FICO®,NUMERIC,9(3)
+112,Issuance Classic FICO®,NUMERIC,9(3)
+113,Current Classic FICO®,NUMERIC,9(3)

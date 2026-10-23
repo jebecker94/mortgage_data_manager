@@ -1,0 +1,167 @@
+{
+  "prefix": "FRR",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "series",
+          "arrow_type": "string",
+          "pdf_text": "Series",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 14,
+              "length": 14
+            }
+          ]
+        },
+        {
+          "id": "tranche_name",
+          "arrow_type": "string",
+          "pdf_text": "Tranche Name",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 15,
+              "end": 22,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 23,
+              "end": 31,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "reset_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Reset Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 32,
+              "end": 45,
+              "length": 14
+            }
+          ]
+        },
+        {
+          "id": "filler",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 46,
+              "end": 47,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "payment_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Payment Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 48,
+              "end": 55,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "filler_2",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 56,
+              "end": 57,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "accrual_period_begins",
+          "arrow_type": "int64",
+          "pdf_text": "Accrual Period Begins",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 58,
+              "end": 65,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "filler_3",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 66,
+              "end": 67,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "accrual_period_ends",
+          "arrow_type": "int64",
+          "pdf_text": "Accrual Period Ends",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 68,
+              "end": 75,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

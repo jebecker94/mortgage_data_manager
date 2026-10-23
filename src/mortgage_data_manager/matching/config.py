@@ -32,7 +32,7 @@ class MatchingConfig(MortgageDataConfig):
         """Get data directory for a specific matching workflow.
 
         Args:
-            matching_type: Type of matching (e.g., "hmda_mbs", "fha_hmda")
+            matching_type: Type of matching (e.g., "hmda_gse", "hmda_fha")
 
         Returns:
             Path to matching type directory
@@ -44,7 +44,7 @@ class MatchingConfig(MortgageDataConfig):
         """Get crosswalk output directory for a specific matching workflow.
 
         Args:
-            matching_type: Type of matching (e.g., "hmda_mbs", "fha_hmda")
+            matching_type: Type of matching (e.g., "hmda_gse", "hmda_fha")
 
         Returns:
             Path to crosswalk output directory (crosswalk/{matching_type}/)
@@ -52,23 +52,18 @@ class MatchingConfig(MortgageDataConfig):
         return cls.CROSSWALK_DIR / matching_type
 
     @classmethod
-    def ensure_directories(cls, matching_type: str | None = None) -> None:
-        """Create necessary matching directories if they don't exist.
-
-        Args:
-            matching_type: Optional matching type. If provided, only create that type's dirs.
-        """
+    def ensure_directories(cls) -> None:
+        """Create the shared matching cache directory if it doesn't exist."""
         cls.MATCHING_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-        if matching_type:
-            type_dir = cls.get_matching_type_dir(matching_type)
-            type_dir.mkdir(parents=True, exist_ok=True)
-            crosswalk_dir = cls.get_crosswalk_type_dir(matching_type)
-            crosswalk_dir.mkdir(parents=True, exist_ok=True)
+    @classmethod
+    def ensure_matching_type_dirs(cls, matching_type: str) -> None:
+        """Create one workflow's intermediate and crosswalk directories.
 
-
-# Module-level exports for backward compatibility
-PROJECT_DIR: Path = MatchingConfig.PROJECT_DIR
-DATA_DIR: Path = MatchingConfig.MATCHING_DATA_DIR
-CACHE_DIR: Path = MatchingConfig.MATCHING_CACHE_DIR
-CROSSWALK_DIR: Path = MatchingConfig.CROSSWALK_DIR
+        Args:
+            matching_type: Workflow identifier (the ``matching/{workflow}`` and
+                ``crosswalk/{workflow}`` directory name).
+        """
+        cls.ensure_directories()
+        cls.get_matching_type_dir(matching_type).mkdir(parents=True, exist_ok=True)
+        cls.get_crosswalk_type_dir(matching_type).mkdir(parents=True, exist_ok=True)

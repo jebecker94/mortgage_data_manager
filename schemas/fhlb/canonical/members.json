@@ -1,0 +1,427 @@
+{
+  "dataset": "members",
+  "layout_kind": "named",
+  "period_grain": "quarter",
+  "source_kind": "excel",
+  "provenance": {
+    "source": "FHFA FHLBank membership data page, quarterly Excel releases",
+    "generated_from": "raw workbook headers 2009Q4-2026Q1 + FHLB_MEMBERS_COLUMN_MAPPING + bronze dtypes"
+  },
+  "vintage_overrides": {
+    "2010Q1": {
+      "ignore_columns": [
+        "Unnamed: 13"
+      ],
+      "note": "Spare 14th column holding a single stray '1' in 8,020 rows \u2014 a spreadsheet artefact, not a field."
+    },
+    "2020Q1": {
+      "header_row": 1,
+      "note": "Workbook carries a 'FHLBank Members as of 3/31/2020 ... Division of Bank Regulation' title banner on row 0; the real header is row 1."
+    }
+  },
+  "fields": [
+    {
+      "id": "FHFB ID",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64",
+        "int64"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "FHFBID"
+        },
+        {
+          "from": "2010Q3",
+          "to": "2015Q4",
+          "source": "FHFB_ID"
+        },
+        {
+          "from": "2016Q1",
+          "to": "2016Q1",
+          "source": "FHFA_ID"
+        },
+        {
+          "from": "2016Q2",
+          "to": "2019Q4",
+          "source": "FHFB_ID"
+        },
+        {
+          "from": "2020Q1",
+          "to": "2020Q1",
+          "source": "FHFA_ID"
+        },
+        {
+          "from": "2020Q2",
+          "to": "2020Q3",
+          "source": "FHFB_ID"
+        },
+        {
+          "from": "2020Q4",
+          "to": null,
+          "source": "FHFA_ID"
+        }
+      ]
+    },
+    {
+      "id": "DISTRICT",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "District"
+        },
+        {
+          "from": "2010Q3",
+          "to": "2021Q3",
+          "source": "DISTRICT"
+        },
+        {
+          "from": "2021Q4",
+          "to": "2021Q4",
+          "source": "District"
+        },
+        {
+          "from": "2022Q1",
+          "to": null,
+          "source": "DISTRICT"
+        }
+      ]
+    },
+    {
+      "id": "MEMBER NAME",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "Member Name"
+        },
+        {
+          "from": "2010Q3",
+          "to": null,
+          "source": "MEMBER_NAME"
+        }
+      ]
+    },
+    {
+      "id": "CITY",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "City"
+        },
+        {
+          "from": "2010Q3",
+          "to": null,
+          "source": "CITY"
+        }
+      ]
+    },
+    {
+      "id": "STATE",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "State"
+        },
+        {
+          "from": "2010Q3",
+          "to": null,
+          "source": "STATE"
+        }
+      ]
+    },
+    {
+      "id": "ZIP",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "float64",
+        "int64",
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "Zip"
+        },
+        {
+          "from": "2010Q3",
+          "to": null,
+          "source": "ZIP"
+        }
+      ]
+    },
+    {
+      "id": "MEMBER TYPE",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "Member Type"
+        },
+        {
+          "from": "2010Q3",
+          "to": "2022Q1",
+          "source": "MEM_TYPE"
+        },
+        {
+          "from": "2022Q2",
+          "to": "2022Q2",
+          "source": "MEMBER_TYPE"
+        },
+        {
+          "from": "2022Q3",
+          "to": null,
+          "source": "MEM_TYPE"
+        }
+      ]
+    },
+    {
+      "id": "CHARTER TYPE",
+      "arrow_type": "string",
+      "derived_arrow_types": [
+        "string"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "Charter Type"
+        },
+        {
+          "from": "2010Q3",
+          "to": null,
+          "source": "CHAR_TYPE"
+        }
+      ]
+    },
+    {
+      "id": "FDIC CERTIFICATE NUMBER",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "FDIC Certificate Number"
+        },
+        {
+          "from": "2010Q3",
+          "to": null,
+          "source": "CERT"
+        }
+      ]
+    },
+    {
+      "id": "FEDERAL RESERVE ID",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "Federal Reserve ID"
+        },
+        {
+          "from": "2010Q3",
+          "to": "2021Q3",
+          "source": "FED_ID"
+        },
+        {
+          "from": "2021Q4",
+          "to": "2021Q4",
+          "source": "FED ID"
+        },
+        {
+          "from": "2022Q1",
+          "to": null,
+          "source": "FED_ID"
+        }
+      ]
+    },
+    {
+      "id": "OTS DOCKET NUMBER",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "OTS Docket Number"
+        },
+        {
+          "from": "2010Q3",
+          "to": "2014Q1",
+          "source": "OTS_ID"
+        }
+      ]
+    },
+    {
+      "id": "CREDIT UNION CHARTER NUMBER",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "Credit Union Charter Number"
+        },
+        {
+          "from": "2010Q3",
+          "to": null,
+          "source": "NCUA_ID"
+        }
+      ]
+    },
+    {
+      "id": "APPROVAL DATE",
+      "arrow_type": "date32",
+      "derived_arrow_types": [
+        "date32"
+      ],
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": "2010Q2",
+          "source": "Approval Date",
+          "pattern": "%Y-%m-%d %H:%M:%S"
+        },
+        {
+          "from": "2010Q3",
+          "to": "2014Q2",
+          "source": "APPR_DATE",
+          "pattern": "%Y-%m-%d %H:%M:%S"
+        },
+        {
+          "from": "2014Q3",
+          "to": null,
+          "source": "APPR_DATE",
+          "pattern": "%m/%d/%y",
+          "fallback_patterns": [
+            "%Y-%m-%d %H:%M:%S"
+          ]
+        }
+      ],
+      "decode": {
+        "kind": "date",
+        "century_fix": true
+      },
+      "notes": "Two-digit-year vintages pivot 00-68 into the 2000s (a 1966 membership date parses as 2066); century_fix shifts anything after the vintage period back 100 years. The fallback pattern covers cells stored as true Excel datetimes amid the m/d/yy text (2015Q4/2016Q2)."
+    },
+    {
+      "id": "NAIC ID",
+      "arrow_type": "float64",
+      "derived_arrow_types": [
+        "float64"
+      ],
+      "layouts": [
+        {
+          "from": "2014Q2",
+          "to": null,
+          "source": "NAIC_ID"
+        }
+      ]
+    },
+    {
+      "id": "MEM DATE",
+      "arrow_type": "date32",
+      "derived_arrow_types": [
+        "date32"
+      ],
+      "layouts": [
+        {
+          "from": "2014Q2",
+          "to": "2014Q2",
+          "source": "MEM_DATE",
+          "pattern": "%Y-%m-%d %H:%M:%S"
+        },
+        {
+          "from": "2014Q3",
+          "to": null,
+          "source": "MEM_DATE",
+          "pattern": "%m/%d/%y",
+          "fallback_patterns": [
+            "%Y-%m-%d %H:%M:%S"
+          ]
+        }
+      ],
+      "decode": {
+        "kind": "date",
+        "century_fix": true
+      },
+      "notes": "Two-digit-year vintages pivot 00-68 into the 2000s (a 1966 membership date parses as 2066); century_fix shifts anything after the vintage period back 100 years. The fallback pattern covers cells stored as true Excel datetimes amid the m/d/yy text (2015Q4/2016Q2)."
+    },
+    {
+      "id": "SOURCE FILE",
+      "arrow_type": "string",
+      "derived": true,
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": null,
+          "source": null
+        }
+      ],
+      "notes": "Added by the builder from the filename, not read from the source."
+    },
+    {
+      "id": "YEAR",
+      "arrow_type": "int64",
+      "derived": true,
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": null,
+          "source": null
+        }
+      ],
+      "notes": "Added by the builder from the filename, not read from the source."
+    },
+    {
+      "id": "QUARTER",
+      "arrow_type": "int64",
+      "derived": true,
+      "layouts": [
+        {
+          "from": "2009Q4",
+          "to": null,
+          "source": null
+        }
+      ],
+      "notes": "Added by the builder from the filename, not read from the source."
+    }
+  ]
+}

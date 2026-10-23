@@ -1,0 +1,83 @@
+{
+  "prefix": "issrcutoff",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 4,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "issuer_name",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Name",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 5,
+              "end": 64,
+              "length": 60
+            }
+          ]
+        },
+        {
+          "id": "issuer_cut_off_date_code_description",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Cut-Off Date Code Description",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 65,
+              "end": 105,
+              "length": 41
+            }
+          ]
+        },
+        {
+          "id": "data_file_as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Data File As-Of Date (YYYYMMDD)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 106,
+              "end": 113,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

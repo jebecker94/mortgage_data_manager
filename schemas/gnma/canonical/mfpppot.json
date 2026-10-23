@@ -1,0 +1,159 @@
+{
+  "prefix": "mfpppot",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "derived from mfpppmon.json \u2014 MF participation-pool 'other' \u2014 same delimited layout. Validated 0-hard across all mfpppot bronze months.",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "issuer_number",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "string",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "CCYYMM"
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_number",
+          "arrow_type": "string",
+          "pdf_text": "Pool Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "issue_type",
+          "arrow_type": "string",
+          "pdf_text": "Issue Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "payment_date",
+          "arrow_type": "string",
+          "pdf_text": "Payment Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "penalty_amount",
+          "arrow_type": "string",
+          "pdf_text": "Penalty Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "lockout_period_end_date",
+          "arrow_type": "string",
+          "pdf_text": "Lockout Period End Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "prepayment_end_date",
+          "arrow_type": "string",
+          "pdf_text": "Prepayment End Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

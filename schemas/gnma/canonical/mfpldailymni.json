@@ -1,0 +1,975 @@
+{
+  "prefix": "mfpldailymni",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "derived from mfpldailymni2.json \u2014 MF pool daily (v1 generation, 69 tokens) \u2014 earlier prefix of the v2 field set; embedded header labels align token-for-token. Validated 0-hard across all mfpldailymni bronze months.",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2018-12",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_number",
+          "arrow_type": "string",
+          "pdf_text": "Pool Number",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator (X)",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "security_interest_rate",
+          "arrow_type": "string",
+          "pdf_text": "Security Interest Rate",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "string",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "pool_maturity_date",
+          "arrow_type": "string",
+          "pdf_text": "Pool Maturity Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "original_aggregate_amount",
+          "arrow_type": "string",
+          "pdf_text": "Original Aggregate Amount",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "issuer_number",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Number",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "issuer_name",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Name",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 40
+            }
+          ]
+        },
+        {
+          "id": "issuer_address_1",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Address 1",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 30
+            }
+          ]
+        },
+        {
+          "id": "issuer_address_2",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Address 2",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 30
+            }
+          ]
+        },
+        {
+          "id": "issuer_city",
+          "arrow_type": "string",
+          "pdf_text": "Issuer City",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 30
+            }
+          ]
+        },
+        {
+          "id": "issuer_state",
+          "arrow_type": "string",
+          "pdf_text": "Issuer State",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "issuer_zip_code_1",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Zip Code 1",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "issuer_zip_code_2",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Zip Code 2",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 16,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "pool_upb",
+          "arrow_type": "string",
+          "pdf_text": "Pool UPB",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 17,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans_in_pool",
+          "arrow_type": "string",
+          "pdf_text": "Number of loans in pool",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 18,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans_30_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Number of Loans 30 days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 19,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "upb_of_loans_30_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "UPB of Loans 30 days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 20,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "percentage_of_upb_of_loans_30_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Percentage of UPB of Loans 30 days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 21,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans_60_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Number of Loans 60 days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 22,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "upb_of_loans_60_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "UPB of Loans 60 days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 23,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "percentage_of_upb_of_loans_60_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Percentage of UPB of Loans 60 days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 24,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans_90_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Number of Loans 90+ days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 25,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "upb_of_loans_90_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "UPB of Loans 90+ days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 26,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "percentage_of_upb_of_loans_90_days_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Percentage of UPB of Loans 90+ days delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 27,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "security_rpb",
+          "arrow_type": "string",
+          "pdf_text": "Security RPB",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 28,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "rpb_factor",
+          "arrow_type": "string",
+          "pdf_text": "RPB Factor",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 29,
+              "max_length": 10,
+              "format": "1.8"
+            }
+          ]
+        },
+        {
+          "id": "disclosure_sequence_number",
+          "arrow_type": "string",
+          "pdf_text": "Disclosure Sequence Number",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 30,
+              "max_length": 10
+            }
+          ]
+        },
+        {
+          "id": "case_number",
+          "arrow_type": "string",
+          "pdf_text": "Case Number",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 31,
+              "max_length": 15
+            }
+          ]
+        },
+        {
+          "id": "agency_type",
+          "arrow_type": "string",
+          "pdf_text": "Agency Type",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 32,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_type",
+          "arrow_type": "string",
+          "pdf_text": "Loan Type",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 33,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "loan_term",
+          "arrow_type": "string",
+          "pdf_text": "Loan Term",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 34,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "first_payment_date",
+          "arrow_type": "string",
+          "pdf_text": "First Payment Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 35,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "maturity_date_of_loan",
+          "arrow_type": "string",
+          "pdf_text": "Maturity Date of Loan",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 36,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "loan_interest_rate",
+          "arrow_type": "string",
+          "pdf_text": "Loan Interest Rate",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 37,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "modified_loan_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Modified Loan Indicator",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 38,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "non_level_payments_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Non-level Payments Indicator",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 39,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "mature_loan_certification_flag",
+          "arrow_type": "string",
+          "pdf_text": "Mature Loan Certification Flag",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 40,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_origination_date",
+          "arrow_type": "string",
+          "pdf_text": "Loan Origination Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 41,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "initial_endorsement_date",
+          "arrow_type": "string",
+          "pdf_text": "Initial Endorsement Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 42,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "final_endorsement_date",
+          "arrow_type": "string",
+          "pdf_text": "Final Endorsement Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 43,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "lockout_term",
+          "arrow_type": "string",
+          "pdf_text": "Lockout Term",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 44,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "lockout_period_end_date",
+          "arrow_type": "string",
+          "pdf_text": "Lockout Period End Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 45,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "prepayment_premium_period",
+          "arrow_type": "string",
+          "pdf_text": "Prepayment Premium Period",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 46,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "prepayment_end_date",
+          "arrow_type": "string",
+          "pdf_text": "Prepayment End Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 47,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "interest_approval_date",
+          "arrow_type": "string",
+          "pdf_text": "Interest Approval Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 48,
+              "max_length": 8,
+              "format": "CCYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "pre_payment_penalty_flag",
+          "arrow_type": "string",
+          "pdf_text": "Pre-Payment Penalty Flag",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 49,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "original_principal_balance",
+          "arrow_type": "string",
+          "pdf_text": "Original Principal Balance",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 50,
+              "max_length": 12,
+              "format": "9.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_at_issuance",
+          "arrow_type": "string",
+          "pdf_text": "UPB at Issuance",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 51,
+              "max_length": 12,
+              "format": "9.2"
+            }
+          ]
+        },
+        {
+          "id": "unpaid_principal_balance",
+          "arrow_type": "string",
+          "pdf_text": "Unpaid Principal Balance",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 52,
+              "max_length": 12,
+              "format": "9.2"
+            }
+          ]
+        },
+        {
+          "id": "draw_number",
+          "arrow_type": "string",
+          "pdf_text": "Draw Number",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 53,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "approved_draw_amount",
+          "arrow_type": "string",
+          "pdf_text": "Approved Draw Amount",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 54,
+              "max_length": 13,
+              "format": "10.2"
+            }
+          ]
+        },
+        {
+          "id": "months_delinquent",
+          "arrow_type": "string",
+          "pdf_text": "Months Delinquent",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 55,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "current_month_liquidation_flag",
+          "arrow_type": "string",
+          "pdf_text": "Current Month Liquidation Flag",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 56,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "removal_reason",
+          "arrow_type": "string",
+          "pdf_text": "Removal Reason",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 57,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "seller_issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Seller Issuer ID",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 58,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "property_name",
+          "arrow_type": "string",
+          "pdf_text": "Property Name",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 59,
+              "max_length": 60
+            }
+          ]
+        },
+        {
+          "id": "property_street",
+          "arrow_type": "string",
+          "pdf_text": "Property Street",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 60,
+              "max_length": 55
+            }
+          ]
+        },
+        {
+          "id": "property_city",
+          "arrow_type": "string",
+          "pdf_text": "Property City",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 61,
+              "max_length": 30
+            }
+          ]
+        },
+        {
+          "id": "property_state",
+          "arrow_type": "string",
+          "pdf_text": "Property State",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 62,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "property_zip",
+          "arrow_type": "string",
+          "pdf_text": "Property Zip",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 63,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "msa",
+          "arrow_type": "string",
+          "pdf_text": "MSA",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 64,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "number_of_units",
+          "arrow_type": "string",
+          "pdf_text": "Number of Units",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 65,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "current_principal_and_interest_amount",
+          "arrow_type": "string",
+          "pdf_text": "Current Principal and Interest Amount",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 66,
+              "max_length": 12,
+              "format": "9.2"
+            }
+          ]
+        },
+        {
+          "id": "prepayment_description",
+          "arrow_type": "string",
+          "pdf_text": "Prepayment Description",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 67,
+              "max_length": 245
+            }
+          ]
+        },
+        {
+          "id": "description_of_non_level_adjustment_period",
+          "arrow_type": "string",
+          "pdf_text": "Description of Non-Level Adjustment Period",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 68,
+              "max_length": 230
+            }
+          ]
+        },
+        {
+          "id": "fha_program_section_code",
+          "arrow_type": "string",
+          "pdf_text": "FHA Program Section Code",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 69,
+              "max_length": 20
+            }
+          ]
+        },
+        {
+          "id": "insurance_type",
+          "arrow_type": "string",
+          "pdf_text": "Insurance Type",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 70,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "string",
+          "pdf_text": "As of Date",
+          "layouts": [
+            {
+              "from": "2018-12",
+              "to": null,
+              "ordinal": 71,
+              "max_length": 6,
+              "format": "CCYYMM"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

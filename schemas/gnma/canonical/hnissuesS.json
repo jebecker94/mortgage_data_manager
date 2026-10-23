@@ -1,0 +1,3445 @@
+{
+  "prefix": "hnissuesS",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "01": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 01",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "quartiles",
+          "arrow_type": "string",
+          "pdf_text": "Quartiles",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "participation_original_principal_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Participation Original Principal Balance (OPB)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 9,
+              "format": "6.2"
+            }
+          ]
+        },
+        {
+          "id": "participation_upb",
+          "arrow_type": "float64",
+          "pdf_text": "Participation UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 9,
+              "format": "6.2"
+            }
+          ]
+        },
+        {
+          "id": "participation_original_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Participation Original Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "participation_current_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Participation Current Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "participation_prospective_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Participation Prospective Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loan_age",
+          "arrow_type": "int64",
+          "pdf_text": "HECM Loan Age",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "ratio_participation_upb_hecm_loan_maximum_claim_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Ratio: Participation UPB/HECM Loan Maximum Claim Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "expected_average_mortgage_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Expected Average Mortgage Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "servicing_fee_set_aside",
+          "arrow_type": "float64",
+          "pdf_text": "Servicing Fee Set Aside",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "original_funding_age",
+          "arrow_type": "int64",
+          "pdf_text": "Original Funding Age",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 16,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "property_valuation_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Property Valuation Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 17,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "original_term_of_payments",
+          "arrow_type": "int64",
+          "pdf_text": "Original Term of Payments",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 18,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "property_charges_set_aside_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Property Charges Set Aside Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 19,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "property_repair_set_aside_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Property Repair Set Aside Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 20,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "original_available_line_of_credit",
+          "arrow_type": "float64",
+          "pdf_text": "Original Available Line of Credit",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 21,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "original_draw_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Original Draw Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 22,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "mortgage_margin",
+          "arrow_type": "float64",
+          "pdf_text": "Mortgage Margin",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 23,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "lifetime_floor_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Lifetime Floor Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 24,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "remaining_available_line_of_credit",
+          "arrow_type": "float64",
+          "pdf_text": "Remaining Available Line of Credit",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 25,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "monthly_scheduled_payment_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Monthly Scheduled Payment Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 26,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "remaining_term_of_payments",
+          "arrow_type": "int64",
+          "pdf_text": "Remaining Term of Payments",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 27,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "credit_line_set_aside_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Credit Line Set Aside Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 28,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_change_cap",
+          "arrow_type": "int64",
+          "pdf_text": "Lifetime Interest Rate Change Cap",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 29,
+              "max_length": 2,
+              "format": "9(2)"
+            }
+          ]
+        },
+        {
+          "id": "annual_interest_rate_change_cap",
+          "arrow_type": "int64",
+          "pdf_text": "Annual Interest Rate Change Cap",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 30,
+              "max_length": 2,
+              "format": "9(2)"
+            }
+          ]
+        },
+        {
+          "id": "maximum_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Maximum Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 31,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "eligible_non_borrowing_spouse_age",
+          "arrow_type": "int64",
+          "pdf_text": "Eligible Non-borrowing Spouse Age",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 32,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "initial_remaining_available_line_of_credit",
+          "arrow_type": "float64",
+          "pdf_text": "Initial Remaining Available Line of Credit",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 33,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "initial_monthly_scheduled_payment_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Initial Monthly Scheduled Payment Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 34,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        }
+      ]
+    },
+    "02": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 02",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "eligible_non_borrowing_spouse_number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Eligible Non-Borrowing Spouse Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "eligible_non_borrowing_spouse_upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "Eligible Non-Borrowing Spouse UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "eligible_non_borrowing_spouse_upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "Eligible Non-Borrowing Spouse UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "remaining_property_charges_set_aside_number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Remaining Property Charges Set Aside Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "remaining_property_charges_set_aside_upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "Remaining Property Charges Set Aside UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "remaining_property_charges_set_aside_upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "Remaining Property Charges Set Aside UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "03": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 03",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "payment_option",
+          "arrow_type": "int64",
+          "pdf_text": "Payment Option",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "04": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 04",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "property_type",
+          "arrow_type": "int64",
+          "pdf_text": "Property Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "05": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 05",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "age_of_youngest_borrower_co_borrower",
+          "arrow_type": "int64",
+          "pdf_text": "Age of Youngest Borrower/Co- borrower",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "06": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 06",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "age_of_youngest_eligible_non_borrowing_spouse",
+          "arrow_type": "int64",
+          "pdf_text": "Age of Youngest Eligible Non- Borrowing Spouse",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "07": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 07",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "msa",
+          "arrow_type": "int64",
+          "pdf_text": "MSA",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "08": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 08",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "state_code",
+          "arrow_type": "string",
+          "pdf_text": "State Code",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations_for_state_as_a_of_pool_s_total_participation_count",
+          "arrow_type": "float64",
+          "pdf_text": "Number of Participations for State as a % of Pool\u2019s total Participation count",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "original_principal_balance_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "Original Principal Balance of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "09": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 09",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "loan_purpose",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Purpose",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 10",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "hecm_saver",
+          "arrow_type": "string",
+          "pdf_text": "HECM Saver",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "11": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 11",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "low_and_moderate_borrower_income",
+          "arrow_type": "string",
+          "pdf_text": "Low and Moderate Borrower Income",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "12": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 12",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "not_available",
+          "arrow_type": "int64",
+          "pdf_text": "Not Available",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "13": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 13",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "joint_single_loan_indicator",
+          "arrow_type": "int64",
+          "pdf_text": "Joint/Single Loan Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "youngest_borrower_co_borrower_sex",
+          "arrow_type": "string",
+          "pdf_text": "Youngest Borrower/Co-borrower Sex",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "hecm_loans_upb_as_of_mca_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "HECM Loans UPB as % of MCA of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "14": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 14",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "rural_area",
+          "arrow_type": "string",
+          "pdf_text": "Rural Area",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "HP": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = HP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "create_date",
+          "arrow_type": "string",
+          "pdf_text": "Create Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "HS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = HS",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "create_date",
+          "arrow_type": "string",
+          "pdf_text": "Create Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMM\nDD"
+            }
+          ]
+        }
+      ]
+    },
+    "PS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PS",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "index_type",
+          "arrow_type": "string",
+          "pdf_text": "Index Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "string",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "pool_maturity_date",
+          "arrow_type": "string",
+          "pdf_text": "Pool Maturity Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "issuer_number",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "issuer_name",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Name",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 40
+            }
+          ]
+        },
+        {
+          "id": "original_aggregate_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Original Aggregate Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "pool_unpaid_principal_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Pool Unpaid Principal Balance",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "security_rpb",
+          "arrow_type": "float64",
+          "pdf_text": "Security RPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "rpb_factor",
+          "arrow_type": "float64",
+          "pdf_text": "RPB Factor",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 10,
+              "format": "1.8"
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations_in_pool",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations in pool.",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "number_of_participations_with_payments_this_period",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Participations with Payments this Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 16,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "unpaid_principal_balance_of_participations_with_payments",
+          "arrow_type": "float64",
+          "pdf_text": "Unpaid Principal Balance of Participations with Payments",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 17,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "percent_of_upb_paid_off",
+          "arrow_type": "float64",
+          "pdf_text": "Percent of UPB Paid Off",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 18,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "average_original_participation_size",
+          "arrow_type": "float64",
+          "pdf_text": "Average Original Participation Size (AOPS)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 19,
+              "max_length": 9,
+              "format": "6.2"
+            }
+          ]
+        },
+        {
+          "id": "current_period_average_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Current Period Average Balance",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 20,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "original_security_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Original Security Interest Rate (WAC)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 21,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "current_security_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Current Security Interest Rate (WAC)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 22,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "prospective_security_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Prospective Security Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 23,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "ratio_pool_outstanding_balance_to_max_claim_amount_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "Ratio: Pool Outstanding Balance to Max Claim Amount of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 24,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "ratio_pool_outstanding_balance_to_principal_limit_of_hecm_loans",
+          "arrow_type": "float64",
+          "pdf_text": "Ratio: Pool Outstanding Balance to Principal Limit of HECM Loans",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 25,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_loan_age_of_the_participations",
+          "arrow_type": "int64",
+          "pdf_text": "WA Loan Age (WALA) of the Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 26,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "wa_expected_mortgage_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "WA Expected Mortgage Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 27,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_servicing_fee_set_aside",
+          "arrow_type": "float64",
+          "pdf_text": "WA Servicing Fee Set Aside",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 28,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_original_funding_age",
+          "arrow_type": "int64",
+          "pdf_text": "WA Original Funding Age",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 29,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "wa_property_valuation_amount",
+          "arrow_type": "float64",
+          "pdf_text": "WA Property Valuation Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 30,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_original_term_of_payments",
+          "arrow_type": "int64",
+          "pdf_text": "WA Original Term of Payments",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 31,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "wa_property_charges_set_aside",
+          "arrow_type": "float64",
+          "pdf_text": "WA Property Charges Set Aside",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 32,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_property_repair_set_aside",
+          "arrow_type": "float64",
+          "pdf_text": "WA Property Repair Set Aside",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 33,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_original_available_line_of_credit",
+          "arrow_type": "float64",
+          "pdf_text": "WA Original Available Line of Credit",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 34,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_original_draw_amount",
+          "arrow_type": "float64",
+          "pdf_text": "WA Original Draw Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 35,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_mortgage_margin",
+          "arrow_type": "float64",
+          "pdf_text": "WA Mortgage Margin",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 36,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_lifetime_floor_rate",
+          "arrow_type": "float64",
+          "pdf_text": "WA Lifetime Floor Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 37,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_remaining_available_line_of_credit",
+          "arrow_type": "float64",
+          "pdf_text": "WA Remaining Available Line of Credit",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 38,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_monthly_scheduled_payment",
+          "arrow_type": "float64",
+          "pdf_text": "WA Monthly Scheduled Payment",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 39,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_remaining_term_of_payments",
+          "arrow_type": "int64",
+          "pdf_text": "WA Remaining Term of Payments",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 40,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "wa_credit_line_set_aside",
+          "arrow_type": "float64",
+          "pdf_text": "WA Credit Line Set Aside",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 41,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_lifetime_interest_rate_change_cap",
+          "arrow_type": "int64",
+          "pdf_text": "WA Lifetime Interest Rate Change Cap",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 42,
+              "max_length": 2,
+              "format": "9(2)"
+            }
+          ]
+        },
+        {
+          "id": "wa_annual_interest_rate_change_cap",
+          "arrow_type": "int64",
+          "pdf_text": "WA Annual Interest Rate Change Cap",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 43,
+              "max_length": 2,
+              "format": "9(2)"
+            }
+          ]
+        },
+        {
+          "id": "wa_maximum_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "WA Maximum Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 44,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_eligible_non_borrowing_spouse_age",
+          "arrow_type": "int64",
+          "pdf_text": "WA Eligible Non- borrowing Spouse Age",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 45,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "wa_initial_remaining_available_line_of_credit",
+          "arrow_type": "float64",
+          "pdf_text": "WA Initial Remaining Available Line of Credit",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 46,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_initial_monthly_scheduled_payment_amount",
+          "arrow_type": "float64",
+          "pdf_text": "WA Initial Monthly Scheduled Payment Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 47,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        }
+      ]
+    },
+    "TP": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_create_date",
+          "arrow_type": "string",
+          "pdf_text": "File Create Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "detail_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Detail Record Count",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 8
+            }
+          ]
+        }
+      ]
+    },
+    "TS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TS",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_create_date",
+          "arrow_type": "string",
+          "pdf_text": "File Create Date",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "detail_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Detail Record Count",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 12
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

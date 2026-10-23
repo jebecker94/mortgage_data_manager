@@ -1,7 +1,7 @@
 """Tests for FHLB configuration."""
 
 from mortgage_data_manager.core.config import MortgageDataConfig
-from mortgage_data_manager.fhlb.config import FHLBConfig
+from mortgage_data_manager.sources.fhlb.config import FHLBConfig
 
 
 def test_fhlb_config_inherits_from_base():
@@ -16,8 +16,8 @@ def test_fhlb_config_has_defaults():
     exact literals: the defaults track data availability and move over time
     (FHLB_DEFAULT_MAX_YEAR has already advanced past the original 2023).
     """
-    assert hasattr(FHLBConfig, 'FHLB_DEFAULT_MIN_YEAR')
-    assert hasattr(FHLBConfig, 'FHLB_DEFAULT_MAX_YEAR')
+    assert hasattr(FHLBConfig, "FHLB_DEFAULT_MIN_YEAR")
+    assert hasattr(FHLBConfig, "FHLB_DEFAULT_MAX_YEAR")
 
     assert isinstance(FHLBConfig.FHLB_DEFAULT_MIN_YEAR, int)
     assert isinstance(FHLBConfig.FHLB_DEFAULT_MAX_YEAR, int)

@@ -1,0 +1,1352 @@
+{
+  "prefix": "llmon2",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "derived from dailyllmni.json \u2014 identical layout (verified: 5 RTs, byte-identical positions + V1.0..V1.8 timeline)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "H": {
+      "role": "header",
+      "present": [
+        {
+          "from": "2013-09",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type H = File Header",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "File Name (GNMA_MBS_LL_XXX_CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "correction_flag",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Correction Flag (If a replacement of previous file)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 27,
+              "end": 27,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 28,
+              "end": 33,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Date File Generated (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 34,
+              "end": 41,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    },
+    "L": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2013-09",
+          "to": null
+        }
+      ],
+      "key_fields": [
+        "pool_id",
+        "disclosure_sequence_number"
+      ],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type L=Loan Level Details",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 2,
+              "end": 7,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "disclosure_sequence_number",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Disclosure Sequence Number (A sequence number unique to loan level)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 8,
+              "end": 17,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Issuer ID (including for loan packages in MIP pool)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 18,
+              "end": 21,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "agency",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Agency (Agency Loan Type FHA, VA, RD, NA)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 22,
+              "end": 22,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_purpose",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan Purpose",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 23,
+              "end": 23,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "refinance_type",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Refinance Type",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 24,
+              "end": 24,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "first_payment_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "First Payment Date (First Scheduled Installment)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 25,
+              "end": 32,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "maturity_date_of_loan",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Maturity Date of Loan (Last Scheduled Installment)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 33,
+              "end": 40,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "loan_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan Interest Rate (current interest rate)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 41,
+              "end": 45,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "original_principal_balance",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Original Principal Balance (OPB at pool issuance)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 46,
+              "end": 56,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "upb_at_issuance",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "UPB at Issuance (UPB of the loan at pool issuance)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 57,
+              "end": 67,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "unpaid_principal_balance",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Unpaid Principal Balance (UPB of the loan)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 68,
+              "end": 78,
+              "length": 11
+            }
+          ]
+        },
+        {
+          "id": "original_loan_term_in_months",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Original Loan Term, in Months",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 79,
+              "end": 81,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "loan_age_in_months",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan Age, in Months",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 82,
+              "end": 84,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "remaining_loan_term_in_months",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Remaining Loan Term (Remaining Maturity), in Months",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 85,
+              "end": 87,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "months_delinquent",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Months Delinquent (1,2,3,4,5,6 where 6 means 6+ Scheduled installments due but not paid)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 88,
+              "end": 88,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "months_pre_paid",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Months Pre-Paid (1,2,3,4,5,6 where 6 means 6+ Future scheduled installments have been paid)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 89,
+              "end": 89,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_gross_margin",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan Gross Margin (ARM Loans only)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 90,
+              "end": 93,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "loan_to_value",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan To Value (LTV)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 94,
+              "end": 98,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "combined_ltv",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Combined LTV (CLTV)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 99,
+              "end": 103,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "total_debt_expense_ratio_percent",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Total Debt Expense Ratio Percent",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 104,
+              "end": 108,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "credit_score",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Credit Score",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 109,
+              "end": 111,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "down_payment_assistance",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Down Payment Assistance (Yes or No)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 112,
+              "end": 112,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "buy_down_status",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Buy Down Status (Loan Status) (Yes or No)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 113,
+              "end": 113,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "upfront_mip",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Upfront MIP (insurance premium rate)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 114,
+              "end": 118,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "annual_mip",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Annual MIP (insurance premium rate)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 119,
+              "end": 123,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "number_of_borrowers",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Number of Borrowers",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 124,
+              "end": 124,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "first_time_home_buyer",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "First Time Home Buyer (Yes or No)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 125,
+              "end": 125,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "property_type",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Property Type (Number of Living Units)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 126,
+              "end": 126,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "state",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "State (2 character State Code)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 127,
+              "end": 128,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "msa",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "MSA",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 129,
+              "end": 133,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "third_party_origination_type",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Third-Party Origination Type",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 134,
+              "end": 134,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 137,
+              "end": 142,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "current_month_liquidation_flag",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Current Month Liquidation Flag (Yes or No)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 135,
+              "end": 135,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "removal_reason",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Removal Reason",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 136,
+              "end": 136,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "loan_origination_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan Origination Date",
+          "layouts": [
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 143,
+              "end": 150,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "seller_issuer_id",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Seller Issuer ID",
+          "layouts": [
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 151,
+              "end": 154,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "index_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Index Type",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 155,
+              "end": 159,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "look_back_period",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Look-Back Period",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 160,
+              "end": 161,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "interest_rate_change_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Interest Rate Change Date",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 162,
+              "end": 169,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "initial_interest_rate_cap",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Initial Interest Rate Cap",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 170,
+              "end": 170,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "subsequent_interest_rate_cap",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Subsequent Interest Rate Cap",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 171,
+              "end": 171,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_cap",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Lifetime Interest Rate Cap",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 172,
+              "end": 172,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "next_interest_rate_change_ceiling",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Next Interest Rate Change Ceiling",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 173,
+              "end": 177,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_ceiling",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Lifetime Interest Rate Ceiling",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 178,
+              "end": 182,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_floor",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Lifetime Interest Rate Floor",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 183,
+              "end": 187,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "prospective_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Prospective Interest Rate",
+          "layouts": [
+            {
+              "from": "2017-12",
+              "to": null,
+              "begin": 188,
+              "end": 192,
+              "length": 5
+            }
+          ]
+        }
+      ]
+    },
+    "P": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2013-09",
+          "to": null
+        }
+      ],
+      "key_fields": [
+        "cusip_number",
+        "pool_id"
+      ],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type P=Pool Information",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 2,
+              "end": 10,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 11,
+              "end": 16,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "issue_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Issue Type (X, C, or M)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 17,
+              "end": 17,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 18,
+              "end": 19,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 20,
+              "end": 27,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 28,
+              "end": 31,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 32,
+              "end": 37,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    },
+    "T": {
+      "role": "trailer",
+      "present": [
+        {
+          "from": "2013-09",
+          "to": null
+        }
+      ],
+      "key_fields": [
+        "cusip_number",
+        "pool_id"
+      ],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type T=Pool Trailer information",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 2,
+              "end": 10,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 11,
+              "end": 16,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "issue_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Issue Type (X, C, or M)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 17,
+              "end": 17,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 18,
+              "end": 19,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 20,
+              "end": 27,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_type": "Numeric",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 28,
+              "end": 31,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 32,
+              "end": 37,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "loan_count_for_the_pool",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan Count for the Pool",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 38,
+              "end": 44,
+              "length": 7
+            }
+          ]
+        }
+      ]
+    },
+    "Z": {
+      "role": "trailer",
+      "present": [
+        {
+          "from": "2013-09",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type Z = File Trailer",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "File Name (GNMA_MBS_LL_XXX_CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "pool_count",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Pool Count (Control Total)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 27,
+              "end": 33,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "loan_count",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Loan Count (Control Total)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 34,
+              "end": 42,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "total_record_count_in_file",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Total Record Count in File (All Record Types, Including H and Z records)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 43,
+              "end": 51,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_type": "Numeric",
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 52,
+              "end": 57,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": [
+    "L 2013-09..11: bad 140-char window replaced by data-confirmed 142-char layout (validator-caught)"
+  ]
+}

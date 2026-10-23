@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mortgage-data-manager"
-version = "0.1.0"
-description = "Unified data manager for mortgage market data (HMDA, FHA, MBS, financial institutions) with matching workflows"
+version = "0.2.0"
+description = "Loan-level matching across U.S. public mortgage datasets (HMDA, FHA, FHFA, GSE, Ginnie Mae, UMBS, FHLB), with the pipelines that feed it"
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [
@@ -30,18 +30,12 @@ dependencies = [
 [project.optional-dependencies]
 # Subpackage-specific dependencies
 hmda = [
-    "selenium>=4.32.0",
-    "webdriver-manager>=4.0.2",
     "scipy>=1.15.0",
 ]
 fha = [
     "fastexcel>=0.0.1",
     "openpyxl>=3.1.5",
     "addfips>=0.4.0",
-    "networkx>=3.3",
-    "matplotlib>=3.10.0",
-    "plotly>=6.3.0",
-    "kaleido>=1.0.0",
 ]
 mbs = [
     "pymupdf>=1.23.0",
@@ -51,9 +45,12 @@ mbs = [
 matching = [
     "addfips>=0.4.0",
     "numpy>=1.26.0",
+    # validation figures (plotly, written to PNG through kaleido)
+    "plotly>=6.3.0",
+    "kaleido>=1.0.0",
 ]
-hud = []
-hud_mf = [
+usps_crosswalk = []
+hud = [
     "fastexcel>=0.0.1",
 ]
 analytics = [
@@ -69,7 +66,12 @@ analytics = [
 
 # Convenience groups
 all = [
-    "mortgage-data-manager[hmda,fha,mbs,matching,hud,hud_mf,analytics]"
+    "mortgage-data-manager[hmda,fha,mbs,matching,usps_crosswalk,hud,analytics]"
+]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.26.0",
 ]
 dev = [
     "ruff>=0.11.10",
@@ -85,8 +87,6 @@ dev = [
 
 [project.scripts]
 # Single entry point — per-module CLIs are reached as `mortgage-data <module>`.
-# (Standalone per-module scripts were removed 2026-06-07; each module still
-# exposes cli_main, so `python -m`-style access and re-adding a script remain trivial.)
 mortgage-data = "mortgage_data_manager.cli.main:cli_main"
 
 [tool.hatch.build.targets.wheel]
@@ -104,7 +104,7 @@ line-length = 100
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "D"]
+select = ["E", "F", "I", "N", "W", "UP", "D", "G"]
 ignore = [
     "E501", # Line too long (handled by formatter)
     "D1",   # Missing docstrings — coverage is a judgment call, not a gate

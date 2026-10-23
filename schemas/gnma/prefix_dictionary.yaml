@@ -14,7 +14,6 @@ nimonSFS:
   frequency: monthly
   description: MBS SF MONTHLY NEW ISSUES - POOL SUPPLEMENTAL
   # Pool supplemental: deterministic stratification of dailyllmni.
-  # See investigations/reports/investigation_gnma_supplemental_reconstruction_2026-05-02.md
   default_download: false
 dailyllmni:
   min_date: '201309'
@@ -38,7 +37,6 @@ monthlySFS:
   frequency: monthly
   description: MBS SF PORTFOLIO - POOL SUPPLEMENTAL
   # Pool supplemental: deterministic stratification of llmon1+llmon2.
-  # See investigations/reports/investigation_gnma_supplemental_reconstruction_2026-05-02.md
   default_download: false
 llmon1:
   min_date: '201310'
@@ -136,7 +134,6 @@ hmonthlyS:
   # Pool supplemental: deterministic stratification of hllmon1+hllmon2.
   # Exception: Record 08 (Property State) is not derivable \u2014 HMBS loan-level
   # has no State column. Re-pull this file if pool x state distribution is needed.
-  # See investigations/reports/investigation_gnma_supplemental_reconstruction_2026-05-02.md
   default_download: false
 hsavr:
   min_date: '201010'

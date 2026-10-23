@@ -1,0 +1,750 @@
+{
+  "prefix": "plmonforb",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "90": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 90",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "forbearance_type",
+          "arrow_type": "int64",
+          "pdf_text": "Forbearance Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "of_loans",
+          "arrow_type": "float64",
+          "pdf_text": "% of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "of_upb",
+          "arrow_type": "float64",
+          "pdf_text": "% of UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "91": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 91",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "forbearance_type",
+          "arrow_type": "int64",
+          "pdf_text": "Forbearance Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "delinquency",
+          "arrow_type": "int64",
+          "pdf_text": "Delinquency",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "of_loans",
+          "arrow_type": "float64",
+          "pdf_text": "% of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "of_upb",
+          "arrow_type": "float64",
+          "pdf_text": "% of UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "92": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 92",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "forbearance_type",
+          "arrow_type": "int64",
+          "pdf_text": "Forbearance Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "loan_type",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "of_loans",
+          "arrow_type": "float64",
+          "pdf_text": "% of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "of_upb",
+          "arrow_type": "float64",
+          "pdf_text": "% of UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "93": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 93",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "forbearance_type",
+          "arrow_type": "int64",
+          "pdf_text": "Forbearance Type",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "loan_purpose",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Purpose",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "number_of_loans",
+          "arrow_type": "int64",
+          "pdf_text": "Number of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "of_loans",
+          "arrow_type": "float64",
+          "pdf_text": "% of Loans",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "of_upb",
+          "arrow_type": "float64",
+          "pdf_text": "% of UPB",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "HF": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = HF",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "create_date",
+          "arrow_type": "string",
+          "pdf_text": "Create Date",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "TF": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2020-05",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TF",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_create_date",
+          "arrow_type": "string",
+          "pdf_text": "File Create Date",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "detail_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Detail Record Count",
+          "layouts": [
+            {
+              "from": "2020-05",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 12
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

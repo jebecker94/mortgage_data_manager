@@ -6,10 +6,48 @@ This module provides utilities for working with the medallion architecture
 
 from __future__ import annotations
 
+import shutil
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import polars as pl
+
+if TYPE_CHECKING:
+    from polars._typing import ParquetCompression
+
+
+@contextmanager
+def atomic_output(path: Path) -> Iterator[Path]:
+    """Yield a sibling temp path to write to; publish it under ``path`` on success.
+
+    A writer killed mid-write must never leave a partial file under the final
+    name: ``should_process_file`` would skip it forever after, so the partial
+    becomes permanent silently. Writing to ``<name>.tmp`` in the same
+    directory and renaming on success makes the final name appear only when the
+    file is complete — the rename is atomic on a same-filesystem sibling. On
+    failure the temp file is removed; a stale temp from a killed run is removed
+    on the next attempt. Single-writer per output path, like every builder here.
+
+    Args:
+        path: Final destination path to publish to on success.
+
+    Yields:
+        The sibling temp path to write to.
+
+    Example:
+        >>> with atomic_output(save_file) as tmp:
+        ...     lf.sink_parquet(tmp)
+    """
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.unlink(missing_ok=True)
+    try:
+        yield tmp
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
+    tmp.rename(path)
 
 
 def should_process_file(
@@ -38,7 +76,7 @@ def write_hive_partitioned(
     lf: pl.LazyFrame,
     output_dir: Path,
     partition_cols: list[str],
-    compression: str = "snappy",
+    compression: ParquetCompression = "snappy",
     include_key: bool = False,
     **kwargs: Any,
 ) -> None:
@@ -73,156 +111,33 @@ def write_hive_partitioned(
     """
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # Sink into a hidden sibling temp tree, then move each produced file into
+    # place with an atomic per-file rename. A run killed mid-sink therefore
+    # leaves only the temp tree (removed on the next attempt) — never a
+    # partial parquet under a final partition path, which existence-based
+    # skip logic would otherwise treat as complete forever after. A kill
+    # mid-move can leave some partitions published and others absent, but
+    # every published file is complete, so a re-run rebuilds only what is
+    # genuinely missing. Single writer per output_dir, like every builder.
+    tmp_dir = output_dir.parent / f".{output_dir.name}.tmp"
+    if tmp_dir.exists():
+        shutil.rmtree(tmp_dir)
+
     # pl.PartitionBy (key=/include_key=) is the current partitioned-sink API; it
     # replaced pl.PartitionByKey (removed in polars 1.42) and the sink_parquet
     # partition_by= kwarg. include_key=True keeps the partition columns inside each
     # file; False strips them to the directory path only. Both produce the standard
     # ``col=value/`` hive layout.
-    lf.sink_parquet(
-        pl.PartitionBy(str(output_dir), key=partition_cols, include_key=include_key),
-        compression=compression,
-        mkdir=True,
-        **kwargs,
-    )
-
-
-def read_medallion_layer(
-    layer_dir: Path, glob_pattern: str = "**/*.parquet", **kwargs: Any
-) -> pl.LazyFrame:
-    """Read all parquet files from a medallion layer.
-
-    Args:
-        layer_dir: Path to the medallion layer directory
-        glob_pattern: Glob pattern for matching files (default: all parquet)
-        **kwargs: Additional arguments passed to scan_parquet
-
-    Returns:
-        Polars LazyFrame with data from all matching files
-
-    Example:
-        >>> df = read_medallion_layer(
-        ...     Path("data/hmda/silver"),
-        ...     glob_pattern="activity_year=2020/**/*.parquet"
-        ... )
-    """
-    return pl.scan_parquet(layer_dir / glob_pattern, **kwargs)
-
-
-def get_partitioned_path(
-    base_dir: Path,
-    partitions: dict[str, str | int],
-) -> Path:
-    """Get path with hive-style partitioning.
-
-    Args:
-        base_dir: Base directory
-        partitions: Dictionary of partition column names to values
-
-    Returns:
-        Path with hive-style partitioning
-
-    Example:
-        >>> get_partitioned_path(
-        ...     Path("data/silver"),
-        ...     {"year": 2020, "month": 6}
-        ... )
-        PosixPath('data/silver/year=2020/month=6')
-    """
-    path = base_dir
-    for col, value in partitions.items():
-        path = path / f"{col}={value}"
-    return path
-
-
-def validate_medallion_layer(
-    layer_dir: Path,
-    expected_columns: list[str] | None = None,
-    check_empty: bool = True,
-) -> tuple[bool, str]:
-    """Validate a medallion layer directory.
-
-    Args:
-        layer_dir: Path to the medallion layer directory
-        expected_columns: If provided, check that all files have these columns
-        check_empty: If True, validate that layer is not empty
-
-    Returns:
-        Tuple of (is_valid, message)
-
-    Example:
-        >>> is_valid, msg = validate_medallion_layer(
-        ...     Path("data/hmda/silver"),
-        ...     expected_columns=["lei", "loan_amount"]
-        ... )
-        >>> if not is_valid:
-        ...     print(f"Validation failed: {msg}")
-    """
-    if not layer_dir.exists():
-        return False, f"Layer directory does not exist: {layer_dir}"
-
-    parquet_files = list(layer_dir.glob("**/*.parquet"))
-
-    if check_empty and len(parquet_files) == 0:
-        return False, f"Layer directory is empty: {layer_dir}"
-
-    if expected_columns and parquet_files:
-        # Check first file for expected columns
-        try:
-            df = pl.scan_parquet(parquet_files[0])
-            actual_columns = set(df.columns)
-            expected_set = set(expected_columns)
-            missing = expected_set - actual_columns
-
-            if missing:
-                return False, f"Missing expected columns: {missing}"
-
-        except Exception as e:
-            return False, f"Error reading parquet file: {e}"
-
-    return True, "Validation passed"
-
-
-def count_records_in_layer(layer_dir: Path) -> int:
-    """Count total records in a medallion layer.
-
-    Args:
-        layer_dir: Path to the medallion layer directory
-
-    Returns:
-        Total number of records across all parquet files
-
-    Example:
-        >>> count = count_records_in_layer(Path("data/hmda/silver"))
-        >>> print(f"Total records: {count:,}")
-    """
     try:
-        lf = read_medallion_layer(layer_dir)
-        return lf.select(pl.count()).collect().item()
-    except Exception:
-        return 0
-
-
-def get_layer_file_stats(layer_dir: Path) -> dict[str, Any]:
-    """Get statistics about files in a medallion layer.
-
-    Args:
-        layer_dir: Path to the medallion layer directory
-
-    Returns:
-        Dictionary with file statistics
-
-    Example:
-        >>> stats = get_layer_file_stats(Path("data/hmda/silver"))
-        >>> print(f"Total files: {stats['num_files']}")
-        >>> print(f"Total size: {stats['total_size_mb']:.2f} MB")
-    """
-    parquet_files = list(layer_dir.glob("**/*.parquet"))
-
-    total_size = sum(f.stat().st_size for f in parquet_files)
-
-    return {
-        "num_files": len(parquet_files),
-        "total_size_bytes": total_size,
-        "total_size_mb": total_size / (1024 * 1024),
-        "total_size_gb": total_size / (1024 * 1024 * 1024),
-    }
+        lf.sink_parquet(
+            pl.PartitionBy(str(tmp_dir), key=partition_cols, include_key=include_key),
+            compression=compression,
+            mkdir=True,
+            **kwargs,
+        )
+        for produced in sorted(tmp_dir.rglob("*.parquet")):
+            final = output_dir / produced.relative_to(tmp_dir)
+            final.parent.mkdir(parents=True, exist_ok=True)
+            produced.rename(final)
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)

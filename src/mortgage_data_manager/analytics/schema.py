@@ -1,26 +1,23 @@
 """Harmonized loan-month schema and column constants for analytics.
 
-The analytics prepayment work operates on a single source-neutral loan-month
-grain harmonized from the GSE single-family datasets. Every row is one
-loan-month. The column-name constants here are imported by
-:mod:`analytics.panel`, :mod:`analytics.features`, and
-:mod:`analytics.estimated` so the panel/feature/model contracts never drift
-apart.
+The analytics prepayment and credit work operates on a single source-neutral
+loan-month grain. Every row is one loan-month. The column-name constants here
+are imported by `analytics.panel`, `analytics.features`, and
+`analytics.estimated` so the panel/feature/model contracts never drift apart.
 
-The harmonization maps the main package's FNMA **bronze** (SF Loan Performance,
-one merged orig+perf row per loan-month) and FHLMC **bronze** (separate
-origination + performance, joined on Loan Sequence Number) into this schema.
-The loan-month grain only exists at bronze in this package — FNMA silver is
-issuance-only and FHLMC silver is origination-only — so the panel adapter reads
-bronze directly (it still reuses the package's download/bronze work; it does
-not re-ingest).
+The panel is a projection of the combined loan-level masters: static attributes
+from ``combined/loan_issuance`` and the monthly history from
+``combined/loan_performance``, restricted to the GSE single-family disclosure
+universe. The maps at the bottom name the combined column behind each panel
+column; the harmonization itself (sentinels, code spaces, the representative
+credit score) is done once, in `combined`.
 """
 
 from __future__ import annotations
 
-from datetime import date
-
 import polars as pl
+
+from mortgage_data_manager.combined.loan_performance_schema import ZBC_CREDIT_EVENT_CODES
 
 # ---------------------------------------------------------------------------
 # Harmonized loan-month column names
@@ -54,7 +51,7 @@ MOD_FLAG = "mod_flag"
 ELTV = "eltv"
 
 #: Harmonized loan-month schema (column name -> Polars dtype).
-SILVER_SCHEMA: dict[str, pl.DataType] = {
+SILVER_SCHEMA: dict[str, type[pl.DataType] | pl.DataType] = {
     LOAN_ID: pl.String,
     AGENCY: pl.String,
     PERIOD: pl.Date,
@@ -90,10 +87,17 @@ SILVER_COLUMNS = list(SILVER_SCHEMA.keys())
 FNMA = "FNMA"
 FHLMC = "FHLMC"
 
+#: Zero-balance codes that are credit/default-driven terminal events (third-party
+#: sale, short sale / charge-off, REO disposition), as integers — the harmonized
+#: ``zero_bal_code`` column is Int32. Derived from the tri-agency taxonomy in
+#: `combined.loan_performance_schema` so the two definitions cannot drift.
+CREDIT_EVENT_ZB_CODES: frozenset[int] = frozenset(int(c) for c in ZBC_CREDIT_EVENT_CODES)
+
 # ---------------------------------------------------------------------------
 # Panel-level columns (added by analytics.panel)
 # ---------------------------------------------------------------------------
 Y = "y"
+Y_DEFAULT = "y_default"
 ORIG_QUARTER = "orig_quarter"
 MORTGAGE_RATE = "mortgage_rate"
 RATE_CHANGE_3M = "rate_change_3m"
@@ -119,118 +123,44 @@ MONTH_OF_YEAR = "month_of_year"
 VINTAGE_YEAR = "vintage_year"
 
 # ---------------------------------------------------------------------------
-# FNMA bronze (SF Loan Performance) -> harmonized columns
+# Combined masters -> harmonized columns
 # ---------------------------------------------------------------------------
-FNMA_COL_MAP: dict[str, str] = {
-    "Loan Identifier": LOAN_ID,
-    "Monthly Reporting Period": PERIOD,
-    "Origination Date": ORIG_DATE,
-    "Original Interest Rate": ORIG_RATE,
-    "Original UPB": ORIG_UPB,
-    "Original Loan Term": ORIG_TERM,
-    "Original Loan to Value Ratio (LTV)": ORIG_LTV,
-    "Original Combined Loan to Value Ratio (CLTV)": ORIG_CLTV,
-    "Borrower Credit Score at Origination": FICO,
-    "Debt-To-Income (DTI)": DTI,
-    "Loan Purpose": LOAN_PURPOSE,
-    "Property Type": PROPERTY_TYPE,
-    "Occupancy Status": OCCUPANCY,
-    "Channel": CHANNEL,
-    "Number of Borrowers": NUM_BORROWERS,
-    "First Time Home Buyer Indicator": FIRST_TIME_BUYER,
-    "Number of Units": NUM_UNITS,
-    "Property State": STATE,
-    "First Payment Date": FIRST_PAYMENT_DATE,
-    "Current Actual UPB": CURRENT_UPB,
-    "Current Interest Rate": CURRENT_RATE,
-    "Loan Age": LOAN_AGE,
-    "Current Loan Delinquency Status": DLQ_STATUS,
-    "Zero Balance Code": ZERO_BAL_CODE,
-    "Modification Flag": MOD_FLAG,
+#: ``combined/loan_issuance`` source datasets the panel draws on: the GSE
+#: single-family disclosures (the UMBS-only and HARP universes are excluded).
+PANEL_SOURCE_DATASETS: dict[str, str] = {FNMA: "fnma_sf_perf", FHLMC: "fhlmc_sf_orig"}
+
+#: ``combined/loan_issuance`` column -> harmonized static column.
+ISSUANCE_COL_MAP: dict[str, str] = {
+    "loan_key": LOAN_ID,
+    "agency": AGENCY,
+    "origination_date": ORIG_DATE,
+    "note_rate": ORIG_RATE,
+    "original_upb": ORIG_UPB,
+    "loan_term": ORIG_TERM,
+    "ltv": ORIG_LTV,
+    "cltv": ORIG_CLTV,
+    "representative_credit_score": FICO,
+    "dti": DTI,
+    "loan_purpose": LOAN_PURPOSE,
+    "property_type": PROPERTY_TYPE,
+    "occupancy": OCCUPANCY,
+    "channel": CHANNEL,
+    "number_of_borrowers": NUM_BORROWERS,
+    "first_time_homebuyer": FIRST_TIME_BUYER,
+    "number_of_units": NUM_UNITS,
+    "property_state": STATE,
+    "first_payment_date": FIRST_PAYMENT_DATE,
 }
 
-# FHLMC origination bronze -> harmonized columns.
-FHLMC_ORIG_COL_MAP: dict[str, str] = {
-    "Loan Sequence Number": LOAN_ID,
-    "Credit Score": FICO,
-    "First Payment Date": FIRST_PAYMENT_DATE,
-    "First Time Homebuyer Flag": FIRST_TIME_BUYER,
-    "Original Combined Loan-to-Value (CLTV)": ORIG_CLTV,
-    "Original Debt-to-Income (DTI) Ratio": DTI,
-    "Original UPB": ORIG_UPB,
-    "Original Loan-to-Value (LTV)": ORIG_LTV,
-    "Original Interest Rate": ORIG_RATE,
-    "Channel": CHANNEL,
-    "Property State": STATE,
-    "Property Type": PROPERTY_TYPE,
-    "Loan Purpose": LOAN_PURPOSE,
-    "Original Loan Term": ORIG_TERM,
-    "Number of Borrowers": NUM_BORROWERS,
-    "Number of Units": NUM_UNITS,
-    "Occupancy Status": OCCUPANCY,
+#: ``combined/loan_performance`` column -> harmonized monthly column. ``period``,
+#: ``zero_bal_code`` and ``mod_flag`` are derived in the panel builder
+#: (``reporting_period``, ``event_raw_code`` and ``modification_flag``).
+PERFORMANCE_COL_MAP: dict[str, str] = {
+    "loan_key": LOAN_ID,
+    "agency": AGENCY,
+    "current_upb": CURRENT_UPB,
+    "current_interest_rate": CURRENT_RATE,
+    "loan_age": LOAN_AGE,
+    "delinquency_months": DLQ_STATUS,
+    "estimated_ltv": ELTV,
 }
-
-# FHLMC performance bronze -> harmonized columns.
-FHLMC_PERF_COL_MAP: dict[str, str] = {
-    "Loan Sequence Number": LOAN_ID,
-    "Monthly Reporting Period": PERIOD,
-    "Current Actual UPB": CURRENT_UPB,
-    "Current Loan Delinquency Status": DLQ_STATUS,
-    "Loan Age": LOAN_AGE,
-    "Modification Flag": MOD_FLAG,
-    "Zero Balance Code": ZERO_BAL_CODE,
-    "Current Interest Rate": CURRENT_RATE,
-    "Estimated Loan-to-Value (ELTV)": ELTV,
-}
-
-#: FHLMC sentinel values mapped to null during harmonization.
-FHLMC_SENTINELS: dict[str, list[int]] = {
-    FICO: [9999],
-    DTI: [999],
-    ORIG_CLTV: [999],
-    ORIG_LTV: [999],
-}
-
-#: Loan-purpose harmonization: FHLMC 'N' (no-cash-out refi) -> 'R' (rate-term).
-LOAN_PURPOSE_MAP: dict[str, str] = {
-    "P": "P",  # Purchase
-    "C": "C",  # Cash-out refinance
-    "R": "R",  # Rate-term refinance (FNMA)
-    "N": "R",  # No-cash-out refinance (FHLMC) -> rate-term refi
-}
-
-
-def parse_mmyyyy(s: str | None) -> date | None:
-    """Parse an FNMA ``MMYYYY`` date string to the first of that month.
-
-    Args:
-        s: A 6-character ``MMYYYY`` string, or None.
-
-    Returns:
-        The first-of-month date, or None if the string is missing/malformed.
-    """
-    if s is None or len(s) < 6:
-        return None
-    try:
-        return date(int(s[2:]), int(s[:2]), 1)
-    except (ValueError, IndexError):
-        return None
-
-
-def validate_silver(df: pl.DataFrame) -> None:
-    """Check that a DataFrame conforms to the harmonized loan-month schema.
-
-    Args:
-        df: The harmonized DataFrame to validate.
-
-    Raises:
-        ValueError: If schema columns are missing.
-        TypeError: If a column has an unexpected dtype.
-    """
-    missing = set(SILVER_COLUMNS) - set(df.columns)
-    if missing:
-        raise ValueError(f"Harmonized schema missing columns: {missing}")
-    for col, expected in SILVER_SCHEMA.items():
-        actual = df.schema[col]
-        if actual != expected:
-            raise TypeError(f"Column '{col}': expected {expected}, got {actual}")

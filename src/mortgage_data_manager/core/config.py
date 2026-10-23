@@ -19,11 +19,14 @@ def _default_schemas_dir(project_dir: Path) -> str:
     Source tree / editable install: ``<project>/schemas`` (alongside the repo). Built
     wheel: the packaged copy at ``mortgage_data_manager/_schemas`` (shipped via the hatch
     build hook in pyproject). An explicit ``MORTGAGE_DATA_SCHEMAS_DIR`` env var overrides both.
+
+    Returns:
+        The resolved schemas root, as a string.
     """
-    repo_schemas = project_dir / 'schemas'
+    repo_schemas = project_dir / "schemas"
     if repo_schemas.is_dir():
         return str(repo_schemas)
-    packaged = Path(__file__).resolve().parents[1] / '_schemas'
+    packaged = Path(__file__).resolve().parents[1] / "_schemas"
     if packaged.is_dir():
         return str(packaged)
     return str(repo_schemas)
@@ -46,6 +49,8 @@ class MortgageDataConfig:
         DOWNLOAD_PAUSE: Pause between batch downloads in seconds (default: 5.0)
         DOWNLOAD_CHUNK_SIZE: Chunk size for streaming downloads (default: 8192)
         DOWNLOAD_BACKOFF_FACTOR: Exponential backoff multiplier (default: 2.0)
+        DOWNLOAD_LEDGER_DIR: Directory holding the per-source raw download ledgers
+            (default: MORTGAGE_DATA_DIR/download_ledger)
 
     Example:
         >>> from mortgage_data_manager.core.config import MortgageDataConfig
@@ -57,51 +62,49 @@ class MortgageDataConfig:
     # Default user agent for HTTP requests. The Chrome-mimicking default is
     # deliberate: some scraped sources treat bot-style user agents differently.
     USER_AGENT: str = config(
-        'MORTGAGE_DATA_USER_AGENT',
-        default='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        "MORTGAGE_DATA_USER_AGENT",
+        default="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     )
 
     # Download configuration
-    DOWNLOAD_RETRIES: int = int(config('DOWNLOAD_RETRIES', default='3'))
-    DOWNLOAD_TIMEOUT: int = int(config('DOWNLOAD_TIMEOUT', default='30'))
-    DOWNLOAD_PAUSE: float = float(config('DOWNLOAD_PAUSE', default='5.0'))
-    DOWNLOAD_CHUNK_SIZE: int = int(config('DOWNLOAD_CHUNK_SIZE', default='8192'))
-    DOWNLOAD_BACKOFF_FACTOR: float = float(config('DOWNLOAD_BACKOFF_FACTOR', default='2.0'))
+    DOWNLOAD_RETRIES: int = int(config("DOWNLOAD_RETRIES", default="3"))
+    DOWNLOAD_TIMEOUT: int = int(config("DOWNLOAD_TIMEOUT", default="30"))
+    DOWNLOAD_PAUSE: float = float(config("DOWNLOAD_PAUSE", default="5.0"))
+    DOWNLOAD_CHUNK_SIZE: int = int(config("DOWNLOAD_CHUNK_SIZE", default="8192"))
+    DOWNLOAD_BACKOFF_FACTOR: float = float(config("DOWNLOAD_BACKOFF_FACTOR", default="2.0"))
 
     # Root directories
     PROJECT_DIR: Path = Path(
         config(
-            'MORTGAGE_DATA_PROJECT_DIR',
-            default=str(Path(__file__).resolve().parent.parent.parent.parent)
+            "MORTGAGE_DATA_PROJECT_DIR",
+            default=str(Path(__file__).resolve().parent.parent.parent.parent),
         )
     )
 
-    DATA_DIR: Path = Path(
-        config(
-            'MORTGAGE_DATA_DIR',
-            default=str(PROJECT_DIR / 'data')
-        )
+    DATA_DIR: Path = Path(config("MORTGAGE_DATA_DIR", default=str(PROJECT_DIR / "data")))
+
+    # Third-party reference data downloaded from outside any subpackage and shared across
+    # modules and matching workflows (Census tract relationships, the HMDA Lender File,
+    # macro series, ...), one subfolder per source; see ``core.reference``. Hand-maintained
+    # tables live under SCHEMAS_DIR instead, where git reviews them.
+    REFERENCE_DIR: Path = Path(
+        config("MORTGAGE_DATA_REFERENCE_DIR", default=str(DATA_DIR / "reference"))
     )
 
-    OUTPUT_DIR: Path = Path(
-        config(
-            'MORTGAGE_OUTPUT_DIR',
-            default=str(PROJECT_DIR / 'output')
-        )
+    # Append-only JSONL ledger of every raw acquisition, one file per source
+    # (see ``core.download_ledger``).
+    DOWNLOAD_LEDGER_DIR: Path = Path(
+        config("DOWNLOAD_LEDGER_DIR", default=str(DATA_DIR / "download_ledger"))
     )
+
+    OUTPUT_DIR: Path = Path(config("MORTGAGE_OUTPUT_DIR", default=str(PROJECT_DIR / "output")))
 
     SCHEMAS_DIR: Path = Path(
-        config(
-            'MORTGAGE_DATA_SCHEMAS_DIR',
-            default=_default_schemas_dir(PROJECT_DIR)
-        )
+        config("MORTGAGE_DATA_SCHEMAS_DIR", default=_default_schemas_dir(PROJECT_DIR))
     )
 
     CROSSWALK_DIR: Path = Path(
-        config(
-            'MORTGAGE_DATA_CROSSWALK_DIR',
-            default=str(PROJECT_DIR / 'crosswalk')
-        )
+        config("MORTGAGE_DATA_CROSSWALK_DIR", default=str(PROJECT_DIR / "crosswalk"))
     )
 
     # Private (proprietary, non-public) data roots. These mirror DATA_DIR and
@@ -110,46 +113,12 @@ class MortgageDataConfig:
     # ``private/`` folder as a safety net, but are meant to be overridden to an
     # EXTERNAL location (e.g. a private volume) via the env vars below.
     PRIVATE_DATA_DIR: Path = Path(
-        config(
-            'MORTGAGE_PRIVATE_DATA_DIR',
-            default=str(PROJECT_DIR / 'private' / 'data')
-        )
+        config("MORTGAGE_PRIVATE_DATA_DIR", default=str(PROJECT_DIR / "private" / "data"))
     )
 
     PRIVATE_CROSSWALK_DIR: Path = Path(
-        config(
-            'MORTGAGE_PRIVATE_CROSSWALK_DIR',
-            default=str(PROJECT_DIR / 'private' / 'crosswalk')
-        )
+        config("MORTGAGE_PRIVATE_CROSSWALK_DIR", default=str(PROJECT_DIR / "private" / "crosswalk"))
     )
-
-    @classmethod
-    def get_subpackage_crosswalk_dir(cls, subpackage: str) -> Path:
-        """Get crosswalk directory for a specific subpackage.
-
-        Args:
-            subpackage: Name of the subpackage (e.g., 'fha_gnma', 'mbs_umbs')
-
-        Returns:
-            Path to the subpackage's crosswalk directory
-        """
-        return cls.CROSSWALK_DIR / subpackage
-
-    @classmethod
-    def get_subpackage_schemas_dir(cls, subpackage: str) -> Path:
-        """Get schemas directory for a specific subpackage.
-
-        Args:
-            subpackage: Name of the subpackage (e.g., 'gnma', 'fhfa')
-
-        Returns:
-            Path to the subpackage's schemas directory
-
-        Example:
-            >>> MortgageDataConfig.get_subpackage_schemas_dir('gnma')
-            PosixPath('/Users/username/mortgage_data_manager/schemas/gnma')
-        """
-        return cls.SCHEMAS_DIR / subpackage
 
     @classmethod
     def get_subpackage_data_dir(cls, subpackage: str) -> Path:
@@ -192,7 +161,7 @@ class MortgageDataConfig:
     def get_private_subpackage_data_dir(cls, subpackage: str) -> Path:
         """Get the data directory for a proprietary (non-public) subpackage.
 
-        Mirrors :meth:`get_subpackage_data_dir` but roots under
+        Mirrors `get_subpackage_data_dir` but roots under
         ``PRIVATE_DATA_DIR`` so proprietary data lives outside the public
         repository. Override ``MORTGAGE_PRIVATE_DATA_DIR`` to an external path.
 
@@ -238,23 +207,16 @@ class MortgageDataConfig:
         return cls.PRIVATE_CROSSWALK_DIR / workflow
 
     @classmethod
-    def ensure_directories(cls, subpackage: str | None = None) -> None:
-        """Create necessary directories if they don't exist.
+    def ensure_directories(cls) -> None:
+        """Create the data root if it doesn't exist.
 
-        Args:
-            subpackage: If provided, create medallion directories for this
-                subpackage. If None, only create root directories.
+        Subclasses override this no-arg classmethod to create their own per-dir
+        attributes; the signature never grows parameters.
 
         Example:
-            >>> MortgageDataConfig.ensure_directories('hmda')
-            >>> # Creates data/hmda/{raw,bronze,silver}
+            >>> MortgageDataConfig.ensure_directories()
         """
-        if subpackage:
-            base = cls.get_subpackage_data_dir(subpackage)
-            for stage in ["raw", "bronze", "silver"]:
-                (base / stage).mkdir(parents=True, exist_ok=True)
-        else:
-            cls.DATA_DIR.mkdir(parents=True, exist_ok=True)
+        cls.DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     @classmethod
     def get_project_root(cls) -> Path:
@@ -283,6 +245,4 @@ class MortgageDataConfig:
             cls.ensure_directories()
             return True
         except PermissionError as e:
-            raise PermissionError(
-                f"Cannot create directories due to insufficient permissions: {e}"
-            )
+            raise PermissionError(f"Cannot create directories due to insufficient permissions: {e}")

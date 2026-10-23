@@ -1,7 +1,7 @@
 """Top-level CLI for inspecting / managing the global geocoder cache.
 
-Subpackage callers (``mortgage-data ncua geocode-branches``, etc.) own the
-actual geocode workflow. This module just exposes cache operations.
+The source CLIs that geocode (as part of their ``silver`` step) own the actual
+geocode workflow. This module just exposes cache operations.
 """
 
 from __future__ import annotations
@@ -56,7 +56,9 @@ def cache_stats():
 @cache_app.command("purge")
 def cache_purge(
     provider: list[str] | None = typer.Option(None, "--provider", help="Provider(s) to purge"),
-    older_than: str | None = typer.Option(None, "--older-than", help="ISO date — purge rows cached before this date"),
+    older_than: str | None = typer.Option(
+        None, "--older-than", help="ISO date — purge rows cached before this date"
+    ),
     match_reason: list[str] | None = typer.Option(
         None,
         "--match-reason",

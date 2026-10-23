@@ -1,7 +1,6 @@
 """Declarative field plans for the GSE ``loan_performance`` + ``loan_terminations`` masters.
 
-The column allow-lists below are the ones the field-volatility investigation
-(``investigations/reports/investigation_perf_field_volatility_2026-06-26.md``)
+The column allow-lists below are the ones the field-volatility analysis
 proved are GENUINELY TIME-VARYING within a loan id — everything static lives once
 on ``loan_issuance`` and joins by ``loan_key``. Two outputs:
 
@@ -51,8 +50,8 @@ class TermField(TypedDict):
 #: Shared fields resolve **UMBS-first by default**: UMBS is both fresher (the SF panel
 #: is right-censored at the release frontier ~9mo) AND more complete -- the SF
 #: disclosure VALUE-MASKS small servicers/sellers as "Other" and suppresses
-#: forbearance/deferral fields to null, while UMBS discloses them (verified in
-#: ``investigation_sf_umbs_source_fidelity_2026-06-26``: UMBS rescues 100% of SF-masked
+#: forbearance/deferral fields to null, while UMBS discloses them (verified 2026-06-26
+#: on real data: UMBS rescues 100% of SF-masked
 #: servicer/seller rows; ``total_deferral_amount`` SF 96.5% null vs UMBS 0%). SF fills
 #: where UMBS is null (pre-2019-06 history). EXCEPTIONS resolve ``sf_first`` -- the
 #: fields where SF is the substantive source and UMBS (esp. FHLMC FU) is ~100% null:
@@ -221,3 +220,39 @@ ZBC_EVENT_TYPE: Final[dict[str, str]] = {
 }
 #: ZBC codes that are credit/default-driven terminal events (vs voluntary prepay).
 ZBC_CREDIT_EVENT_CODES: Final[frozenset[str]] = frozenset({"02", "03", "09"})
+
+#: Detailed per-agency ``event_type`` -> coarse TRI-AGENCY ``event_class``. The detailed
+#: vocabularies are disjoint by construction (GSE = ZBC-derived, GNMA = removal-reason-
+#: derived) and carry agency-specific nuance worth keeping; ``event_class`` is the level at
+#: which cross-agency pooling is safe. Consistent with ``is_credit_event``:
+#: ``event_class == 'credit_event'`` ⟺ ``is_credit_event`` (GSE ZBC 02/03/09; GNMA
+#: removal 2/3 — GNMA 4 loss-mitigation stays a separate ``workout_removal`` because it is
+#: excluded from the credit-event flag by the §4.8 resolution).
+EVENT_CLASS: Final[dict[str, str]] = {
+    # GSE (ZBC-derived event_type)
+    "prepaid_or_matured": "voluntary_payoff",
+    "third_party_sale": "credit_event",
+    "short_sale_or_chargeoff": "credit_event",
+    "reo_disposition": "credit_event",
+    "repurchase": "repurchase",
+    "note_sale": "loan_sale",
+    "reperforming_or_other_sale": "loan_sale",
+    "removal": "other_removal",
+    # GNMA (removal-reason-derived event_type)
+    "voluntary_prepay": "voluntary_payoff",
+    "dq_buyout": "credit_event",
+    "foreclosure_reo": "credit_event",
+    "loss_mit_workout": "workout_removal",
+    "substitution": "other_removal",
+    "other_removal": "other_removal",
+}
+
+#: "Not available / not applicable" codes that the GSE disclosures mix into otherwise
+#: Y/N/plan-letter code spaces ('7' is the MODAL value of the MI-cancellation and
+#: borrower-assistance columns, ~70-76% of rows). Normalized to null in the combined
+#: outputs. Pure yes/no
+#: indicators are normalized to Boolean at emit time (``builders._yn_bool``, which also
+#: nulls 7/9); this scrub list covers the remaining letter-coded columns.
+GSE_NA_CODES: Final[frozenset[str]] = frozenset({"7", "9"})
+#: Perf-panel columns carrying those N/A codes inside a richer letter code space.
+PERF_NA_CODE_COLUMNS: Final[tuple[str, ...]] = ("borrower_assistance_plan",)

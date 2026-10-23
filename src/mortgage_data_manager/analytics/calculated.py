@@ -3,8 +3,8 @@
 These metrics are computed directly from observed pool/loan data — given the
 inputs the output is exact. Two families live here:
 
-- **Rate primitives** — SMM/CPR/CDR conversions and balance-weighted rollups
-  that work on any loan- or pool-level frame.
+- **Rate primitives** — SMM/CPR/CDR conversions, balance-weighted rollups and
+  realized delinquency roll rates that work on any loan- or pool-level frame.
 - **Security-level prepayment** — net SMM/CPR from month-over-month UPB
   transitions, with the scheduled-principal amortization used by the agency
   MBS disclosure analyses (trend, incentive S-curve, seasoning ramp). These
@@ -12,7 +12,7 @@ inputs the output is exact. Two families live here:
   (FNMA ``FNM_MF`` / FHLMC ``FD`` Monthly Factor disclosure); they are
   grain-agnostic and operate on a security-by-month panel.
 
-Contrast with :mod:`analytics.estimated`, which forecasts future quantities
+Contrast with `analytics.estimated`, which forecasts future quantities
 and therefore requires a model.
 """
 
@@ -88,6 +88,12 @@ def conditional_default_rate(
     return 1.0 - (1.0 - dflt / perf) ** 12
 
 
+def _weighted_mean(value: pl.Expr, weight: pl.Expr) -> pl.Expr:
+    """Weight-averaged ``value``; a row's weight counts only where its value is observed."""
+    total = weight.filter(value.is_not_null()).sum()
+    return pl.when(total > 0).then((value * weight).sum() / total)
+
+
 def remaining_principal_balance(
     lf: pl.LazyFrame, *, by: list[str], balance_col: str = "current_upb"
 ) -> pl.LazyFrame:
@@ -113,6 +119,10 @@ def weighted_averages(
 ) -> pl.LazyFrame:
     """Balance-weighted pool characteristics (WAC, WAM/WARM, WALA, ...).
 
+    Each average runs over the loans where that characteristic is observed: a
+    loan missing a FICO contributes neither its score nor its balance to
+    ``wa_fico``, rather than being averaged in as zero.
+
     Args:
         lf: Loan-level LazyFrame with a weight column + characteristic columns.
         by: Grouping keys (e.g. pool, cohort, month).
@@ -120,14 +130,18 @@ def weighted_averages(
         weight_col: Weight (balance) column.
 
     Returns:
-        A LazyFrame of balance-weighted averages ``wa_{col}`` plus
-        ``total_balance`` by group.
+        A LazyFrame of balance-weighted averages ``wa_{col}`` (null where a group
+        has no observed value) plus ``total_balance`` by group.
     """
-    aggs = [
-        ((pl.col(c) * pl.col(weight_col)).sum() / pl.col(weight_col).sum()).alias(f"wa_{c}")
-        for c in value_cols
-    ]
-    return lf.group_by(by).agg(*aggs, pl.col(weight_col).sum().alias("total_balance")).sort(by)
+    w = pl.col(weight_col)
+    return (
+        lf.group_by(by)
+        .agg(
+            *(_weighted_mean(pl.col(c), w).alias(f"wa_{c}") for c in value_cols),
+            w.sum().alias("total_balance"),
+        )
+        .sort(by)
+    )
 
 
 def delinquency_transition_rates(
@@ -138,34 +152,41 @@ def delinquency_transition_rates(
     period_col: str = "period",
     status_col: str = "dlq_status",
 ) -> pl.LazyFrame:
-    """Realized delinquency-state transition rates between adjacent months.
+    """Realized delinquency-state transition (roll) rates between adjacent months.
 
-    Counts observed ``from_status -> to_status`` transitions across consecutive
-    monthly snapshots per loan — empirical, not modeled.
+    Counts observed ``from_status -> to_status`` transitions per loan —
+    empirical, not modeled. Only calendar-consecutive months pair up: a gap in a
+    loan's history breaks the chain rather than posing as a one-month roll, and
+    a null status is unobserved, not a state.
 
     Args:
         lf: Loan-level performance panel (loan x month with a status column).
         by: Additional grouping keys (besides from/to status).
         id_col: Loan identifier column.
-        period_col: Monthly period column.
+        period_col: Monthly period column, as a date (the analytics schema's ``period``).
         status_col: Delinquency-status column.
 
     Returns:
-        A LazyFrame with ``from_status``, ``to_status``, any ``by`` keys, the
+        A LazyFrame with any ``by`` keys, ``from_status``, ``to_status``, the
         transition ``count``, and the within-``from_status`` ``rate``.
     """
     by = by or []
-    lf = lf.sort([id_col, period_col]).with_columns(
-        pl.col(status_col).shift(1).over(id_col).alias("from_status")
-    )
-    lf = lf.filter(pl.col("from_status").is_not_null()).rename({status_col: "to_status"})
-    group_keys = [*by, "from_status", "to_status"]
-    denom_keys = [*by, "from_status"]
+    keys = [*by, "from_status", "to_status"]
+    month = pl.col(period_col).dt.year() * 12 + pl.col(period_col).dt.month()
     return (
-        lf.group_by(group_keys)
+        lf.with_columns(
+            pl.col(status_col).shift(1).over(id_col, order_by=period_col).alias("from_status"),
+            (month - month.shift(1).over(id_col, order_by=period_col)).alias("_step"),
+        )
+        .filter(pl.col("_step") == 1)
+        .rename({status_col: "to_status"})
+        .drop_nulls(["from_status", "to_status"])
+        .group_by(keys)
         .agg(pl.len().alias("count"))
-        .with_columns((pl.col("count") / pl.col("count").sum().over(denom_keys)).alias("rate"))
-        .sort(group_keys)
+        .with_columns(
+            (pl.col("count") / pl.col("count").sum().over(*by, "from_status")).alias("rate")
+        )
+        .sort(keys)
     )
 
 
@@ -281,7 +302,7 @@ def weighted_net_cpr(
     a loan-age key it is the seasoning ramp.
 
     Args:
-        smm_panel: Output of :func:`security_smm` (joined to any grouping keys).
+        smm_panel: Output of `security_smm` (joined to any grouping keys).
         by: Grouping keys.
         smm_col: SMM column.
         weight_col: Scheduled-balance weight column.
@@ -293,11 +314,9 @@ def weighted_net_cpr(
     return (
         smm_panel.group_by(by)
         .agg(
-            ((pl.col(smm_col) * pl.col(weight_col)).sum() / pl.col(weight_col).sum()).alias(
-                "weighted_smm"
-            ),
+            _weighted_mean(pl.col(smm_col), pl.col(weight_col)).alias("weighted_smm"),
             pl.col(weight_col).sum().alias("total_balance"),
         )
-        .with_columns((1.0 - (1.0 - pl.col("weighted_smm")) ** 12).alias("net_cpr"))
+        .with_columns(smm_to_cpr(pl.col("weighted_smm")).alias("net_cpr"))
         .sort(by)
     )

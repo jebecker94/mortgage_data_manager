@@ -1,0 +1,2118 @@
+{
+  "prefix": "hplatmonPS",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "02": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 02",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "eligible_non_borrowing_spouse_upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "Eligible Non-Borrowing Spouse UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "eligible_non_borrowing_spouse_upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "Eligible Non-Borrowing Spouse UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "remaining_property_charges_set_aside_upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "Remaining Property Charges Set Aside UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "remaining_property_charges_set_aside_upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "Remaining Property Charges Set Aside UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "03": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 03",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "payment_option",
+          "arrow_type": "int64",
+          "pdf_text": "Payment Option",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "04": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 04",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "property_type",
+          "arrow_type": "int64",
+          "pdf_text": "Property Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "05": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 05",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "age_of_youngest_borrower_co_borrower",
+          "arrow_type": "int64",
+          "pdf_text": "Age of Youngest Borrower/Co- borrower",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "06": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 06",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "age_of_youngest_eligible_non_borrowing_spouse",
+          "arrow_type": "int64",
+          "pdf_text": "Age of Youngest Eligible Non- Borrowing Spouse",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "07": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 07",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "msa",
+          "arrow_type": "int64",
+          "pdf_text": "MSA",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "08": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 08",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "state_code",
+          "arrow_type": "string",
+          "pdf_text": "State Code",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "09": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 09",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "loan_purpose",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Purpose",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 10",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "hecm_saver",
+          "arrow_type": "string",
+          "pdf_text": "HECM Saver",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "11": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 11",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "low_and_moderate_borrower_income",
+          "arrow_type": "string",
+          "pdf_text": "Low and Moderate Borrower Income",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "12": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 12",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6,
+              "format": "Col4"
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "not_available",
+          "arrow_type": "int64",
+          "pdf_text": "Not Available",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "13": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 13",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "joint_single_loan_indicator",
+          "arrow_type": "int64",
+          "pdf_text": "Joint/Single Loan Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "youngest_borrower_co_borrower_sex",
+          "arrow_type": "string",
+          "pdf_text": "Youngest Borrower/Co-borrower Sex",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "14": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = 14",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "rural_area",
+          "arrow_type": "string",
+          "pdf_text": "Rural Area",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "upb_of_participations_as_of_pool_upb",
+          "arrow_type": "float64",
+          "pdf_text": "UPB of Participations as % of Pool UPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        }
+      ]
+    },
+    "PHP": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PHP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "create_date",
+          "arrow_type": "string",
+          "pdf_text": "Create Date",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "PHS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PHS",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "create_date",
+          "arrow_type": "string",
+          "pdf_text": "Create Date",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMM\nDD"
+            }
+          ]
+        }
+      ]
+    },
+    "PPS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PPS",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "index_type",
+          "arrow_type": "string",
+          "pdf_text": "Index Type",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 5
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "string",
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "pool_maturity_date",
+          "arrow_type": "string",
+          "pdf_text": "Pool Maturity Date",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "original_aggregate_amount",
+          "arrow_type": "float64",
+          "pdf_text": "Original Aggregate Amount",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "pool_unpaid_principal_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Pool Unpaid Principal Balance",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "security_rpb",
+          "arrow_type": "float64",
+          "pdf_text": "Security RPB",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "rpb_factor",
+          "arrow_type": "float64",
+          "pdf_text": "RPB Factor",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 10,
+              "format": "1.8"
+            }
+          ]
+        },
+        {
+          "id": "unpaid_principal_balance_of_participations_with_payments",
+          "arrow_type": "float64",
+          "pdf_text": "Unpaid Principal Balance of Participations with Payments",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "percent_of_upb_paid_off",
+          "arrow_type": "float64",
+          "pdf_text": "Percent of UPB Paid Off",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 6,
+              "format": "3.2"
+            }
+          ]
+        },
+        {
+          "id": "average_original_participation_size",
+          "arrow_type": "float64",
+          "pdf_text": "Average Original Participation Size (AOPS)",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 9,
+              "format": "6.2"
+            }
+          ]
+        },
+        {
+          "id": "current_period_average_balance",
+          "arrow_type": "float64",
+          "pdf_text": "Current Period Average Balance",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 16,
+              "max_length": 14,
+              "format": "11.2"
+            }
+          ]
+        },
+        {
+          "id": "original_security_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Original Security Interest Rate (WAC)",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 17,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "current_security_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Current Security Interest Rate (WAC)",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 18,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "prospective_security_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "Prospective Security Interest Rate",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 19,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_loan_age_of_the_participations",
+          "arrow_type": "int64",
+          "pdf_text": "WA Loan Age (WALA) of the Participations",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 20,
+              "max_length": 3,
+              "format": "9(3)"
+            }
+          ]
+        },
+        {
+          "id": "wa_expected_mortgage_interest_rate",
+          "arrow_type": "float64",
+          "pdf_text": "WA Expected Mortgage Interest Rate",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 21,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        }
+      ]
+    },
+    "PTP": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PTP",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_create_date",
+          "arrow_type": "string",
+          "pdf_text": "File Create Date",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "detail_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Detail Record Count",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 8
+            }
+          ]
+        }
+      ]
+    },
+    "PTS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2024-11",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = PTS",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_create_date",
+          "arrow_type": "string",
+          "pdf_text": "File Create Date",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "detail_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Detail Record Count",
+          "layouts": [
+            {
+              "from": "2024-11",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 12
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

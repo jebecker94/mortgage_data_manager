@@ -5,120 +5,89 @@ API reference for the GNMA (Ginnie Mae) subpackage.
 ## Module Structure
 
 ```
-mortgage_data_manager.gnma
-├── config          # GNMAConfig, ProcessorConfig, DownloadConfig, SchemaReaderConfig
-├── download        # Data and schema file downloads
+mortgage_data_manager.sources.gnma
+├── config          # GNMAConfig, ProcessorConfig, DownloadConfig
+├── download        # Data and schema-PDF downloads
 ├── import_bronze   # Raw → Bronze (ZIP/TXT to parquet)
-├── import_silver   # Bronze → Silver (parquet to structured)
-├── schemas/        # PDF extraction, COBOL parsing, schema combination
+├── import_silver   # Bronze → Silver, via the canonical schemas
+├── canonical       # Canonical schema model, decode and validators
 ├── performance     # Loan-level performance analysis
 ├── pipeline        # Orchestrated pipelines
 └── cli             # Command-line interface
 ```
 
+Silver is built **only** from `schemas/gnma/canonical/{prefix}.json`.
+
 ---
 
 ## Configuration
 
-### `GNMAConfig`
-
-**Module:** `mortgage_data_manager.gnma.config`
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `GNMA_DATA_DIR` | `Path` | Root GNMA data directory |
-| `GNMA_RAW_DIR` | `Path` | Raw downloads |
-| `GNMA_BRONZE_DIR` | `Path` | Staged parquet files |
-| `GNMA_SILVER_DIR` | `Path` | Transformed data |
-| `GNMA_SCHEMAS_DIR` | `Path` | Schema files directory |
-| `GNMA_PREFIX_DICTIONARY` | `Path` | Prefix dictionary YAML |
-| `GNMA_SCHEMA_COMBINED_DIR` | `Path` | Combined schema CSVs |
-
-All paths support environment variable overrides (e.g., `GNMA_DATA_DIR`).
-
-### Config Dataclasses
-
-| Class | Purpose | Key Attributes |
-|-------|---------|----------------|
-| `DownloadConfig` | Data/schema downloads | `email_value`, `id_value`, `data_download_folder` |
-| `ProcessorConfig` | Bronze/silver processing | `raw_folder`, `bronze_folder`, `silver_folder`, `schemas_folder` |
-| `SchemaReaderConfig` | PDF schema extraction | `schemas_folder`, `prefix_file` |
+::: mortgage_data_manager.sources.gnma.config
 
 ---
 
-## Import Functions
+## Download
 
-### Bronze Layer (`import_bronze`)
-
-**Module:** `mortgage_data_manager.gnma.import_bronze`
-
-| Function | Description |
-|----------|-------------|
-| `import_zip_to_parquet()` | Convert ZIP to parquet |
-| `import_txt_to_parquet()` | Convert TXT to parquet |
-| `import_prefix_bronze()` | Import all files for a prefix |
-| `import_all_bronze()` | Import all prefixes |
-
-### Silver Layer (`import_silver`)
-
-**Module:** `mortgage_data_manager.gnma.import_silver`
-
-| Function | Description |
-|----------|-------------|
-| `import_prefix_silver()` | Transform prefix to silver |
-| `import_file_silver()` | Transform single file |
-| `transform_fixed_width()` | Parse fixed-width format |
-| `transform_delimited()` | Parse delimited format |
-| `load_schema_by_record_type()` | Load schema grouped by record type |
+::: mortgage_data_manager.sources.gnma.download
 
 ---
 
-## Schemas
+## Bronze layer
 
-**Module:** `mortgage_data_manager.gnma.schemas`
+::: mortgage_data_manager.sources.gnma.import_bronze
 
-Schema processing pipeline: PDF extraction → cleaning → combination.
+---
 
-| Submodule | Purpose |
-|-----------|---------|
-| `pdf_extraction` | Extract tables from PDF schema docs |
-| `cleaning` | Clean extracted data, add record types |
-| `cobol` | Parse COBOL format codes (e.g., `9(13)v9(2)`) |
-| `combination` | Merge schema versions across time |
-| `standardization` | Normalize field names |
-| `analysis` | Temporal coverage, format detection |
+## Silver layer
+
+::: mortgage_data_manager.sources.gnma.import_silver
+
+---
+
+## Canonical schemas
+
+::: mortgage_data_manager.sources.gnma.canonical
+
+---
+
+## Performance
+
+::: mortgage_data_manager.sources.gnma.performance
+
+---
+
+## Pipeline
+
+::: mortgage_data_manager.sources.gnma.pipeline
 
 ---
 
 ## CLI
 
-```bash
-# Download
-mortgage-data gnma download all monthly
-mortgage-data gnma download schemas monthly
+Commands, options and examples for `mortgage-data gnma` live in the
+[CLI Reference](../cli_reference.md#mortgage-data-gnma). `mortgage-data gnma --help` is
+authoritative.
 
-# Bronze (stage raw → parquet)
-mortgage-data gnma bronze monthly
+---
 
-# Silver (transform with schemas)
-mortgage-data gnma silver monthly
+## Prefixes
 
-# Schemas
-mortgage-data gnma schemas extract monthly
-mortgage-data gnma schemas pipeline monthly
-
-# Full pipeline (download + bronze + silver)
-mortgage-data gnma pipeline full monthly
-```
+Every GNMA command selects files by **prefix**. Two prefix facts the CLI reference
+does not carry:
 
 ### Common Prefixes
 
 | Prefix | Description |
 |--------|-------------|
-| `monthly` | Monthly disclosure data |
-| `llmon1` | Loan-level performance (MBS) |
-| `llmon2` | Loan-level performance (HMBS) |
-| `dailyllmni` | Daily loan-level data |
+| `llmon1` | MBS single-family portfolio, loan level, Ginnie I (2013-10 on) |
+| `llmon2` | MBS single-family portfolio, loan level, Ginnie II (2013-10 on); union it with `llmon1` for the whole portfolio |
+| `llmon` | Combined Ginnie I + II loan-level portfolio file (layout V2.0, 2026-01 on). No canonical schema yet, so no silver is built for it |
+| `dailyllmni` | MBS single-family monthly new issues, loan level (2013-09 on) |
+| `hllmon1` / `hllmon2` | HMBS portfolio, loan level: monthly-adjustable / fixed and annual-adjustable (2013-07 on) |
+| `monthly` | Legacy MBS portfolio, pool level, 2012-02 → 2020-10 |
+| `nissues` | Legacy pool-at-issuance header (record `D`), 2012-02 → 2021-04 — superseded by `nimonSFPS` PS from 2020-01, and the only source of Ginnie pool-at-issuance data before it |
+
+Coverage dates and descriptions for every prefix are in `schemas/gnma/prefix_dictionary.yaml`.
 
 ### Default-Download Opt-Out
 
@@ -134,24 +103,20 @@ are flagged with `default_download: false` in
 | `nimonSFS` | Pool supplemental — deterministic stratification of `dailyllmni` |
 | `hmonthlyS` | Pool supplemental — deterministic stratification of `hllmon1`+`hllmon2` |
 
-See `../notes/gnma.md` and the supporting investigation under
-`investigations/reports/` for validation.
-
 ---
 
 ## Data Structure
 
 ```
-data/gnma/
-├── raw/            # Downloaded ZIP/TXT files
-├── bronze/         # Staged parquet (text_content column)
-├── silver/         # Structured data by record type
-│   └── {prefix}/{record_type}/
-└── schemas/
-    ├── prefix_dictionary.yaml
-    ├── raw/        # Downloaded PDF schemas
-    ├── clean/      # Extracted CSVs
-    └── combined/   # Merged schemas (used by import_silver)
+{GNMA_DATA_DIR}/
+├── raw/{prefix}/            # Downloaded ZIP/TXT files, {prefix}_{YYYYMM}.zip
+├── bronze/{prefix}/         # Staged parquet, one text_content column per line
+└── silver/{prefix}/{record_type}/{prefix}_{YYYYMM}_{record_type}.parquet
+
+{GNMA_SCHEMAS_DIR}/          # schemas/gnma/ in the package
+├── prefix_dictionary.yaml
+├── canonical/               # Canonical per-prefix JSON (the only silver path)
+└── raw/{prefix}/            # Layout PDFs fetched by `mortgage-data gnma download`
 ```
 
 ---

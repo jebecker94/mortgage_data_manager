@@ -1,0 +1,67 @@
+File,Field Position,Attribute Name,Data Type & Format,Max Length
+Origination Data File,1,Classic FICO®,Numeric,4
+Origination Data File,2,First Payment Date,Date,6
+Origination Data File,3,First Time Homebuyer Indicator,Alpha,1
+Origination Data File,4,Maturity Date,Date,6
+Origination Data File,5,Metropolitan Statistical Area (MSA) Or Metropolitan Division,Numeric,5
+Origination Data File,6,Mortgage Insurance Percentage (MI %),Numeric,3
+Origination Data File,7,Number of Units,Numeric,2
+Origination Data File,8,Occupancy Status,Alpha,1
+Origination Data File,9,Original Combined Loan-to-Value (CLTV),Numeric,3
+Origination Data File,10,Original Debt-to-Income (DTI) Ratio,Numeric,3
+Origination Data File,11,Original UPB,Numeric,12
+Origination Data File,12,Original Loan-to-Value (LTV),Numeric,3
+Origination Data File,13,Original Interest Rate,"Numeric - 6,3",6
+Origination Data File,14,Channel,Alpha,1
+Origination Data File,15,Prepayment Penalty Indicator,Alpha,1
+Origination Data File,16,Amortization Type,Alpha,5
+Origination Data File,17,Property State,Alpha,2
+Origination Data File,18,Property Type,Alpha,2
+Origination Data File,19,Postal Code,Alpha,3
+Origination Data File,20,Loan Identifier,Alpha Numeric - PYYQnXXXXXXX,12
+Origination Data File,21,Loan Purpose,Alpha,1
+Origination Data File,22,Original Loan Term,Numeric,3
+Origination Data File,23,Number of Borrowers,Numeric,2
+Origination Data File,24,Seller Name,Alpha Numeric,60
+Origination Data File,25,Super Conforming Flag,Alpha,1
+Origination Data File,26,Pre-HARP Loan Sequence Number,Alpha Numeric - PYYQnXXXXXXX,12
+Origination Data File,27,Special Eligibility Program,Alpha Numeric,1
+Origination Data File,28,HARP Indicator,Alpha,1
+Origination Data File,29,Property Valuation Method,Numeric,1
+Origination Data File,30,Interest Only (I/O) Indicator,Alpha,1
+Origination Data File,31,VantageScore® 4.0,Numeric,4
+Monthly Performance Data File,1,Loan Identifier,Alpha Numeric - PYYQnXXXXXXX,12
+Monthly Performance Data File,2,Period,Date,6
+Monthly Performance Data File,3,Current Actual UPB,"Numeric - 12,2",12
+Monthly Performance Data File,4,Current Loan Delinquency Status,Alpha Numeric,3
+Monthly Performance Data File,5,Loan Age,Numeric ,3
+Monthly Performance Data File,6,Remaining Months to Legal Maturity,Numeric ,3
+Monthly Performance Data File,7,Underwriting Defect and Major Servicing Defect Settlement Date,Date,6
+Monthly Performance Data File,8,Modification Flag,Alpha,1
+Monthly Performance Data File,9,Zero Balance Code,Numeric,2
+Monthly Performance Data File,10,Zero Balance Effective Date,Date,6
+Monthly Performance Data File,11,Current Interest Rate,"Numeric - 8,3",8
+Monthly Performance Data File,12,Current Non-Interest Bearing UPB,Numeric,12
+Monthly Performance Data File,13,Due Date of Last Paid Installment (DDLPI),Date,6
+Monthly Performance Data File,14,MI Recoveries,"Numeric - 12,2",12
+Monthly Performance Data File,15,Net Sales Proceeds,Alpha-Numeric ,14
+Monthly Performance Data File,16,Non MI Recoveries,"Numeric - 12,2",12
+Monthly Performance Data File,17,Total Expenses,"Numeric - 12,2",12
+Monthly Performance Data File,18,Legal Costs,"Numeric - 12,2",12
+Monthly Performance Data File,19,Maintenance and Preservation Costs,"Numeric - 12,2",12
+Monthly Performance Data File,20,Taxes and Insurance,"Numeric - 12,2",12
+Monthly Performance Data File,21,Miscellaneous Expenses,"Numeric - 12,2",12
+Monthly Performance Data File,22,Actual Loss,"Numeric - 12,2",12
+Monthly Performance Data File,23,Cumulative Modification Costs,"Numeric - 12,2",12
+Monthly Performance Data File,24,Interest Rate Step Indicator,Alpha,1
+Monthly Performance Data File,25,Payment Deferral Flag,Alpha,1
+Monthly Performance Data File,26,Estimated Loan-to-Value (ELTV),Numeric,4
+Monthly Performance Data File,27,Zero Balance Removal UPB,"Numeric - 12,2",12
+Monthly Performance Data File,28,Delinquent Accrued Interest,"Numeric - 12,2",12
+Monthly Performance Data File,29,Delinquency Due to Disaster,Alpha,1
+Monthly Performance Data File,30,Borrower Assistance Plan,Alpha,1
+Monthly Performance Data File,31,Current Period Modification Costs,"Numeric - 12,2",12
+Monthly Performance Data File,32,Current Interest Bearing UPB,"Numeric - 12,2",12
+Monthly Performance Data File,33,Mortgage Insurance Cancellation Indicator,Alpha,1
+Monthly Performance Data File,34,Servicer Name,Alpha Numeric,60
+Monthly Performance Data File,35,Bankruptcy Cramdown Costs,"Numeric - 12,2",12

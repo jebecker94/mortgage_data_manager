@@ -3,7 +3,7 @@
 Detects servicer/issuer changes in the agency loan-level disclosures and
 aggregates them into a seller -> buyer -> transition-month event table. Two
 deterministic detection strategies, one per data shape (this is *calculated*
-analytics in the sense of :mod:`analytics.calculated` — given the inputs the
+analytics in the sense of `analytics.calculated` — given the inputs the
 output is exact):
 
 - **diff** (FNMA, FHLMC) -- the UMBS monthly loan-level files carry a per-month
@@ -14,7 +14,7 @@ output is exact):
 - **flag** (GNMA) -- the Ginnie loan-level files carry an explicit
   ``Seller Issuer ID`` populated *only* in the month a transfer occurs, so no
   month-over-month differencing is needed; one pass per month suffices. Issuer
-  IDs are resolved to names via :func:`resolve_gnma_issuer_names`.
+  IDs are resolved to names via `resolve_gnma_issuer_names`.
 
 Both strategies emit the same common schema (``servicer_from``,
 ``servicer_to``, ``transition_month``, ``n_loans``, ``total_upb``, and four
@@ -24,7 +24,7 @@ fraction definitions and the rebrand/transfer interpretation matrix.
 
 Because FNMA/FHLMC identify servicers by name only, corporate **rebrands**
 (Quicken -> Rocket) surface as spurious transfers; use
-:func:`analytics.servicer_names.add_servicer_parents` (or ``consolidate=True``)
+`analytics.servicer_names.add_servicer_parents` (or ``consolidate=True``)
 to fold variants under parent entities and flag the intercompany rows.
 
 The GNMA seller-side portfolio fractions are an **approximation**: the data
@@ -46,8 +46,8 @@ from mortgage_data_manager.analytics.config import AnalyticsConfig
 from mortgage_data_manager.analytics.servicer_names import add_servicer_parents
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import should_process_file
-from mortgage_data_manager.gnma.config import GNMAConfig
-from mortgage_data_manager.umbs.config import UMBSConfig
+from mortgage_data_manager.sources.gnma.config import GNMAConfig
+from mortgage_data_manager.sources.umbs.config import UMBSConfig
 
 logger = get_logger(__name__)
 
@@ -131,7 +131,7 @@ def detect_servicer_transfers_diff(
         upb_col: Current-UPB column.
 
     Returns:
-        A LazyFrame in the :data:`COMMON_COLUMNS` schema (unsorted).
+        A LazyFrame in the `COMMON_COLUMNS` schema (unsorted).
     """
     prev = prev.select(
         pl.col(loan_id_col),
@@ -202,13 +202,9 @@ def _run_diff(
         start = max(in_range[0] - 1, 0) if in_range else len(pairs)
     else:
         start = 0
-    selected = [
-        (f, m) for f, m in pairs[start:] if hi is None or m <= hi
-    ]
+    selected = [(f, m) for f, m in pairs[start:] if hi is None or m <= hi]
     if len(selected) < 2:
-        raise ValueError(
-            f"{spec.agency}: need >=2 monthly files in range; got {len(selected)}"
-        )
+        raise ValueError(f"{spec.agency}: need >=2 monthly files in range; got {len(selected)}")
 
     logger.info(
         "%s diff: %d files, %s -> %s (%d transitions)",
@@ -224,9 +220,7 @@ def _run_diff(
         selected[0][0], columns=[_DIFF_LOAN_COL, _DIFF_SERVICER_COL, _DIFF_UPB_COL]
     )
     for f, month in selected[1:]:
-        df_curr = pl.read_parquet(
-            f, columns=[_DIFF_LOAN_COL, _DIFF_SERVICER_COL, _DIFF_UPB_COL]
-        )
+        df_curr = pl.read_parquet(f, columns=[_DIFF_LOAN_COL, _DIFF_SERVICER_COL, _DIFF_UPB_COL])
         agg = detect_servicer_transfers_diff(
             df_prev.lazy(), df_curr.lazy(), transition_month=month
         ).collect()
@@ -243,12 +237,13 @@ def _run_diff(
 # GNMA flag strategy
 # ---------------------------------------------------------------------------
 _GNMA_FLOOR = "201504"  # Seller Issuer ID populated from Apr 2015
-_GN_ISSUER = "Issuer ID (including for loan packages in MIP pool)"
-_GN_SELLER = "Seller Issuer ID"
-_GN_UPB = "Unpaid Principal Balance (UPB of the loan)"
-_GN_POOL = "Pool ID"
-_GN_LOAN_NEW = "Disclosure Sequence Number (A sequence number unique to loan level)"
-_GN_LOAN_OLD = "Disclosure Sequence Number (A sequence number unique to loan level )"  # trailing space
+# Canonical GNMA silver ids (llmon1/llmon2 L). Canonical silver decodes at build, so
+# unpaid_principal_balance arrives as a real-USD Float64 (no manual /100 or string strip).
+_GN_ISSUER = "issuer_id"
+_GN_SELLER = "seller_issuer_id"
+_GN_UPB = "unpaid_principal_balance"
+_GN_POOL = "pool_id"
+_GN_LOAN = "disclosure_sequence_number"
 
 
 def resolve_gnma_issuer_names() -> pl.DataFrame:
@@ -270,13 +265,17 @@ def resolve_gnma_issuer_names() -> pl.DataFrame:
     frames: list[pl.DataFrame] = []
     # Older source first; later concat + last-wins dedup lets issrcutoff override.
     for f in sorted(nissues_dir.glob("*.parquet")):
+        lf = pl.scan_parquet(f)
+        cols = lf.collect_schema().names()
+        # Canonical silver names the fields snake_case (issuer_number/issuer_name); the
+        # retired legacy silver used the verbose PDF names. Accept whichever this file carries.
+        id_col = "issuer_number" if "issuer_number" in cols else "Issuer Number"
+        name_col = "issuer_name" if "issuer_name" in cols else "Issuer Name"
         frames.append(
-            pl.scan_parquet(f)
-            .select(
-                pl.col("Issuer Number").cast(pl.Utf8).str.strip_chars().alias("issuer_id"),
-                pl.col("Issuer Name").cast(pl.Utf8).alias("issuer_name"),
-            )
-            .collect()
+            lf.select(
+                pl.col(id_col).cast(pl.Utf8).str.strip_chars().alias("issuer_id"),
+                pl.col(name_col).cast(pl.Utf8).alias("issuer_name"),
+            ).collect()
         )
     for f in sorted(issrcutoff_dir.glob("*.parquet")):
         frames.append(
@@ -321,7 +320,7 @@ def detect_servicer_transfers_flag(
         month: One month's deduplicated llmon1+llmon2 L frame, with a numeric
             ``upb_dollars`` column already derived.
         transition_month: ``YYYYMM`` label for this month.
-        issuer_names: Output of :func:`resolve_gnma_issuer_names`, or ``None``.
+        issuer_names: Output of `resolve_gnma_issuer_names`, or ``None``.
         issuer_col: Current-issuer (buyer) ID column.
         seller_col: Seller-issuer ID column (the transfer flag).
         upb_col: Source UPB column name (retained for symmetry; the kernel uses
@@ -372,9 +371,11 @@ def detect_servicer_transfers_flag(
         .select(seller_col, "seller_total_n", "seller_total_upb")
     )
 
-    names = (issuer_names if issuer_names is not None else pl.DataFrame(
-        schema={"issuer_id": pl.Utf8, "issuer_name": pl.Utf8}
-    )).lazy()
+    names = (
+        issuer_names
+        if issuer_names is not None
+        else pl.DataFrame(schema={"issuer_id": pl.Utf8, "issuer_name": pl.Utf8})
+    ).lazy()
 
     return (
         agg.join(buyer_totals, on=issuer_col, how="left")
@@ -405,9 +406,7 @@ def detect_servicer_transfers_flag(
             how="left",
         )
         .with_columns(
-            pl.col("servicer_from").fill_null(
-                pl.format("ID:{}", pl.col("seller_issuer_id"))
-            ),
+            pl.col("servicer_from").fill_null(pl.format("ID:{}", pl.col("seller_issuer_id"))),
             pl.col("servicer_to").fill_null(pl.format("ID:{}", pl.col("issuer_id"))),
         )
         .select(
@@ -452,14 +451,13 @@ def _run_gnma_flag(*, min_month: int | None, max_month: int | None) -> pl.DataFr
         frames: list[pl.DataFrame] = []
         for f in files_by_month[month]:
             cols = pl.scan_parquet(f).collect_schema().names()
-            loan_col = _GN_LOAN_NEW if _GN_LOAN_NEW in cols else _GN_LOAN_OLD
-            if loan_col not in cols:
+            if _GN_LOAN not in cols:
                 continue
             frames.append(
                 pl.scan_parquet(f)
                 .select(
                     pl.col(_GN_POOL),
-                    pl.col(loan_col).alias("loan_seq"),
+                    pl.col(_GN_LOAN).alias("loan_seq"),
                     pl.col(_GN_ISSUER),
                     pl.col(_GN_SELLER),
                     pl.col(_GN_UPB),
@@ -472,10 +470,8 @@ def _run_gnma_flag(*, min_month: int | None, max_month: int | None) -> pl.DataFr
             pl.concat(frames, how="diagonal")
             .unique(subset=[_GN_POOL, "loan_seq"])
             .with_columns(
-                (
-                    pl.col(_GN_UPB).str.strip_chars().replace("", None).cast(pl.Float64, strict=False)
-                    / 100
-                ).alias("upb_dollars")
+                # Canonical silver already decodes UPB to real USD (Float64); no /100.
+                pl.col(_GN_UPB).cast(pl.Float64, strict=False).alias("upb_dollars")
             )
         )
         agg = detect_servicer_transfers_flag(
@@ -496,8 +492,11 @@ def _run_gnma_flag(*, min_month: int | None, max_month: int | None) -> pl.DataFr
 def _finalize(results: list[pl.DataFrame], *, gnma: bool = False) -> pl.DataFrame:
     """Concatenate per-period aggregates and sort by (month, n_loans desc)."""
     if not results:
-        cols = (["seller_issuer_id", "servicer_from", "issuer_id", "servicer_to"] + COMMON_COLUMNS[2:]
-                ) if gnma else COMMON_COLUMNS
+        cols = (
+            (["seller_issuer_id", "servicer_from", "issuer_id", "servicer_to"] + COMMON_COLUMNS[2:])
+            if gnma
+            else COMMON_COLUMNS
+        )
         return pl.DataFrame(schema={c: pl.Utf8 for c in cols})
     return pl.concat(results, how="diagonal").sort(
         ["transition_month", "n_loans"], descending=[False, True]
@@ -526,7 +525,7 @@ def detect_servicer_transfers(
         max_month: Latest transition month, as ``YYYYMM`` int. ``None`` = end.
         consolidate: If ``True``, attach parent/sector columns and an
             ``intercompany`` flag via
-            :func:`analytics.servicer_names.add_servicer_parents`.
+            `analytics.servicer_names.add_servicer_parents`.
         overwrite: Rebuild the persisted parquet even if it exists. When the
             full range is requested and the output exists, detection is skipped
             and the cached parquet returned unless ``overwrite``.
@@ -543,7 +542,9 @@ def detect_servicer_transfers(
     if agency not in ("FNMA", "FHLMC", "GNMA"):
         raise ValueError(f"Unknown agency {agency!r}; expected FNMA, FHLMC, or GNMA")
 
-    out_path = AnalyticsConfig.ANALYTICS_TRANSFERS_DIR / f"servicer_transfers_{agency.lower()}.parquet"
+    out_path = (
+        AnalyticsConfig.ANALYTICS_TRANSFERS_DIR / f"servicer_transfers_{agency.lower()}.parquet"
+    )
     full_range = min_month is None and max_month is None
     if write and full_range and not should_process_file(out_path, overwrite):
         logger.info("%s transfers exist at %s; loading (overwrite=False)", agency, out_path)
@@ -560,7 +561,7 @@ def detect_servicer_transfers(
         agency,
         df.height,
         int(df["n_loans"].sum()) if df.height else 0,
-        (df["total_upb"].sum() / 1e9) if df.height else 0.0,
+        (float(df["total_upb"].sum()) / 1e9) if df.height else 0.0,
     )
 
     if write:

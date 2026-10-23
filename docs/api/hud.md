@@ -1,496 +1,161 @@
-# HUD Crosswalk API Reference
+# HUD Multifamily API Reference
 
-API reference for the HUD (Department of Housing and Urban Development) USPS ZIP Code Crosswalk subpackage.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Crosswalk Types](#crosswalk-types)
-- [Census Vintage Boundaries](#census-vintage-boundaries)
-- [Configuration](#configuration)
-- [Download](#download)
-- [Loading Data](#loading-data)
-- [Allocation & Aggregation](#allocation--aggregation)
-- [Processing (Raw to Bronze)](#processing-raw-to-bronze)
-- [Validation](#validation)
-- [Migration](#migration)
-- [CLI](#cli)
-- [Data Structure](#data-structure)
-- [Common Pitfalls](#common-pitfalls)
-- [Best Practices](#best-practices)
+API reference for the HUD multifamily housing (`hud`) subpackage.
 
 ---
 
 ## Overview
+HUD publishes a family of FHA multifamily and assisted-housing extracts at
+<https://www.hud.gov/hud-partners/multifamily-data> as **monthly point-in-time
+Excel/Access snapshots**. This subpackage ingests the tabular extracts into the
+medallion layout. Eleven logical tables in two families, bridged by one key.
 
-The HUD subpackage provides tools for downloading, processing, and using HUD USPS ZIP Code Crosswalk files. These crosswalks map between ZIP codes and Census geographies (tracts, counties, CBSAs, congressional districts, and county subdivisions) using address-count ratios from the USPS.
+Distinct from the `usps_crosswalk` subpackage (HUD's USPS ZIP↔Census crosswalks) and the `fha`
+subpackage (single-family + HECM loan snapshots).
 
-The crosswalks are published quarterly by HUD and are essential for:
+### Insured family — FHA-number spine
 
-- Converting between ZIP-level and tract-level data (e.g., IRS income data to ACS-compatible tracts)
-- Bridging datasets that use different geographic identifiers (ZIP vs census tract)
-- Geographic allocation of aggregate statistics
-- Supporting matching workflows (e.g., FHA-HMDA matching uses ZIP-tract crosswalks to bridge FHA ZIP codes with HMDA census tracts)
+| Table | Source file | Rows | Grain / key |
+|---|---|---|---|
+| `insured_mortgages_active` | active_insured_mortgages.xlsx | 15,562 | `hud_project_number` (1/FHA#) |
+| `insured_mortgages_terminated` | terminated_insured_mortgages.xlsx | 58,616 | `hud_project_number` (disjoint from active) |
+| `section202_direct_loans` | 202_direct_loans.xlsx | 608 | `project_fha_number` (+suffix); **alphanumeric** FHA# |
+| `insured_active_addresses` | insured_active_addresses.xlsx | 18,787 | `property_id` + `fha_number` (bridge) |
 
-### Data Pipeline
+### Assisted family — `property_id` (REMS-id) spine
 
-The HUD pipeline uses a simplified medallion architecture:
+| Table | Source file | Rows | Grain / key |
+|---|---|---|---|
+| `sec8_contracts` | mf_assistance_sec8_contracts.xlsx | 24,309 | `contract_number` |
+| `sec8_properties` | mf_properties_assistance_sec8.xlsx | 23,610 | `property_id` |
+| `contract_rents_utility` | contracts_rent_utility.xlsx | 80,340 | (`property_id`,`contract_number`,bedroom); **two sheets unioned** |
+| `contract_renewals` | contract_renewal_all.xls | 24,309 | `contract_number` |
+| `portfolio_property` | active_portfolio_property.xlsx · sheet 1 | 36,873 | `property_id` (full active portfolio, superset) |
+| `portfolio_property_fha` | active_portfolio_property.xlsx · sheet 2 | 17,508 | `property_id` + `fha_number` (bridge) |
 
-1. **Raw**: Individual quarterly Parquet files downloaded from the HUD API (one file per type/year/quarter)
-2. **Bronze**: Combined longitudinal files (optional, for batch analysis)
+### Reference
 
-There is no silver or gold layer — the crosswalks are reference data, not transactional data, so the raw layer is the primary source of truth.
+| Table | Source file | Rows | Notes |
+|---|---|---|---|
+| `soa_codes` | soa_list.xlsx | 93 | Section-of-the-Act code → title lookup |
 
----
+`property_id` is the universal spine; `fha_number` links the insured subset (in the
+2026-06 snapshot, 21% of Section 8 properties and 47% of the active portfolio carry an FHA
+number). The
+property↔FHA bridge lives in `insured_active_addresses` and
+`portfolio_property_fha`. **Active and terminated insured mortgages are disjoint
+on FHA number**; Section 202 uses a disjoint alphanumeric project-number
+namespace.
 
-## Crosswalk Types
+### Medallion layout
 
-HUD publishes 12 crosswalk types organized into 6 bidirectional pairs:
-
-| ID | Name | From | To | Available From |
-|----|------|------|----|----------------|
-| 1 | `ZIP_TRACT` | ZIP | Census Tract | 2010 Q1 |
-| 2 | `ZIP_COUNTY` | ZIP | County | 2010 Q1 |
-| 3 | `ZIP_CBSA` | ZIP | Core-Based Statistical Area | 2010 Q1 |
-| 4 | `ZIP_CBSA_DIV` | ZIP | CBSA Division | 2017 Q4 |
-| 5 | `ZIP_CD` | ZIP | Congressional District | 2010 Q1 |
-| 6 | `TRACT_ZIP` | Census Tract | ZIP | 2010 Q1 |
-| 7 | `COUNTY_ZIP` | County | ZIP | 2010 Q1 |
-| 8 | `CBSA_ZIP` | CBSA | ZIP | 2010 Q1 |
-| 9 | `CBSA_DIV_ZIP` | CBSA Division | ZIP | 2017 Q4 |
-| 10 | `CD_ZIP` | Congressional District | ZIP | 2010 Q1 |
-| 11 | `ZIP_COUNTY_SUB` | ZIP | County Subdivision | 2018 Q2 |
-| 12 | `COUNTY_SUB_ZIP` | County Subdivision | ZIP | 2018 Q2 |
-
-### Why Both Directions?
-
-Both directions contain the same geographic pairs, but the **ratio denominators differ**:
-
-- **`ZIP_TRACT`**: Ratios represent the share of each ZIP's addresses in each tract. For a given ZIP, ratios sum to 1.0.
-- **`TRACT_ZIP`**: Ratios represent the share of each tract's addresses in each ZIP. For a given tract, ratios sum to 1.0.
-
-Use `ZIP_TRACT` when disaggregating ZIP-level data to tracts; use `TRACT_ZIP` when disaggregating tract-level data to ZIPs.
-
-### Ratio Columns
-
-Each crosswalk row includes four allocation ratios:
-
-| Column | Description | Use For |
-|--------|-------------|---------|
-| `res_ratio` | Residential address share | Population, housing, demographic data |
-| `bus_ratio` | Business address share | Employment, commercial, economic data |
-| `oth_ratio` | Other address share | PO boxes, group quarters |
-| `tot_ratio` | Total address share | General purpose |
-
-For a given source geography, the ratios within each column sum to approximately 1.0.
-
----
-
-## Census Vintage Boundaries
-
-HUD crosswalks use different Census geography definitions depending on the time period. Tract IDs are **not** comparable across vintages — the same numeric ID may refer to different geographic boundaries.
-
-| Vintage | Period | Notes |
-|---------|--------|-------|
-| 2000 Census | 2010 Q1 – 2011 Q4 | Original tract definitions |
-| 2010 Census | 2012 Q1 – 2022 Q4 | Tracts redrawn after 2010 Census |
-| 2020 Census | 2023 Q1 onwards | Tracts redrawn after 2020 Census |
-
-**Critical**: Never mix data from different census vintages in the same analysis without an explicit tract-to-tract vintage crosswalk.
-
-```python
-from mortgage_data_manager.hud import get_vintage_for_crosswalk
-
-get_vintage_for_crosswalk(2015, 1)  # 2010
-get_vintage_for_crosswalk(2023, 3)  # 2020
 ```
+{HUD_DATA_DIR}/
+├── raw/
+│   ├── active_insured_mortgages.xlsx        (10 source workbooks, friendly names)
+│   ├── ...
+│   └── dictionaries/
+│       └── ded_*.pdf                         (3 Data Element Dictionaries)
+├── bronze/
+│   └── <table>.parquet                       (snake_case, whitespace-stripped, snapshot-stamped)
+└── silver/
+    └── <table>.parquet                       (cleaned + normalized join keys)
+```
+
+The Access `.zip` HUD also offers is **intentionally not downloaded**: it
+bundles the same two Section 8 Excel extracts we already fetch plus a 65 MB
+`.accdb` — pure redundancy.
 
 ---
 
 ## Configuration
 
-### `HUDConfig`
-
-Configuration class for HUD crosswalk data management.
-
-**Module:** `mortgage_data_manager.hud.config`
-
-**Inherits from:** `MortgageDataConfig`
-
-#### Class Attributes
-
-| Attribute | Type | Description | Environment Variable |
-|-----------|------|-------------|---------------------|
-| `HUD_DATA_DIR` | `Path` | Root directory for HUD data | `HUD_DATA_DIR` |
-| `HUD_RAW_DIR` | `Path` | Raw data directory | `HUD_RAW_DIR` |
-| `HUD_BRONZE_DIR` | `Path` | Bronze layer directory | `HUD_BRONZE_DIR` |
-| `HUD_API_BASE_URL` | `str` | HUD API endpoint URL | — |
-| `HUD_API_KEY` | `str` | API bearer token | `HUD_API_KEY` |
-| `HUD_REQUEST_DELAY` | `float` | Seconds between API requests (1.0) | — |
-
-#### Example
-
-```python
-from mortgage_data_manager.hud.config import HUDConfig
-
-print(HUDConfig.HUD_RAW_DIR)     # data/hud/raw
-print(HUDConfig.HUD_BRONZE_DIR)  # data/hud/bronze
-
-HUDConfig.ensure_directories()
-```
-
-### API Key Setup
-
-Register for a free API key at [HUD USER](https://www.huduser.gov/hudapi/public/register?comingfrom=1) and set it in your `.env` file:
-
-```bash
-HUD_API_KEY=your_token_here
-```
+::: mortgage_data_manager.sources.hud.config
 
 ---
 
 ## Download
 
-### `download_all()`
-
-Downloads all 12 crosswalk types from the HUD API, from 2010 to the current quarter.
-
-**Module:** `mortgage_data_manager.hud.download`
-
-```python
-from mortgage_data_manager.hud.download import download_all
-
-download_all()                        # Download everything (skips existing)
-download_all(overwrite=True)          # Re-download all files
-download_all(min_year=2021)         # Only download 2021+
-```
-
-**Note:** The API `query=All` parameter only works reliably for 2021+ data. Pre-2021 requests may return 400 errors. If you need pre-2021 data, you may need to download it state-by-state or use the HUD USER web interface.
-
-### `download_crosswalk()`
-
-Downloads a single crosswalk file for a specific type/year/quarter.
-
-```python
-from mortgage_data_manager.hud.download import download_crosswalk
-
-data = download_crosswalk(type_id=1, year=2023, quarter=1, token="your_key")
-```
+::: mortgage_data_manager.sources.hud.download
 
 ---
 
-## Loading Data
+## Bronze layer
 
-All loading functions return Polars `LazyFrame` objects for memory-efficient query building.
-
-**Module:** `mortgage_data_manager.hud.load`
-
-### `load_crosswalk()`
-
-Load crosswalk data with optional year/quarter range filtering.
-
-```python
-from mortgage_data_manager.hud import load_crosswalk
-
-# Load a year range
-lf = load_crosswalk("ZIP_TRACT", min_year=2015, max_year=2020)
-
-# Load with quarter precision
-lf = load_crosswalk("ZIP_TRACT", min_year=2018, min_quarter=2, max_year=2019, max_quarter=3)
-
-# Collect to materialize
-df = lf.collect()
-```
-
-### `get_crosswalk_for_date()`
-
-Load crosswalk data for exactly one quarter.
-
-```python
-from mortgage_data_manager.hud import get_crosswalk_for_date
-
-lf = get_crosswalk_for_date("ZIP_TRACT", year=2020, quarter=1)
-df = lf.collect()  # 172,121 rows
-```
-
-### `load_crosswalk_by_vintage()`
-
-Load all data for a specific census geography vintage. Prevents accidentally mixing census geographies.
-
-```python
-from mortgage_data_manager.hud import load_crosswalk_by_vintage
-
-# All ZIP_TRACT data using 2010 census tracts (2012 Q1 – 2022 Q4)
-lf = load_crosswalk_by_vintage("ZIP_TRACT", vintage=2010)
-df = lf.collect()  # ~7.4M rows
-```
-
-### `get_vintage_for_crosswalk()`
-
-Returns the census vintage for a given year/quarter.
-
-```python
-from mortgage_data_manager.hud import get_vintage_for_crosswalk
-
-get_vintage_for_crosswalk(2019, 1)  # 2010
-get_vintage_for_crosswalk(2023, 1)  # 2020
-```
+::: mortgage_data_manager.sources.hud.import_bronze
 
 ---
 
-## Allocation & Aggregation
+## Silver layer
 
-Functions for redistributing data between geographies using crosswalk ratios.
-
-**Module:** `mortgage_data_manager.hud.allocate`
-
-### Disaggregation
-
-Splits source geography values across target geographies using ratios.
-
-```python
-from mortgage_data_manager.hud import allocate_to_tracts, allocate_to_zips
-import polars as pl
-
-# ZIP → Tract: distribute ZIP populations to tracts
-zip_data = pl.DataFrame({"zip": ["10001", "10002"], "population": [20000, 30000]})
-tract_data = allocate_to_tracts(zip_data, "population", year=2020, quarter=1)
-
-# Tract → ZIP: distribute tract demographics to ZIPs
-tract_data = pl.DataFrame({"tract": ["36061000100"], "median_income": [75000]})
-zip_data = allocate_to_zips(tract_data, "median_income", year=2020, quarter=1)
-```
-
-### Aggregation
-
-Allocates then groups by target geography to produce one row per target.
-
-```python
-from mortgage_data_manager.hud import aggregate_to_tracts, aggregate_to_zips
-
-# Sum ZIP populations by tract
-tract_pop = aggregate_to_tracts(zip_data, "population", 2020, 1, agg_method="sum")
-
-# Weighted mean of tract incomes by ZIP
-zip_income = aggregate_to_zips(tract_data, "median_income", 2020, 1, agg_method="weighted_mean")
-```
-
-### Choosing the Right Ratio
-
-| Data Type | Ratio Column | Examples |
-|-----------|-------------|----------|
-| Residential/demographic | `res_ratio` | Population, housing units, ACS variables |
-| Business/economic | `bus_ratio` | Employment counts, commercial permits |
-| General purpose | `tot_ratio` | When data type is mixed or unclear |
-
-### Extensive vs Intensive Variables
-
-| Variable Type | Aggregation Method | Examples |
-|---------------|-------------------|----------|
-| Extensive (counts, totals) | `agg_method="sum"` | Population, housing units, jobs |
-| Intensive (rates, averages) | `agg_method="weighted_mean"` | Median income, vacancy rate, price index |
+::: mortgage_data_manager.sources.hud.import_silver
 
 ---
 
-## Processing (Raw to Bronze)
+## Pipeline
 
-Combines quarterly raw files into unified longitudinal datasets.
-
-**Module:** `mortgage_data_manager.hud.import_bronze`
-
-```python
-from mortgage_data_manager.hud.import_bronze import process_all, process_crosswalk_type
-
-# Process all available types
-process_all(min_year=2010, max_year=2025)
-
-# Process a single type with optional CSV/Stata output
-process_crosswalk_type("ZIP_TRACT", min_year=2015, max_year=2024, save_csv=True)
-```
-
-The ZIP_TRACT type also produces a "rounded" variant that truncates ZIP codes to 3-digit prefixes for broader geographic matching.
+::: mortgage_data_manager.sources.hud.pipeline
 
 ---
 
-## Validation
+## Vintages & time-series value
+Every file is a monthly **point-in-time** snapshot and HUD republishes a single
+current file each month with **no historical archive** — so for any table whose
+value is mutating current-state, history can't be backfilled later: each month
+not captured is lost permanently. Bronze and silver overwrite `{table}.parquet` each
+month, so a panel requires archiving the raw workbooks per vintage. How much each table
+gains from that, assessed on the 2026-06 snapshot:
 
-Checks data integrity: file coverage, geographic code formats, and ratio consistency.
+| Table | Panel value | Why |
+|---|---|---|
+| `contract_rents_utility` | ★★★ highest | No date column at all — pure current rent / FMR / utility by bedroom; one snapshot = one period of the rent series. |
+| `sec8_contracts` | ★★★ high | Current rents, `rent_to_fmr_ratio`, status, current expiration mutate on renewal; contracts enter/exit. |
+| `insured_mortgages_active` | ★★★ high | `amoritized_principal_balance`, rate, holder, servicer are current-state; loans leave when terminated. UPB paydown + servicer/holder transfers unrecoverable. |
+| `sec8_properties` | ★★ mod-high | Only the *current* owner / mgmt agent is shown; prior owners lost without vintages. |
+| `portfolio_property` | ★★ mod-high | Current active portfolio; `is_*` financing/subsidy flags flip and properties enter/exit. |
+| `contract_renewals` | ★★ moderate | 1:1 with contracts → *current* renewal stage only, not a renewal log; vintages reconstruct the renewal-option sequence. |
+| `section202_direct_loans` | ★ moderate | Shrinking runoff roster of a legacy program (no new originations; endorsements 1967–2011) with ticking-down UPB. **Not** a strict superset — the latest file *loses* matured loans — but small and origination is in-band. |
+| `insured_mortgages_terminated` | ✗ low | Append-only/cumulative: `term_date` already spans 1939→2026 in one file, so the termination series is fully in-band. |
+| `insured_active_addresses` | ✗ low | Static address lookup for the current active set; no mutable quantity. |
+| `portfolio_property_fha` | ✗ low | Derivative property↔FHA join table. |
+| `soa_codes` | ✗ none | Reference dimension; `superceded_parent_*` columns already encode code lineage. |
 
-**Module:** `mortgage_data_manager.hud.validate`
-
-```python
-from mortgage_data_manager.hud.validate import validate_crosswalk
-
-result = validate_crosswalk("ZIP_TRACT")
-print(result)  # Shows missing files, geo code issues, ratio issues
-print(result.is_valid)  # True/False
-```
-
-### Validation Checks
-
-| Check | What It Verifies |
-|-------|-----------------|
-| File coverage | All expected quarterly files exist |
-| Geographic codes | String types, correct lengths, numeric-only characters |
-| Ratio sums | Ratios sum to ~1.0 per source geography |
-
----
-
-## Migration
-
-Converts between flat and Hive-partitioned storage formats.
-
-**Module:** `mortgage_data_manager.hud.migrate`
-
-```python
-from mortgage_data_manager.hud.migrate import migrate_all, detect_storage_format
-
-# Check current format
-fmt = detect_storage_format(HUDConfig.HUD_RAW_DIR / "ZIP_TRACT")  # "flat", "hive", "mixed", "empty"
-
-# Migrate raw to bronze with Hive partitioning
-migrate_all(
-    input_dir=HUDConfig.HUD_RAW_DIR,
-    output_dir=HUDConfig.HUD_BRONZE_DIR,
-    dry_run=True,  # Preview first
-)
-```
+Single-snapshot **event-style analysis** is supported without vintages wherever
+dates are in-band: endorsement / first-payment / maturity / termination dates
+(insured) and TRACS effective / expiration / renewal dates (assisted).
 
 ---
 
 ## CLI
-
-**Module:** `mortgage_data_manager.hud.cli.main`
-
-### `mortgage-data hud download`
-
-Download crosswalk data from the HUD API.
-
 ```bash
-mortgage-data hud download
-mortgage-data hud download --overwrite
-mortgage-data hud download --min-year 2021 --verbose
-```
-
-### `mortgage-data hud bronze`
-
-Process raw files into combined bronze datasets.
-
-```bash
+mortgage-data hud info                       # paths + logical-table registry + snapshots
+mortgage-data hud download                    # all workbooks + DED PDFs
+mortgage-data hud download -t sec8_contracts --overwrite
 mortgage-data hud bronze
-mortgage-data hud bronze --datasets ZIP_TRACT --datasets TRACT_ZIP
-mortgage-data hud bronze --min-year 2015 --max-year 2024 --csv
+mortgage-data hud silver --overwrite
+mortgage-data hud pipeline                    # download → bronze → silver
 ```
-
-### `mortgage-data hud validate`
-
-Validate data integrity.
-
-```bash
-mortgage-data hud validate
-mortgage-data hud validate ZIP_TRACT
-mortgage-data hud validate all --skip-ratios
-```
-
-### `mortgage-data hud migrate`
-
-Migrate between storage formats.
-
-```bash
-mortgage-data hud migrate status
-mortgage-data hud migrate migrate all --dry-run
-mortgage-data hud migrate migrate ZIP_TRACT --output-dir bronze
-mortgage-data hud migrate rollback ZIP_TRACT
-```
-
-### `mortgage-data hud info`
-
-Display configuration and crosswalk type information.
-
-```bash
-mortgage-data hud info
-```
-
----
-
-## Data Structure
-
-### Raw Layer
-
-- **Format**: Flat Parquet files, one per type/year/quarter
-- **Naming**: `{TYPE}_{YEAR}_Q{QUARTER}.parquet` (e.g., `ZIP_TRACT_2020_Q1.parquet`)
-- **Location**: `{HUD_RAW_DIR}/{TYPE}/`
-- **Schema**: Geographic codes as zero-padded strings, ratios as floats, plus `year`, `quarter`, `type_id`, `type_name` metadata columns
-
-### Bronze Layer
-
-- **Format**: Hive-partitioned Parquet or combined longitudinal files
-- **Structure**: `{TYPE}/year={YEAR}/quarter={QUARTER}/data.parquet`
-- **Location**: `{HUD_BRONZE_DIR}/{TYPE}/`
-
-### Schema
-
-| Column | Type | Description |
-|--------|------|-------------|
-| `zip` | `str` | 5-digit ZIP code (zero-padded) |
-| `geoid` | `str` | Target geography ID (length varies by type) |
-| `res_ratio` | `f64` | Residential address ratio |
-| `bus_ratio` | `f64` | Business address ratio |
-| `oth_ratio` | `f64` | Other address ratio |
-| `tot_ratio` | `f64` | Total address ratio |
-| `year` | `i64` | Data release year |
-| `quarter` | `i64` | Data release quarter (1–4) |
-| `type_id` | `i64` | Crosswalk type ID (1–12) |
-| `type_name` | `str` | Crosswalk type name |
-
-### Geographic Code Lengths
-
-| Geography | Column | Length | Format |
-|-----------|--------|--------|--------|
-| ZIP | `zip` | 5 | ZZZZZ |
-| Census Tract | `tract`/`geoid` | 11 | SS-CCC-TTTTTT (state-county-tract) |
-| County | `county`/`geoid` | 5 | SS-CCC (state-county) |
-| CBSA | `cbsa`/`geoid` | 5 | NNNNN |
-| Congressional District | `cd`/`geoid` | 4 | SS-DD (state-district) |
-| County Subdivision | `countysub`/`geoid` | 10 | SS-CCC-SSSSS |
 
 ---
 
 ## Common Pitfalls
-
-### Mixing Census Vintages
-
-Tract `36061000100` in 2015 (2010 Census) may have entirely different boundaries than `36061000100` in 2023 (2020 Census). Always use `load_crosswalk_by_vintage()` or check vintages with `get_vintage_for_crosswalk()` when working with tracts across time.
-
-### Pre-2021 API Limitations
-
-The HUD API's `query=All` parameter only works reliably for 2021+ data. Downloads for earlier years may fail with 400 errors. Check file coverage with `mortgage-data hud validate` after downloading.
-
-### Allocating Intensive Variables with Sum
-
-Using `agg_method="sum"` on rates or averages (e.g., median income) produces meaningless results. Use `"weighted_mean"` instead.
-
-### ZIP Codes Are Not Geographies
-
-ZIP codes are mail delivery routes, not areas. A ZIP can span multiple counties and states. The crosswalk ratios handle this, but be aware that ZIP-level analysis has inherent geographic imprecision.
-
----
-
-## Best Practices
-
-1. **Stay within vintage**: Don't mix 2010 and 2020 census tracts in the same analysis
-2. **Match your data**: Use crosswalks from the same period as your source data
-3. **Choose the right ratio**: `res_ratio` for demographic data, `bus_ratio` for economic data
-4. **Use lazy evaluation**: Build queries with `load_crosswalk()` and filter before calling `.collect()`
-5. **Validate after downloading**: Run `mortgage-data hud validate` to catch gaps
-6. **Use counties for long time series**: County boundaries are more stable than tracts across census vintages
-
----
-
-## See Also
-
-- [Core API](core.md) — Shared utilities and medallion architecture
-- [Configuration Guide](../configuration.md) — Environment variables and paths
-- [FHA-HMDA Matching](../matching/fha_hmda_matching.md) — Uses HUD ZIP-tract crosswalks to bridge FHA and HMDA geographies
-- [HUD USPS Crosswalk Files](https://www.huduser.gov/portal/datasets/usps_crosswalk.html) — Official data documentation
-- [HUD API Registration](https://www.huduser.gov/hudapi/public/register?comingfrom=1) — Get an API key
+- **Two FHA-number namespaces.** Insured mortgages / addresses / portfolio use
+  numeric zero-padded 8-char project numbers (`00011186`); Section 202 uses
+  alphanumeric ones (`000EH104`). They are disjoint — never blanket-coerce 202
+  numbers to integers. `fha_number_norm` zero-pads numerics and passes the
+  alphanumerics through unchanged.
+- **The SoA lookup is incomplete.** Codes appear in the data that are absent
+  from `soa_codes` — 7 in active insured, **62 in terminated** (decades of
+  retired program codes), 3 of the 202 codes. Treat the lookup as best-effort
+  enrichment, not an exhaustive dimension.
+- **Monthly snapshots, no history.** Every file is point-in-time with no
+  vintage column. To build a panel, archive `raw/` per vintage (the ledger's
+  `Last-Modified` and bronze `snapshot_date` anchor each). Event-style fields for longitudinal work: endorsement/maturity dates
+  and termination type/date (insured), TRACS effective/expiration and renewal
+  dates (assisted).
+- **Pervasive trailing whitespace.** HUD's fixed-width exports pad every string
+  field; bronze strips it, but anything joined against the *raw* workbooks must
+  strip first or keys silently miss.
+- `contracts_rent_utility` ships as **two near-disjoint sheets** (52,675 +
+  27,665 rows, overlap = 1); they are vertically unioned into one long table
+  (one row per bedroom size per contract).

@@ -18,8 +18,8 @@ are directly comparable:
 Both apply a flat annual servicing fee (25 bps by default) to the
 beginning-of-month balance and discount monthly at a flat MSR rate (10% by
 default). Because the PSA assumption is fixed (not estimated), both measures are
-deterministic — hence this lives alongside :mod:`analytics.calculated` rather
-than :mod:`analytics.estimated`.
+deterministic — hence this lives alongside `analytics.calculated` rather
+than `analytics.estimated`.
 
 Scope note: this models the gross servicing-*fee* revenue strip only. It does
 not net out servicing cost, float, ancillary income, or recapture, and it stops
@@ -28,6 +28,8 @@ zero-balance event separately from voluntary prepayment.
 """
 
 from __future__ import annotations
+
+from typing import cast
 
 import numpy as np
 import polars as pl
@@ -56,8 +58,8 @@ MAX_TERM_MONTHS: int = 480
 def psa_cpr(age_months: np.ndarray, psa_multiple: float = 1.0) -> np.ndarray:
     """CPR under the PSA benchmark at the given loan ages.
 
-    100% PSA ramps CPR linearly from 0 to :data:`PSA_TERMINAL_CPR` over the
-    first :data:`PSA_RAMP_MONTHS` months, then holds flat. ``psa_multiple``
+    100% PSA ramps CPR linearly from 0 to `PSA_TERMINAL_CPR` over the
+    first `PSA_RAMP_MONTHS` months, then holds flat. ``psa_multiple``
     scales the whole curve (e.g. ``1.5`` is 150% PSA).
 
     Args:
@@ -68,11 +70,18 @@ def psa_cpr(age_months: np.ndarray, psa_multiple: float = 1.0) -> np.ndarray:
         Array of annualized CPRs (same shape as ``age_months``), clipped to <1.
     """
     ramp = np.minimum(age_months, PSA_RAMP_MONTHS) / PSA_RAMP_MONTHS
-    return np.clip(psa_multiple * PSA_TERMINAL_CPR * ramp, 0.0, 0.999999)
+    return cast(np.ndarray, np.clip(psa_multiple * PSA_TERMINAL_CPR * ramp, 0.0, 0.999999))
 
 
 def cpr_to_smm(cpr: np.ndarray) -> np.ndarray:
-    """Convert an annualized CPR to a single monthly mortality: ``1-(1-CPR)**(1/12)``."""
+    """Convert an annualized CPR to a single monthly mortality.
+
+    Args:
+        cpr: Annualized conditional prepayment rate, as a fraction.
+
+    Returns:
+        The single monthly mortality, ``1-(1-CPR)**(1/12)``.
+    """
     return 1.0 - (1.0 - cpr) ** (1.0 / 12.0)
 
 
@@ -104,12 +113,10 @@ def _scheduled_balance_factor_np(
     return np.clip(factor, 0.0, 1.0)
 
 
-def scheduled_balance_factor_expr(
-    rate_pct_col: str, term_col: str, age_col: str
-) -> pl.Expr:
+def scheduled_balance_factor_expr(rate_pct_col: str, term_col: str, age_col: str) -> pl.Expr:
     """Polars expr for the level-payment remaining-balance factor B(age)/B(0).
 
-    Mirrors :func:`_scheduled_balance_factor_np` for use in lazy pipelines (the
+    Mirrors `_scheduled_balance_factor_np` for use in lazy pipelines (the
     realized path uses it to impute beginning-of-month balance when the
     reported UPB is missing/zero on a still-performing month).
 
@@ -126,11 +133,7 @@ def scheduled_balance_factor_expr(
     a = pl.col(age_col)
     growth_n = (1.0 + i) ** n
     growth_a = (1.0 + i) ** a
-    amort = (
-        pl.when(i > 0)
-        .then((growth_n - growth_a) / (growth_n - 1.0))
-        .otherwise((n - a) / n)
-    )
+    amort = pl.when(i > 0).then((growth_n - growth_a) / (growth_n - 1.0)).otherwise((n - a) / n)
     return pl.when(a >= n).then(0.0).otherwise(amort).clip(0.0, 1.0)
 
 
@@ -257,8 +260,8 @@ def realized_servicing_pv(
     monthly_disc = 1.0 + annual_discount / 12.0
 
     lf = panel.sort([loan_id_col, age_col])
-    sched_fill = (
-        pl.col(orig_upb_col) * scheduled_balance_factor_expr(rate_pct_col, term_col, age_col)
+    sched_fill = pl.col(orig_upb_col) * scheduled_balance_factor_expr(
+        rate_pct_col, term_col, age_col
     )
     # Effective balance for an alive month: reported UPB, else scheduled fill.
     eff_upb = (
@@ -269,9 +272,7 @@ def realized_servicing_pv(
         .otherwise(pl.col(upb_col))
     )
     lf = lf.with_columns(eff_upb.alias("_eff_upb"))
-    beg_bal = (
-        pl.col("_eff_upb").shift(1).over(loan_id_col).fill_null(pl.col(orig_upb_col))
-    )
+    beg_bal = pl.col("_eff_upb").shift(1).over(loan_id_col).fill_null(pl.col(orig_upb_col))
     disc = monthly_disc ** (-pl.col(age_col).cast(pl.Float64))
     lf = lf.with_columns((fee_m * beg_bal * disc).alias("_cf_disc"))
 

@@ -7,9 +7,13 @@ per-source silver layers: ``loan_issuance``, ``loan_performance``,
 exhaustive vendor-style aggregation catalog (e.g. eMBS security-level state-
 concentration summaries) — that scope is out.
 
-One registered dataset, ``msr_transfers``, is produced by a SEPARATE project
-and is noted/registered (``external=True``) but NOT built here. All builders
-are PLACEHOLDER stubs for now.
+Five masters are built here: ``loan_issuance``, ``loan_performance``,
+``loan_terminations``, ``mbs_issuance``, and ``mbs_performance``. ``issuer``
+remains a ``NotImplementedError`` scaffold. One registered dataset,
+``msr_transfers``, is noted/registered (``external=True``) but built by
+`analytics.transfers.detect_servicer_transfers`, not here.
+
+See ``docs/api/combined.md`` for grains, row counts, and the event taxonomy.
 """
 
 from mortgage_data_manager.combined import builders

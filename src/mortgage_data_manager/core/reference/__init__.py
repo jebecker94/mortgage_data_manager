@@ -5,17 +5,27 @@ Reference data is data that:
   - is stable / rarely reissued, and
   - is consumed by multiple subpackages or matching workflows.
 
-Files are cached as parquet under `MortgageDataConfig.DATA_DIR / "reference"`.
+Files are cached under `MortgageDataConfig.REFERENCE_DIR` (default `DATA_DIR / "reference"`),
+one subfolder per source.
 
 Most reference tables here are stable (rarely reissued). The macro series in
-:mod:`core.reference.macro` are the exception — they are refreshed regularly by
+`core.reference.macro` are the exception — they are refreshed regularly by
 their publishers and expose an ``overwrite`` flag to re-pull.
 """
 
+from mortgage_data_manager.core.reference.avery import (
+    AVERY_FILES,
+    avery_dir,
+    avery_file_path,
+    download_avery_files,
+)
 from mortgage_data_manager.core.reference.census_tract import (
+    VINTAGE_2010_FIRST_YEAR,
     VINTAGE_2020_FIRST_YEAR,
     load_tract_relationship,
+    load_tract_relationship_2000_2010,
     needs_vintage_bridge,
+    needs_vintage_bridge_2000_2010,
 )
 from mortgage_data_manager.core.reference.ct_planning_region import (
     PLANREG_FIRST_YEAR,
@@ -41,11 +51,30 @@ from mortgage_data_manager.core.reference.macro import (
     load_yield_curve,
     refresh_macro_series,
 )
+from mortgage_data_manager.core.reference.states import (
+    FIPS_INT_TO_STATE,
+    FIPS_TO_STATE,
+    STATE_TO_FIPS,
+    TERRITORIES,
+)
+from mortgage_data_manager.core.reference.tract_zip3 import (
+    TRACT_ZIP3_VINTAGES,
+    census_year_to_vintage_expr,
+    load_dominant_tract_zip3,
+    load_tract_zip3,
+)
 
 __all__ = [
+    "AVERY_FILES",
+    "avery_dir",
+    "avery_file_path",
+    "download_avery_files",
     "load_tract_relationship",
     "needs_vintage_bridge",
     "VINTAGE_2020_FIRST_YEAR",
+    "load_tract_relationship_2000_2010",
+    "needs_vintage_bridge_2000_2010",
+    "VINTAGE_2010_FIRST_YEAR",
     "load_ct_planreg_relationship",
     "needs_ct_planreg_bridge",
     "to_planning_region",
@@ -64,4 +93,12 @@ __all__ = [
     "load_yield_curve",
     "refresh_macro_series",
     "MACRO_START",
+    "STATE_TO_FIPS",
+    "FIPS_TO_STATE",
+    "FIPS_INT_TO_STATE",
+    "TERRITORIES",
+    "load_tract_zip3",
+    "load_dominant_tract_zip3",
+    "census_year_to_vintage_expr",
+    "TRACT_ZIP3_VINTAGES",
 ]

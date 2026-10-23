@@ -54,17 +54,22 @@ schemas/gnma/**/*.PDF
 schemas/umbs/**/*.pdf
 schemas/umbs/**/*.PDF
 schemas/umbs/**/*.xlsx
+# Agency documentation PDFs: link to the publisher, never redistribute
+schemas/fhlb/**/*.pdf
+schemas/fhlmc/**/*.pdf
+schemas/fnma/**/*.pdf
+# Agency spreadsheets: transcribe what the code reads into a CSV, never redistribute
+schemas/**/*.xls
+schemas/**/*.xlsx
+schemas/**/*.XLS
+schemas/**/*.XLSX
 
 # Data (gitignored - large files, symlinked to external storage)
 data/
 data
 
-# Crosswalk outputs (selected workflows tracked via Git LFS)
-!crosswalk/
-crosswalk/*
-!crosswalk/mbs_umbs/
-!crosswalk/fhfa_hmda/
-!crosswalk/mbs_fhfa/
+# Crosswalk outputs (not git-synced; canonical copies live locally, snapshots on the GitHub baseline)
+crosswalk/
 
 # Output files (generated visualizations, reports)
 /output/
@@ -89,6 +94,7 @@ private/
 *.tmp
 *.temp
 .cache/
+cache/
 
 # Local scripts and vendor references (not documentation)
 scripts/
@@ -100,10 +106,6 @@ CLAUDE.md
 
 .git-backup
 
-# Investigation files
-investigation/
-investigations/
-
 # Deprecated code (kept for reference but not tracked)
 **/deprecated/
 *.log
@@ -114,3 +116,5 @@ planning/
 # Outputs folder
 outputs/
 output/
+# mkdocs build output
+site/

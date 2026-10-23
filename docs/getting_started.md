@@ -1,548 +1,259 @@
-# Getting Started with Mortgage Data Manager
+# Getting Started
 
-This guide will help you get up and running with the Mortgage Data Manager package quickly.
-
-## Table of Contents
-
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Understanding the Medallion Architecture](#understanding-the-medallion-architecture)
-- [Configuration](#configuration)
-- [Common Workflows](#common-workflows)
-- [Next Steps](#next-steps)
-
----
+Install the package, download a first dataset, and read it from Python.
 
 ## Installation
 
-### Basic Installation
-
-Install the core package using `uv` (recommended) or `pip`:
-
-```bash
-# Using uv (recommended)
-uv pip install -e .
-
-# Using pip
-pip install -e .
-```
-
-This installs the core utilities and configuration management, but not the data-source-specific dependencies.
-
-### Install with Specific Data Sources
-
-Install only the data sources you need:
+The base install has the shared utilities and the CLI. Each data source's own
+dependencies are an extra, so install the ones you need:
 
 ```bash
-# HMDA data only
-uv pip install -e ".[hmda]"
-
-# FHA data only
-uv pip install -e ".[fha]"
-
-# MBS agencies (GNMA, FHFA, FNMA, FHLMC, UMBS)
-uv pip install -e ".[mbs]"
-
-# Matching workflows
-uv pip install -e ".[matching]"
-
-# Multiple sources
-uv pip install -e ".[hmda,fha,mbs]"
+uv pip install -e ".[hmda]"            # HMDA only
+uv pip install -e ".[hmda,fha,mbs]"    # several sources
+uv pip install -e ".[all,dev]"         # everything, plus the dev toolchain
 ```
 
-### Install Everything (Development)
+Plain `pip install -e ...` works too. The extras are `hmda`, `fha`, `mbs` (GNMA, FHFA,
+FNMA, FHLMC and UMBS), `matching`, `hud` and `analytics`; `all` installs every one,
+`dev` adds ruff, pytest, mypy, ipython and jupyter, and `docs` adds the documentation
+build. `pyproject.toml` has the full lists.
 
-For development or to use all features:
+## Where data goes
 
-```bash
-# All data sources + development tools
-uv pip install -e ".[all,dev]"
-```
-
-**Optional Dependency Groups:**
-- `[hmda]` - HMDA-specific dependencies (selenium, webdriver-manager, scipy)
-- `[fha]` - FHA-specific dependencies (fastexcel, openpyxl, addfips, networkx, matplotlib, plotly)
-- `[mbs]` - MBS-specific dependencies (pymupdf, openpyxl, python-dateutil)
-- `[matching]` - Matching workflow dependencies (addfips, numpy)
-- `[hud_mf]` - HUD multifamily dependencies (fastexcel)
-- `[analytics]` - Analytics dependencies (numpy, scikit-learn, statsmodels, xgboost, fredapi, seaborn, matplotlib)
-- `[all]` - All of the above
-- `[dev]` - Development tools (ruff, pytest, pytest-cov, ipython, jupyter, mypy)
-
----
-
-## Data Directory Setup
-
-The `data/` directory is **not included** in the repository — it's too large to track in git. Directories are created automatically when you run CLI commands or call `ensure_directories()` in Python.
-
-### Default Setup
-
-By default, data is stored in `data/` within the project root. No configuration needed — just start downloading:
-
-```bash
-mortgage-data hmda download --min-year 2024 --max-year 2024
-# data/hmda/raw/ is created automatically
-```
-
-### Custom Data Location
-
-To store data elsewhere (e.g., external drive, network share), set `MORTGAGE_DATA_DIR` in a `.env` file in the project root:
+By default everything is written to `data/` in the project root, which is created on
+first use and is not tracked in git. To keep data somewhere else, such as an external
+drive, set `MORTGAGE_DATA_DIR` in a `.env` file in the project root:
 
 ```bash
 # .env
 MORTGAGE_DATA_DIR=/Volumes/ExternalDrive/mortgage_data
 ```
 
-Or use a symlink:
+A symlink works too: `ln -s /Volumes/ExternalDrive/mortgage_data data`. The
+[configuration guide](configuration.md) covers per-source overrides.
+
+Each source is processed in stages: the downloaded files (**raw**), a parquet copy
+(**bronze**), and a cleaned, partitioned version for analysis (**silver**). You will
+almost always read silver. [Architecture](architecture.md#medallion-layers) describes the
+layers.
+
+## Quick start
+
+### HMDA
 
 ```bash
-ln -s /Volumes/ExternalDrive/mortgage_data data
-```
-
-### Create Directories Manually
-
-You can also pre-create the directory structure:
-
-```python
-from mortgage_data_manager.core.config import MortgageDataConfig
-
-# Create all subpackage directories
-MortgageDataConfig.ensure_directories()
-```
-
-See the [Configuration Guide](configuration.md) for more options.
-
----
-
-## Quick Start
-
-### HMDA: Download and Process Mortgage Disclosure Data
-
-Download HMDA data for specific years:
-
-```bash
-# Download HMDA data for 2020-2024
+mortgage-data hmda download --dry-run                       # list what would be fetched
 mortgage-data hmda download --min-year 2020 --max-year 2024
-
-# Check what was downloaded
-ls data/hmda/raw/
-```
-
-Import to silver (analysis-ready) format:
-
-```bash
-# Process to bronze + silver (silver is partitioned by year and state)
 mortgage-data hmda pipeline post2018 --min-year 2020 --max-year 2024
 ```
 
-Use in Python:
+HMDA silver keeps every CFPB release of a year side by side, so read it through
+`hmda.load`, which picks one release per year. Globbing the directory would stack
+several releases of the same year on top of each other.
 
 ```python
 import polars as pl
-from mortgage_data_manager.hmda.config import HMDAConfig
+from mortgage_data_manager.sources.hmda.load import scan_hmda_years
 
-# Load silver data (lazy loading for efficiency)
-silver_dir = HMDAConfig.HMDA_SILVER_DIR / "loans" / "post2018"
-df = pl.scan_parquet(f"{silver_dir}/**/*.parquet")
+df = scan_hmda_years("post2018", 2020, 2024)
 
-# Filter for California mortgages in 2024
+# California records in 2024 (state_code is the postal abbreviation)
 ca_2024 = df.filter(
-    (pl.col("activity_year") == 2024) &
-    (pl.col("state") == "CA")
+    (pl.col("activity_year") == 2024) & (pl.col("state_code") == "CA")
 ).collect()
-
-print(f"Found {len(ca_2024):,} mortgages in CA for 2024")
+print(f"{len(ca_2024):,} records in CA for 2024")
 ```
 
-### FHA: Federal Housing Administration Data
-
-Download and process FHA single-family data:
+### FHA
 
 ```bash
-# Run complete pipeline (download + import)
-mortgage-data fha pipeline single-family --min-year 2020
-
-# Check the data
-ls data/fha/silver/single_family/
+mortgage-data fha pipeline single-family --min-year 2020    # download, bronze and silver
 ```
-
-Use in Python:
 
 ```python
 import polars as pl
-from mortgage_data_manager.fha.config import FHAConfig
+from mortgage_data_manager.sources.fha.config import FHAConfig
 
-# Load FHA silver data
-silver_dir = FHAConfig.FHA_SILVER_DIR / "single_family"
-df = pl.scan_parquet(f"{silver_dir}/**/*.parquet")
+fha = pl.scan_parquet(FHAConfig.FHA_SILVER_DIR / "single_family" / "**" / "*.parquet")
 
-# Analyze lender activity
-lender_stats = df.group_by("lender_id").agg([
-    pl.count("case_number").alias("loan_count"),
-    pl.sum("upfront_mip_amount").alias("total_mip")
-]).collect()
-
+# Endorsements and dollar volume by lender
+lender_stats = (
+    fha.group_by("Originating Mortgagee Number", "Originating Mortgagee")
+    .agg(
+        pl.len().alias("loan_count"),
+        pl.col("Mortgage Amount").sum().alias("total_volume"),
+    )
+    .sort("loan_count", descending=True)
+    .collect()
+)
 print(lender_stats.head(10))
 ```
 
-### GNMA: Ginnie Mae Mortgage-Backed Securities
+### GNMA
 
-Download and process GNMA monthly data:
-
-```bash
-# Download all monthly data files
-mortgage-data gnma download all monthly
-
-# Process schemas from PDFs
-mortgage-data gnma schemas pipeline monthly
-
-# Stage raw data to bronze, then transform to silver
-mortgage-data gnma bronze monthly
-mortgage-data gnma silver monthly
-
-# Or run everything at once
-mortgage-data gnma pipeline full monthly
-```
-
-Use in Python:
-
-```python
-from mortgage_data_manager.gnma.config import GNMAConfig
-import polars as pl
-
-# Load processed GNMA data
-silver_dir = GNMAConfig.GNMA_SILVER_DIR / "monthly"
-df = pl.scan_parquet(f"{silver_dir}/**/*.parquet")
-
-# Analyze by loan type
-print(df.group_by("loan_type").agg(
-    pl.count().alias("pool_count")
-).collect())
-```
-
-### FHLMC: Freddie Mac Data
-
-Download and process Freddie Mac loan performance data:
+GNMA downloads need a free Ginnie Mae profile; put the credentials in `.env` first (see
+[Manual Downloads](manual_downloads.md#ginnie-mae-disclosure-data)).
 
 ```bash
-# Download historical data
-mortgage-data fhlmc download
-
-# Load to bronze (Parquet conversion)
-mortgage-data fhlmc bronze load -t origination --min-year 2020 --max-year 2024
-
-# Or run complete pipeline
-mortgage-data fhlmc pipeline full --min-year 2020 --max-year 2024
+mortgage-data gnma pipeline monthly      # or run download, bronze and silver separately
 ```
 
-Use in Python:
+GNMA silver is split by file prefix and then by record type
+(`{prefix}/{record_type}/`). Each record type has its own columns, so read one at a
+time:
 
 ```python
-from mortgage_data_manager.fhlmc.config import FHLMCConfig
 import polars as pl
+from mortgage_data_manager.sources.gnma.config import GNMAConfig
 
-# Load bronze data
-bronze_dir = FHLMCConfig.FHLMC_BRONZE_DIR / "historical" / "origination"
-df = pl.scan_parquet(f"{bronze_dir}/**/*.parquet")
-
-print(df.head())
+pools = pl.scan_parquet(
+    GNMAConfig.GNMA_SILVER_DIR / "monthly" / "P" / "*.parquet", extra_columns="ignore"
+)
+print(pools.group_by("pool_type").len().collect())
 ```
 
-### Matching Workflows: Link Records Across Datasets
+### Freddie Mac
 
-Match HMDA originations with their subsequent sales:
+Freddie Mac's loan-level files have to be downloaded by hand from its Clarity portal
+(`mortgage-data fhlmc download` prints the steps, and [Manual
+Downloads](manual_downloads.md#freddie-mac-single-family-loan-level-dataset) has them in
+full). Once the files are in the raw directory:
 
 ```bash
-# Show available workflows
-mortgage-data match info
-
-# Run HMDA seller-purchaser matching
-mortgage-data match hmda-sellers-purchasers --min-year 2020 --max-year 2024
+mortgage-data fhlmc pipeline --min-year 2020 --max-year 2024
 ```
-
-Use in Python:
 
 ```python
-from mortgage_data_manager.matching.config import MatchingConfig
 import polars as pl
+from mortgage_data_manager.sources.fhlmc.config import FHLMCConfig
 
-# Load matching results
-match_dir = MatchingConfig.MATCHING_DATA_DIR / "hmda_sellers_purchasers"
-matches = pl.scan_parquet(f"{match_dir}/**/*.parquet")
-
-# Analyze GSE purchase patterns
-gse_purchases = matches.filter(
-    pl.col("purchaser_type").is_in([1, 2, 3, 4])  # Fannie, Freddie, Ginnie, Farmer Mac
-).collect()
-
-print(f"Found {len(gse_purchases):,} GSE purchases")
+orig = pl.scan_parquet(FHLMCConfig.FHLMC_SILVER_DIR / "origination" / "**" / "*.parquet")
+print(orig.head().collect())
 ```
 
----
+### Matching
 
-## Understanding the Medallion Architecture
-
-All data sources follow a consistent 4-layer architecture:
-
-```
-data/{subpackage}/
-├── raw/       # Original downloaded files (CSV, Excel, ZIP)
-├── bronze/    # Parquet conversion with minimal processing
-├── silver/    # Cleaned, partitioned, analysis-ready
-└── gold/      # Aggregations (future phase)
-```
-
-### Data Flow
-
-1. **Raw Layer**: Original files exactly as downloaded
-   - CSVs, Excel files, ZIPs
-   - Untouched source data
-   - Located in `data/{subpackage}/raw/`
-
-2. **Bronze Layer**: Parquet conversion
-   - Minimal processing (type conversions)
-   - One-to-one with raw files
-   - Fast to query, smaller size
-   - Located in `data/{subpackage}/bronze/`
-
-3. **Silver Layer**: Analysis-ready
-   - Cleaned and standardized
-   - Hive-partitioned for efficient querying
-   - Validated data types
-   - Located in `data/{subpackage}/silver/`
-
-4. **Gold Layer**: Aggregations (planned)
-   - Pre-computed metrics
-   - Dashboards and reports
-   - Located in `data/{subpackage}/gold/`
-
-### Why This Architecture?
-
-- **Reproducibility**: Raw files preserved, transformations documented
-- **Efficiency**: Query only what you need with partitioning
-- **Flexibility**: Different processing stages for different needs
-- **Performance**: Polars LazyFrames enable query optimization
-
----
-
-## Configuration
-
-### Environment Variables
-
-Configure paths via `.env` file or environment variables:
+The matching workflows link records across sources. For example, the seller-purchaser
+workflow pairs an HMDA origination with the HMDA record of the institution that bought
+the loan:
 
 ```bash
-# Global configuration
-MORTGAGE_DATA_PROJECT_DIR=/path/to/project
-MORTGAGE_DATA_DIR=/path/to/data
-MORTGAGE_OUTPUT_DIR=/path/to/output
-
-# Subpackage overrides (optional)
-HMDA_DATA_DIR=/custom/hmda/path
-FHA_RAW_DIR=/custom/fha/raw
-GNMA_BRONZE_DIR=/custom/gnma/bronze
+mortgage-data match info                                      # list the workflows
+mortgage-data match hmda-sellers-purchasers run --min-year 2020 --max-year 2024
 ```
 
-### Python Configuration
-
-Access configuration in code:
-
-```python
-from mortgage_data_manager.core.config import MortgageDataConfig
-from mortgage_data_manager.hmda.config import HMDAConfig
-
-# Base paths
-print(f"Project: {MortgageDataConfig.PROJECT_DIR}")
-print(f"Data: {MortgageDataConfig.DATA_DIR}")
-
-# HMDA-specific paths
-print(f"HMDA Raw: {HMDAConfig.HMDA_RAW_DIR}")
-print(f"HMDA Silver: {HMDAConfig.HMDA_SILVER_DIR}")
-
-# Get medallion directories programmatically
-# Base layout (subpackage, stage):
-bronze_dir = MortgageDataConfig.get_medallion_dir("hmda", "bronze")
-# HMDA dataset/era layout (stage, dataset, period):
-bronze_loans_dir = HMDAConfig.get_dataset_dir("bronze", "loans", "post2018")
-```
-
-### Directory Structure
-
-Default directory structure (created automatically):
-
-```
-mortgage_data_manager/
-├── data/
-│   ├── hmda/
-│   │   ├── raw/
-│   │   ├── bronze/
-│   │   └── silver/
-│   ├── fha/
-│   │   ├── raw/
-│   │   ├── bronze/
-│   │   └── silver/
-│   ├── gnma/
-│   └── matching/
-└── output/
-```
-
----
-
-## Common Workflows
-
-### Workflow 1: Analyze HMDA Lending Patterns
+The crosswalk is written under
+`crosswalk/hmda_sellers_purchasers/hmda_sellers_purchasers_crosswalk_post2018/`,
+partitioned by match round and seller activity year:
 
 ```python
 import polars as pl
-from mortgage_data_manager.hmda.config import HMDAConfig
+from mortgage_data_manager.matching.match_hmda_sellers_purchasers import (
+    HMDASellersPurchasersMatchingConfig,
+)
 
-# Load HMDA silver data
-silver_dir = HMDAConfig.HMDA_SILVER_DIR / "loans" / "post2018"
-df = pl.scan_parquet(f"{silver_dir}/**/*.parquet")
-
-# Analyze denial rates by race/ethnicity
-denial_analysis = df.filter(
-    pl.col("action_taken").is_in([1, 3])  # Originated or denied
-).group_by(["activity_year", "derived_race"]).agg([
-    pl.count().alias("total_apps"),
-    (pl.col("action_taken") == 3).sum().alias("denials"),
-    ((pl.col("action_taken") == 3).sum() / pl.count() * 100).alias("denial_rate")
-]).collect()
-
-print(denial_analysis)
+crosswalk_dir = HMDASellersPurchasersMatchingConfig.get_crosswalk_dir("post2018")
+pairs = pl.scan_parquet(crosswalk_dir / "**" / "*.parquet", hive_partitioning=True)
+print(pairs.group_by("match_round").len().sort("match_round").collect())
 ```
 
-### Workflow 2: Track FHA Lender Market Share
+Each workflow's method, output schema and match rates are in the
+[matching docs](matching/README.md).
+
+## Examples
+
+### HMDA denial rates by loan type
 
 ```python
 import polars as pl
-from mortgage_data_manager.fha.config import FHAConfig
+from mortgage_data_manager.sources.hmda.load import scan_hmda_years
 
-# Load FHA silver data
-silver_dir = FHAConfig.FHA_SILVER_DIR / "single_family"
-df = pl.scan_parquet(f"{silver_dir}/**/*.parquet")
+df = scan_hmda_years("post2018", 2018, 2024)
 
-# Calculate lender market share
-market_share = df.group_by("lender_name").agg([
-    pl.count("case_number").alias("endorsement_count"),
-    pl.sum("original_principal_balance").alias("total_volume")
-]).with_columns([
-    (pl.col("total_volume") / pl.col("total_volume").sum() * 100).alias("market_share_pct")
-]).sort("market_share_pct", descending=True).collect()
+denial_rates = (
+    df.filter(pl.col("action_taken").is_in([1, 3]))  # originated or denied
+    .group_by("activity_year", "loan_type")
+    .agg(
+        pl.len().alias("applications"),
+        (pl.col("action_taken") == 3).mean().alias("denial_rate"),
+    )
+    .sort("activity_year", "loan_type")
+    .collect()
+)
+print(denial_rates)
+```
 
+### FHA lender market share
+
+```python
+import polars as pl
+from mortgage_data_manager.sources.fha.config import FHAConfig
+
+fha = pl.scan_parquet(FHAConfig.FHA_SILVER_DIR / "single_family" / "**" / "*.parquet")
+
+market_share = (
+    fha.group_by("Year", "Originating Mortgagee")
+    .agg(pl.col("Mortgage Amount").sum().alias("volume"))
+    .with_columns((pl.col("volume") / pl.col("volume").sum().over("Year")).alias("share"))
+    .filter(pl.col("Year") == 2024)
+    .sort("share", descending=True)
+    .collect()
+)
 print(market_share.head(20))
 ```
 
-### Workflow 3: Match HMDA Loans to Secondary Market Sales
+### Who buys matched loans
 
-```bash
-# Run matching workflow
-mortgage-data match hmda-sellers-purchasers --min-year 2020 --max-year 2024
-```
-
-```python
-import polars as pl
-from mortgage_data_manager.matching.config import MatchingConfig
-
-# Load matches
-match_dir = MatchingConfig.MATCHING_DATA_DIR / "hmda_sellers_purchasers"
-matches = pl.scan_parquet(f"{match_dir}/MatchRound=1/**/*.parquet")
-
-# Analyze time to sale
-matches_with_sale_time = matches.with_columns([
-    (pl.col("action_taken_date_p") - pl.col("action_taken_date_s")).alias("days_to_sale")
-]).collect()
-
-print(matches_with_sale_time.select(["days_to_sale"]).describe())
-```
-
-### Workflow 4: Combine Multiple Data Sources
+Join the seller side of the seller-purchaser crosswalk back to HMDA to see what kind of
+institution bought each loan. `scan_hmda_for_index` reads exactly the HMDA releases the
+crosswalk was built from.
 
 ```python
 import polars as pl
-from mortgage_data_manager.hmda.config import HMDAConfig
-from mortgage_data_manager.fha.config import FHAConfig
+from mortgage_data_manager.sources.hmda.load import scan_hmda_for_index
+from mortgage_data_manager.matching.match_hmda_sellers_purchasers import (
+    HMDASellersPurchasersMatchingConfig,
+)
 
-# Load HMDA data
-hmda = pl.scan_parquet(f"{HMDAConfig.HMDA_SILVER_DIR}/loans/post2018/**/*.parquet")
+crosswalk_dir = HMDASellersPurchasersMatchingConfig.get_crosswalk_dir("post2018")
+pairs = pl.scan_parquet(crosswalk_dir / "**" / "*.parquet", hive_partitioning=True)
+sellers = scan_hmda_for_index(pairs.select(pl.col("HMDAIndex_s").alias("HMDAIndex")))
 
-# Load FHA data
-fha = pl.scan_parquet(f"{FHAConfig.FHA_SILVER_DIR}/single_family/**/*.parquet")
-
-# Compare FHA-insured vs conventional loan characteristics
-fha_hmda = hmda.filter(
-    pl.col("loan_type") == 2  # FHA-insured
-).select(["activity_year", "loan_amount", "interest_rate"]).collect()
-
-print(f"FHA loans in HMDA: {len(fha_hmda):,}")
-print(f"FHA endorsements: {fha.select(pl.count()).collect()[0,0]:,}")
+by_purchaser = (
+    pairs.join(sellers, left_on="HMDAIndex_s", right_on="HMDAIndex")
+    .group_by("purchaser_type")
+    .len()
+    .sort("len", descending=True)
+    .collect()
+)
+print(by_purchaser)
 ```
 
----
+The GSEs don't file HMDA, so sales to them never appear in this crosswalk. Other
+workflows link HMDA to agency data, such as the
+[HMDA-FHA crosswalk](matching/hmda_fha_matching.md).
 
-## Next Steps
+## Getting help
 
-### Learn More
-
-- **[CLI Reference](cli_reference.md)** - Complete command reference
-- **[API Documentation](api/)** - Python API for each subpackage
-- **[Architecture Guide](architecture.md)** - Detailed design decisions
-- **[Configuration Guide](configuration.md)** - Advanced configuration options
-
-### Get Help
+Every command has `--help`, and `mortgage-data info` shows the resolved project and data
+directories:
 
 ```bash
-# General help
 mortgage-data --help
-
-# Subcommand help
-mortgage-data hmda --help
 mortgage-data fha pipeline --help
-mortgage-data gnma download --help
-
-# Show project info
 mortgage-data info
 ```
 
-### Join the Community
-
-- Report issues: [GitHub Issues](https://github.com/your-org/mortgage-data-manager/issues)
-- Contribute: See [CONTRIBUTING.md](../CONTRIBUTING.md)
-- Documentation: [docs/](.)
-
----
+The [CLI reference](cli_reference.md) lists every command, and the API pages document
+each subpackage's Python functions.
 
 ## Troubleshooting
 
-### Common Issues
+**`ModuleNotFoundError` for a package such as `pymupdf` or `fastexcel`.** The
+subpackage's extra isn't installed. Install it, for example `uv pip install -e ".[mbs]"`.
 
-**Issue**: `ModuleNotFoundError: No module named 'pymupdf'`
+**`PermissionError` when downloading.** The data directory isn't writable. Check who
+owns it with `ls -ld data/` (or the path in `MORTGAGE_DATA_DIR`).
 
-**Solution**: Install the MBS dependencies:
-```bash
-uv pip install -e ".[mbs]"
-```
-
-**Issue**: `PermissionError` when downloading files
-
-**Solution**: Check that you have write permissions to the data directory:
-```bash
-ls -la data/
-# If needed, create the directory
-mkdir -p data/
-```
-
-**Issue**: Out of memory when processing large datasets
-
-**Solution**: Use Polars LazyFrames and process incrementally:
-```python
-# Don't collect() the entire dataset
-df = pl.scan_parquet("data/**/*.parquet")
-
-# Filter first, then collect
-result = df.filter(pl.col("year") == 2024).collect()
-```
-
----
-
-Happy analyzing!
+**Running out of memory.** Stay lazy until the end: scan, filter and aggregate first,
+then `collect()` only the result. `collect()` on a whole multi-year scan loads all of it.

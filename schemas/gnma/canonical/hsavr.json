@@ -1,0 +1,157 @@
+{
+  "prefix": "hsavr",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "Y": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "cusip",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 9,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_number",
+          "arrow_type": "string",
+          "pdf_text": "Pool Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 10,
+              "end": 15,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator (Always H)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 16,
+              "end": 16,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 17,
+              "end": 18,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (Y)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 19,
+              "end": 19,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "report_period",
+          "arrow_type": "int64",
+          "pdf_text": "Report Period (YYYYMM)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 20,
+              "end": 25,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "hecm_saver_number_of_participations",
+          "arrow_type": "int64",
+          "pdf_text": "HECM Saver Number of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 26,
+              "end": 31,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "hecm_saver_upb_of_participations",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "HECM Saver UPB of Participations",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 32,
+              "end": 44,
+              "length": 13
+            }
+          ]
+        },
+        {
+          "id": "hecm_saver_of_total_upb",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "HECM Saver % of Total UPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 45,
+              "end": 49,
+              "length": 5
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

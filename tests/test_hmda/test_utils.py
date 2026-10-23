@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import polars as pl
 
-from mortgage_data_manager.hmda.config import HMDA_INDEX_COLUMN
-from mortgage_data_manager.hmda.utils import append_hmda_index
+from mortgage_data_manager.sources.hmda.config import HMDA_INDEX_COLUMN
+from mortgage_data_manager.sources.hmda.utils import append_hmda_index
 
 
 def test_append_hmda_index_formats_prefix_and_zero_pads():

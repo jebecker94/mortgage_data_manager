@@ -3,11 +3,11 @@
 Analytics consumes silver/combined datasets and produces derived metrics. Two
 kinds, split across modules:
 
-- :mod:`analytics.calculated` - deterministic, closed-form metrics computed
+- `analytics.calculated` - deterministic, closed-form metrics computed
   directly from observed data (CPR/SMM, RPB, factors, WALA/WARM, realized
   delinquency-transition rates). No model, no forecast — given the inputs, the
   output is exact.
-- :mod:`analytics.estimated` - forward-looking quantities that require a model
+- `analytics.estimated` - forward-looking quantities that require a model
   to estimate/forecast (prepayment probability, default/loss projections,
   speed forecasts). These carry parameter/specification choices and
   uncertainty.

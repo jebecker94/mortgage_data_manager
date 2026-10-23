@@ -7,7 +7,7 @@ Fannie loan-level spines:
   * enrich = FNM_ILLD UMBS pool-disclosure ("UMBS", ``umbs/silver/FNMA/ILLD``)
             UNION the first FNM_MLLD monthly snapshot (pre-2019-06 recovery, D-6)
 
-bridged by the strictly-1:1 ``crosswalk/mbs_umbs/fnma_crosswalk.parquet``.
+bridged by the strictly-1:1 ``crosswalk/mbs_umbs/mbs_umbs_crosswalk_fnma.parquet``.
 
 Each entry maps one unified output field to its source column(s):
 
@@ -20,13 +20,12 @@ Each entry maps one unified output field to its source column(s):
                  umbs_only     pass through from ILLD
                  shared_keep   in both, agree >=99.8% -> coalesce(SF, ILLD)
                  shared_harmon in both, code/encoding differs -> bespoke transform
-                 shared_both   keep both copies (participation-weighted vs full)
-                 drop          filler / empty -> not carried
+                 drop          filler / verified-never-populated -> not carried
+                               (see PRUNED_ALWAYS_NULL_FIELDS at the bottom)
 
-The harmonization decisions (D-1..D-6) are documented in
-``investigations/reports/investigation_fnma_mbs_umbs_combine_2026-06-18.md`` and
-``docs/design/combined_spec.md``. The plan itself is generated from the validated
-column table (``investigation_fnma_mbs_umbs_combine_table_2026-06-18.py``); every
+The harmonization decisions (D-1..D-6) are documented in the maintainer's
+harmonization spec. The plan itself is generated from the validated
+column table; every
 SF and ILLD source column is asserted accounted for there.
 """
 
@@ -55,7 +54,7 @@ DATE_FIELDS: Final[frozenset[str]] = frozenset(
 #: - ``seller_name`` / ``servicer_name`` / ``mi_cancellation_ind``: the SF disclosure
 #:   VALUE-MASKS small entities as "Other" (only ~50-80 distinct sellers/servicers) while
 #:   ILLD discloses the real names (~1,200-1,550) and rescues 100% of the masked rows
-#:   (``investigation_sf_umbs_source_fidelity_2026-06-26``). ILLD-first recovers the true
+#:   (measured 2026-06-26). ILLD-first recovers the true
 #:   names for 2019-06+ loans; pre-2019 history falls back to the (masked) SF value.
 IL_FIRST_FIELDS: Final[frozenset[str]] = frozenset(
     {"mi_percent", "seller_name", "servicer_name", "mi_cancellation_ind"}
@@ -115,10 +114,13 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "disposition": "shared_keep",
     },
     {
+        # Was ``shared_both`` (SF full-loan UPB alongside the ILLD participation-weighted
+        # UPB), but SF ``UPB at Issuance`` is 100% null on issuance records (2026-07-09
+        # audit) so the SF twin ``issuance_full_upb`` was pruned; ILLD is the only source.
         "name": "issuance_investor_upb",
-        "sf": ["UPB at Issuance"],
+        "sf": [],
         "il": ["Issuance Investor Loan UPB"],
-        "disposition": "shared_both",
+        "disposition": "umbs_only",
     },
     {
         "name": "current_actual_upb",
@@ -1636,8 +1638,259 @@ FHLMC_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
 ]
 
 
-#: Per-GSE field plans, keyed by agency.
-LOAN_ISSUANCE_PLANS: Final[dict[str, list[FieldSpec]]] = {
-    "FNMA": FNMA_LOAN_ISSUANCE_PLAN,
-    "FHLMC": FHLMC_LOAN_ISSUANCE_PLAN,
-}
+class PrunedField(TypedDict):
+    """One pruned output field and the never-populated source column(s) behind it."""
+
+    name: str  # unified column formerly emitted by the combined builder
+    fnma_sf: list[str]  # FNMA SF issuance-silver source columns (verified all-null)
+    il: list[str]  # UMBS ILLD/snapshot source columns (verified all-null)
+    gnma: list[str]  # GNMA dailyllmni L source columns (verified all-blank)
+
+
+#: Output columns PRUNED from the combined ``loan_issuance`` on 2026-07-09 because every
+#: source layer behind them is unpopulated (verified across every source layer):
+#:
+#: * ``fnma_sf`` columns are 100% null across all 51 FNMA SF issuance-silver files (they are
+#:   perf-month / termination / CRT fields that only populate on later monthly records — the
+#:   SAME source columns populate fine in ``loan_terminations``, so ingestion is sound).
+#: * ``il`` columns are 100% null across all ILLD months AND both first-month snapshots (the
+#:   step "next adjustment" quartet, ``Updated VS4``, deferral/ADR-count fields — ILLD is an
+#:   at-issuance disclosure, so monthly-state fields never populate there). The step
+#:   SCHEDULE fields (initial period / total / remaining / terminal / cap) DO populate on
+#:   ILLD modified-reissue records and are therefore NOT pruned.
+#: * ``gnma`` = ``Seller Issuer ID``: GNMA publishes the slot but it is blank (all spaces) in
+#:   every dailyllmni month; the adjacent V1.7+ ``Index Type`` field extracts fine, so the
+#:   fixed-width offsets are correct.
+#: * ``upb_at_removal`` is the one not-quite-null case: 0.73% of FNMA issuance rows carry a
+#:   literal 0.0 (never a real value).
+#:
+#: ``tests/test_combined/test_pruned_columns_guard.py`` walks this registry against the
+#: source silver layers and FAILS if any column ever starts populating — the signal to
+#: un-prune it (delete its row here; its plan entry above still documents the wiring).
+PRUNED_ALWAYS_NULL_FIELDS: Final[list[PrunedField]] = [
+    {
+        "name": "alternative_delinquency_resolution_count",
+        "fnma_sf": ["Alternative Delinquency  Resolution Count"],
+        "il": ["Number of Alternative Delinquency Resolutions"],
+        "gnma": [],
+    },
+    {"name": "arm_balloon_ind", "fnma_sf": ["ARM Balloon Indicator"], "il": [], "gnma": []},
+    {"name": "arm_cap_structure", "fnma_sf": ["ARM Cap Structure"], "il": [], "gnma": []},
+    {
+        "name": "arm_life_cap_up",
+        "fnma_sf": ["Lifetime Interest Rate Cap Up Percent"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "arm_plan_number", "fnma_sf": ["ARM Plan Number"], "il": [], "gnma": []},
+    {"name": "asset_recovery_costs", "fnma_sf": ["Asset Recovery Costs"], "il": [], "gnma": []},
+    {
+        "name": "co_borrower_credit_score_current",
+        "fnma_sf": ["Co-Borrower Credit Score Current"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "credit_enhancement_proceeds",
+        "fnma_sf": ["Credit Enhancement Proceeds"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "credit_score_current",
+        "fnma_sf": ["Borrower Credit Score Current ", "Current Classic FICO®"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "cumulative_credit_event_gainloss",
+        "fnma_sf": ["Cumulative Credit Event Net Gain or Loss"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "cumulative_mod_loss",
+        "fnma_sf": ["Cumulative Modification Loss Amount"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "current_list_price", "fnma_sf": ["Current List Price"], "il": [], "gnma": []},
+    {
+        "name": "current_list_start_date",
+        "fnma_sf": ["Current List Start Date"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "current_period_credit_event_gainloss",
+        "fnma_sf": ["Current Period Credit Event Net Gain or Loss"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "current_period_mod_loss",
+        "fnma_sf": ["Current Period Modification Loss Amount"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "deal_name", "fnma_sf": ["Deal Name"], "il": [], "gnma": []},
+    {
+        "name": "delinquent_accrued_interest",
+        "fnma_sf": ["Delinquent Accrued Interest"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "disposition_date", "fnma_sf": ["Disposition Date"], "il": [], "gnma": []},
+    {"name": "foreclosure_costs", "fnma_sf": ["Foreclosure Costs"], "il": [], "gnma": []},
+    {"name": "foreclosure_date", "fnma_sf": ["Foreclosure Date"], "il": [], "gnma": []},
+    {
+        "name": "foreclosure_principal_writeoff",
+        "fnma_sf": ["Foreclosure Principal Write-off Amount"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "holding_taxes",
+        "fnma_sf": ["Associated Taxes for Holding Property"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "issuance_full_upb", "fnma_sf": ["UPB at Issuance"], "il": [], "gnma": []},
+    {
+        "name": "last_paid_installment_date",
+        "fnma_sf": ["Last Paid Installment Date"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "loan_holdback_effective_date",
+        "fnma_sf": ["Loan Holdback Effective Date"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "loan_holdback_ind", "fnma_sf": ["Loan Holdback Indicator"], "il": [], "gnma": []},
+    {"name": "master_servicer", "fnma_sf": ["Master Servicer"], "il": [], "gnma": []},
+    {
+        "name": "misc_holding_expenses",
+        "fnma_sf": ["Miscellaneous Holding Expenses and Credits"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "mod_noninterest_bearing_upb",
+        "fnma_sf": ["Modification-Related Non-Interest Bearing UPB"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "net_sales_proceeds", "fnma_sf": ["Net Sales Proceeds"], "il": [], "gnma": []},
+    {"name": "original_list_price", "fnma_sf": ["Original List Price"], "il": [], "gnma": []},
+    {
+        "name": "original_list_start_date",
+        "fnma_sf": ["Original List Start Date"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "other_foreclosure_proceeds",
+        "fnma_sf": ["Other Foreclosure Proceeds"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "principal_forgiveness_amount",
+        "fnma_sf": ["Principal Forgiveness Amount"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "property_preservation_costs",
+        "fnma_sf": ["Property Preservation and Repair Costs"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "reference_pool_id", "fnma_sf": ["Reference Pool ID"], "il": [], "gnma": []},
+    {"name": "repurchase_date", "fnma_sf": ["Repurchase Date"], "il": [], "gnma": []},
+    {
+        "name": "repurchase_make_whole_proceeds",
+        "fnma_sf": ["Repurchase Make Whole Proceeds"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "repurchase_make_whole_proceeds_flag",
+        "fnma_sf": ["Repurchase Make Whole Proceeds Flag"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "scheduled_principal_current",
+        "fnma_sf": ["Scheduled Principal Current"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "seller_issuer_id", "fnma_sf": [], "il": [], "gnma": ["Seller Issuer ID"]},
+    {
+        "name": "step_adj_frequency",
+        "fnma_sf": [],
+        "il": ["Step Rate Adjustment Frequency"],
+        "gnma": [],
+    },
+    {
+        "name": "step_months_to_next_adj",
+        "fnma_sf": [],
+        "il": ["Months to Next Step Rate Adjustment Date"],
+        "gnma": [],
+    },
+    {
+        "name": "step_next_adj_date",
+        "fnma_sf": [],
+        "il": ["Next Step Rate Adjustment Date"],
+        "gnma": [],
+    },
+    {"name": "step_next_rate", "fnma_sf": [], "il": ["Next Step Rate"], "gnma": []},
+    {
+        "name": "total_deferral_amount",
+        "fnma_sf": ["Total Deferral Amount "],
+        "il": ["Total Deferral Amount"],
+        "gnma": [],
+    },
+    {
+        "name": "total_principal_current",
+        "fnma_sf": ["Total Principal Current"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "unscheduled_principal_current",
+        "fnma_sf": ["Unscheduled Principal Current"],
+        "il": [],
+        "gnma": [],
+    },
+    {"name": "upb_at_removal", "fnma_sf": ["UPB at the Time of Removal"], "il": [], "gnma": []},
+    {"name": "vs4_updated", "fnma_sf": [], "il": ["Updated VS4"], "gnma": []},
+    {"name": "zero_balance_code", "fnma_sf": ["Zero Balance Code"], "il": [], "gnma": []},
+    {
+        "name": "zero_balance_code_change_date",
+        "fnma_sf": ["Zero Balance Code Change Date"],
+        "il": [],
+        "gnma": [],
+    },
+    {
+        "name": "zero_balance_effective_date",
+        "fnma_sf": ["Zero Balance Effective Date"],
+        "il": [],
+        "gnma": [],
+    },
+]
+
+#: Names of the pruned fields (drives the disposition flip below + the GNMA assembler).
+PRUNED_FIELD_NAMES: Final[frozenset[str]] = frozenset(f["name"] for f in PRUNED_ALWAYS_NULL_FIELDS)
+
+# Flip the pruned entries' dispositions to ``drop`` in ONE auditable place. The plan
+# entries above keep their source-alias documentation; the builders simply stop emitting
+# these columns. (``issuance_full_upb`` and ``seller_issuer_id`` are not plan names —
+# they are handled at their emit sites.)
+for _plan in (FNMA_LOAN_ISSUANCE_PLAN, FHLMC_LOAN_ISSUANCE_PLAN):
+    for _spec in _plan:
+        if _spec["name"] in PRUNED_FIELD_NAMES:
+            _spec["disposition"] = "drop"

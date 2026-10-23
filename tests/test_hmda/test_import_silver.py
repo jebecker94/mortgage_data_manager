@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import polars as pl
 
-from mortgage_data_manager.hmda.import_silver import _standardize_geographic_codes
+from mortgage_data_manager.sources.hmda.import_silver import _standardize_geographic_codes
 
 
 def test_standardize_geographic_codes_builds_padded_geoids():

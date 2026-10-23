@@ -14,6 +14,19 @@ from rich.table import Table
 from mortgage_data_manager import __version__
 from mortgage_data_manager.core.cli.formatting import console
 from mortgage_data_manager.core.cli.validation import version_callback_factory
+from mortgage_data_manager.matching.master.cli import app as master_app
+from mortgage_data_manager.matching.match_crt_mbs.cli import app as crt_mbs_app
+from mortgage_data_manager.matching.match_fhfa_mbs.cli import app as fhfa_mbs_app
+from mortgage_data_manager.matching.match_fhlb_mbs.cli import app as fhlb_mbs_app
+from mortgage_data_manager.matching.match_hmda_fha.cli import app as hmda_fha_app
+from mortgage_data_manager.matching.match_hmda_fhfa.cli import app as hmda_fhfa_app
+from mortgage_data_manager.matching.match_hmda_fhlb.cli import app as hmda_fhlb_app
+from mortgage_data_manager.matching.match_hmda_gnma.cli import app as hmda_gnma_app
+from mortgage_data_manager.matching.match_hmda_gse.cli import app as hmda_gse_app
+from mortgage_data_manager.matching.match_hmda_sellers_purchasers.cli import (
+    app as hmda_sellers_purchasers_app,
+)
+from mortgage_data_manager.matching.match_mbs_umbs.cli import app as mbs_umbs_app
 
 # Version callback
 _version_callback = version_callback_factory("Matching Workflows", __version__)
@@ -51,92 +64,66 @@ def callback(
 # Register Matching Workflow CLIs
 # ============================================================================
 
-from mortgage_data_manager.matching.match_fha_gnma.cli import app as fha_gnma_app
-from mortgage_data_manager.matching.match_fha_hmda.cli import app as fha_hmda_app
-from mortgage_data_manager.matching.match_fhfa_hmda.cli import app as fhfa_hmda_app
-from mortgage_data_manager.matching.match_hmda_fhlb.cli import app as hmda_fhlb_app
-from mortgage_data_manager.matching.match_hmda_mbs.cli import app as hmda_mbs_app
-from mortgage_data_manager.matching.match_hmda_sellers_and_purchasers.cli import (
-    app as sellers_purchasers_app,
-)
-from mortgage_data_manager.matching.match_mbs_fhfa.cli import app as mbs_fhfa_app
-from mortgage_data_manager.matching.match_mbs_fhlb.cli import app as mbs_fhlb_app
-from mortgage_data_manager.matching.match_mbs_umbs.cli import app as mbs_umbs_app
-
-app.add_typer(fha_gnma_app, name="fha-gnma")
-app.add_typer(fha_hmda_app, name="fha-hmda")
-app.add_typer(fhfa_hmda_app, name="fhfa-hmda")
+app.add_typer(hmda_fha_app, name="hmda-fha")
+app.add_typer(hmda_fhfa_app, name="hmda-fhfa")
 app.add_typer(hmda_fhlb_app, name="hmda-fhlb")
-app.add_typer(hmda_mbs_app, name="hmda-mbs")
-app.add_typer(sellers_purchasers_app, name="sellers-purchasers")
+app.add_typer(hmda_gse_app, name="hmda-gse")
+app.add_typer(hmda_gnma_app, name="hmda-gnma")
+app.add_typer(hmda_sellers_purchasers_app, name="hmda-sellers-purchasers")
 app.add_typer(mbs_umbs_app, name="mbs-umbs")
-app.add_typer(mbs_fhlb_app, name="mbs-fhlb")
-app.add_typer(mbs_fhfa_app, name="mbs-fhfa")
+app.add_typer(crt_mbs_app, name="crt-mbs")
+app.add_typer(fhlb_mbs_app, name="fhlb-mbs")
+app.add_typer(fhfa_mbs_app, name="fhfa-mbs")
+# Assembler, not a pairwise matcher: consumes every crosswalk above.
+app.add_typer(master_app, name="master")
+
+
+#: Every pairwise matching workflow: (``match`` subcommand, module, what it links). Workflow
+#: names put HMDA first and the MBS/UMBS side last; ``master`` assembles them all.
+WORKFLOWS: tuple[tuple[str, str, str], ...] = (
+    ("hmda-fha", "match_hmda_fha", "HMDA originations ↔ FHA endorsements"),
+    ("hmda-fhfa", "match_hmda_fhfa", "HMDA originations ↔ FHFA GSE acquisitions"),
+    ("hmda-fhlb", "match_hmda_fhlb", "HMDA originations ↔ FHLB acquired member assets"),
+    ("hmda-gse", "match_hmda_gse", "HMDA conventional ↔ FNMA/FHLMC loan level (chain + direct)"),
+    ("hmda-gnma", "match_hmda_gnma", "HMDA FHA and VA/USDA ↔ GNMA loan level"),
+    ("hmda-sellers-purchasers", "match_hmda_sellers_purchasers", "HMDA originations ↔ purchases"),
+    ("fhfa-mbs", "match_fhfa_mbs", "FHFA acquisitions ↔ GSE single-family loan level"),
+    ("fhlb-mbs", "match_fhlb_mbs", "FHLB acquired member assets ↔ GNMA loan level"),
+    ("crt-mbs", "match_crt_mbs", "GSE CRT reference pools ↔ single-family loan level"),
+    ("mbs-umbs", "match_mbs_umbs", "GSE single-family loan level ↔ UMBS disclosures"),
+)
 
 
 @app.command()
 def info() -> None:
-    """Show information about available matching workflows."""
+    """Show the matching workflows and where their outputs live."""
     console.print("\n[bold cyan]Matching Workflows[/bold cyan]\n")
 
-    console.print(
-        "The matching module provides tools for linking records across different "
-        "mortgage data sources.\n"
-    )
-
-    # Create table of available workflows
-    table = Table(title="Available Matching Workflows", show_header=True, header_style="bold magenta")
-    table.add_column("Workflow", style="cyan", width=30)
-    table.add_column("Description", style="white")
-
-    workflows = [
-        ("FHA ↔ GNMA", "Match FHA endorsements to GNMA loan-level disclosure"),
-        ("FHA ↔ HMDA", "Match FHA loans to HMDA loan applications"),
-        ("HMDA ↔ MBS", "Match HMDA loans to MBS pool data"),
-        ("HMDA ↔ FHLB", "Match HMDA loans to FHLB advance data"),
-        ("HMDA ↔ FHFA", "Match HMDA loans to FHFA data"),
-        ("MBS ↔ UMBS", "Match MBS loan-level to UMBS issuance data"),
-        ("MBS ↔ FHLB", "Match MBS pools to FHLB data"),
-        ("MBS ↔ FHFA", "Match MBS pools to FHFA data"),
-        ("HMDA Sellers/Purchasers", "Match HMDA loans to seller/purchaser data"),
-    ]
-
-    for workflow, description in workflows:
-        table.add_row(workflow, description)
-
+    table = Table(title="Matching workflows", show_header=True, header_style="bold magenta")
+    table.add_column("Command", style="cyan")
+    table.add_column("Links", style="white")
+    for command, _module, links in WORKFLOWS:
+        table.add_row(f"match {command}", links)
+    table.add_row("match master", "Assembles every edge into the HMDA spine")
     console.print(table)
 
-    console.print("\n[yellow]Matching workflows are available as Python modules.[/yellow]\n")
-
-    console.print("[bold]Example usage:[/bold]")
-    console.print("  from mortgage_data_manager.matching.match_fha_hmda import match_fha_hmda")
-    console.print("  from mortgage_data_manager.matching.match_hmda_sellers_and_purchasers import run_matching")
+    console.print(
+        "\nEvery workflow has [cyan]info[/cyan], [cyan]run[/cyan] and (most) [cyan]validate[/cyan]."
+    )
     console.print("\n[bold]Data configuration:[/bold]")
     console.print("  from mortgage_data_manager.matching.config import MatchingConfig")
     console.print("  matching_dir = MatchingConfig.MATCHING_DATA_DIR")
-    console.print("  output_dir = MatchingConfig.MATCHING_OUTPUT_DIR\n")
+    console.print('  crosswalk_dir = MatchingConfig.get_crosswalk_type_dir("hmda_fha")\n')
 
 
 @app.command(name="list-workflows")
 def list_workflows() -> None:
     """List all available matching workflow modules."""
     console.print("\n[bold cyan]Available Matching Workflow Modules:[/bold cyan]\n")
-
-    workflows = [
-        "match_fha_gnma",
-        "match_fha_hmda",
-        "match_fhfa_hmda",
-        "match_hmda_sellers_and_purchasers",
-        "match_hmda_mbs",
-        "match_hmda_fhlb",
-        "match_mbs_umbs",
-        "match_mbs_fhlb",
-        "match_mbs_fhfa",
-    ]
-
-    for workflow in workflows:
-        console.print(f"  • [cyan]mortgage_data_manager.matching.{workflow}[/cyan]")
-
+    for _command, module, _links in WORKFLOWS:
+        console.print(f"  • [cyan]mortgage_data_manager.matching.{module}[/cyan]")
+    # The assembler over all of the above, not a pairwise matcher.
+    console.print("  • [cyan]mortgage_data_manager.matching.master[/cyan]")
     console.print("\n[yellow]Use Python API to access matching functionality.[/yellow]\n")
 
 

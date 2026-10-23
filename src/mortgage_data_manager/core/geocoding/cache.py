@@ -43,7 +43,7 @@ CACHE_SCHEMA = {
 
 
 def cache_dir() -> Path:
-    return MortgageDataConfig.DATA_DIR / "reference" / "geocoder_cache"
+    return MortgageDataConfig.REFERENCE_DIR / "geocoder_cache"
 
 
 def cache_path() -> Path:
@@ -54,11 +54,19 @@ def _lock_path() -> Path:
     return cache_dir() / "geocoder_cache.lock"
 
 
-def normalize_address(street: str | None, city: str | None, state: str | None, zip_: str | None) -> tuple[str, str, str, str]:
+def normalize_address(
+    street: str | None, city: str | None, state: str | None, zip_: str | None
+) -> tuple[str, str, str, str]:
     """Canonicalize an address tuple for hashing + cache lookup.
 
+    Args:
+        street: Street line, or None.
+        city: City name, or None.
+        state: State code, or None.
+        zip_: Postal code, or None.
+
     Returns:
-        (street_norm, city_norm, state_norm, zip5).
+        The ``(street_norm, city_norm, state_norm, zip5)`` tuple.
     """
     s = (street or "").strip().upper()
     c = (city or "").strip().upper()
@@ -72,25 +80,55 @@ def address_hash(street: str | None, city: str | None, state: str | None, zip_: 
     return hashlib.sha1(f"{s}|{c}|{st}|{z}".encode()).hexdigest()
 
 
-def attach_hash(df: pl.DataFrame, street: str = "street", city: str = "city", state: str = "state", zip_: str = "zip") -> pl.DataFrame:
-    """Append `_street_norm`, `_city_norm`, `_state_norm`, `_zip5`, `address_hash`."""
-    return df.with_columns(
-        pl.col(street).fill_null("").str.strip_chars().str.to_uppercase().alias("_street_norm"),
-        pl.col(city).fill_null("").str.strip_chars().str.to_uppercase().alias("_city_norm"),
-        pl.col(state).fill_null("").str.strip_chars().str.to_uppercase().alias("_state_norm"),
-        pl.col(zip_).fill_null("").str.strip_chars().str.slice(0, 5).alias("_zip5"),
-    ).with_columns(
-        pl.concat_str(["_street_norm", "_city_norm", "_state_norm", "_zip5"], separator="|").alias("_addr_key")
-    ).with_columns(
-        pl.col("_addr_key").map_elements(
-            lambda s: hashlib.sha1(s.encode("utf-8")).hexdigest(),
-            return_dtype=pl.Utf8,
-        ).alias("address_hash"),
-    ).drop("_addr_key")
+def attach_hash(
+    df: pl.DataFrame,
+    street: str = "street",
+    city: str = "city",
+    state: str = "state",
+    zip_: str = "zip",
+) -> pl.DataFrame:
+    """Append `_street_norm`, `_city_norm`, `_state_norm`, `_zip5`, `address_hash`.
+
+    Args:
+        df: The frame to annotate.
+        street: Name of the street column.
+        city: Name of the city column.
+        state: Name of the state column.
+        zip_: Name of the postal-code column.
+
+    Returns:
+        The frame with the normalized columns and ``address_hash`` appended.
+    """
+    return (
+        df.with_columns(
+            pl.col(street).fill_null("").str.strip_chars().str.to_uppercase().alias("_street_norm"),
+            pl.col(city).fill_null("").str.strip_chars().str.to_uppercase().alias("_city_norm"),
+            pl.col(state).fill_null("").str.strip_chars().str.to_uppercase().alias("_state_norm"),
+            pl.col(zip_).fill_null("").str.strip_chars().str.slice(0, 5).alias("_zip5"),
+        )
+        .with_columns(
+            pl.concat_str(
+                ["_street_norm", "_city_norm", "_state_norm", "_zip5"], separator="|"
+            ).alias("_addr_key")
+        )
+        .with_columns(
+            pl.col("_addr_key")
+            .map_elements(
+                lambda s: hashlib.sha1(s.encode("utf-8")).hexdigest(),
+                return_dtype=pl.Utf8,
+            )
+            .alias("address_hash"),
+        )
+        .drop("_addr_key")
+    )
 
 
 def load_cache() -> pl.DataFrame:
-    """Read the cache parquet. Returns an empty DataFrame with the right schema if absent."""
+    """Read the cache parquet.
+
+    Returns:
+        The cached geocodes, or an empty frame with the right schema if absent.
+    """
     p = cache_path()
     if not p.exists():
         return pl.DataFrame(schema=CACHE_SCHEMA)
@@ -111,7 +149,7 @@ def _acquire_lock(timeout_seconds: float = 30.0) -> None:
         except FileExistsError:
             if time.monotonic() - start > timeout_seconds:
                 # Stale lock — overwrite.
-                logger.warning(f"Geocoder cache lock held >{timeout_seconds}s; forcing release")
+                logger.warning("Geocoder cache lock held >%ss; forcing release", timeout_seconds)
                 try:
                     lock.unlink()
                 except FileNotFoundError:
@@ -132,6 +170,9 @@ def append_cache(new_rows: pl.DataFrame) -> int:
 
     Dedupes on address_hash, keeping the latest geocode_cached_at when an
     address is seen more than once.
+
+    Args:
+        new_rows: Rows to append; must carry ``address_hash``.
 
     Returns:
         Number of rows written to the cache after dedupe.
@@ -167,7 +208,16 @@ def purge_cache(
     providers: Sequence[str] | None = None,
     match_reason: Sequence[str] | None = None,
 ) -> int:
-    """Remove rows from the cache matching the given filters. Returns rows removed."""
+    """Remove rows from the cache matching the given filters.
+
+    Args:
+        older_than: Purge rows cached strictly before this date.
+        providers: Purge rows from these providers.
+        match_reason: Purge rows carrying these match reasons.
+
+    Returns:
+        The number of rows removed.
+    """
     p = cache_path()
     if not p.exists():
         return 0

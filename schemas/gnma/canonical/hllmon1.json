@@ -1,0 +1,1676 @@
+{
+  "prefix": "hllmon1",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "H": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2013-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (H = File Header)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_text": "File Name",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "file_correction_flag",
+          "arrow_type": "string",
+          "pdf_text": "File Correction Flag (Y/N)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 27,
+              "end": 27,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As-Of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 28,
+              "end": 33,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Date File Generated (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 34,
+              "end": 41,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    },
+    "L": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2013-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (L)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 2,
+              "end": 7,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 8,
+              "end": 11,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "disclosure_sequence_number",
+          "arrow_type": "string",
+          "pdf_text": "Disclosure Sequence Number",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 12,
+              "end": 21,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "sequence_number_suffix",
+          "arrow_type": "string",
+          "pdf_text": "Sequence Number Suffix",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 22,
+              "end": 24,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "property_type_code",
+          "arrow_type": "int64",
+          "pdf_text": "Property Type Code",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 25,
+              "end": 25,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "original_principal_limit",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Original Principal Limit",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 26,
+              "end": 37,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "current_principal_limit",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Current Principal Limit",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 38,
+              "end": 49,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "reserved_filler",
+          "arrow_type": "string",
+          "pdf_text": "Reserved/Filler",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 50,
+              "end": 51,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "payment_reason_code",
+          "arrow_type": "int64",
+          "pdf_text": "Payment Reason Code",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 52,
+              "end": 53,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "original_hecm_loan_balance",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Original HECM Loan Balance (OPB)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 54,
+              "end": 65,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "current_hecm_loan_balance",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Current HECM Loan Balance",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 66,
+              "end": 77,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "mortgage_margin",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "Mortgage Margin",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 78,
+              "end": 82,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "rate_reset_frequency",
+          "arrow_type": "string",
+          "pdf_text": "Rate Reset Frequency",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 83,
+              "end": 83,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "servicing_fee_margin",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "Servicing Fee Margin",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 84,
+              "end": 87,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "borrower_1_age_at_pool_issuance",
+          "arrow_type": "int64",
+          "pdf_text": "Borrower 1 Age at Pool Issuance",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 88,
+              "end": 90,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "borrower_2_age_at_pool_issuance",
+          "arrow_type": "int64",
+          "pdf_text": "Borrower 2 Age at Pool Issuance",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 91,
+              "end": 93,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "msa",
+          "arrow_type": "string",
+          "pdf_text": "MSA",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 94,
+              "end": 98,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "hecm_loan_original_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "HECM Loan Original Interest Rate",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 99,
+              "end": 103,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "hecm_loan_current_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "HECM Loan Current Interest Rate",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 104,
+              "end": 108,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "participation_upb",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Participation UPB",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 109,
+              "end": 120,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "participation_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "Participation Interest Rate",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 121,
+              "end": 125,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "loan_servicing_fee_code",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Servicing Fee Code",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 126,
+              "end": 126,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "expected_average_mortgage_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "Expected Average Mortgage Interest Rate",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 127,
+              "end": 131,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "servicing_fee_set_aside_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Servicing Fee Set Aside Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 132,
+              "end": 143,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "hecm_original_funding_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "HECM Original Funding Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 144,
+              "end": 151,
+              "length": 8
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 144,
+              "end": 149,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "filler",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 152,
+              "end": 163,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 150,
+              "end": 151,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "property_valuation_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Property Valuation Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 164,
+              "end": 166,
+              "length": 3
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 152,
+              "end": 163,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "original_term_of_payments",
+          "arrow_type": "int64",
+          "pdf_text": "Original Term of Payments",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 167,
+              "end": 178,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 164,
+              "end": 166,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "property_charges_set_aside_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Property Charges Set Aside Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 179,
+              "end": 190,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 167,
+              "end": 178,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "property_repair_set_aside_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Property Repair Set Aside Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 191,
+              "end": 198,
+              "length": 8
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 179,
+              "end": 190,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "property_valuation_effective_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Property Valuation Effective Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 199,
+              "end": 228,
+              "length": 30
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 191,
+              "end": 198,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "loan_origination_company",
+          "arrow_type": "string",
+          "pdf_text": "Loan Origination Company",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 229,
+              "end": 229,
+              "length": 1
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 199,
+              "end": 228,
+              "length": 30
+            }
+          ]
+        },
+        {
+          "id": "hecm_loan_purpose_code",
+          "arrow_type": "int64",
+          "pdf_text": "HECM Loan Purpose Code",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 230,
+              "end": 230,
+              "length": 1
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 229,
+              "end": 229,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "hecm_loan_payment_option_code",
+          "arrow_type": "int64",
+          "pdf_text": "HECM Loan Payment Option Code",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 231,
+              "end": 231,
+              "length": 1
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 230,
+              "end": 230,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "hecm_saver_flag",
+          "arrow_type": "string",
+          "pdf_text": "HECM Saver Flag",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 232,
+              "end": 243,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 231,
+              "end": 231,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "original_available_line_of_credit_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Original Available Line of Credit Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 244,
+              "end": 255,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 232,
+              "end": 243,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "original_draw_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Original Draw Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 256,
+              "end": 265,
+              "length": 10
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 244,
+              "end": 255,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "mortgage_servicer",
+          "arrow_type": "string",
+          "pdf_text": "Mortgage Servicer",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 266,
+              "end": 270,
+              "length": 5
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 256,
+              "end": 265,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "lifetime_floor_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "Lifetime Floor Rate",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 271,
+              "end": 282,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 266,
+              "end": 270,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "remaining_available_line_of_credit_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Remaining Available Line of Credit Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 283,
+              "end": 294,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 271,
+              "end": 282,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "monthly_servicing_fee_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Monthly Servicing Fee Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 295,
+              "end": 306,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 283,
+              "end": 294,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "monthly_scheduled_payment_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Monthly Scheduled Payment Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 307,
+              "end": 309,
+              "length": 3
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 295,
+              "end": 306,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "remaining_term_of_payments",
+          "arrow_type": "int64",
+          "pdf_text": "Remaining Term of Payments",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 310,
+              "end": 317,
+              "length": 8
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 307,
+              "end": 309,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "initial_change_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Initial Change Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 318,
+              "end": 329,
+              "length": 12
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 310,
+              "end": 317,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "credit_line_set_aside_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Credit Line Set Aside Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 330,
+              "end": 332,
+              "length": 3
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 318,
+              "end": 329,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "mip_basis_points",
+          "arrow_type": "int64",
+          "pdf_text": "MIP Basis Points",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 333,
+              "end": 345,
+              "length": 13
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 330,
+              "end": 332,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "maximum_claim_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Maximum Claim Amount",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 346,
+              "end": 347,
+              "length": 2
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 333,
+              "end": 345,
+              "length": 13
+            }
+          ]
+        },
+        {
+          "id": "lifetime_interest_rate_change_cap",
+          "arrow_type": "int64",
+          "pdf_text": "Lifetime Interest Rate Change Cap",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 348,
+              "end": 349,
+              "length": 2
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 346,
+              "end": 347,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "reset_months",
+          "arrow_type": "int64",
+          "pdf_text": "Reset Months",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 350,
+              "end": 350,
+              "length": 1
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 348,
+              "end": 349,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "current_month_liquidation_flag",
+          "arrow_type": "string",
+          "pdf_text": "Current Month Liquidation Flag",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2013-08",
+              "begin": 351,
+              "end": 356,
+              "length": 6
+            },
+            {
+              "from": "2013-09",
+              "to": null,
+              "begin": 350,
+              "end": 350,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "eligible_non_borrowing_spouse",
+          "arrow_type": "string",
+          "pdf_text": "Eligible Non-borrowing Spouse",
+          "layouts": [
+            {
+              "from": "2013-09",
+              "to": "2015-03",
+              "begin": 351,
+              "end": 356,
+              "length": 6
+            },
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 351,
+              "end": 351,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "mandatory_property_charges_set_aside",
+          "arrow_type": "string",
+          "pdf_text": "Mandatory Property Charges Set Aside",
+          "layouts": [
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 352,
+              "end": 352,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "annual_interest_rate_change_cap",
+          "arrow_type": "int64",
+          "pdf_text": "Annual Interest Rate Change Cap",
+          "layouts": [
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 353,
+              "end": 354,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "maximum_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "Maximum Interest Rate",
+          "layouts": [
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 355,
+              "end": 359,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "remaining_property_charges_set_aside",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Remaining Property Charges Set Aside",
+          "layouts": [
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 360,
+              "end": 372,
+              "length": 13
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As-Of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2015-04",
+              "to": null,
+              "begin": 373,
+              "end": 378,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "initial_monthly_scheduled_payment",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Initial Monthly Scheduled Payment",
+          "layouts": [
+            {
+              "from": "2017-11",
+              "to": null,
+              "begin": 379,
+              "end": 391,
+              "length": 13
+            }
+          ]
+        },
+        {
+          "id": "initial_remaining_available_line_of_credit",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Initial Remaining Available Line of Credit",
+          "layouts": [
+            {
+              "from": "2017-11",
+              "to": null,
+              "begin": 392,
+              "end": 404,
+              "length": 13
+            }
+          ]
+        },
+        {
+          "id": "adjustment_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Adjustment Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2017-11",
+              "to": null,
+              "begin": 405,
+              "end": 412,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    },
+    "P": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2013-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (P = Pool Header Information)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 2,
+              "end": 10,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 11,
+              "end": 16,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "issue_type",
+          "arrow_type": "string",
+          "pdf_text": "Issue Type",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 17,
+              "end": 17,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 18,
+              "end": 19,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Pool Issue Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 20,
+              "end": 27,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 28,
+              "end": 31,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As-Of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 32,
+              "end": 37,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    },
+    "T": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2013-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (T = Pool Trailer Information)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 2,
+              "end": 10,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 11,
+              "end": 16,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "issue_type",
+          "arrow_type": "string",
+          "pdf_text": "Issue Type",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 17,
+              "end": 17,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 18,
+              "end": 19,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Pool Issue Date",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 20,
+              "end": 27,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 28,
+              "end": 31,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As-Of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 32,
+              "end": 37,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "loan_count_for_the_pool",
+          "arrow_type": "int64",
+          "pdf_text": "Loan Count for the Pool",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 38,
+              "end": 44,
+              "length": 7
+            }
+          ]
+        }
+      ]
+    },
+    "Z": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2013-07",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type (Z = File Trailer)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_text": "File Name",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "count_of_pools_in_this_file",
+          "arrow_type": "int64",
+          "pdf_text": "Count of Pools in this File (Control Total)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 27,
+              "end": 33,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "count_of_loans_in_this_file",
+          "arrow_type": "int64",
+          "pdf_text": "Count of Loans in this File (Control Total)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 34,
+              "end": 42,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "total_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Total Record Count (Control Total including all headers and trailers)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 43,
+              "end": 51,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As-Of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2013-07",
+              "to": null,
+              "begin": 52,
+              "end": 57,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

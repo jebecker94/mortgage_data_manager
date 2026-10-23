@@ -15,11 +15,9 @@ Target master datasets (the registry below):
 
 Plus one derived dataset that is NOTED here but built by a sibling subpackage:
 
-- ``msr_transfers``    - MSR (mortgage servicing rights) transfers. Detection
-  now lives in-package in :func:`analytics.transfers.detect_servicer_transfers`
-  (folded in from Jonathan's former standalone ``msr_transfers`` project), not
-  in ``combined``. Registered here for cross-reference only; this subpackage
-  does not build it. See ``builders.msr_transfers_note``.
+- ``msr_transfers``    - MSR (mortgage servicing rights) transfers, detected by
+  `analytics.transfers.detect_servicer_transfers`. Registered here for
+  cross-reference only; this subpackage does not build it.
 
 The ``sources`` field lists the per-source silver inputs each master is
 expected to draw on — a wiring sketch, refined as builders are implemented.
@@ -36,8 +34,8 @@ from mortgage_data_manager.core.config import MortgageDataConfig
 
 #: Registry of combined master datasets. ``grain`` is the row grain; ``sources``
 #: are the per-source silver inputs the builder will draw on (sketch);
-#: ``external`` marks datasets not built by THIS subpackage (produced elsewhere
-#: — a separate project, or a sibling subpackage like ``analytics``).
+#: ``external`` marks datasets not built by THIS subpackage (a sibling subpackage
+#: like ``analytics`` produces them).
 DATASET_MAP: Final[dict[str, dict[str, object]]] = {
     "loan_issuance": {
         "description": "Master loan-level issuance/origination",
@@ -55,6 +53,12 @@ DATASET_MAP: Final[dict[str, dict[str, object]]] = {
         "description": "GSE loan termination / loss-waterfall events (one row per event)",
         "grain": "loan_event",
         "sources": ["fnma", "fhlmc"],
+        "external": False,
+    },
+    "loan_outcomes": {
+        "description": "Loan-grain outcome summary (observation window, delinquency, modification, terminal event)",
+        "grain": "loan",
+        "sources": ["gnma", "umbs", "fnma", "fhlmc"],
         "external": False,
     },
     "mbs_issuance": {
@@ -112,5 +116,12 @@ class CombinedConfig(MortgageDataConfig):
 
     @classmethod
     def dataset_path(cls, dataset: str) -> Path:
-        """Output path for a combined master dataset."""
+        """Output path for a combined master dataset.
+
+        Args:
+            dataset: Combined master dataset name.
+
+        Returns:
+            The output path for that dataset.
+        """
         return cls.COMBINED_DATA_DIR / dataset

@@ -3,7 +3,7 @@
 GSE and GNMA disclosures store dates as zero-suppressed integers or digit
 strings rather than ISO dates — ``M(M)YYYY`` (month-granularity), ``MMDDYYYY``
 (GSE security issue dates), and ``YYYYMMDD`` (GNMA full dates). These helpers
-turn an encoded column into a proper :class:`polars.Date` (month-only encodings
+turn an encoded column into a proper `polars.Date` (month-only encodings
 land on the first of the month). Each is robust to int-or-string inputs,
 leading-zero loss (``92025`` == ``092025``), and zero/blank sentinels (which
 parse to null under ``strict=False``).
@@ -76,7 +76,7 @@ def yyyymmdd_to_date(expr: pl.Expr) -> pl.Expr:
 def ccyymm_to_date(expr: pl.Expr) -> pl.Expr:
     """Parse a ``CCYYMM`` (year-first ``YYYYMM``) month encoding to a first-of-month ``pl.Date``.
 
-    Distinct from :func:`month_to_date`, which expects month-first ``MMYYYY`` —
+    Distinct from `month_to_date`, which expects month-first ``MMYYYY`` —
     here the year leads (GNMA As-Of / report-period columns, ``"202512"`` ->
     2025-12-01).
 
@@ -112,6 +112,18 @@ def mmddyy_to_date(expr: pl.Expr) -> pl.Expr:
         .str.zfill(6)
         .str.strptime(pl.Date, "%m%d%y", strict=False)
     )
+
+
+def iso_to_date(expr: pl.Expr) -> pl.Expr:
+    """Parse an ISO ``YYYY-MM-DD`` string encoding to ``pl.Date`` (FNMA multifamily).
+
+    Args:
+        expr: The ISO-formatted date column (String).
+
+    Returns:
+        A ``pl.Date`` expression (null on blanks/non-dates).
+    """
+    return expr.str.strptime(pl.Date, "%Y-%m-%d", strict=False)
 
 
 def to_date_from_datetime(expr: pl.Expr) -> pl.Expr:

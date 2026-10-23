@@ -1,11 +1,11 @@
 """Feature engineering for the prepayment model.
 
-Reads the harmonized loan-month panel (:mod:`analytics.panel`) and adds the
+Reads the harmonized loan-month panel (`analytics.panel`) and adds the
 closed-form features the prepayment estimators consume: refinance incentive and
 spread-at-origination (SATO), burnout measures, dynamic LTV, a pre-specified
 S-curve, restricted-cubic-spline bases, categorical dummies, seasonality,
 vintage fixed effects, and a COVID indicator. The market-rate and HPI inputs
-come from the macro reference series (:mod:`core.reference.macro`).
+come from the macro reference series (`core.reference.macro`).
 
 Every transformation here is deterministic given the panel — no model is fit.
 """
@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from datetime import date
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import polars as pl
@@ -83,7 +84,7 @@ def _restricted_cubic_spline(values: np.ndarray, knots: list[float]) -> np.ndarr
     def _h(t_j: float) -> np.ndarray:
         d_j = (np.maximum(x - t_j, 0) ** 3 - np.maximum(x - t[-2], 0) ** 3) / (t[-1] - t_j)
         d_k = (np.maximum(x - t[-2], 0) ** 3 - np.maximum(x - t[-1], 0) ** 3) / (t[-1] - t[-2])
-        return d_j - d_k
+        return cast(np.ndarray, d_j - d_k)
 
     basis = np.zeros((len(x), k - 2), dtype=np.float64)
     for j in range(k - 2):
@@ -110,16 +111,25 @@ def _scurve(incentive: np.ndarray, k: float = 6.0, c: float = 0.75) -> np.ndarra
     return 1.0 / (1.0 + np.exp(-k * (incentive - c)))
 
 
-def engineer_features(*, panel_path: Path | None = None, overwrite: bool = False) -> Path:
-    """Engineer all prepayment features and persist the feature matrix.
+def engineer_features(
+    *, panel_path: Path | None = None, out_path: Path | None = None, overwrite: bool = False
+) -> Path:
+    """Engineer all model features and persist the feature matrix.
+
+    Works on either panel flavor (the outcome columns pass through untouched);
+    for the credit panel pass ``panel_credit.parquet`` and a distinct
+    ``out_path`` (e.g. ``features_credit.parquet``) so the prepayment matrix
+    is not clobbered.
 
     Args:
         panel_path: Source panel parquet. Defaults to the panel under
             ``AnalyticsConfig.ANALYTICS_PANEL_DIR``.
-        overwrite: Rebuild even if ``features.parquet`` already exists.
+        out_path: Destination parquet. Defaults to ``features.parquet`` under
+            ``AnalyticsConfig.ANALYTICS_PANEL_DIR``.
+        overwrite: Rebuild even if the output already exists.
 
     Returns:
-        Path to the written ``features.parquet``.
+        Path to the written feature matrix.
 
     Raises:
         FileNotFoundError: If the source panel does not exist.
@@ -128,13 +138,13 @@ def engineer_features(*, panel_path: Path | None = None, overwrite: bool = False
     if not panel_path.exists():
         raise FileNotFoundError(f"{panel_path} not found. Build the panel first.")
 
-    out_path = AnalyticsConfig.ANALYTICS_PANEL_DIR / "features.parquet"
+    out_path = out_path or (AnalyticsConfig.ANALYTICS_PANEL_DIR / "features.parquet")
     if not should_process_file(out_path, overwrite):
-        logger.info(f"Features exist at {out_path}, skipping (use overwrite=True to rebuild)")
+        logger.info("Features exist at %s, skipping (use overwrite=True to rebuild)", out_path)
         return out_path
 
     df = pl.read_parquet(panel_path)
-    logger.info(f"Loaded panel: {df.height:,} rows")
+    logger.info("Loaded panel: %s rows", f"{df.height:,}")
 
     # A. Refinance incentive (orig rate vs current market rate).
     if MORTGAGE_RATE in df.columns:
@@ -189,15 +199,20 @@ def engineer_features(*, panel_path: Path | None = None, overwrite: bool = False
     df = _add_spline_features(df, FICO, [660, 700, 740, 780], "fico")
     df = _add_spline_features(df, DYNAMIC_LTV, [60, 80, 100, 120], "dltv")
 
-    # H. Categorical dummies (reference category dropped).
-    for val in ["R", "C"]:
-        df = df.with_columns((pl.col(LOAN_PURPOSE) == val).cast(pl.Int8).alias(f"lp_{val}"))
-    for val in ["CO", "CP", "MH", "PU"]:
-        df = df.with_columns((pl.col(PROPERTY_TYPE) == val).cast(pl.Int8).alias(f"pt_{val}"))
-    for val in ["S", "I"]:
-        df = df.with_columns((pl.col(OCCUPANCY) == val).cast(pl.Int8).alias(f"occ_{val}"))
-    for val in ["B", "C"]:
-        df = df.with_columns((pl.col(CHANNEL) == val).cast(pl.Int8).alias(f"ch_{val}"))
+    # H. Categorical dummies (reference category dropped). Names keep the GSE letter
+    # codes the fitted models were trained on; purpose and channel values are the
+    # combined masters' spelled-out vocabulary.
+    dummies = {
+        "lp_R": (LOAN_PURPOSE, "refi_rate_term"),
+        "lp_C": (LOAN_PURPOSE, "refi_cash_out"),
+        **{f"pt_{v}": (PROPERTY_TYPE, v) for v in ("CO", "CP", "MH", "PU")},
+        **{f"occ_{v}": (OCCUPANCY, v) for v in ("S", "I")},
+        "ch_B": (CHANNEL, "broker"),
+        "ch_C": (CHANNEL, "correspondent"),
+    }
+    df = df.with_columns(
+        (pl.col(col) == val).cast(pl.Int8).alias(name) for name, (col, val) in dummies.items()
+    )
     df = df.with_columns((pl.col(AGENCY) == FHLMC).cast(pl.Int8).alias("agency_fhlmc"))
 
     # I. Seasonality (Jan reference).
@@ -219,7 +234,7 @@ def engineer_features(*, panel_path: Path | None = None, overwrite: bool = False
     )
 
     df.write_parquet(out_path)
-    logger.info(f"Feature matrix: {df.height:,} rows x {df.width} cols -> {out_path}")
+    logger.info("Feature matrix: %s rows x %s cols -> %s", f"{df.height:,}", df.width, out_path)
     return out_path
 
 

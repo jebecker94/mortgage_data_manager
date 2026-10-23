@@ -1,0 +1,197 @@
+{
+  "prefix": "REMICSocial",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; delimited (explicit decimals, plain decode)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "HR": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2026-03",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = HR",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "create_date",
+          "arrow_type": "string",
+          "pdf_text": "Create Date",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "RS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2026-03",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = RS",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "remic_trust",
+          "arrow_type": "string",
+          "pdf_text": "REMIC Trust",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 13,
+              "format": "GNMA-\nYYYY-NNN"
+            }
+          ]
+        },
+        {
+          "id": "remic_trust_settlement_date",
+          "arrow_type": "string",
+          "pdf_text": "REMIC Trust Settlement Date",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "social_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Social Indicator",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        }
+      ]
+    },
+    "TR": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2026-03",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type = TR",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_create_date",
+          "arrow_type": "string",
+          "pdf_text": "File Create Date",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "detail_record_count",
+          "arrow_type": "int64",
+          "pdf_text": "Detail Record Count",
+          "layouts": [
+            {
+              "from": "2026-03",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 8
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

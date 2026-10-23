@@ -51,18 +51,20 @@ def sample_hmda_data():
         ...     assert len(sample_hmda_data) > 0
         ...     assert "activity_year" in sample_hmda_data.columns
     """
-    return pl.DataFrame({
-        "activity_year": [2020, 2020, 2021],
-        "lei": ["ABC123", "DEF456", "ABC123"],
-        "loan_amount": [250000, 180000, 300000],
-        "interest_rate": [3.5, 3.25, 3.75],
-        "state_code": ["CA", "NY", "CA"],
-        "county_code": ["037", "061", "037"],
-        "census_tract": ["980100", "010100", "980200"],
-        "action_taken": [1, 1, 1],
-        "loan_type": [2, 2, 2],
-        "loan_purpose": [1, 1, 3],
-    })
+    return pl.DataFrame(
+        {
+            "activity_year": [2020, 2020, 2021],
+            "lei": ["ABC123", "DEF456", "ABC123"],
+            "loan_amount": [250000, 180000, 300000],
+            "interest_rate": [3.5, 3.25, 3.75],
+            "state_code": ["CA", "NY", "CA"],
+            "county_code": ["037", "061", "037"],
+            "census_tract": ["980100", "010100", "980200"],
+            "action_taken": [1, 1, 1],
+            "loan_type": [2, 2, 2],
+            "loan_purpose": [1, 1, 3],
+        }
+    )
 
 
 @pytest.fixture
@@ -77,15 +79,17 @@ def sample_fha_data():
         ...     assert len(sample_fha_data) > 0
         ...     assert "Year" in sample_fha_data.columns
     """
-    return pl.DataFrame({
-        "Year": [2020, 2020, 2021],
-        "Month": [6, 7, 6],
-        "Mortgage Amount": [250000, 180000, 300000],
-        "Interest Rate": [3.5, 3.25, 3.75],
-        "Property State": ["CA", "NY", "CA"],
-        "Property Zip": [90001, 10001, 90002],
-        "Loan Type": ["Purchase", "Purchase", "Refinance"],
-    })
+    return pl.DataFrame(
+        {
+            "Year": [2020, 2020, 2021],
+            "Month": [6, 7, 6],
+            "Mortgage Amount": [250000, 180000, 300000],
+            "Interest Rate": [3.5, 3.25, 3.75],
+            "Property State": ["CA", "NY", "CA"],
+            "Property Zip": [90001, 10001, 90002],
+            "Loan Type": ["Purchase", "Purchase", "Refinance"],
+        }
+    )
 
 
 @pytest.fixture
@@ -147,11 +151,13 @@ def sample_csv_file(temp_project_dir):
     """
     csv_path = temp_project_dir / "test_data.csv"
 
-    df = pl.DataFrame({
-        "id": [1, 2, 3],
-        "name": ["Alice", "Bob", "Charlie"],
-        "value": [100, 200, 300],
-    })
+    df = pl.DataFrame(
+        {
+            "id": [1, 2, 3],
+            "name": ["Alice", "Bob", "Charlie"],
+            "value": [100, 200, 300],
+        }
+    )
 
     df.write_csv(csv_path)
     return csv_path

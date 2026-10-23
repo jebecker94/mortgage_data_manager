@@ -85,7 +85,7 @@ def info_command() -> None:
         )
     console.print(registry)
     console.print(
-        "[yellow]Note:[/yellow] msr_transfers comes from a separate project and is not built here."
+        "[yellow]Note:[/yellow] msr_transfers is built by analytics.transfers, not by combined."
     )
 
 

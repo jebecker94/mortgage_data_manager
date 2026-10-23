@@ -38,15 +38,6 @@ def print_success(message: str) -> None:
     console.print(f"[green]\u2713[/green] {message}")
 
 
-def print_warning(message: str) -> None:
-    """Print a warning message with yellow indicator.
-
-    Args:
-        message: Warning message to display
-    """
-    console.print(f"[yellow]\u26a0[/yellow] {message}")
-
-
 def print_error(message: str) -> None:
     """Print an error message with red indicator.
 
@@ -65,13 +56,7 @@ def print_summary(title: str, data: dict[str, Any], style: str = "green") -> Non
         style: Border style (default: "green")
     """
     lines = [f"[cyan]{k}:[/cyan] {v}" for k, v in data.items()]
-    console.print(
-        Panel(
-            "\n".join(lines),
-            title=title,
-            border_style=style
-        )
-    )
+    console.print(Panel("\n".join(lines), title=title, border_style=style))
 
 
 def print_section_header(text: str) -> None:
@@ -82,16 +67,6 @@ def print_section_header(text: str) -> None:
     """
     console.print(f"\n[bold cyan]{text}[/bold cyan]")
     console.print("=" * len(text))
-
-
-def print_path_info(label: str, path: Path) -> None:
-    """Print formatted path information.
-
-    Args:
-        label: Label for the path
-        path: Path to display
-    """
-    console.print(f"[cyan]{label}:[/cyan] {path}")
 
 
 def print_info_table(
@@ -121,35 +96,5 @@ def print_info_table(
 
     for key, value in data.items():
         table.add_row(key, str(value))
-
-    console.print(table)
-
-
-def print_file_table(files: list[dict[str, Any]], title: str = "Files") -> None:
-    """Print a formatted table of files.
-
-    Args:
-        files: List of dictionaries with file information
-        title: Table title
-
-    Example:
-        files = [
-            {'prefix': 'monthly', 'date': '202401', 'files': 5, 'status': 'success'},
-            {'prefix': 'llmon1', 'date': '202401', 'files': 3, 'status': 'success'},
-        ]
-        print_file_table(files)
-    """
-    table = Table(title=title)
-    table.add_column("Prefix", style="cyan")
-
-    # Dynamically add columns based on first file entry
-    if files:
-        for key in files[0].keys():
-            if key != "prefix":
-                table.add_column(key.replace("_", " ").title(), style="magenta")
-
-    for file_info in files:
-        row = [str(v) for v in file_info.values()]
-        table.add_row(*row)
 
     console.print(table)

@@ -1,10 +1,10 @@
 """Unit tests for the deterministic scale/enum expression helpers in ``combined.builders``.
 
 These tiny per-value transforms are the load-bearing seams of the tri-agency harmonization: a
-wrong scale factor (GNMA rate is ``/1000``, not ``/100``), a swapped enum branch (the GSE and
-GNMA channel code spaces are disjoint), or a missed sentinel silently corrupts the unified
-issuance/performance panels (tens of millions of rows) with no type or schema error. Each is a
-string/number-in, value-out contract worth pinning.
+stray rescale (GNMA silver is canonical since the 2026-07 rebuild — the ``_dec`` helpers must
+NOT re-divide), a swapped enum branch (the GSE and GNMA channel code spaces are disjoint), or a
+missed sentinel silently corrupts the unified issuance/performance panels (tens of millions of
+rows) with no type or schema error. Each is a string/number-in, value-out contract worth pinning.
 """
 
 from __future__ import annotations
@@ -21,9 +21,9 @@ from mortgage_data_manager.combined.builders import (
     _fico_clean,
     _gnma_event_type,
     _gnma_purpose,
-    _gnma_rate,
-    _gnma_ratio,
-    _gnma_upb,
+    _gnma_rate_dec,
+    _gnma_ratio_dec,
+    _gnma_upb_dec,
     _purpose_letter_to_enum,
     _zbc_norm,
 )
@@ -33,17 +33,20 @@ def _e(expr: pl.Expr):
     return pl.select(expr).item()
 
 
-@pytest.mark.parametrize(("raw", "expected"), [("03500", 3.5), ("04305", 4.305), ("00000", None)])
-def test_gnma_rate_divides_by_1000(raw, expected):
-    # The documented trap: GNMA fixed-point rate is /1000 (3.5%), NOT /100; 0 is a null sentinel.
-    assert _e(_gnma_rate(pl.lit(raw))) == expected
+@pytest.mark.parametrize(("raw", "expected"), [("3.5", 3.5), ("4.305", 4.305), ("0", None)])
+def test_gnma_rate_dec_passes_canonical_percent_through(raw, expected):
+    # GNMA silver is CANONICAL (decoded at build) since the 2026-07 rebuild: rates already
+    # arrive as real percent. The trap is the opposite of the old one — re-introducing the
+    # retired /1000 fixed-point scaler here would silently shift every GNMA rate. 0 -> null.
+    assert _e(_gnma_rate_dec(pl.lit(raw))) == expected
 
 
-def test_gnma_ratio_and_upb_scaling():
-    assert _e(_gnma_ratio(pl.lit("9500"))) == 95  # LTV/CLTV/DTI /100
-    assert _e(_gnma_ratio(pl.lit("0"))) is None
-    assert _e(_gnma_upb(pl.lit("1234567"))) == pytest.approx(12345.67)  # UPB cents /100
-    assert _e(_gnma_upb(pl.lit("0"))) is None
+def test_gnma_ratio_and_upb_dec_do_not_rescale():
+    # Same contract for ratios (int percent) and UPB (real USD): no /100, only 0/blank -> null.
+    assert _e(_gnma_ratio_dec(pl.lit("95"))) == 95
+    assert _e(_gnma_ratio_dec(pl.lit("0"))) is None
+    assert _e(_gnma_upb_dec(pl.lit("12345.67"))) == pytest.approx(12345.67)
+    assert _e(_gnma_upb_dec(pl.lit("0"))) is None
 
 
 @pytest.mark.parametrize(
@@ -71,19 +74,25 @@ def test_purpose_letter_enum():
     assert _e(_purpose_letter_to_enum(pl.lit("X"))) is None
 
 
-def test_gnma_purpose_curated_defaults():
-    def gp(purpose: str) -> str | None:
-        return _e(_gnma_purpose(pl.lit(purpose), pl.lit(None, dtype=pl.String)))
+def test_gnma_purpose_official_decode():
+    # Ginnie loan-level layout V1.0-V1.8: Refinance Type 2 = cash-out, 3 = streamlined;
+    # Loan Purpose 3 / 4 = loan modification, 5 = re-performing. The builder once had
+    # cash-out and streamline swapped and called code 3 construction.
+    def gp(purpose: str, refi: str | None = None) -> str | None:
+        return _e(_gnma_purpose(pl.lit(purpose), pl.lit(refi, dtype=pl.String)))
 
     assert gp("1") == "purchase"
-    assert gp("3") == "construction"  # curated default for GNMA code 3
-    assert gp("4") == "other"         # curated default for GNMA codes 4/5
-    assert gp("5") == "other"
+    assert gp("2", "2") == "refi_cash_out"
+    assert gp("2", "1") == "refi_rate_term"
+    assert gp("2", "3") == "refi_rate_term"
+    assert gp("2") == "refi_unspecified"
+    for code in ("3", "4", "5"):
+        assert gp(code) is None  # carried by is_modified_reissue, as the GSE "M" is
 
 
 def test_zbc_norm_unifies_fnma_string_and_fhlmc_int():
     assert _e(_zbc_norm(pl.lit("1"))) == "01"
-    assert _e(_zbc_norm(pl.lit(3))) == "03"       # FHLMC integer path
+    assert _e(_zbc_norm(pl.lit(3))) == "03"  # FHLMC integer path
     assert _e(_zbc_norm(pl.lit("  2 "))) == "02"  # strip then zero-pad
 
 

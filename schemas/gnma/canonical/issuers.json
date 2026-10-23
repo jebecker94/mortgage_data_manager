@@ -1,0 +1,317 @@
+{
+  "prefix": "issuers",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "issuer_number",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 4,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "filler",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 5,
+              "end": 6,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "filler_of_value_a0",
+          "arrow_type": "string",
+          "pdf_text": "Filler of value \u201cA0\u201d",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 7,
+              "end": 8,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "filler_2",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 9,
+              "end": 10,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "filler_3",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 11,
+              "end": 12,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "issuer_name",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Name (Short Name)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 13,
+              "end": 30,
+              "length": 18
+            }
+          ]
+        },
+        {
+          "id": "issuer_name_2",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Name (Long Name)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 31,
+              "end": 90,
+              "length": 60
+            }
+          ]
+        },
+        {
+          "id": "issuer_address_1",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Address 1",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 91,
+              "end": 120,
+              "length": 30
+            }
+          ]
+        },
+        {
+          "id": "issuer_address_2",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Address 2",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 121,
+              "end": 144,
+              "length": 24
+            }
+          ]
+        },
+        {
+          "id": "issuer_city",
+          "arrow_type": "string",
+          "pdf_text": "Issuer City",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 145,
+              "end": 166,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "issuer_state",
+          "arrow_type": "string",
+          "pdf_text": "Issuer State",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 167,
+              "end": 168,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "filler_4",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 169,
+              "end": 169,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "issuer_zip",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Zip",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 170,
+              "end": 174,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "issuer_phone_number_1",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Phone Number 1",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 175,
+              "end": 184,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_phone_number_2",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Phone Number 2",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 185,
+              "end": 194,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_phone_number_3",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Phone Number 3",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 195,
+              "end": 204,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "filler_5",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 205,
+              "end": 216,
+              "length": 12
+            }
+          ]
+        },
+        {
+          "id": "issuer_contact_name_1",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Contact Name 1",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 217,
+              "end": 246,
+              "length": 30
+            }
+          ]
+        },
+        {
+          "id": "issuer_contact_name_2",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Contact Name 2",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 247,
+              "end": 276,
+              "length": 30
+            }
+          ]
+        },
+        {
+          "id": "issuer_contact_name_3",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Contact Name 3",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 277,
+              "end": 306,
+              "length": 30
+            }
+          ]
+        },
+        {
+          "id": "filler_6",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 307,
+              "end": 308,
+              "length": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

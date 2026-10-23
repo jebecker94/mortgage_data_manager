@@ -1,0 +1,167 @@
+{
+  "prefix": "issrinfo",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 4,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "program",
+          "arrow_type": "string",
+          "pdf_text": "Program",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 5,
+              "end": 6,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "issuer_name",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Name",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 7,
+              "end": 106,
+              "length": 100
+            }
+          ]
+        },
+        {
+          "id": "issuer_address",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Address",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 107,
+              "end": 166,
+              "length": 60
+            }
+          ]
+        },
+        {
+          "id": "issuer_city",
+          "arrow_type": "string",
+          "pdf_text": "Issuer City",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 167,
+              "end": 196,
+              "length": 30
+            }
+          ]
+        },
+        {
+          "id": "issuer_state",
+          "arrow_type": "string",
+          "pdf_text": "Issuer State",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 197,
+              "end": 198,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "issuer_zip_code",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer Zip Code",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 199,
+              "end": 207,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "issuer_phone_number",
+          "arrow_type": "int64",
+          "pdf_text": "Issuer Phone Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 208,
+              "end": 217,
+              "length": 10
+            }
+          ]
+        },
+        {
+          "id": "issuer_status_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Status Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 218,
+              "end": 218,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "record_as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Record As-Of Date (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 219,
+              "end": 226,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

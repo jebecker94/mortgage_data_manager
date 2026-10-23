@@ -1,614 +1,192 @@
-# Architecture Documentation
+# Architecture
 
-This document describes the architectural patterns, design decisions, and principles used in the Mortgage Data Manager.
+How the package is organized, how data moves through it, and why it is built this way.
 
-## Table of Contents
+## Package layout
 
-- [Overview](#overview)
-- [Architectural Principles](#architectural-principles)
-- [Project Structure](#project-structure)
-- [Medallion Architecture](#medallion-architecture)
-- [Configuration Management](#configuration-management)
-- [CLI Design](#cli-design)
-- [Data Processing Patterns](#data-processing-patterns)
-- [Dependency Management](#dependency-management)
-- [Design Decisions](#design-decisions)
-
----
-
-## Overview
-
-The Mortgage Data Manager is a unified data management system that consolidates six previously standalone packages into a single, cohesive framework. The architecture prioritizes:
-
-1. **Modularity**: Subpackages are independent but share common utilities
-2. **Consistency**: Standardized patterns across all data sources
-3. **Scalability**: Efficient processing of large datasets
-4. **Maintainability**: Clear separation of concerns and DRY principles
-5. **Extensibility**: Easy to add new data sources
-
----
-
-## Architectural Principles
-
-### 1. Separation of Concerns
-
-Each subpackage is responsible for a single data source:
+Each data source is its own subpackage under `sources/`. The sources share one kernel,
+`core/`, and nothing else; the cross-source layers sit beside them:
 
 ```
-mortgage_data_manager/
-├── core/           # Shared utilities (configuration, I/O, logging)
-├── hmda/           # HMDA-specific code
-├── fha/            # FHA-specific code
-├── gnma/           # GNMA (Ginnie Mae)
-├── fhfa/           # FHFA
-├── fnma/           # FNMA (Fannie Mae)
-├── fhlmc/          # FHLMC (Freddie Mac)
-├── umbs/           # UMBS
-├── hud/            # HUD single-family programs
-├── hud_mf/         # HUD multifamily programs
-├── fhlb/           # FHLB (Acquired Member Assets)
-├── analytics/      # Derived analytics
-├── combined/       # Cross-source master datasets
-└── matching/       # Matching workflows
+src/mortgage_data_manager/
+├── core/               # Configuration, medallion helpers, downloads, logging,
+│                       #   reference tables, geocoding
+├── cli/                # The unified `mortgage-data` entry point
+├── sources/            # One subpackage per data source
+│   ├── hmda/           # Home Mortgage Disclosure Act
+│   ├── fha/            # FHA single-family and HECM endorsements
+│   ├── gnma/           # Ginnie Mae disclosures
+│   ├── fhfa/           # FHFA Public Use Database
+│   ├── fnma/           # Fannie Mae loan performance
+│   ├── fhlmc/          # Freddie Mac loan-level data
+│   ├── umbs/           # UMBS disclosures
+│   ├── usps_crosswalk/ # USPS ZIP crosswalks (published by HUD)
+│   ├── hud/            # HUD multifamily programs
+│   └── fhlb/           # FHLB Acquired Member Assets
+├── matching/           # Record linkage: one `match_{workflow}/` per pair of sources,
+│                       #   plus `master/`, which joins them onto one HMDA spine
+├── combined/           # Cross-source master datasets
+└── analytics/          # Derived analytics
 ```
 
-### 2. Configuration Inheritance
+A data-source subpackage has the same files every time:
 
-All subpackage configurations inherit from `MortgageDataConfig`:
+```
+subpackage/
+├── __init__.py         # Re-exports the config class and main functions
+├── config.py           # Configuration class
+├── download.py         # Fetch into raw
+├── import_bronze.py    # raw → bronze
+├── import_silver.py    # bronze → silver (every silver writer lives here)
+├── pipeline.py         # download → bronze → silver in one call
+└── cli.py              # Typer app: one flat module, never a cli/ package
+```
+
+The matching workflows are described in the [matching docs](matching/README.md).
+
+## Medallion layers
+
+Every source moves through the same four layers, each in its own directory under the
+source's data root:
+
+```
+{SUBPACKAGE_DATA_DIR}/
+├── raw/       # Files exactly as published
+├── bronze/    # Parquet, typed, minimal processing
+├── silver/    # Cleaned, hive-partitioned, analysis-ready
+└── gold/      # Derived assets promoted out of research use
+```
+
+**Raw** holds the files exactly as the publisher released them (CSV, Excel, ZIP, or for
+a JSON API the literal response). Nothing is transformed here, so the raw layer can
+always be compared against the source.
+
+**Bronze** converts raw to parquet. This is where column types and schemas are fixed
+and JSON is flattened, but the rows are otherwise left alone.
+
+**Silver** is the layer you analyse. Values are cleaned and standardized, and the output
+is hive-partitioned (for example `activity_year=2024/file_type=c/` for HMDA,
+`Year=2024/Month=6/` for FHA) so a query reads only the partitions it needs.
+
+**Gold** holds derived assets that more than one analysis depends on, such as a
+benchmark or a scored dataset. Each gold asset has a builder in its subpackage, a path
+in the config, and a `gold` CLI verb. Gold is only built when something needs it, so
+most sources have none.
+
+Each layer is written by one module:
+
+```
+ download.py        import_bronze.py        import_silver.py
+──────────────► raw ────────────────► bronze ────────────────► silver
+```
+
+`usps_crosswalk` stops at bronze. Its bronze files already need no further cleaning,
+so a silver layer would only copy them; read across quarters with `load_crosswalk()`.
+
+## Configuration
+
+Every subpackage has a config class that inherits `MortgageDataConfig` and adds its own
+directories:
 
 ```python
-# Base configuration
 class MortgageDataConfig:
     PROJECT_DIR: Path
     DATA_DIR: Path
     OUTPUT_DIR: Path
 
-# Subpackage configuration
 class HMDAConfig(MortgageDataConfig):
-    HMDA_DATA_DIR: Path
+    HMDA_DATA_DIR: Path = Path(config("HMDA_DATA_DIR", default=...))
     HMDA_RAW_DIR: Path
     HMDA_BRONZE_DIR: Path
     HMDA_SILVER_DIR: Path
 ```
 
-**Benefits:**
-- Shared functionality (path resolution, directory creation)
-- Consistent interface across subpackages
-- Easy to add new subpackages
+Paths are read once, at import, from `.env` or the environment. Use the class directly
+(`HMDAConfig.HMDA_SILVER_DIR`); an instance would only be a copy. The
+[configuration guide](configuration.md) lists every setting.
 
-### 3. Medallion Architecture
+## CLI
 
-All data follows the medallion pattern (raw → bronze → silver → gold):
+Every subpackage exposes a Typer app, and `cli/main.py` mounts them all under one
+`mortgage-data` command:
 
 ```
-data/
-└── hmda/
-    ├── raw/      # Downloaded data in original format
-    ├── bronze/   # Converted to parquet, minimal processing
-    ├── silver/   # Cleaned, standardized, partitioned
-    └── gold/     # Aggregated, business-ready (future)
-```
-
-**Benefits:**
-- Clear data lineage
-- Incremental processing
-- Easy to rebuild downstream layers
-- Separation of concerns (acquisition vs. transformation)
-
-### 4. Polars-First Approach
-
-All data processing uses Polars LazyFrames:
-
-```python
-# Lazy evaluation for efficiency
-df = pl.scan_parquet("data/raw/*.parquet")
-df = df.filter(pl.col("year") >= 2020)
-df = df.with_columns([pl.col("amount") * 1000])
-df.sink_parquet("data/bronze/output.parquet")  # Execute
-```
-
-**Benefits:**
-- Query optimization
-- Memory efficiency
-- Fast execution
-- Consistent API across subpackages
-
-### 5. CLI Hierarchy
-
-Unified CLI with subcommand structure:
-
-```bash
-mortgage-data                    # Root command
-├── info                        # Project information
-├── version                     # Version info
-├── hmda                        # HMDA subcommand
+mortgage-data
+├── info
+├── version
+├── hmda
 │   ├── download
-│   ├── import
+│   ├── bronze
+│   ├── silver
+│   ├── pipeline
 │   └── info
-├── fha                         # FHA subcommand
-│   ├── download
-│   ├── import
-│   └── pipeline
+├── fha
+│   └── ...
 └── ...
 ```
 
-**Benefits:**
-- Discoverable command structure
-- Consistent interface
+The same verbs recur across sources: `download`, `bronze`, `silver`, `gold`, `pipeline`
+and `info`, with the same option names wherever they apply (`--min-year`/`--max-year`,
+`--overwrite`, `--output-dir`, `--datasets`/`-t`, `--pause`). The matching workflows
+under `mortgage-data match` use `info`, `run` and `validate`.
 
----
+Another installed package can add its own subcommands through the
+`mortgage_data_manager.plugins` entry-point group: each entry point is a callable that
+receives the top-level Typer app. A plugin that fails to load prints a warning and
+leaves the rest of the CLI working.
 
-## Project Structure
+The [CLI reference](cli_reference.md) lists every command.
 
-### Directory Layout
+## Processing patterns
 
-```
-mortgage_data_manager/
-├── src/mortgage_data_manager/     # Source code
-│   ├── core/                       # Shared utilities
-│   │   ├── config.py              # Base configuration
-│   │   ├── medallion.py           # Medallion utilities
-│   │   ├── io.py                  # I/O operations
-│   │   └── logging.py             # Logging setup
-│   ├── cli/                        # Top-level CLI
-│   │   └── main.py                # Unified CLI entry point
-│   ├── hmda/                       # HMDA subpackage
-│   │   ├── config.py
-│   │   ├── download.py
-│   │   ├── import_bronze.py
-│   │   ├── import_silver.py
-│   │   └── cli/
-│   │       └── main.py
-│   ├── fha/                        # FHA subpackage
-│   ├── gnma/                       # GNMA agency
-│   ├── fhfa/                       # FHFA agency
-│   ├── fnma/                       # FNMA agency
-│   ├── fhlmc/                      # FHLMC agency
-│   ├── umbs/                       # UMBS agency
-│   ├── hud/                        # HUD single-family programs
-│   ├── hud_mf/                     # HUD multifamily programs
-│   ├── fhlb/                       # FHLB (Acquired Member Assets)
-│   ├── analytics/                  # Derived analytics
-│   ├── combined/                   # Cross-source master datasets
-│   └── matching/                   # Matching workflows
-│       ├── match_fha_hmda/
-│       ├── match_fhfa_hmda/
-│       └── match_hmda_sellers_and_purchasers/
-├── data/                           # Data directory (not in repo; created at runtime or via symlink)
-├── crosswalk/                      # Final crosswalk outputs from matching workflows
-├── tests/                          # Test suite
-├── docs/                           # Documentation
-│   ├── api/                        # API reference
-│   ├── notes/                      # Research & data-quality notes
-│   ├── architecture.md
-│   └── configuration.md
-├── pyproject.toml                  # Project configuration
-└── README.md                       # Main documentation
+**Lazy frames throughout.** Builders scan, transform and sink without loading a whole
+file into memory. Polars plans the query and only executes it at `sink_parquet`:
+
+```python
+lf = pl.scan_parquet(bronze_dir / "*.parquet")
+lf = lf.filter(pl.col("activity_year") >= 2020)
+lf.sink_parquet(out_path)
 ```
 
-### Package Organization
+**Hive-partitioned silver.** `core.medallion.write_hive_partitioned` writes one directory
+per partition value. Rows with a null partition key are dropped first, since a null has
+no directory name.
 
-Each subpackage follows a consistent structure:
-
-```
-subpackage/
-├── __init__.py         # Package exports
-├── config.py           # Configuration class
-├── download.py         # Download functions
-├── import_bronze.py    # Bronze layer import
-├── import_silver.py    # Silver layer import
-└── cli/                # CLI commands
-    ├── __init__.py
-    └── main.py
+```python
+write_hive_partitioned(lf, silver_dir, partition_cols=["activity_year", "file_type"])
 ```
 
----
+**Skip what already exists.** Builders process one year or file at a time and skip
+outputs already on disk, so an interrupted build resumes where it stopped. `--overwrite`
+rebuilds, and it only deletes the partitions being rebuilt.
 
-## Medallion Architecture
-
-### Layer Definitions
-
-#### Raw Layer
-
-**Purpose**: Store data exactly as downloaded from source
-
-**Characteristics:**
-- Original file formats (CSV, Excel, PDF, etc.)
-- No transformations
-- Complete historical record
-
-**Location:** `{SUBPACKAGE_DATA_DIR}/raw/`
-
-**Example:**
-```
-data/hmda/raw/
-├── 2020_hmda_lar.csv
-├── 2021_hmda_lar.csv
-└── 2022_hmda_lar.csv
+```python
+for year in range(min_year, max_year + 1):
+    if should_process_file(silver_dir / f"activity_year={year}", overwrite=False):
+        process_year(year)
 ```
 
-#### Bronze Layer
+## Dependencies
 
-**Purpose**: Convert to parquet for efficient storage and access
-
-**Characteristics:**
-- Parquet format
-- Minimal transformations (type conversions)
-- Schema standardization
-- Data quality checks
-
-**Location:** `{SUBPACKAGE_DATA_DIR}/bronze/`
-
-**Example:**
-```
-data/hmda/bronze/
-├── 2020.parquet
-├── 2021.parquet
-└── 2022.parquet
-```
-
-#### Silver Layer
-
-**Purpose**: Cleaned, standardized, business-ready data
-
-**Characteristics:**
-- Type conversions applied
-- Missing values handled
-- Derived fields added
-- Hive partitioning for efficient queries
-- Compressed parquet
-
-**Location:** `{SUBPACKAGE_DATA_DIR}/silver/`
-
-**Example:**
-```
-data/hmda/silver/
-├── activity_year=2020/
-│   └── part-0.parquet
-├── activity_year=2021/
-│   └── part-0.parquet
-└── activity_year=2022/
-    └── part-0.parquet
-```
-
-#### Gold Layer (Future)
-
-**Purpose**: Aggregated, business-specific datasets
-
-**Characteristics:**
-- Aggregations for specific use cases
-- Optimized for reporting
-- May combine multiple sources
-
-**Location:** `{SUBPACKAGE_DATA_DIR}/gold/`
-
-### Processing Pipeline
-
-```
-┌──────────┐
-│   Raw    │  Downloaded data
-│  Layer   │  Original formats
-└─────┬────┘
-      │
-      │ download.py
-      ▼
-┌──────────┐
-│  Bronze  │  Parquet conversion
-│  Layer   │  Type standardization
-└─────┬────┘
-      │
-      │ import_bronze.py
-      ▼
-┌──────────┐
-│  Silver  │  Cleaning & enrichment
-│  Layer   │  Partitioning
-└─────┬────┘
-      │
-      │ import_silver.py
-      ▼
-┌──────────┐
-│   Gold   │  Aggregations
-│  Layer   │  Business datasets
-└──────────┘
-```
-
----
-
-## Configuration Management
-
-### Environment Variables
-
-Configuration uses environment variables for flexibility:
+The base install covers data handling (polars, pyarrow, pandas), configuration,
+downloading and the CLI. Each subpackage's own dependencies live in an extra (`hmda`,
+`fha`, `mbs`, `matching`, `hud`, `analytics`); `all` pulls in every one, `dev` adds the
+toolchain and `docs` the documentation build. `pyproject.toml` is the authoritative list.
 
 ```bash
-# .env file
-MORTGAGE_DATA_DIR=/data/mortgage_data
-HMDA_DATA_DIR=/data/hmda
-FHA_DATA_DIR=/data/fha
+uv pip install -e ".[hmda]"      # one source
+uv pip install -e ".[all,dev]"   # everything, plus the toolchain
 ```
 
-### Configuration Hierarchy
-
-```python
-# 1. Base configuration (core/config.py)
-class MortgageDataConfig:
-    PROJECT_DIR: Path
-    DATA_DIR: Path
-    OUTPUT_DIR: Path
-
-# 2. Subpackage configuration (hmda/config.py)
-class HMDAConfig(MortgageDataConfig):
-    HMDA_DATA_DIR: Path = Path(config("HMDA_DATA_DIR", default=...))
-
-    @classmethod
-    def ensure_directories(cls):
-        # Create HMDA-specific directories
-        pass
-
-# 3. Usage
-config = HMDAConfig()
-silver_dir = config.get_medallion_dir('hmda', 'silver')
-```
-
-### Design Decisions
-
-1. **Class-level attributes**: Configuration as class attributes for easy access
-2. **Inheritance**: Subpackages extend base config, adding specific attributes
-3. **Environment variables**: Override defaults with environment variables
-4. **Path resolution**: Automatic path resolution from project root
-5. **Directory creation**: Automatic directory creation on first use
-
----
-
-## CLI Design
-
-### Typer Framework
-
-All CLIs use Typer for consistent, modern command-line interfaces:
-
-```python
-import typer
-from rich.console import Console
-
-app = typer.Typer(
-    name="hmda",
-    help="HMDA data operations",
-    no_args_is_help=True,
-)
-
-console = Console()
-
-@app.command()
-def download(years: list[int] = typer.Option(..., help="Years to download")):
-    """Download HMDA data for specified years."""
-    console.print(f"[cyan]Downloading data for {len(years)} years...[/cyan]")
-    # Download logic
-```
-
-### Unified CLI Structure
-
-```python
-# src/mortgage_data_manager/cli/main.py
-from mortgage_data_manager.hmda.cli.main import app as hmda_app
-from mortgage_data_manager.fha.cli.main import app as fha_app
-
-app = typer.Typer(name="mortgage-data")
-app.add_typer(hmda_app, name="hmda")
-app.add_typer(fha_app, name="fha")
-```
-
----
-
-## Data Processing Patterns
-
-### Lazy Evaluation
-
-All processing uses lazy evaluation for efficiency:
-
-```python
-# Lazy: builds query plan
-df = pl.scan_parquet("data/raw/*.parquet")
-df = df.filter(pl.col("year") >= 2020)
-df = df.select(["id", "amount", "year"])
-
-# Execute: optimized query
-df.sink_parquet("data/output.parquet")
-```
-
-### Partitioning Strategy
-
-Hive-style partitioning for efficient querying:
-
-```python
-# Write with partitioning
-write_hive_partitioned(
-    lf=df,
-    output_dir=Path("data/silver"),
-    partition_cols=["activity_year", "state"]
-)
-
-# Query specific partition
-df = pl.scan_parquet("data/silver/activity_year=2020/state=CA/**/*.parquet")
-```
-
-### Incremental Processing
-
-Process data incrementally to handle large datasets:
-
-```python
-def import_data(min_year: int, max_year: int):
-    for year in range(min_year, max_year + 1):
-        logger.info(f"Processing {year}...")
-
-        # Check if already processed
-        output = silver_dir / f"year={year}"
-        if should_process_file(output, overwrite=False):
-            process_year(year)
-```
-
----
-
-## Dependency Management
-
-### Core Dependencies
-
-Shared across all subpackages:
-
-```toml
-dependencies = [
-    "polars>=1.26.0",      # Data processing
-    "pandas>=2.2.0",       # Compatibility
-    "pyarrow>=19.0.0",     # Parquet I/O
-    "python-decouple>=3.8", # Configuration
-    "typer>=0.9.0",        # CLI framework
-    "rich>=13.0.0",        # Terminal formatting
-]
-```
-
-### Optional Dependencies
-
-Subpackage-specific dependencies:
-
-```toml
-[project.optional-dependencies]
-hmda = ["selenium>=4.32.0", "scipy>=1.15.0"]
-fha = ["openpyxl>=3.1.5", "networkx>=3.3", "matplotlib>=3.10.0"]
-mbs = ["pymupdf>=1.23.0", "python-dateutil>=2.8.0"]
-matching = ["addfips>=0.4.0", "numpy>=1.26.0"]
-```
-
-### Installation Options
-
-```bash
-# Install only HMDA support
-pip install mortgage-data-manager[hmda]
-
-# Install everything
-pip install mortgage-data-manager[all]
-
-# Development installation
-pip install mortgage-data-manager[all,dev]
-```
-
----
-
-## Design Decisions
-
-### 1. Why Polars over Pandas?
-
-**Rationale:**
-- **Performance**: 5-10x faster for large datasets
-- **Memory efficiency**: Lazy evaluation reduces memory footprint
-- **Modern API**: More intuitive query syntax
-- **Arrow backend**: Efficient columnar format
-
-**Trade-offs:**
-- Learning curve for pandas users
-- Smaller ecosystem than pandas
-- Some libraries expect pandas DataFrames
-
-**Solution:**
-- Easy conversion: `df.to_pandas()` when needed
-- Most mortgage data operations don't require pandas-specific features
-
-### 2. Why Parquet over CSV?
-
-**Rationale:**
-- **Compression**: 80-90% smaller file sizes
-- **Speed**: 10-100x faster reads
-- **Schema**: Built-in type information
-- **Partitioning**: Efficient subset queries
-
-**Trade-offs:**
-- Not human-readable
-- Requires parquet-compatible tools
-
-**Solution:**
-- Keep raw layer in original format
-- Convert to parquet in bronze layer
-
-### 3. Why Medallion Architecture?
-
-**Rationale:**
-- **Data lineage**: Clear transformation steps
-- **Reproducibility**: Easy to rebuild downstream layers
-- **Flexibility**: Can process data at different levels
-- **Debugging**: Easy to inspect intermediate stages
-
-**Trade-offs:**
-- More disk space (multiple copies)
-- More processing steps
-
-**Solution:**
-- Disk is cheap, time is expensive
-- Compression mitigates storage costs
-
-### 4. Why Typer over Argparse?
-
-**Rationale:**
-- **Type hints**: Leverages Python type system
-- **Auto-documentation**: Generates help from docstrings
-- **Validation**: Automatic input validation
-- **Rich integration**: Beautiful terminal output
-
-**Trade-offs:**
-- Additional dependency
-- Different from stdlib argparse
-
-**Solution:**
-- Better DX (developer experience) worth the dependency
-- Typer is stable and well-maintained
-
-### 5. Why Unified Package vs. Separate Packages?
-
-**Rationale:**
-- **Shared utilities**: Eliminate code duplication
-- **Consistent patterns**: Same architecture across all data sources
-- **Easier maintenance**: Single codebase to maintain
-- **Simpler dependencies**: One installation for all packages
-
-**Trade-offs:**
-- Larger package size
-- All dependencies installed together
-
-**Solution:**
-- Optional dependencies for subpackages
-- Users can install only what they need
-
----
-
-## Future Architecture Considerations
-
-### Planned Enhancements
-
-1. **Gold Layer**: Add aggregation layer for business-specific datasets
-2. **Data Catalog**: Metadata about available datasets
-3. **Workflow Engine**: DAG-based processing pipelines
-4. **API Layer**: REST API for data access
-5. **Caching**: Intelligent caching for repeated queries
-
-### Extensibility
-
-To add a new data source:
-
-1. Create subpackage directory
-2. Implement configuration class (inherit from MortgageDataConfig)
-3. Add download, import_bronze, import_silver modules
-4. Create CLI with Typer
-5. Add to unified CLI
-6. Update documentation
-
----
-
-## Best Practices
-
-1. **Follow DRY**: Use shared utilities from `core/`
-2. **Use type hints**: Enable better IDE support and validation
-3. **Log appropriately**: Use structured logging for debugging
-4. **Test thoroughly**: Write tests for new functionality
-5. **Document changes**: Update docs when changing architecture
-
-## See Also
-
-- [Configuration Guide](configuration.md) - Environment variables and settings
-- [Core API](api/core.md) - Shared utilities API
+## Design decisions
+
+- **Polars, not pandas.** Lazy evaluation and the Arrow backend are what make
+  multi-billion-row loan-month panels tractable on one machine. `.to_pandas()`
+  is there for the libraries that need it.
+- **Parquet from bronze onward.** Typed, compressed, and cheap to subset;
+  the raw layer stays in the publisher's original format so nothing is lost.
+- **A layer per transformation.** Downstream layers are rebuildable from
+  upstream ones, and an intermediate stage is inspectable when a build goes
+  wrong. The cost is disk, which is cheaper than a re-download.
+- **One package, many extras.** Shared `core` utilities and one configuration
+  model beat six near-identical packages; extras keep a narrow install narrow.

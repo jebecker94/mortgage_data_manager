@@ -1,4 +1,21 @@
-# Git LFS tracking for crosswalk parquet files
-crosswalk/mbs_umbs/*.parquet filter=lfs diff=lfs merge=lfs -text
-crosswalk/fhfa_hmda/*.parquet filter=lfs diff=lfs merge=lfs -text
-crosswalk/mbs_fhfa/*.parquet filter=lfs diff=lfs merge=lfs -text
+# Line endings: LF everywhere, in the repository and in the working tree.
+#
+# This repo previously carried a mix (75 of 249 Python files were CRLF, the rest
+# LF). Nothing read the difference -- Python's universal newlines make both
+# identical at runtime -- but git stores bytes, so any tool that round-tripped a
+# CRLF file through a text read/write silently rewrote every line and turned a
+# small edit into a whole-file diff.
+#
+# `text=auto` lets git classify: files it detects as binary (NUL bytes) are left
+# byte-exact. The explicit entries below cover formats where that heuristic
+# should not be relied on.
+* text=auto eol=lf
+
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.pdf     binary
+*.parquet binary
+*.xlsx    binary
+*.xls     binary
+*.zip     binary

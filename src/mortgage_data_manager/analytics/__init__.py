@@ -3,19 +3,19 @@
 A top-level subpackage (sibling to ``matching`` and ``combined``) for metrics
 computed on top of the silver/combined layers. Split by epistemic kind:
 
-- :mod:`analytics.calculated` - deterministic, closed-form metrics on observed
+- `analytics.calculated` - deterministic, closed-form metrics on observed
   data (CPR/SMM, RPB aggregations, weighted averages, realized transition
   rates). Exact given the inputs.
-- :mod:`analytics.estimated` - model-based estimates/forecasts of not-yet-
+- `analytics.estimated` - model-based estimates/forecasts of not-yet-
   observed quantities (prepayment/default probability, projected speeds,
   lifetime loss). Carry a model spec and uncertainty.
 
-The deterministic metrics in :mod:`analytics.calculated`, the prepayment model
-+ cross-fitting in :mod:`analytics.estimated`, and the loan-month panel/feature
-builders (:mod:`analytics.panel`, :mod:`analytics.features`) productionize the
-analyses previously explored ad hoc in ``investigations/`` (the SMM estimator
-and the agency-MBS prepayment study). The macro inputs they consume live in
-:mod:`core.reference.macro`.
+The deterministic metrics in `analytics.calculated`, the prepayment and
+credit-default hazard models + cross-fitting in `analytics.estimated`, and
+the loan-month panel/feature builders (`analytics.panel`,
+`analytics.features`) cover prepayment and credit: the credit side rides the
+same panel as prepayment with ``include_delinquent=True``.
+The macro inputs they consume live in `core.reference.macro`.
 """
 
 from mortgage_data_manager.analytics import (

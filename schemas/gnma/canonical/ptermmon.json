@@ -1,0 +1,419 @@
+{
+  "prefix": "ptermmon",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "H": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2017-04",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type H = File Header",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_text": "File Name (GNMA_MBS_TP_XXX_CCYYMM)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "correction_flag",
+          "arrow_type": "string",
+          "pdf_text": "Correction Flag (If a replacement of previous file)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 27,
+              "end": 27,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 28,
+              "end": 33,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "date_file_generated",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Date File Generated (CCYYMMDD)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 34,
+              "end": 41,
+              "length": 8
+            }
+          ]
+        }
+      ]
+    },
+    "P": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2017-04",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type P = Pool Record",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 2,
+              "end": 10,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 11,
+              "end": 16,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 17,
+              "end": 17,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 18,
+              "end": 19,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "issuer_id",
+          "arrow_type": "string",
+          "pdf_text": "Issuer ID *",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 20,
+              "end": 23,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Issue Date",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 24,
+              "end": 31,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "maturity_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Maturity Date",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 32,
+              "end": 39,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "original_interest_rate",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 1000
+          },
+          "pdf_text": "Original Interest Rate",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 40,
+              "end": 44,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "original_aggregate_amount",
+          "arrow_type": "float64",
+          "decode": {
+            "kind": "fixed_point",
+            "scale": 100
+          },
+          "pdf_text": "Original Aggregate Amount (OAA)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 45,
+              "end": 59,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "termination_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMMDD"
+          },
+          "pdf_text": "Termination Date",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 60,
+              "end": 67,
+              "length": 8
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As-Of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 68,
+              "end": 73,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    },
+    "Z": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2017-04",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_text": "Record Type Z = File Trailer",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 1,
+              "end": 1,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "file_name",
+          "arrow_type": "string",
+          "pdf_text": "File Name (GNMA_MBS_TP_XXX_CCYYMM)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 2,
+              "end": 23,
+              "length": 22
+            }
+          ]
+        },
+        {
+          "id": "file_number",
+          "arrow_type": "int64",
+          "pdf_text": "File Number",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 24,
+              "end": 26,
+              "length": 3
+            }
+          ]
+        },
+        {
+          "id": "pool_count",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Count (Control Total)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 27,
+              "end": 33,
+              "length": 7
+            }
+          ]
+        },
+        {
+          "id": "total_record_count_in_file",
+          "arrow_type": "int64",
+          "pdf_text": "Total Record Count in File (All Record Types, Including H and Z records)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 34,
+              "end": 42,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "as_of_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "CCYYMM"
+          },
+          "pdf_text": "As of Date (CCYYMM)",
+          "layouts": [
+            {
+              "from": "2017-04",
+              "to": null,
+              "begin": 43,
+              "end": 48,
+              "length": 6
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": []
+}

@@ -1,0 +1,97 @@
+site_name: mortgage-data-manager
+site_description: Public mortgage market data pipelines (HMDA, FHA, FHFA, FHLB, GNMA, GSE/UMBS, HUD)
+repo_url: https://github.com/jebecker94/mortgage_data_manager
+docs_dir: docs
+
+# Surface broken links and anchors as warnings, so `mkdocs build --strict` fails on them.
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: warn
+    unrecognized_links: warn
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle: {icon: material/weather-night, name: Switch to dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle: {icon: material/weather-sunny, name: Switch to light mode}
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            docstring_section_style: table
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            filters: ["!^_"]
+            separate_signature: true
+            signature_crossrefs: false
+            merge_init_into_class: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - toc: {permalink: true}
+  - pymdownx.highlight: {anchor_linenums: true}
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.inlinehilite
+
+nav:
+  - Home: getting_started.md
+  - Architecture: architecture.md
+  - Configuration: configuration.md
+  - CLI reference: cli_reference.md
+  - Manual downloads: manual_downloads.md
+  - API reference:
+      - core: api/core.md
+      - hmda: api/hmda.md
+      - fha: api/fha.md
+      - fhfa: api/fhfa.md
+      - fhlb: api/fhlb.md
+      - fhlmc: api/fhlmc.md
+      - fnma: api/fnma.md
+      - gnma: api/gnma.md
+      - hud: api/hud.md
+      - umbs: api/umbs.md
+      - usps_crosswalk: api/usps_crosswalk.md
+      - combined: api/combined.md
+      - analytics: api/analytics.md
+      - matching: api/matching.md
+  - Matching workflows:
+      - Overview: matching/README.md
+      - hmda_fha: matching/hmda_fha_matching.md
+      - hmda_fhfa: matching/hmda_fhfa_matching.md
+      - hmda_fhlb: matching/hmda_fhlb_matching.md
+      - hmda_gnma: matching/hmda_gnma_matching.md
+      - hmda_gse: matching/hmda_gse_matching.md
+      - hmda_sellers_purchasers: matching/hmda_sellers_purchasers_matching.md
+      - crt_mbs: matching/crt_mbs_matching.md
+      - fhfa_mbs: matching/fhfa_mbs_matching.md
+      - fhlb_mbs: matching/fhlb_mbs_matching.md
+      - mbs_umbs: matching/mbs_umbs_matching.md
+      - master_crosswalk: matching/master_crosswalk.md

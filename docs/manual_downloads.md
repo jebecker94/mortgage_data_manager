@@ -1,233 +1,154 @@
-# Manual Download Guide
+# Manual Downloads
 
-This document provides instructions for data sources that require manual download due to registration requirements, institutional access, or terms of service restrictions.
+Most sources download with one command. Fannie Mae, Freddie Mac and UMBS data can't
+be fetched automatically: each enterprise requires a free account and terms that you
+accept in a browser. Ginnie Mae downloads are automatic but need account credentials in
+`.env`.
 
-## Overview
+| Source | How to get it | Account | Cost |
+|--------|---------------|---------|------|
+| HMDA | `mortgage-data hmda download` | None | Free |
+| FHA | `mortgage-data fha download` | None | Free |
+| FHFA | `mortgage-data fhfa download` | None | Free |
+| GNMA | `mortgage-data gnma download monthly` | Ginnie Mae profile (email + secret-question answer) | Free |
+| USPS crosswalk | `mortgage-data usps-crosswalk download` | HUD USPS API token (`USPS_CROSSWALK_API_KEY`) | Free |
+| FHLB, HUD | `mortgage-data fhlb download`, `mortgage-data hud download` | None | Free |
+| FNMA | Manual download | Data Dynamics | Free for research |
+| FHLMC | Manual download | Clarity Data Intelligence | Free for non-commercial use |
+| UMBS | Manual download | Via FNMA or FHLMC | Free |
 
-Most data sources in this package support automated downloads. However, some sources require manual intervention:
+After placing a file in a raw directory by hand, record it in the raw-download ledger so
+it has the same record (SHA-256, size, content type, note) as an automated download:
 
-| Data Source | Reason | Registration Required | Cost |
-|-------------|--------|----------------------|------|
-| **Fannie Mae (FNMA)** | Terms of Service | Yes (free) | Free for research |
-| **Freddie Mac (FHLMC)** | Terms of Service | Yes (free) | Free for non-commercial |
-| **UMBS** | Via FNMA/FHLMC | See above | See above |
-| **Ginnie Mae (GNMA)** | Authentication | Yes (free) | Free |
-
----
+```bash
+mortgage-data raw register --source <fnma|fhlmc|umbs> --note "<where it came from>"
+mortgage-data raw audit     # lists raw files not yet recorded
+```
 
 ## Fannie Mae Single-Family Loan Performance Data
 
-### Access Requirements
+**Access.** A free Data Dynamics account. The terms allow research and academic use and
+prohibit redistribution without Fannie Mae's written consent.
 
-- **Registration**: Required (free account)
-- **Platform**: Data Dynamics
-- **Terms**: Prohibits redistribution without written consent; research/academic use permitted
+1. Go to
+   https://capitalmarkets.fanniemae.com/credit-risk-transfer/single-family-credit-risk-transfer/fannie-mae-single-family-loan-performance-data
+   and follow the link to Data Dynamics.
+2. Register with an email and password, and accept the terms.
+3. Download either the whole dataset ("Entire Single Family Dataset") or individual
+   quarterly files, plus the Exclusions and HARP files if you want them.
+4. Put the files in `data/fnma/raw/`, keeping Fannie Mae's file names, which the
+   importer relies on:
 
-### How to Download
-
-1. **Visit the Data Portal**
-
-   Go to: https://capitalmarkets.fanniemae.com/credit-risk-transfer/single-family-credit-risk-transfer/fannie-mae-single-family-loan-performance-data
-
-2. **Create an Account**
-
-   - Click "Access the Data" or similar link to Data Dynamics
-   - Register with email and create a password
-   - Accept Terms and Conditions
-
-3. **Download Options**
-
-   - **Full Dataset**: Use "Entire Single Family Dataset" grid for one-click download of all acquisition and performance files
-   - **By Quarter**: Download individual quarterly files
-   - **API Access**: Available for programmatic access after registration
-
-4. **Place Files**
-
-   Download files to: `data/fnma/raw/`
-
-   Expected structure:
    ```
    data/fnma/raw/
-   ├── Acquisition_*.txt
-   └── Performance_*.txt
+   ├── 2020Q1.zip            # one quarter
+   ├── Performance_All.zip   # full history
+   ├── Exclusions.zip        # loans left out of the standard dataset
+   └── HARP_Files.zip        # the HARP refinance population
    ```
 
-### Dataset Details
+`mortgage-data fnma bronze` imports the per-quarter, Exclusions, HARP and multifamily
+files. `Performance_All.zip` is the only source of the history before 2016 but is not
+part of the default run because of its size; import it with
+`mortgage-data fnma bronze -t performance_all` (`--min-year`/`--max-year` select
+quarters).
 
-- **Coverage**: 30-year and less, fully amortizing, fixed-rate single-family mortgages
-- **Excludes**: ARMs, balloon, interest-only, government-insured, HARP, non-standard loans
-- **Update Frequency**: Quarterly (on or after the 20th following quarter-end)
-- **Fields**: 110 fields as of 2024
+**Contents.** Fixed-rate, fully amortizing single-family mortgages with terms of 30
+years or less. ARMs, balloons, interest-only, government-insured, HARP and other
+non-standard loans are left out of the standard dataset; the Exclusions and HARP files
+carry some of them. Fannie Mae updates the files quarterly.
 
-### Support
+## Fannie Mae Multifamily Loan Performance Data
 
-For questions: Visit the Fannie Mae Capital Markets website or contact through their support portal.
+**Access.** The same free Data Dynamics account; research use permitted, no
+redistribution.
 
----
+1. Go to
+   https://capitalmarkets.fanniemae.com/credit-risk-transfer/multifamily-credit-risk-transfer/multifamily-loan-performance-data.
+2. Download both files:
+   - `Multifamily.zip`: loan performance, one row per loan per month, from 2000-01 on
+   - `Multifamily_DSCR.zip`: debt service coverage ratio (DSCR), one row per loan per year
+3. Put them in `data/fnma/raw/` under their original names.
+
+```bash
+mortgage-data fnma bronze -t multifamily              # parquet per release under bronze/multifamily/
+mortgage-data fnma silver -t multifamily --overwrite  # rebuild silver from the latest release
+```
+
+**Contents.** Fannie Mae multifamily acquisitions (DUS, Non-DUS, Bulk Delivery, Credit
+Facility) from 2000 on. Unlike the single-family files, these are comma-delimited with a
+header row, and dollar amounts are strings such as `"$1,234.56"` with negatives in
+parentheses. Each quarterly release restates the full history, so silver keeps only the
+latest release.
 
 ## Freddie Mac Single-Family Loan-Level Dataset
 
-### Access Requirements
+**Access.** A free Clarity Data Intelligence account. Free for non-commercial academic
+and research use; commercial redistribution requires a license.
 
-- **Registration**: Required (free account)
-- **Platform**: Clarity Data Intelligence
-- **Terms**: Free for non-commercial, academic/research use; licensing required for commercial redistribution
+1. Go to https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset and follow the
+   link to Clarity, or go directly to https://capitalmarkets.freddiemac.com/clarity.
+2. Create an account and accept the terms.
+3. Sign in and open the Single-Family Loan-Level Dataset (SFLLD) download page. It
+   offers the full dataset, the standard dataset by year, the non-standard dataset
+   (ARMs, balloons and other special loan types) and sample files.
+4. Put the zip files in `data/fhlmc/raw/` as downloaded; the importer walks every zip
+   there, including zips nested inside it, so the full set and per-year files both work:
 
-### How to Download
-
-1. **Visit the Data Portal**
-
-   Go to: https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset
-
-2. **Register for Clarity Data Intelligence**
-
-   - Click on the Clarity Data Intelligence link
-   - Or go directly to: https://capitalmarkets.freddiemac.com/clarity
-   - Create a free account
-   - Accept Terms and Conditions
-
-3. **Navigate to Downloads**
-
-   - Sign in to Clarity
-   - Go to the SFLLD (Single-Family Loan-Level Dataset) Data Download page
-   - Choose your download format:
-     - **Full Dataset**: All historical data
-     - **Standard Dataset by Year**: Annual files
-     - **Non-Standard Dataset**: Special loan types
-     - **Sample Files**: For testing
-
-4. **Place Files**
-
-   Download files to: `data/fhlmc/raw/`
-
-   Expected structure:
    ```
    data/fhlmc/raw/
-   ├── historical_data_*.txt      # Standard dataset
-   ├── historical_data_time_*.txt # Time series
-   └── sample_*.txt               # Sample files
+   ├── full_set_standard_historical_data.zip   # standard dataset, all years
+   ├── non_std_historical_data.zip             # non-standard dataset
+   └── rpl_historical_data.zip                 # re-performing loan mapping
    ```
 
-### Dataset Details
-
-- **Coverage**: ~54.8 million mortgages (1999-2024)
-- **Datasets Available**:
-  - Standard Dataset (fixed-rate, fully amortizing)
-  - Non-Standard Dataset (ARMs, balloons, etc.)
-  - RPL (Re-Performing Loans) Mapping File
-- **Update Frequency**: Quarterly
-
-### Support
-
-For technical issues: SF_LLD_Technology_Support@freddiemac.com
-
----
+**Contents.** Single-family mortgages acquired from 1999 on: fixed-rate loans in the
+standard dataset, the special loan types in the non-standard dataset, and a
+re-performing loan (RPL) mapping file. Updated quarterly. Technical support: SF_LLD_Technology_Support@freddiemac.com.
 
 ## UMBS (Uniform Mortgage-Backed Securities)
 
-### About UMBS Data
+Since June 2019 Fannie Mae and Freddie Mac have both issued UMBS, under the Single
+Security Initiative, and each publishes its own disclosures. The accounts are the same
+as for the loan-level data above.
 
-UMBS are passthrough securities issued by both Fannie Mae and Freddie Mac since June 2019 as part of the Single Security Initiative. UMBS data is available through both enterprises' platforms.
+- **Fannie Mae:** https://capitalmarkets.fanniemae.com/mortgage-backed-securities/single-family-mbs
+  (MBS issuance, monthly disclosures, supplemental files)
+- **Freddie Mac:** https://capitalmarkets.freddiemac.com/mbs/products/umbs
+  (CRT issuance, monthly disclosures, MBS information)
 
-### Access Options
-
-#### Option 1: Through Fannie Mae
-
-- **Portal**: https://capitalmarkets.fanniemae.com/mortgage-backed-securities/single-family-mbs
-- **Registration**: Same as Fannie Mae loan data (see above)
-- **Data Available**: MBS issuance, monthly disclosures, supplemental information
-
-#### Option 2: Through Freddie Mac
-
-- **Portal**: https://capitalmarkets.freddiemac.com/mbs/products/umbs
-- **Registration**: Same as Freddie Mac loan data (see above)
-- **Data Available**: CRT issuance, monthly disclosures, MBS information
-
-### Place Files
-
-Download files to: `data/umbs/raw/`
-
----
+Put the files in `data/umbs/raw/{FNMA|FHLMC}/{prefix}/`, one folder per disclosure file
+type, keeping the published names (for example
+`data/umbs/raw/FNMA/FNM_ILLD/FNM_ILLD_201906.zip`).
 
 ## Ginnie Mae Disclosure Data
 
-### Access Requirements
-
-- **Registration**: Required for bulk downloads (free)
-- **Platform**: Ginnie Mae Bulk Download Portal
-
-### How to Download
-
-1. **Visit the Bulk Download Portal**
-
-   Go to: https://bulk.ginniemae.gov/
-
-2. **Create a Download Profile** (if needed)
-
-   - Visit: https://www.ginniemae.gov/data_and_reports/disclosure_data/Pages/test_file_download.aspx
-   - Register for access
-
-3. **Available Data**
-
-   - Daily, weekly, factor, and monthly disclosure information
-   - MBS data (Single Family, Multifamily, Multi-class)
-   - HMBS (HECM-backed Securities) data
-   - REMIC and Platinum security data
-
-4. **File Layouts**
-
-   Reference layouts at: https://www.ginniemae.gov/data_and_reports/disclosure_data/Pages/bulk_data_download_layout.aspx
-
-### Note on Automated Downloads
-
-The `mortgage-data gnma download` command supports automated downloads but requires credentials. Configure your credentials before use:
+`mortgage-data gnma download` downloads automatically, but Ginnie Mae's APIs require a
+profile token. Register for a free profile at
+https://www.ginniemae.gov/data_and_reports/disclosure_data/Pages/test_file_download.aspx,
+then put two keys in `.env`. There is no interactive prompt:
 
 ```bash
-# Set credentials (email and user ID)
-mortgage-data gnma download all monthly
-# You will be prompted for credentials on first run
+# .env
+GNMA_EMAIL=you@example.com
+GNMA_ANSWER=<the answer to your profile's secret question>
 ```
 
-### Support
+The command exchanges them for a `gm_up_token`, caches it, and signs in again when it
+expires.
 
-For questions: InvestorInquiries@hud.gov
+The disclosures cover single-family, multifamily and multiclass MBS, HMBS (securities
+backed by reverse mortgages, HECMs), and REMIC and Platinum securities, at daily,
+weekly, monthly and factor frequencies. File layouts are at
+https://www.ginniemae.gov/data_and_reports/disclosure_data/Pages/bulk_data_download_layout.aspx;
+questions go to InvestorInquiries@hud.gov.
 
----
+## Processing downloaded files
 
-## Quick Reference: All Data Sources
-
-### Fully Automated (No Registration)
-
-| Source | CLI Command | Notes |
-|--------|-------------|-------|
-| HMDA | `mortgage-data hmda download --min-year 2020 --max-year 2024` | CFPB public data |
-| FHA | `mortgage-data fha download` | HUD public data |
-| FHFA | `mortgage-data fhfa download all` | Public PUDB data |
-
-### Registration Required (Free)
-
-| Source | CLI Command | Registration |
-|--------|-------------|--------------|
-| GNMA | `mortgage-data gnma download all monthly` | Email + User ID |
-| FNMA | Manual download | Data Dynamics account |
-| FHLMC | Manual download | Clarity Data Intelligence account |
-| UMBS | Manual download | Via FNMA or FHLMC |
-
----
-
-## After Manual Download
-
-Once you've downloaded files manually, use the import commands to process them:
+Once the files are in place, build bronze and silver:
 
 ```bash
-# Fannie Mae
-mortgage-data fnma bronze
-
-# Freddie Mac
-mortgage-data fhlmc import bronze
-
-# UMBS
-mortgage-data umbs bronze
+mortgage-data fnma pipeline
+mortgage-data fhlmc pipeline
+mortgage-data umbs pipeline
 ```
-
-These commands will convert the raw files to the bronze (Parquet) format for efficient analysis.

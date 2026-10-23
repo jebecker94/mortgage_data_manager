@@ -1,7 +1,8 @@
 """Unit tests for the closed-form rate/prepayment primitives in ``analytics.calculated``.
 
 These are deterministic financial identities (SMM/CPR/CDR conversions, level-payment
-scheduled principal, security-level net SMM) with exact known answers, so per the project's
+scheduled principal, security-level net SMM, balance-weighted rollups, roll rates) with exact
+known answers, so per the project's
 testing policy they are worth pinning: a scale slip (percent vs decimal, ``/12`` vs ``/1200``)
 or an off-by-one in the amortization formula silently corrupts every prepayment/servicing
 number downstream without tripping mypy or the schema check.
@@ -9,15 +10,21 @@ number downstream without tripping mypy or the schema check.
 
 from __future__ import annotations
 
+from datetime import date
+
 import polars as pl
 import pytest
 
 from mortgage_data_manager.analytics.calculated import (
     conditional_default_rate,
+    delinquency_transition_rates,
+    remaining_principal_balance,
     scheduled_principal,
     security_smm,
     single_monthly_mortality,
     smm_to_cpr,
+    weighted_averages,
+    weighted_net_cpr,
 )
 
 
@@ -43,7 +50,7 @@ def test_conditional_default_rate_annualizes_monthly_default_share():
 @pytest.mark.parametrize(
     ("upb", "rate_pct", "months", "expected"),
     [
-        (360000.0, 0.0, 360, 1000.0),           # zero-rate -> straight-line UPB / n
+        (360000.0, 0.0, 360, 1000.0),  # zero-rate -> straight-line UPB / n
         (100000.0, 6.0, 360, 99.5505251527569),  # standard amortizing first-month principal
     ],
 )
@@ -95,3 +102,50 @@ def test_security_smm_flags_real_prepay_as_bounded_positive():
     assert out.height == 2  # terminal month dropped
     assert (out["smm"] > 0).all()
     assert (out["smm"] <= 1).all()
+
+
+def test_remaining_principal_balance_sums_and_counts_by_group():
+    lf = pl.LazyFrame({"g": ["a", "a", "b"], "current_upb": [100.0, 50.0, 25.0]})
+    assert remaining_principal_balance(lf, by=["g"]).collect().rows() == [
+        ("a", 150.0, 2),
+        ("b", 25.0, 1),
+    ]
+
+
+def test_weighted_averages_drop_the_balance_of_loans_missing_the_value():
+    lf = pl.LazyFrame(
+        {
+            "g": ["a", "a", "a", "b"],
+            "fico": [700, 800, None, None],
+            "current_upb": [100.0, 300.0, 600.0, 50.0],
+        }
+    )
+    out = weighted_averages(lf, by=["g"], value_cols=["fico"]).collect()
+    # (700*100 + 800*300) / 400: the 600 of balance with no FICO is not averaged in as zero.
+    assert out["wa_fico"][0] == pytest.approx(775.0)
+    assert out["wa_fico"][1] is None
+    assert out["total_balance"].to_list() == [1000.0, 50.0]
+
+
+def test_delinquency_transition_rates_pair_only_consecutive_observed_months():
+    d = date
+    lf = pl.LazyFrame(
+        {
+            "loan_id": ["A"] * 4 + ["B"] * 3,
+            "period": [d(2020, 1, 1), d(2020, 2, 1), d(2020, 3, 1), d(2020, 5, 1)]
+            + [d(2020, 1, 1), d(2020, 2, 1), d(2020, 3, 1)],
+            "dlq_status": [0, 0, 1, 3, 0, 1, None],
+        }
+    ).reverse()  # input order must not matter
+    # A: 0->0, 0->1, then Mar->May is a gap (dropped). B: 0->1, then 1->null (dropped).
+    assert delinquency_transition_rates(lf).collect().rows() == [
+        (0, 0, 1, pytest.approx(1 / 3)),
+        (0, 1, 2, pytest.approx(2 / 3)),
+    ]
+
+
+def test_weighted_net_cpr_balance_weights_smm_then_annualizes():
+    lf = pl.LazyFrame({"period": [1, 1], "smm": [0.01, 0.03], "smm_denom": [300.0, 100.0]})
+    out = weighted_net_cpr(lf, by=["period"]).collect()
+    assert out["weighted_smm"][0] == pytest.approx(0.015)
+    assert out["net_cpr"][0] == pytest.approx(1 - 0.985**12)

@@ -1,0 +1,339 @@
+{
+  "prefix": "factorAAdd",
+  "layout_kind": "fixed_width",
+  "provenance": {
+    "source": "bootstrap-from-combined-csv; rank-keyed; decode from COBOL picture clause (Remarks)",
+    "date": "2026-07-12"
+  },
+  "record_types": {
+    "ALL": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 1,
+              "end": 6,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_text": "Pool Indicator",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 7,
+              "end": 7,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "issuer_number",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 8,
+              "end": 11,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "filler",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 12,
+              "end": 12,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "issuer_name",
+          "arrow_type": "string",
+          "pdf_text": "Issuer Name",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 13,
+              "end": 72,
+              "length": 60
+            }
+          ]
+        },
+        {
+          "id": "original_aggregate_amount",
+          "arrow_type": "int64",
+          "pdf_text": "Original Aggregate Amount",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 73,
+              "end": 87,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "remaining_security_rpb",
+          "arrow_type": "int64",
+          "pdf_text": "Remaining Security RPB",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 88,
+              "end": 102,
+              "length": 15
+            }
+          ]
+        },
+        {
+          "id": "rpb_factor",
+          "arrow_type": "int64",
+          "pdf_text": "RPB Factor",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 103,
+              "end": 111,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_interest_rate",
+          "arrow_type": "int64",
+          "pdf_text": "Pool Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 112,
+              "end": 116,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 117,
+              "end": 118,
+              "length": 2
+            }
+          ]
+        },
+        {
+          "id": "pool_issue_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "MMDDYY"
+          },
+          "pdf_text": "Pool Issue Date (MMDDYY)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 119,
+              "end": 124,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_maturity_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "MMDDYY"
+          },
+          "pdf_text": "Pool Maturity Date (MMDDYY)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 125,
+              "end": 130,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "factor_security_margin",
+          "arrow_type": "int64",
+          "pdf_text": "Factor Security Margin",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 131,
+              "end": 134,
+              "length": 4
+            }
+          ]
+        },
+        {
+          "id": "interest_adjustment_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "MMDDYY"
+          },
+          "pdf_text": "Interest Adjustment Date (MMDDYY)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 135,
+              "end": 140,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "original_interest_rate",
+          "arrow_type": "int64",
+          "pdf_text": "Original Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 141,
+              "end": 145,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "prospective_interest_rate",
+          "arrow_type": "int64",
+          "pdf_text": "Prospective Interest Rate",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 146,
+              "end": 150,
+              "length": 5
+            }
+          ]
+        },
+        {
+          "id": "index_reference_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "MMDDYY"
+          },
+          "pdf_text": "Index Reference Date (MMDDYY)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 151,
+              "end": 156,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "payment_adjustment_date",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "MMDDYY"
+          },
+          "pdf_text": "Payment Adjustment Date (MMDDYY)",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 157,
+              "end": 162,
+              "length": 6
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 163,
+              "end": 171,
+              "length": 9
+            }
+          ]
+        },
+        {
+          "id": "filler_2",
+          "arrow_type": "string",
+          "pdf_text": "Filler",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 172,
+              "end": 172,
+              "length": 1
+            }
+          ]
+        },
+        {
+          "id": "factor_percentage_complete",
+          "arrow_type": "int64",
+          "pdf_text": "Factor Percentage Complete",
+          "layouts": [
+            {
+              "from": "",
+              "to": null,
+              "begin": 173,
+              "end": 179,
+              "length": 7
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": [
+    "factorAAdd factor_percentage_complete is 7 chars NN.NNNN (173-179); CSV documented 6 (173-178). Only populated when the record is full-width (e.g. 201608=179); other months right-trim to 171. Fixed per bronze."
+  ]
+}

@@ -3,15 +3,13 @@
 Connecticut replaced its 8 county-based county-equivalents (FIPS 09001-09015)
 with 9 planning regions (FIPS 09110-09190). OMB issued the change June 2022;
 HMDA adopted the new tract GEOIDs as a **hard cut at the 2023->2024 reporting
-boundary** (0% planning-region in 2023, 100% in 2024 -- see
-`investigation_ct_geography_conventions_2026-05-21.md`).
+boundary** (0% planning-region in 2023, 100% in 2024).
 
 Any cross-year join on `census_tract` that pairs a pre-2024 (county-coded) CT
 record with a 2024+ (planning-region-coded) CT record silently loses the match:
 the GEOID strings never agree (HMDA's CT tract sets for 2023 and 2024 have a
 *zero* intersection). This breaks, in particular, the HMDA seller-purchaser
-matcher, whose cross-year rounds require an exact `census_tract` join (see
-`investigation_ct_planning_region_seller_purchaser_2026-06-10.md`).
+matcher, whose cross-year rounds require an exact `census_tract` join.
 
 The national 2010<->2020 tract relationship file
 (`core.reference.census_tract`) does NOT bridge this: it carries Connecticut
@@ -48,8 +46,11 @@ CT_CROSSWALK_URL = (
 PLANREG_FIRST_YEAR: int = 2024
 
 
+_REFERENCE_DIR = MortgageDataConfig.REFERENCE_DIR
+
+
 def _cache_dir() -> Path:
-    return MortgageDataConfig.DATA_DIR / "reference" / "ct_planning_region"
+    return _REFERENCE_DIR / "ct_planning_region"
 
 
 def _raw_path() -> Path:
@@ -63,9 +64,11 @@ def _parquet_path() -> Path:
 def _build_parquet_cache() -> Path:
     raw = _raw_path()
     if not raw.exists():
-        logger.info(f"Downloading CT planning-region tract crosswalk from {CT_CROSSWALK_URL}")
+        logger.info("Downloading CT planning-region tract crosswalk from %s", CT_CROSSWALK_URL)
         raw.parent.mkdir(parents=True, exist_ok=True)
-        result = atomic_download(CT_CROSSWALK_URL, raw, show_progress=False)
+        result = atomic_download(
+            CT_CROSSWALK_URL, raw, show_progress=False, source="reference", raw_dir=_REFERENCE_DIR
+        )
         if result.status != DownloadStatus.SUCCESS:
             raise RuntimeError(
                 f"Failed to download CT planning-region crosswalk: {result.error_message}"
@@ -81,7 +84,7 @@ def _build_parquet_cache() -> Path:
         county_fips_2020="county_fips_2020",
         ce_fips_2022="ce_fips_2022",
     ).write_parquet(parquet)
-    logger.info(f"Cached CT planning-region crosswalk as parquet: {parquet}")
+    logger.info("Cached CT planning-region crosswalk as parquet: %s", parquet)
     return parquet
 
 
@@ -90,10 +93,10 @@ def load_ct_planreg_relationship() -> pl.LazyFrame:
 
     Returns:
         LazyFrame with columns:
-          - tract_fips_2020: 11-char county-based tract GEOID (09001-09015 prefix)
-          - tract_fips_2022: 11-char planning-region tract GEOID (09110-09190 prefix)
-          - county_fips_2020: 5-char 2020 county FIPS
-          - ce_fips_2022: 5-char 2022 planning-region county-equivalent FIPS
+            - tract_fips_2020: 11-char county-based tract GEOID (09001-09015 prefix)
+            - tract_fips_2022: 11-char planning-region tract GEOID (09110-09190 prefix)
+            - county_fips_2020: 5-char 2020 county FIPS
+            - ce_fips_2022: 5-char 2022 planning-region county-equivalent FIPS
 
     Downloads and parquet-caches on first use. Idempotent thereafter.
     """
@@ -104,7 +107,7 @@ def load_ct_planreg_relationship() -> pl.LazyFrame:
 
 
 def needs_ct_planreg_bridge(early_year: int, late_year: int) -> bool:
-    """Does this year pair straddle the 2023/2024 CT planning-region cut?
+    """Report whether a year pair straddles the 2023/2024 CT planning-region cut.
 
     HMDA switched CT tract GEOIDs from county-based to planning-region-based in
     its 2024 reporting year. A join that pairs a pre-2024 (county-coded) CT
@@ -140,15 +143,16 @@ def to_planning_region(lf: pl.LazyFrame, tract_col: str = "census_tract") -> pl.
         The LazyFrame with `tract_col` rewritten to planning-region convention
         for CT records. Column order and all other columns are preserved.
     """
-    # .unique() guards against row multiplication: this is a left join, so a
-    # duplicated tract_fips_2020 in the crosswalk would fan one input row into
-    # several. The source is a documented 1:1 bijection (879 tracts), so this is
-    # defensive only — but it makes the transform safe even if the file is ever
-    # reissued with dup rows.
+    # Guards against row multiplication: this is a left join, so a duplicated
+    # tract_fips_2020 in the crosswalk would fan one input row into several. The
+    # source is a documented 1:1 bijection (879 tracts), so this is defensive
+    # only. Identical rows collapse; a tract mapped to two different successors
+    # is left untranslated rather than sent to either.
     xw = (
         load_ct_planreg_relationship()
         .select("tract_fips_2020", "tract_fips_2022")
-        .unique(subset="tract_fips_2020")
+        .unique()
+        .unique(subset="tract_fips_2020", keep="none")
     )
     return (
         lf.join(xw, left_on=tract_col, right_on="tract_fips_2020", how="left")
@@ -176,13 +180,14 @@ def to_county_vintage(lf: pl.LazyFrame, tract_col: str = "census_tract") -> pl.L
         The LazyFrame with `tract_col` rewritten to county convention for CT
         planning-region records. Other columns are preserved.
     """
-    # .unique() guards against row multiplication on the left join (see the note
-    # in to_planning_region); the crosswalk is a 1:1 bijection, so this is
-    # defensive only.
+    # Same guard as in to_planning_region: identical rows collapse, and a tract
+    # with two different predecessors is left untranslated rather than sent to
+    # either.
     xw = (
         load_ct_planreg_relationship()
         .select("tract_fips_2020", "tract_fips_2022")
-        .unique(subset="tract_fips_2022")
+        .unique()
+        .unique(subset="tract_fips_2022", keep="none")
     )
     return (
         lf.join(xw, left_on=tract_col, right_on="tract_fips_2022", how="left")

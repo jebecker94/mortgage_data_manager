@@ -14,7 +14,7 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from mortgage_data_manager.fha.lender_list import (
+from mortgage_data_manager.sources.fha.lender_list import (
     BRONZE_SCHEMA,
     LENDER_LIST_STATES,
     build_bronze_lender_list,

@@ -1,0 +1,663 @@
+{
+  "prefix": "platmonPPS",
+  "layout_kind": "delimited",
+  "delimiter": "|",
+  "provenance": {
+    "source_pdfs": [
+      {
+        "file": "platmonPPS/platmonPPS_PLATINUM PORTFOLIO ENHANCED POOL_SECURITY Layout V2.1 (Oct 2021 - Jul 2022).pdf",
+        "version": "2.1",
+        "sha256": "a5bf16822b52fd1ef7fe922a4cb8a4ffc5b0600efceddb840865092cc185041c",
+        "table": "pp.10-12 Record Types HP / PS (items 1-31) / TP"
+      },
+      {
+        "file": "platmonPPS/platmonPPS_PLATINUM PORTFOLIO ENHANCED POOL_SECURITY Layout V2.1.2 (Apr 2022 - Feb 2023).pdf",
+        "version": "2.1.2",
+        "sha256": "5270cd81eaa63d0e3da45ab34288220f7254e8fac2c55a0f8219bdd0660cd922",
+        "table": "PS unchanged (V2.1.1/2.1.2 add supplemental-file strata 26-27 only)"
+      },
+      {
+        "file": "platmonPPS/platmonPPS_PLATINUM PORTFOLIO ENHANCED POOL_SECURITY Layout V2.1.2.1 (Mar 2023 - Jun 2023).pdf",
+        "version": "2.1.2.1",
+        "sha256": "0f8f862db2eeb07b1775629b0d282f60978c2f5c2b45b432490f5e910e442e8f",
+        "table": "PS unchanged"
+      },
+      {
+        "file": "platmonPPS/platmonPPS_PLATINUM PORTFOLIO ENHANCED POOL_SECURITY Layout V2.1.3 (Jul 2023 - Present).pdf",
+        "version": "2.1.3",
+        "sha256": "7f378d0e056102dbb0eec5aa4806c8a632e2af69aa7321da369ae98b5bb1dca6",
+        "table": "PS unchanged (V2.1.3 adds supplemental-file stratum 28 only)"
+      },
+      {
+        "file": "platmonPPS/platmonPPS_PLATINUM PORTFOLIO ENHANCED POOL_SECURITY Layout V2.1.5 (Jul 2023 - Present).pdf",
+        "version": "2.1.5",
+        "sha256": "c24f329a07ecd00552a41a4aad2d4d7196bb1aa833e5116cb47e3b601244676f",
+        "table": "pp.9-13 Record Types HP / PS (items 1-32, Social Indicator added) / TP; p.2 document version history"
+      }
+    ],
+    "authored_by": "claude-opus-5 (visual transcription of the layout tables; bootstrap ids retained)",
+    "prompt_version": "gnma-canonical-v1",
+    "validated_against": "bronze platmonPPS 202101..202604 (64 files)",
+    "date": "2026-09-01"
+  },
+  "record_types": {
+    "HP": {
+      "role": "header",
+      "present": [
+        {
+          "from": "2021-01",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type = HP",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "create_date",
+          "arrow_type": "string",
+          "pdf_type": "Date",
+          "pdf_text": "Create Date",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        }
+      ]
+    },
+    "PS": {
+      "role": "detail",
+      "present": [
+        {
+          "from": "2021-01",
+          "to": null
+        }
+      ],
+      "key_fields": [
+        "cusip_number",
+        "pool_id"
+      ],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type = PS",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "cusip_number",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "CUSIP Number",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 9
+            }
+          ]
+        },
+        {
+          "id": "pool_id",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool ID",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 6
+            }
+          ]
+        },
+        {
+          "id": "pool_indicator",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool Indicator",
+          "domain": [
+            "X",
+            "C",
+            "M"
+          ],
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 1
+            }
+          ]
+        },
+        {
+          "id": "pool_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Pool Type",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 5,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "issue_date",
+          "arrow_type": "string",
+          "pdf_type": "Date",
+          "pdf_text": "Issue Date",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 6,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "security_interest_rate",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Security Interest Rate",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 7,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "maturity_date",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Maturity Date",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 8,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "original_aggregate_amount",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Original Aggregate Amount",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 9,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "remaining_security_rpb",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Remaining Security RPB",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 10,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "rpb_factor",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "RPB Factor",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 11,
+              "max_length": 10,
+              "format": "1.8"
+            }
+          ]
+        },
+        {
+          "id": "issuer_number",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Issuer Number",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 12,
+              "max_length": 4
+            }
+          ]
+        },
+        {
+          "id": "issuer_name",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Issuer Name",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 13,
+              "max_length": 40
+            }
+          ]
+        },
+        {
+          "id": "pool_upb",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Pool UPB",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 14,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "average_original_loan_size_weighted",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Average Original Loan Size (AOLS) - Weighted",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 15,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_original_loan_size",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Original Loan Size",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 16,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_interest_rate",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Interest Rate (WAC)",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 17,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_remaining_months_to_maturity",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Remaining Months to Maturity (WARM)",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 18,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_loan_age",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Loan Age (WALA)",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 19,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_original_loan_term",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Original Loan Term (WAOLT)",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 20,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_gross_margin",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Gross Margin (WAGM)",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 21,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_loan_to_value",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Loan to Value (LTV)",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 22,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_combined_loan_to_value",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Combined Loan to Value (CLTV)",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 23,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_credit_score",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Credit Score",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 24,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_debt_to_income",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Debt to Income",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 25,
+              "max_length": 5,
+              "format": "1.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_pre_modified_lad",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Pre-Modified LAD",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 26,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_pre_modified_opb",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Pre-Modified OPB",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 27,
+              "max_length": 16,
+              "format": "13.2"
+            }
+          ]
+        },
+        {
+          "id": "wa_interest_rate_at_issuance",
+          "arrow_type": "float64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Interest Rate (WAC) at Issuance",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 28,
+              "max_length": 6,
+              "format": "2.3"
+            }
+          ]
+        },
+        {
+          "id": "wa_remaining_months_to_maturity_at_issuance",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Remaining Months to Maturity (WARM) at Issuance",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 29,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_loan_age_at_issuance",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Loan Age (WALA) at Issuance",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 30,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "wa_original_loan_term_at_issuance",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "WA Original Loan Term (WAOLT) at Issuance",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 31,
+              "max_length": 3
+            }
+          ]
+        },
+        {
+          "id": "social_indicator",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Social Indicator",
+          "domain": [
+            "Y",
+            "N"
+          ],
+          "layouts": [
+            {
+              "from": "2025-05",
+              "to": null,
+              "ordinal": 32,
+              "max_length": 1
+            }
+          ]
+        }
+      ]
+    },
+    "TP": {
+      "role": "trailer",
+      "present": [
+        {
+          "from": "2021-01",
+          "to": null
+        }
+      ],
+      "key_fields": [],
+      "fields": [
+        {
+          "id": "record_type",
+          "arrow_type": "string",
+          "pdf_type": "Character",
+          "pdf_text": "Record Type = TP",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 1,
+              "max_length": 2
+            }
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Reporting Period",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 2,
+              "max_length": 6,
+              "format": "YYYYMM"
+            }
+          ]
+        },
+        {
+          "id": "file_create_date",
+          "arrow_type": "string",
+          "pdf_type": "Date",
+          "pdf_text": "File Create Date",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 3,
+              "max_length": 8,
+              "format": "YYYYMMDD"
+            }
+          ]
+        },
+        {
+          "id": "detail_record_count",
+          "arrow_type": "int64",
+          "pdf_type": "Numeric",
+          "pdf_text": "Detail Record Count",
+          "layouts": [
+            {
+              "from": "2021-01",
+              "to": null,
+              "ordinal": 4,
+              "max_length": 8
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "corrections": [
+    "Record types 01-29, HS and TS removed: they belong to the Platinum Pool Supplemental file (prefix platmonPS), not to the Pool/Security file. The bootstrap gave both prefixes the supplemental record-type set, so silver wrote an empty parquet per stratum. Bronze 202101..202604 holds exactly HP (1 row), PS and TP (1 row) per file.",
+    "PS.social_indicator opens at 2025-05: it is item 32, added by layout V2.1.5 (effective June 2025, with the May 2025 monthly data). Bronze confirms 31 pipe tokens through 2025-04 and 32 from 2025-05.",
+    "PS.wa_combined_loan_to_value: dropped the extractor's 'Col4' format token; the layout table gives CLTV no Format (Numeric, max length 3).",
+    "Field ordinals, types and formats re-read from the V2.1 and V2.1.5 layout PDFs; roles, present windows, key_fields, pdf_type and domains added."
+  ]
+}

@@ -1,6 +1,6 @@
 """Servicer-name normalization and parent-entity consolidation.
 
-Servicer/issuer transfers detected by :mod:`analytics.transfers` are keyed on
+Servicer/issuer transfers detected by `analytics.transfers` are keyed on
 free-text names (FNMA/FHLMC carry no servicer ID; GNMA names are resolved from
 issuer-ID lookups and contain formatting artifacts). The same economic entity
 therefore appears under many spellings, and corporate rebrands (Quicken ->
@@ -13,16 +13,15 @@ shuffles under a single **parent entity**, so that:
 - acquisition-driven integrations (Caliber -> NewRez) are *kept* as true
   transfers (economic control changed).
 
-The normalization heuristic and the curated ``PARENT_MAP`` are ported from the
-``msr_transfers`` ``investigation_msr_transfer_trends`` study; the per-row
-``map_elements`` lookups there are reimplemented as vectorized expressions
-here. ``PARENT_MAP`` covers roughly the top ~120 names by UPB involvement
-(~91% of gross flow); unmapped names fall back to a title-cased version of
-their normalized form, with a bank/nonbank guess from name keywords.
+The normalization heuristic and the curated ``PARENT_MAP`` come from an earlier
+MSR-transfer trends study; its per-row ``map_elements`` lookups are reimplemented
+as vectorized expressions here. ``PARENT_MAP`` covers roughly the top ~120 names by
+UPB involvement (~91% of gross flow); unmapped names fall back to a title-cased
+version of their normalized form, with a bank/nonbank guess from name keywords.
 
 This is deterministic, closed-form name handling (no model), and is the one
 piece of the transfer pipeline that encodes curated judgment — kept separate
-from the mechanical detection in :mod:`analytics.transfers` so the curated
+from the mechanical detection in `analytics.transfers` so the curated
 parent map can evolve independently.
 """
 
@@ -39,9 +38,24 @@ import polars as pl
 #: (NATIONALASSOCIATION) match before their abbreviations (NA).
 SUFFIXES: list[str] = sorted(
     [
-        "LLC", "LP", "INC", "INCORPORATED", "CORP", "CORPORATION", "CO",
-        "COMPANY", "LTD", "LIMITED", "NA", "NATIONALASSOCIATION", "FSB",
-        "FEDERALSAVINGSBANK", "SSB", "FA", "LLLP", "PLC",
+        "LLC",
+        "LP",
+        "INC",
+        "INCORPORATED",
+        "CORP",
+        "CORPORATION",
+        "CO",
+        "COMPANY",
+        "LTD",
+        "LIMITED",
+        "NA",
+        "NATIONALASSOCIATION",
+        "FSB",
+        "FEDERALSAVINGSBANK",
+        "SSB",
+        "FA",
+        "LLLP",
+        "PLC",
     ],
     key=len,
     reverse=True,
@@ -64,7 +78,7 @@ def normalize_servicer_name(col_name: str = "servicer_name") -> pl.Expr:
     Returns:
         A Polars expression producing the normalized key.
 
-    Examples:
+    Example:
         >>> import polars as pl
         >>> df = pl.DataFrame({"servicer_name": ["Amerihome Mortgage Company, LLC"]})
         >>> df.select(normalize_servicer_name("servicer_name")).item()
@@ -237,8 +251,14 @@ _PARENT_SECTOR: dict[str, str] = {k: v[1] for k, v in PARENT_MAP.items()}
 #: when an entity is not in ``PARENT_MAP``. Tested against the uppercased,
 #: alphanumeric-only raw name (suffixes kept), so spaced forms are dropped.
 BANK_KEYWORDS: tuple[str, ...] = (
-    "BANK", "BANC", "SAVINGS", "CREDITUNION", "TRUSTCOMPANY",
-    "NATIONALASSOCIATION", "FEDERALSAVINGS", "FSB",
+    "BANK",
+    "BANC",
+    "SAVINGS",
+    "CREDITUNION",
+    "TRUSTCOMPANY",
+    "NATIONALASSOCIATION",
+    "FEDERALSAVINGS",
+    "FSB",
 )
 
 
@@ -247,7 +267,7 @@ def classify_sector_expr(raw_col: str) -> pl.Expr:
 
     Operates on the *raw* name (punctuation removed, entity suffixes kept) so
     depository markers like ``FSB`` / ``NATIONAL ASSOCIATION`` survive. Returns
-    ``"bank"`` when any :data:`BANK_KEYWORDS` marker is present, else
+    ``"bank"`` when any `BANK_KEYWORDS` marker is present, else
     ``"nonbank"`` (the safe default for unrecognized originator-servicers).
 
     Args:
@@ -268,6 +288,9 @@ def _parent_name_expr(norm_col: str) -> pl.Expr:
 
     Mapped keys resolve to their curated parent; unmapped keys fall back to a
     title-cased version of the normalized key (``"(blank)"`` when empty).
+
+    Returns:
+        A Utf8 expression yielding the parent display name.
     """
     mapped = pl.col(norm_col).replace_strict(_PARENT_NAME, default=None, return_dtype=pl.Utf8)
     fallback = (
