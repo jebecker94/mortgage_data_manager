@@ -12,19 +12,15 @@ Example Usage
 >>> run_matching(max_year=2024)
 
 >>> from mortgage_data_manager.matching.match_hmda_fhlb import HMDAFHLBMatchingConfig
->>> print(HMDAFHLBMatchingConfig.DATA_DIR)
+>>> print(HMDAFHLBMatchingConfig.HMDA_FHLB_MATCHING_DIR)
 """
 
-from mortgage_data_manager.matching.match_hmda_fhlb.config import (
-    DATA_DIR,
-    HMDAFHLBMatchingConfig,
-)
+from mortgage_data_manager.matching.match_hmda_fhlb.config import HMDAFHLBMatchingConfig
 from mortgage_data_manager.matching.match_hmda_fhlb.pipeline import run_matching
 
 __all__ = [
     # Configuration
     "HMDAFHLBMatchingConfig",
-    "DATA_DIR",
     # Matching
     "run_matching",
 ]

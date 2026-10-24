@@ -148,14 +148,14 @@ which reads exactly those releases. The purchase year is the first four characte
 
 ```bash
 mortgage-data match hmda-sellers-purchasers info               # rounds, inputs, outputs present
-mortgage-data match hmda-sellers-purchasers run                # all eight rounds, post-2018
-mortgage-data match hmda-sellers-purchasers run --round 3      # one round (rewrites its partitions)
+mortgage-data match hmda-sellers-purchasers run --overwrite    # all eight rounds, post-2018
+mortgage-data match hmda-sellers-purchasers run --round 3 --overwrite   # one round
 mortgage-data match hmda-sellers-purchasers validate           # report and validation figure
 ```
 
-A post-2018 round always rewrites its partitions; `--overwrite` only changes the 2007–2017
-era, which skips a round already built. Rerunning one post-2018 round leaves later rounds'
-partitions as they were, so rerun every round after it too.
+Both eras skip a round already built; `--overwrite` rebuilds it, deleting only that
+round's partitions for the years being run. Rerunning one post-2018 round leaves later
+rounds' partitions as they were, so rerun every round after it too.
 
 ## Results
 

@@ -14,6 +14,7 @@ import pytest
 
 from mortgage_data_manager.core.medallion import (
     atomic_output,
+    clear_partitions,
     should_process_file,
     write_hive_partitioned,
 )
@@ -70,3 +71,28 @@ def test_write_hive_partitioned_leaves_no_temp_tree(tmp_path):
     got = pl.scan_parquet(out / "**/*.parquet").collect()
     assert got.sort("value")["value"].to_list() == [1, 2, 3]
     assert not (tmp_path / ".silver.tmp").exists()  # temp tree removed after publish
+
+
+def test_clear_partitions_removes_only_named_partitions(tmp_path):
+    for leaf in ("activity_year=2019", "activity_year=2020", "Year=2010/Month=5"):
+        (tmp_path / leaf).mkdir(parents=True)
+        (tmp_path / leaf / "part.parquet").touch()
+
+    removed = clear_partitions(
+        tmp_path, ["activity_year=2020", "Year=2010/Month=5", "activity_year=1999"]
+    )
+
+    assert removed == 2  # an absent partition is not an error
+    assert (tmp_path / "activity_year=2019" / "part.parquet").exists()
+    assert not (tmp_path / "activity_year=2020").exists()
+    assert (tmp_path / "Year=2010").is_dir()  # only the leaf goes
+
+
+@pytest.mark.parametrize("target", [".", "..", "activity_year=2020/../.."])
+def test_clear_partitions_refuses_the_root_and_outside(tmp_path, target):
+    root = tmp_path / "silver"
+    (root / "activity_year=2020").mkdir(parents=True)
+
+    with pytest.raises(ValueError):
+        clear_partitions(root, [target])
+    assert (root / "activity_year=2020").is_dir()

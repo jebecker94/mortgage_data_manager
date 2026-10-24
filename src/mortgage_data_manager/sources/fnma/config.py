@@ -71,11 +71,6 @@ class FNMAConfig(MortgageDataConfig):
     #: Fannie Mae's CRT file layout and glossary workbook.
     FNMA_SCHEMA_FILE: Path = FNMA_SCHEMAS_DIR / "sf_loan_layout.csv"
 
-    # Backward compatibility aliases
-    RAW_DIR = FNMA_RAW_DIR
-    BRONZE_DIR = FNMA_BRONZE_DIR
-    SILVER_DIR = FNMA_SILVER_DIR
-
     # Processing constants
     DEFAULT_DELIMITER: str = "|"
     DEFAULT_ENCODING: str = "utf-8"
@@ -131,11 +126,6 @@ class FNMAConfig(MortgageDataConfig):
 
         # Create schemas directory
         cls.FNMA_SCHEMAS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-# Backward compatibility module-level exports
-PROJECT_ROOT = FNMAConfig.PROJECT_DIR
-DATA_ROOT = FNMAConfig.DATA_DIR
 
 
 # ----------------------------------------------------------------------------- #

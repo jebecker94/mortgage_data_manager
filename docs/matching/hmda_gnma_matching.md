@@ -167,13 +167,13 @@ releases the `hmda_fha` crosswalk names):
 
 | | Pairs | HMDA-side rate |
 |---|---:|---:|
-| Round 1 | 6,353,270 | 76.8% |
-| Round 2 | 160,248 | 1.9% |
-| Score ≥ 11 | 6,079,467 | 73.4% |
-| Absent evidence | 434,051 | 5.2% |
-| Total | 6,513,518 | 78.7% |
+| Round 1 | 6,352,112 | 76.7% |
+| Round 2 | 160,195 | 1.9% |
+| Score ≥ 11 | 6,078,642 | 73.4% |
+| Absent evidence | 433,665 | 5.2% |
+| Total | 6,512,307 | 78.7% |
 
-The absent-evidence route is almost all round 1 (433,422 of 434,051 pairs).
+The absent-evidence route is almost all round 1 (433,036 of 433,665 pairs).
 
 **VA and USDA**, with the purpose term and round 3. The last column reruns the same code
 with neither, at a floor of 7 (measured 2026-10-22):
@@ -188,7 +188,7 @@ By round: 2,613,245 in round 1, 96,038 in round 2 and 1,175,686 in round 3. Roun
 of the gain; the purpose term adds 37,432 pairs net on rounds 1–2.
 
 **GNMA side**, against the loan-level disclosure universe each program contributes in pools
-from January 2018 on (including 2026 pools): FHA 75.5% (6,513,518 of 8,627,330), VA 54.6%
+from January 2018 on (including 2026 pools): FHA 75.5% (6,512,307 of 8,627,330), VA 54.6%
 (3,451,360 of 6,322,574), USDA 65.9% (433,609 of 657,593). These sit below the HMDA-side
 rates because Ginnie pools loans HMDA never reports as 2018–2025 originations (re-pooled,
 non-reporter and 2026 volume), so the two denominators are different populations.
@@ -199,15 +199,15 @@ DTI is a direct-match score input, so it cannot validate direct pairs. The valid
 (`match hmda-gnma validate`) instead uses a field no matcher keys on: for loans also matched
 seller → purchaser (the `hmda_sellers_purchasers` crosswalk), the GNMA pool issuer name
 should equal the purchaser's (aggregator's, `lei_p`) HMDA panel name, and the originator's
-name serves as a control. Measured 2026-10-22.
+name serves as a control. Measured 2026-10-23.
 
 | FHA set | Testable pairs | Issuer = aggregator | Issuer = originator (control) |
 |---|---:|---:|---:|
-| All pairs | 2,024,564 | 95.3% | 0.8% |
-| Score ≥ 11 | 2,006,466 | 95.3% | 0.8% |
-| Absent evidence | 18,098 | 95.1% | 1.4% |
+| All pairs | 2,024,298 | 95.3% | 0.8% |
+| Score ≥ 11 | 2,006,208 | 95.3% | 0.8% |
+| Absent evidence | 18,090 | 95.1% | 1.4% |
 
-The absent-evidence tier is thinly testable: 18,098 of its 434,051 pairs carry a purchase
+The absent-evidence tier is thinly testable: 18,090 of its 433,665 pairs carry a purchase
 record, against a third of the score tier, because most are retail refinances.
 
 | VA/USDA set | Testable pairs | Issuer = aggregator | Issuer = originator (control) |
@@ -223,13 +223,13 @@ record, against a third of the score tier, because most are retail refinances.
 
 1. **State-size bias.** Spearman correlation of a state's HMDA volume with its HMDA-side
    match rate is −0.04 for FHA (p = 0.79, 55 state codes) and −0.84 for VA (measured
-   2026-10-22). Weight or use state fixed effects for cross-state VA analysis.
+   2026-10-23). Weight or use state fixed effects for cross-state VA analysis.
 2. **Selection.** Matched FHA loans under-represent Hispanic borrowers. Among applicants
    reporting an ethnicity on forward FHA originations, the Hispanic share is 6.9 points lower
    for matched than unmatched loans within activity year, and 7.1 within year and purpose
    (purchases 7.8, refinances 5.0); the gap widens to 10–11 points in 2024–2025. Purchases
    match 5–13 points less often than refinances in 2018 and 2022–2025, and 1–2 points more
-   often in 2019–2021 (measured 2026-10-21). The direct route also mildly favors
+   often in 2019–2021 (measured 2026-10-23). The direct route also mildly favors
    DTI-consistent loans (some issuers re-report DTI at pooling); `s_dti` is persisted so
    DTI-agnostic subsets can be rebuilt.
 3. **DTI is not match evidence**, because it is a match input; use the name triangulation

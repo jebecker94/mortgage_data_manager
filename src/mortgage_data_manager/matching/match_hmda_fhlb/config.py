@@ -111,13 +111,5 @@ HMDA_POST2018_COLS: list[str] = [
 ]
 
 
-# Backward compatibility exports
-PROJECT_ROOT: Path = HMDAFHLBMatchingConfig.PROJECT_DIR
-DATA_DIR: Path = HMDAFHLBMatchingConfig.HMDA_FHLB_MATCHING_DIR
-AVERY_FILE_PATH: Path = HMDAFHLBMatchingConfig.AVERY_FILE_PATH
-AVERY_PRE2018_FILE_PATH: Path = HMDAFHLBMatchingConfig.AVERY_PRE2018_FILE_PATH
-CROSSWALK_DIR: Path = HMDAFHLBMatchingConfig.HMDA_FHLB_CROSSWALK_DIR
-
-
 # Check dependencies on import
 HMDAFHLBMatchingConfig._check_dependencies()

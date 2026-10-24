@@ -11,11 +11,9 @@ from __future__ import annotations
 
 import re
 from difflib import SequenceMatcher
-from pathlib import Path
 from typing import Literal
 
 import polars as pl
-import yaml
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.matching.match_hmda_gse.config import HMDAGSEMatchingConfig as Config
@@ -209,7 +207,7 @@ def aggregate_lender_seller_pairs(mismatches: pl.LazyFrame) -> pl.DataFrame:
 
     Computes:
     - total_loans, fnma_loans, fhlmc_loans
-    - year_2019, year_2020, ..., year_2024
+    - year_{YYYY} for every activity year present
     - first_year, last_year
     - representative LEI (most common)
 
@@ -221,6 +219,7 @@ def aggregate_lender_seller_pairs(mismatches: pl.LazyFrame) -> pl.DataFrame:
     """
     # Collect first to enable complex aggregations
     df = mismatches.collect()
+    years = sorted(df["activity_year"].drop_nulls().unique().to_list())
 
     # Group and aggregate
     agg_exprs = [
@@ -229,12 +228,7 @@ def aggregate_lender_seller_pairs(mismatches: pl.LazyFrame) -> pl.DataFrame:
         (pl.col("agency") == "fnma").sum().alias("fnma_loans"),
         (pl.col("agency") == "fhlmc").sum().alias("fhlmc_loans"),
         # Year breakdown
-        (pl.col("activity_year") == 2019).sum().alias("year_2019"),
-        (pl.col("activity_year") == 2020).sum().alias("year_2020"),
-        (pl.col("activity_year") == 2021).sum().alias("year_2021"),
-        (pl.col("activity_year") == 2022).sum().alias("year_2022"),
-        (pl.col("activity_year") == 2023).sum().alias("year_2023"),
-        (pl.col("activity_year") == 2024).sum().alias("year_2024"),
+        *((pl.col("activity_year") == year).sum().alias(f"year_{year}") for year in years),
         # Year range
         pl.col("activity_year").min().cast(pl.Int16).alias("first_year"),
         pl.col("activity_year").max().cast(pl.Int16).alias("last_year"),
@@ -330,33 +324,6 @@ def classify_connection_type(hmda_name: str, umbs_name: str) -> str:
         return "merger"
 
     return "unknown"
-
-
-def load_annotations(annotations_path: Path | None = None) -> dict:
-    """Load manual annotations from YAML file.
-
-    Args:
-        annotations_path: Path to annotations YAML. Defaults to config path.
-
-    Returns:
-        Dictionary of annotations keyed by (respondent_name, seller_name) tuple.
-    """
-    if annotations_path is None:
-        annotations_path = Config.ANNOTATIONS_PATH
-
-    if not annotations_path.exists():
-        return {}
-
-    with open(annotations_path) as f:
-        data = yaml.safe_load(f) or {}
-
-    # Convert list to dict keyed by name pair
-    annotations = {}
-    for entry in data.get("annotations", []):
-        key = (entry.get("respondent_name"), entry.get("seller_name"))
-        annotations[key] = entry
-
-    return annotations
 
 
 def compute_concentration_metrics(
@@ -517,41 +484,6 @@ def build_lender_seller_crosswalk(
         .alias("auto_class")
     )
 
-    # Load and merge manual annotations
-    annotations = load_annotations()
-    if annotations:
-        logger.info("  Merging %s manual annotations...", len(annotations))
-
-        def get_annotation_field(row: dict, field: str) -> str | None:
-            key = (row["respondent_name"], row["Seller Name"])
-            ann = annotations.get(key, {})
-            result = ann.get(field)
-            return str(result) if result is not None else None
-
-        filtered = filtered.with_columns(
-            [
-                pl.struct(["respondent_name", "Seller Name"])
-                .map_elements(
-                    lambda x: get_annotation_field(x, "connection_type"),
-                    return_dtype=pl.Utf8,
-                )
-                .alias("connection_type"),
-                pl.struct(["respondent_name", "Seller Name"])
-                .map_elements(
-                    lambda x: get_annotation_field(x, "notes"),
-                    return_dtype=pl.Utf8,
-                )
-                .alias("notes"),
-            ]
-        )
-    else:
-        filtered = filtered.with_columns(
-            [
-                pl.lit(None).cast(pl.Utf8).alias("connection_type"),
-                pl.lit(None).cast(pl.Utf8).alias("notes"),
-            ]
-        )
-
     # Reorder columns
     final = filtered.select(
         [
@@ -571,17 +503,10 @@ def build_lender_seller_crosswalk(
             "unproblematic",
             "fnma_loans",
             "fhlmc_loans",
-            "year_2019",
-            "year_2020",
-            "year_2021",
-            "year_2022",
-            "year_2023",
-            "year_2024",
+            pl.col(r"^year_\d{4}$"),
             "first_year",
             "last_year",
             "auto_class",
-            "connection_type",
-            "notes",
         ]
     )
 
@@ -593,171 +518,3 @@ def build_lender_seller_crosswalk(
     logger.info("  Needs review (non-spurious & problematic): %s", f"{len(needs_review):,}")
 
     return final
-
-
-def generate_markdown_report(
-    crosswalk: pl.DataFrame,
-    output_path: Path | None = None,
-) -> None:
-    """Generate markdown documentation for the lender/seller crosswalk.
-
-    Args:
-        crosswalk: The crosswalk DataFrame to document.
-        output_path: Path to write markdown file. Defaults to docs/matching/.
-    """
-    if output_path is None:
-        output_path = (
-            Path(__file__).parent.parent.parent.parent.parent
-            / "docs"
-            / "matching"
-            / "lender_seller_crosswalk.md"
-        )
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Compute statistics
-    total_pairs = len(crosswalk)
-    total_loans = crosswalk["total_loans"].sum()
-    spurious_pairs = crosswalk.filter(pl.col("likely_spurious")).height
-    non_spurious_pairs = total_pairs - spurious_pairs
-
-    # Classification breakdown (non-spurious only)
-    non_spurious = crosswalk.filter(~pl.col("likely_spurious"))
-    class_counts = (
-        non_spurious.group_by("auto_class")
-        .agg(pl.len().alias("count"))
-        .sort("count", descending=True)
-    )
-
-    # Top 20 non-spurious pairs
-    top_pairs = non_spurious.head(20)
-
-    # Build markdown content
-    lines = [
-        "# Lender/Seller Crosswalk Analysis",
-        "",
-        "## Overview",
-        "",
-        "This crosswalk identifies HMDA lenders and UMBS sellers that frequently match",
-        "in the HMDA-GSE crosswalk but have different names. These represent mergers,",
-        "acquisitions, rebrands, affiliates, and DBAs worth documenting.",
-        "",
-        "The analysis focuses on **Retail channel** records where the originating lender",
-        "is expected to be the same as the seller to the GSEs.",
-        "",
-        "## Summary Statistics",
-        "",
-        "| Metric | Value |",
-        "|--------|-------|",
-        f"| Total name-mismatched pairs | {total_pairs:,} |",
-        f"| Total loans in mismatched pairs | {total_loans:,} |",
-        f"| Likely spurious matches | {spurious_pairs:,} |",
-        f"| Non-spurious pairs | {non_spurious_pairs:,} |",
-        "",
-        "### Spurious Match Detection",
-        "",
-        "Pairs are flagged as **likely spurious** when:",
-        "- Less than 10% of the lender's retail loans go to this seller, AND",
-        "- Less than 10% of the seller's retail loans come from this lender",
-        "",
-        "This suggests coincidental matching between large institutions rather than",
-        "a real business relationship (merger, rebrand, affiliate, or DBA).",
-        "",
-        "### Classification Breakdown (Non-Spurious Only)",
-        "",
-        "| Classification | Count |",
-        "|----------------|-------|",
-    ]
-
-    for row in class_counts.iter_rows(named=True):
-        lines.append(f"| {row['auto_class']} | {row['count']:,} |")
-
-    lines.extend(
-        [
-            "",
-            "## Top 20 Pairs by Loan Volume (Non-Spurious)",
-            "",
-            "| HMDA Lender | UMBS Seller | Loans | % Lender | % Seller | Class |",
-            "|-------------|-------------|-------|----------|----------|-------|",
-        ]
-    )
-
-    for row in top_pairs.iter_rows(named=True):
-        class_type = row.get("connection_type") or row["auto_class"]
-        lines.append(
-            f"| {row['respondent_name'][:35]} | {row['seller_name'][:35]} | "
-            f"{row['total_loans']:,} | {row['pct_of_lender']:.1f}% | "
-            f"{row['pct_of_seller']:.1f}% | {class_type} |"
-        )
-
-    lines.extend(
-        [
-            "",
-            "## Known Cases",
-            "",
-            "### Validated Rebrands",
-            "",
-            "- **Quicken Loans -> Rocket Mortgage**: July 2021 rebrand",
-            "",
-            "### Validated Mergers",
-            "",
-            "- **Iberiabank -> First Horizon Bank**: July 2020 merger",
-            "",
-            "### Affiliate Relationships",
-            "",
-            "- **Citibank, N.A. -> Citimortgage, Inc.**: Bank and mortgage affiliate",
-            "",
-            "## CLI Usage",
-            "",
-            "```bash",
-            "# Build crosswalk with default settings",
-            "mortgage-data match hmda-gse lender-crosswalk",
-            "",
-            "# Custom minimum loan threshold",
-            "mortgage-data match hmda-gse lender-crosswalk --min-loans 500",
-            "",
-            "# Generate this report",
-            "mortgage-data match hmda-gse lender-crosswalk --report",
-            "```",
-            "",
-            "## Output Files",
-            "",
-            "| File | Description |",
-            "|------|-------------|",
-            "| `output/hmda_gse_lender_seller_crosswalk.parquet` | Main crosswalk with loan counts |",
-            "| `schemas/lenders/lender_seller_annotations.yaml` | Manual research notes |",
-            "| `docs/matching/lender_seller_crosswalk.md` | This documentation |",
-            "",
-            "## Schema",
-            "",
-            "| Column | Type | Description |",
-            "|--------|------|-------------|",
-            "| respondent_name | String | HMDA lender name (original) |",
-            "| respondent_name_norm | String | HMDA lender name (normalized) |",
-            "| seller_name | String | UMBS seller name (original) |",
-            "| seller_name_norm | String | UMBS seller name (normalized) |",
-            "| lei | String | Representative LEI |",
-            "| total_loans | Int64 | Total matched loans in pair |",
-            "| lender_total_loans | Int64 | Lender's total retail loans |",
-            "| seller_total_loans | Int64 | Seller's total retail loans |",
-            "| pct_of_lender | Float64 | % of lender's loans to this seller |",
-            "| pct_of_seller | Float64 | % of seller's loans from this lender |",
-            "| likely_spurious | Boolean | True if low concentration on both sides |",
-            "| fnma_loans | Int64 | FNMA loans |",
-            "| fhlmc_loans | Int64 | FHLMC loans |",
-            "| year_2019..year_2024 | Int64 | Loans by year |",
-            "| first_year | Int16 | First year seen |",
-            "| last_year | Int16 | Last year seen |",
-            "| auto_class | String | Automatic classification |",
-            "| connection_type | String | Manual annotation |",
-            "| notes | String | Research notes |",
-            "",
-        ]
-    )
-
-    content = "\n".join(lines)
-
-    with open(output_path, "w") as f:
-        f.write(content)
-
-    logger.info("Report saved: %s", output_path)

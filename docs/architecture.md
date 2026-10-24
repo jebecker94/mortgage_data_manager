@@ -86,97 +86,33 @@ so a silver layer would only copy them; read across quarters with `load_crosswal
 ## Configuration
 
 Every subpackage has a config class that inherits `MortgageDataConfig` and adds its own
-directories:
-
-```python
-class MortgageDataConfig:
-    PROJECT_DIR: Path
-    DATA_DIR: Path
-    OUTPUT_DIR: Path
-
-class HMDAConfig(MortgageDataConfig):
-    HMDA_DATA_DIR: Path = Path(config("HMDA_DATA_DIR", default=...))
-    HMDA_RAW_DIR: Path
-    HMDA_BRONZE_DIR: Path
-    HMDA_SILVER_DIR: Path
-```
-
-Paths are read once, at import, from `.env` or the environment. Use the class directly
-(`HMDAConfig.HMDA_SILVER_DIR`); an instance would only be a copy. The
-[configuration guide](configuration.md) lists every setting.
+directories. The [configuration guide](configuration.md) lists every setting.
 
 ## CLI
 
 Every subpackage exposes a Typer app, and `cli/main.py` mounts them all under one
-`mortgage-data` command:
-
-```
-mortgage-data
-├── info
-├── version
-├── hmda
-│   ├── download
-│   ├── bronze
-│   ├── silver
-│   ├── pipeline
-│   └── info
-├── fha
-│   └── ...
-└── ...
-```
-
-The same verbs recur across sources: `download`, `bronze`, `silver`, `gold`, `pipeline`
-and `info`, with the same option names wherever they apply (`--min-year`/`--max-year`,
-`--overwrite`, `--output-dir`, `--datasets`/`-t`, `--pause`). The matching workflows
-under `mortgage-data match` use `info`, `run` and `validate`.
+`mortgage-data` command. The same verbs recur across sources: `download`, `bronze`,
+`silver`, `gold`, `pipeline` and `info`, with the same option names wherever they apply
+(`--min-year`/`--max-year`, `--overwrite`, `--output-dir`, `--datasets`/`-t`, `--pause`).
+The matching workflows under `mortgage-data match` use `info`, `run` and `validate`. The
+[CLI reference](cli_reference.md) lists every command.
 
 Another installed package can add its own subcommands through the
 `mortgage_data_manager.plugins` entry-point group: each entry point is a callable that
 receives the top-level Typer app. A plugin that fails to load prints a warning and
 leaves the rest of the CLI working.
 
-The [CLI reference](cli_reference.md) lists every command.
-
 ## Processing patterns
 
-**Lazy frames throughout.** Builders scan, transform and sink without loading a whole
-file into memory. Polars plans the query and only executes it at `sink_parquet`:
-
-```python
-lf = pl.scan_parquet(bronze_dir / "*.parquet")
-lf = lf.filter(pl.col("activity_year") >= 2020)
-lf.sink_parquet(out_path)
-```
-
-**Hive-partitioned silver.** `core.medallion.write_hive_partitioned` writes one directory
-per partition value. Rows with a null partition key are dropped first, since a null has
-no directory name.
-
-```python
-write_hive_partitioned(lf, silver_dir, partition_cols=["activity_year", "file_type"])
-```
-
-**Skip what already exists.** Builders process one year or file at a time and skip
-outputs already on disk, so an interrupted build resumes where it stopped. `--overwrite`
-rebuilds, and it only deletes the partitions being rebuilt.
-
-```python
-for year in range(min_year, max_year + 1):
-    if should_process_file(silver_dir / f"activity_year={year}", overwrite=False):
-        process_year(year)
-```
-
-## Dependencies
-
-The base install covers data handling (polars, pyarrow, pandas), configuration,
-downloading and the CLI. Each subpackage's own dependencies live in an extra (`hmda`,
-`fha`, `mbs`, `matching`, `hud`, `analytics`); `all` pulls in every one, `dev` adds the
-toolchain and `docs` the documentation build. `pyproject.toml` is the authoritative list.
-
-```bash
-uv pip install -e ".[hmda]"      # one source
-uv pip install -e ".[all,dev]"   # everything, plus the toolchain
-```
+- **Lazy frames throughout.** Builders `scan_parquet`, transform and `sink_parquet`
+  without loading a whole file into memory.
+- **Hive-partitioned silver.** `core.medallion.write_hive_partitioned` writes one
+  directory per partition value. Rows with a null partition key are dropped first, since
+  a null has no directory name.
+- **Skip what already exists.** Builders process one year or file at a time and skip
+  outputs already on disk (`core.medallion.should_process_file`), so an interrupted build
+  resumes where it stopped. `--overwrite` rebuilds, and it only deletes the partitions
+  being rebuilt.
 
 ## Design decisions
 

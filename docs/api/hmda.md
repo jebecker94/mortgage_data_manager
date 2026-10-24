@@ -1,57 +1,32 @@
 # HMDA API Reference
 
-API reference for the HMDA (Home Mortgage Disclosure Act) subpackage.
-
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.hmda.config
-
----
 
 ## Download
 
 ::: mortgage_data_manager.sources.hmda.download
 
----
-
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.hmda.import_bronze
-
----
 
 ## Silver layer
 
 ::: mortgage_data_manager.sources.hmda.import_silver
 
----
-
 ## Loading silver
 
 ::: mortgage_data_manager.sources.hmda.load
-
----
 
 ## Pipeline
 
 ::: mortgage_data_manager.sources.hmda.pipeline
 
----
-
 ## Utilities
 
 ::: mortgage_data_manager.sources.hmda.utils
-
----
-
-## CLI
-Commands, options and examples for `mortgage-data hmda` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-hmda). `mortgage-data hmda --help` is
-authoritative.
-
----
 
 ## Complete Example
 ```python
@@ -69,8 +44,6 @@ mortgage-data hmda pipeline pre2007 --min-year 1990 --max-year 2006
 CLI periods are `post2018`, `2007-2017`, `pre2007`; the Python `eras` argument
 spells the middle one `2007_2017`. Datasets are `loans`, `panel`,
 `transmittal_series` (selectable with `--datasets` for `post2018` and `pre2007`).
-
----
 
 ## Data Structure
 ### Bronze Layer
@@ -112,8 +85,6 @@ Key fields in HMDA data:
 | `census_tract` | str | Eleven-digit census tract |
 
 For complete field reference, see the [FFIEC HMDA documentation](https://ffiec.cfpb.gov/documentation/).
-
----
 
 ## See Also
 - [Core API](core.md) - Shared utilities and medallion architecture

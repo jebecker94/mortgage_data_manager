@@ -26,7 +26,6 @@ from mortgage_data_manager.core.medallion import atomic_output, should_process_f
 from mortgage_data_manager.sources.hmda.config import (
     DERIVED_COLUMNS,
     HMDA_INDEX_COLUMN,
-    RAW_DIR,
     HMDAConfig,
 )
 
@@ -64,11 +63,11 @@ def build_bronze_pre2007(
 
     # Determine raw folder and archives based on dataset
     if dataset == "loans":
-        raw_folder = RAW_DIR / "loans"
+        raw_folder = HMDAConfig.HMDA_RAW_DIR / "loans"
     elif dataset == "panel":
-        raw_folder = RAW_DIR
+        raw_folder = HMDAConfig.HMDA_RAW_DIR
     elif dataset == "transmittal_series":
-        raw_folder = RAW_DIR
+        raw_folder = HMDAConfig.HMDA_RAW_DIR
     else:
         raise ValueError(f"Unknown dataset: {dataset}")
 
@@ -184,7 +183,7 @@ def build_bronze_period_2007_2017(
         max_year: Last activity year to build, inclusive.
         overwrite: Rebuild parquets that already exist.
     """
-    raw_folder = RAW_DIR / dataset
+    raw_folder = HMDAConfig.HMDA_RAW_DIR / dataset
     bronze_folder = HMDAConfig.get_dataset_dir("bronze", dataset)
     bronze_folder.resolve().mkdir(parents=True, exist_ok=True)
 
@@ -302,7 +301,7 @@ def build_bronze_post2018(
         max_year: Last activity year to build, inclusive.
         overwrite: Rebuild parquets that already exist.
     """
-    raw_folder = RAW_DIR / dataset
+    raw_folder = HMDAConfig.HMDA_RAW_DIR / dataset
     bronze_folder = HMDAConfig.get_dataset_dir("bronze", dataset)
     bronze_folder.resolve().mkdir(parents=True, exist_ok=True)
 

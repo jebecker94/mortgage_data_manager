@@ -244,7 +244,8 @@ def run(
     console.print()
 
     rounds_to_run = [round_num] if round_num else valid_rounds
-    pairs_total = 0
+    # Pairs matched (pre-2018) or rounds run (post-2018); zero means no work was done.
+    work = 0
 
     try:
         for r in rounds_to_run:
@@ -262,20 +263,27 @@ def run(
                     max_year=max_year,
                     overwrite=overwrite,
                 )
-                pairs_total += pairs
+                work += pairs
                 console.print(f"[green]Round {r} complete: {pairs:,} pairs.[/green]\n")
             else:
-                run_round(
+                built = run_round(
                     r,
-                    str(data_dir),
-                    str(output_dir),
+                    data_dir,
+                    output_dir,
                     min_year=min_year,
                     max_year=max_year,
+                    overwrite=overwrite,
                 )
-                console.print(f"[green]Round {r} complete.[/green]\n")
+                if built:
+                    work += 1
+                    console.print(f"[green]Round {r} complete.[/green]\n")
+                else:
+                    console.print(f"[yellow]Round {r} exists; use --overwrite.[/yellow]\n")
 
-        if pre2018 and pairs_total == 0:
-            console.print("[red]No pairs matched.[/red]")
+        if work == 0:
+            console.print(
+                "[red]No pairs matched.[/red]" if pre2018 else "[red]Nothing built.[/red]"
+            )
             raise typer.Exit(code=1)
 
         console.print("\n[bold green]Matching complete![/bold green]")

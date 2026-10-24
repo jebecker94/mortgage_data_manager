@@ -7,15 +7,13 @@ accept in a browser. Ginnie Mae downloads are automatic but need account credent
 
 | Source | How to get it | Account | Cost |
 |--------|---------------|---------|------|
-| HMDA | `mortgage-data hmda download` | None | Free |
-| FHA | `mortgage-data fha download` | None | Free |
-| FHFA | `mortgage-data fhfa download` | None | Free |
-| GNMA | `mortgage-data gnma download monthly` | Ginnie Mae profile (email + secret-question answer) | Free |
-| USPS crosswalk | `mortgage-data usps-crosswalk download` | HUD USPS API token (`USPS_CROSSWALK_API_KEY`) | Free |
-| FHLB, HUD | `mortgage-data fhlb download`, `mortgage-data hud download` | None | Free |
 | FNMA | Manual download | Data Dynamics | Free for research |
 | FHLMC | Manual download | Clarity Data Intelligence | Free for non-commercial use |
 | UMBS | Manual download | Via FNMA or FHLMC | Free |
+| GNMA | `mortgage-data gnma download monthly` | Ginnie Mae profile (email + secret-question answer) | Free |
+| USPS crosswalk | `mortgage-data usps-crosswalk download` | HUD USPS API token (`USPS_CROSSWALK_API_KEY`) | Free |
+
+Every other source downloads with `mortgage-data <source> download`, with no account.
 
 After placing a file in a raw directory by hand, record it in the raw-download ledger so
 it has the same record (SHA-256, size, content type, note) as an automated download:
@@ -53,10 +51,8 @@ part of the default run because of its size; import it with
 `mortgage-data fnma bronze -t performance_all` (`--min-year`/`--max-year` select
 quarters).
 
-**Contents.** Fixed-rate, fully amortizing single-family mortgages with terms of 30
-years or less. ARMs, balloons, interest-only, government-insured, HARP and other
-non-standard loans are left out of the standard dataset; the Exclusions and HARP files
-carry some of them. Fannie Mae updates the files quarterly.
+**Contents.** Fixed-rate, fully amortizing single-family loans of 30 years or less,
+updated quarterly; the Exclusions and HARP files carry some of the loans left out.
 
 ## Fannie Mae Multifamily Loan Performance Data
 
@@ -75,11 +71,8 @@ mortgage-data fnma bronze -t multifamily              # parquet per release unde
 mortgage-data fnma silver -t multifamily --overwrite  # rebuild silver from the latest release
 ```
 
-**Contents.** Fannie Mae multifamily acquisitions (DUS, Non-DUS, Bulk Delivery, Credit
-Facility) from 2000 on. Unlike the single-family files, these are comma-delimited with a
-header row, and dollar amounts are strings such as `"$1,234.56"` with negatives in
-parentheses. Each quarterly release restates the full history, so silver keeps only the
-latest release.
+**Contents.** Multifamily acquisitions from 2000 on. Each quarterly release restates the
+full history, so silver keeps only the latest release.
 
 ## Freddie Mac Single-Family Loan-Level Dataset
 
@@ -102,9 +95,8 @@ and research use; commercial redistribution requires a license.
    └── rpl_historical_data.zip                 # re-performing loan mapping
    ```
 
-**Contents.** Single-family mortgages acquired from 1999 on: fixed-rate loans in the
-standard dataset, the special loan types in the non-standard dataset, and a
-re-performing loan (RPL) mapping file. Updated quarterly. Technical support: SF_LLD_Technology_Support@freddiemac.com.
+**Contents.** Single-family loans acquired from 1999 on, updated quarterly. Technical
+support: SF_LLD_Technology_Support@freddiemac.com.
 
 ## UMBS (Uniform Mortgage-Backed Securities)
 
@@ -137,18 +129,6 @@ GNMA_ANSWER=<the answer to your profile's secret question>
 The command exchanges them for a `gm_up_token`, caches it, and signs in again when it
 expires.
 
-The disclosures cover single-family, multifamily and multiclass MBS, HMBS (securities
-backed by reverse mortgages, HECMs), and REMIC and Platinum securities, at daily,
-weekly, monthly and factor frequencies. File layouts are at
+File layouts are at
 https://www.ginniemae.gov/data_and_reports/disclosure_data/Pages/bulk_data_download_layout.aspx;
 questions go to InvestorInquiries@hud.gov.
-
-## Processing downloaded files
-
-Once the files are in place, build bronze and silver:
-
-```bash
-mortgage-data fnma pipeline
-mortgage-data fhlmc pipeline
-mortgage-data umbs pipeline
-```

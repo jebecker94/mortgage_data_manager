@@ -30,16 +30,19 @@ from mortgage_data_manager.core.cli.formatting import (
     print_summary,
 )
 from mortgage_data_manager.core.cli.progress import create_progress, create_spinner
-from mortgage_data_manager.core.cli.validation import version_callback_factory
+from mortgage_data_manager.core.cli.validation import (
+    validate_datasets,
+    validate_years,
+    version_callback_factory,
+)
 from mortgage_data_manager.core.logging import configure_logging, get_logger
 from mortgage_data_manager.sources.fhfa.config import (
+    FIRST_DATA_YEAR,
     FIRST_EXCEL_DICTIONARY_YEAR,
     LAST_FIXED_WIDTH_YEAR,
     LATEST_DATA_YEAR,
     VALID_DATASETS,
     FHFAConfig,
-    validate_datasets,
-    validate_years,
 )
 from mortgage_data_manager.sources.fhfa.download import (
     download_fhfa_data,
@@ -328,8 +331,6 @@ def convert_pdfs(
       # Convert specific years
       $ fhfa schemas convert --min-year 2024 --max-year 2025
     """
-    from mortgage_data_manager.sources.fhfa.config import PROJECT_DIR
-
     print_section_header("Convert Dictionaries to CSV")
 
     if min_year is not None and max_year is not None and min_year > max_year:
@@ -370,7 +371,7 @@ def convert_pdfs(
             try:
                 extract_dictionary_tables_for_year(
                     year=year,
-                    paths_project_dir=PROJECT_DIR,
+                    paths_project_dir=FHFAConfig.PROJECT_DIR,
                     overwrite=overwrite,
                     dictionary_root=dict_root,
                     output_formats=("csv",),
@@ -543,7 +544,7 @@ def list_years(
       $ fhfa schemas list-years sf_c
     """
     # Validate dataset
-    validate_datasets([dataset])
+    validate_datasets([dataset], VALID_DATASETS)
 
     dict_root = (dict_dir or FHFAConfig.FHFA_SCHEMAS_DIR).resolve()
 
@@ -611,8 +612,8 @@ def bronze(
     years = list(range(min_year, max_year + 1))
 
     # Validate inputs
-    validate_datasets(datasets)
-    validate_years(years)
+    validate_datasets(datasets, VALID_DATASETS)
+    validate_years(years, FIRST_DATA_YEAR, LATEST_DATA_YEAR)
 
     # Resolve paths
     raw = (raw_dir or FHFAConfig.FHFA_RAW_DIR).resolve()
@@ -725,8 +726,8 @@ def silver(
     years = list(range(min_year, max_year + 1))
 
     # Validate inputs
-    validate_datasets(datasets)
-    validate_years(years)
+    validate_datasets(datasets, VALID_DATASETS)
+    validate_years(years, FIRST_DATA_YEAR, LATEST_DATA_YEAR)
 
     # Resolve paths
     bronze = (bronze_dir or FHFAConfig.FHFA_BRONZE_DIR).resolve()
@@ -875,9 +876,9 @@ def pipeline(
         print_error(f"--min-year ({min_year}) must be <= --max-year ({max_year})")
         raise typer.Exit(code=1)
     dt_list = list(datasets) if datasets else list(VALID_DATASETS)
-    validate_datasets(dt_list)
+    validate_datasets(dt_list, VALID_DATASETS)
     years = list(range(min_year, max_year + 1))
-    validate_years(years)
+    validate_years(years, FIRST_DATA_YEAR, LATEST_DATA_YEAR)
 
     print_section_header("FHFA Pipeline")
     console.print(f"[cyan]Datasets:[/cyan] {', '.join(dt_list)}")

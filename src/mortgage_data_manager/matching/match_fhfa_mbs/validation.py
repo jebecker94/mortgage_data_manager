@@ -13,7 +13,9 @@ and loan characteristics, ensuring the matched sample is representative.
 
 Output:
 - One combined figure: docs/matching/figures/fhfa_mbs_validation.png,
-  a column per enterprise and a row per dimension.
+  a column per enterprise and a row per dimension. A one-enterprise run
+  (``--agency fnma``) writes ``fhfa_mbs_validation_fnma.png`` instead, and
+  likewise for the ARM figure.
 - The ARM coverage figure: docs/matching/figures/fhfa_mbs_umbs_arm_coverage.png,
   the share of FHFA ARM records matched by acquisition year, by the SF crosswalk
   alone and together with the FHFA->UMBS ARM crosswalk.
@@ -84,8 +86,8 @@ ARM_END_YEAR = 2025
 # Output directory for the validation figures
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 FIGURES_DIR = PROJECT_ROOT / "docs" / "matching" / "figures"
-VALIDATION_FIGURE = "fhfa_mbs_validation.png"
-ARM_COVERAGE_FIGURE = "fhfa_mbs_umbs_arm_coverage.png"
+VALIDATION_FIGURE = "fhfa_mbs_validation"
+ARM_COVERAGE_FIGURE = "fhfa_mbs_umbs_arm_coverage"
 
 # Colors
 MBS_COLOR = COLORS["hunter"]  # MBS data (FNMA/FHLMC)
@@ -273,7 +275,10 @@ def load_fhlmc_validation_data(
     from mortgage_data_manager.matching.match_fhfa_mbs.matching import prepare_fhfa
     from mortgage_data_manager.sources.fhfa.config import FHFAConfig
     from mortgage_data_manager.sources.fhlmc.config import FHLMCConfig
-    from mortgage_data_manager.sources.fhlmc.import_silver import scan_origination_bronze
+    from mortgage_data_manager.sources.fhlmc.import_silver import (
+        merge_duplicate_rows,
+        scan_origination_bronze,
+    )
 
     # Load yearly crosswalks and combine on-the-fly
     crosswalks = []
@@ -306,15 +311,13 @@ def load_fhlmc_validation_data(
         f"  Combined crosswalk: {len(crosswalk):,} matches ({years_loaded[0]}-{years_loaded[-1]})"
     )
 
-    # Deduplicate by FHLMC loan ID, keeping earliest acquisition year match
-    # (same loan can match to different FHFA records across years due to year-by-year matching)
-    n_before_dedup = len(crosswalk)
-    crosswalk = crosswalk.sort("fhfa_year").unique(subset=["fhlmc_loan_id"], keep="first")
-    n_after_dedup = len(crosswalk)
-    if n_before_dedup != n_after_dedup:
-        print(
-            f"  After dedup by fhlmc_loan_id: {n_after_dedup:,} matches (removed {n_before_dedup - n_after_dedup:,} duplicates)"
-        )
+    # A resolved run keeps one acquisition year per loan; crosswalks written by single-year
+    # runs (`run --year`) can still claim a loan in two years. Drop such loans, as the
+    # matcher's cross-year resolution does.
+    n_before = len(crosswalk)
+    crosswalk = crosswalk.unique(subset=["fhlmc_loan_id"], keep="none")
+    if len(crosswalk) != n_before:
+        print(f"  Dropped {n_before - len(crosswalk):,} pairs on loans claimed in two years")
 
     # Load FHLMC data for the validation year range and deduplicate by loan ID
     fhlmc_dir = FHLMCConfig.FHLMC_BRONZE_DIR / "origination"
@@ -402,9 +405,9 @@ def load_fhlmc_validation_data(
         ]
     )
 
-    # Deduplicate FHLMC by loan ID (keep first occurrence)
-    fhlmc = fhlmc.unique(subset=["fhlmc_loan_id"], keep="first")
-    print(f"  FHLMC after dedup: {len(fhlmc):,} unique loans")
+    # Merge repeated loans the way the matcher does, dropping any whose copies disagree
+    fhlmc = merge_duplicate_rows(fhlmc.lazy(), "fhlmc_loan_id", exclude_conflicts=True).collect()
+    print(f"  FHLMC after merging repeated loans: {len(fhlmc):,} unique loans")
 
     # Load all FHFA data for Freddie Mac
     fhfa_dfs = []
@@ -1083,6 +1086,13 @@ def run_validation(
         "fhlmc": (fhlmc_min_year, fhlmc_max_year),
     }
     selected = [gse for gse in GSES if enterprise in (gse.key, "both")]
+    # A one-enterprise run gets its own file names so it cannot replace the published
+    # two-column figures with a single column.
+    suffix = "" if enterprise == "both" else f"_{enterprise}"
+    figure, arm_figure = (
+        FIGURES_DIR / f"{stem}{suffix}.png" if save_plots else None
+        for stem in (VALIDATION_FIGURE, ARM_COVERAGE_FIGURE)
+    )
     results: dict[str, Any] = {}
     for gse in selected:
         print("\n" + "=" * 70)
@@ -1092,12 +1102,7 @@ def run_validation(
         if gse_results:
             results[gse.key] = gse_results
     if save_plots or show_plots:
-        plot_validation_panel(
-            results,
-            selected,
-            FIGURES_DIR / VALIDATION_FIGURE if save_plots else None,
-            show_plots,
-        )
+        plot_validation_panel(results, selected, figure, show_plots)
     if arm_coverage:
         print("\n" + "=" * 70)
         print("FHFA->UMBS ARM COVERAGE")
@@ -1110,10 +1115,5 @@ def run_validation(
                 coverage[gse.key] = frame
                 results.setdefault(gse.key, {})["arm_coverage"] = frame
         if save_plots or show_plots:
-            plot_arm_coverage(
-                coverage,
-                selected,
-                FIGURES_DIR / ARM_COVERAGE_FIGURE if save_plots else None,
-                show_plots,
-            )
+            plot_arm_coverage(coverage, selected, arm_figure, show_plots)
     return results

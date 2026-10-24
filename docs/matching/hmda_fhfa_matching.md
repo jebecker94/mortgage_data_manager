@@ -281,18 +281,17 @@ post-2018 map shows no such gap (New York 94.6%).
 **Loan amount and rate.** Post-2018 rates are flat across the GSE-eligible range, low to mid
 nineties on both sides above about $50K, with only very small loans matching far worse, and
 stable across interest rates apart from an FHFA-side dip at 4–4.5%. Pre-2018 rates are
-stable where loans are dense ($100K–$400K), around 74% FHFA-side and 76–81% HMDA-side; the
-HMDA side steps up to about 85% above the $417K conforming limit.
+stable where loans are dense ($100K–$400K), around 74% FHFA-side and 83–86% HMDA-side.
 
 **Demographic agreement (pre-2018).** Matched pairs against a random baseline (the sum of
 squared marginal probabilities), on fields the match does not key on:
 
 | Field | Matched pairs | Random baseline | Lift | Ratio |
 |---|---:|---:|---:|---:|
-| num_borrowers | 99.4% | 49.9% | +49.5 pp | 1.99x |
-| sex | 97.0% | 51.3% | +45.7 pp | 1.89x |
-| ethnicity | 97.4% | 67.7% | +29.7 pp | 1.44x |
-| race1 | 96.5% | 60.5% | +35.9 pp | 1.59x |
+| num_borrowers | 99.4% | 50.0% | +49.4 pp | 1.99x |
+| sex | 97.0% | 51.4% | +45.6 pp | 1.89x |
+| ethnicity | 97.4% | 68.1% | +29.4 pp | 1.43x |
+| race1 | 96.5% | 60.8% | +35.7 pp | 1.59x |
 
 Round 2 is within a fraction of a point of Round 1 (race1 96.4% vs 96.5%, num_borrowers
 98.8% vs 99.5%). Round 3 reads lower (race1 93.0%, ethnicity 93.6%) because this table

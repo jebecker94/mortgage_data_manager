@@ -1,9 +1,5 @@
 # Analytics API Reference
 
-API reference for the derived-analytics (`analytics`) subpackage.
-
----
-
 ## Overview
 `analytics` computes derived metrics on top of the silver and combined layers. It is
 a **library-only** subpackage — there is no `mortgage-data analytics` CLI; you import
@@ -31,43 +27,29 @@ The preliminary modules work, but their interfaces are still moving and the pane
 defaults to a 10% loan sample (`ANALYTICS_PANEL_SAMPLE_FRAC`). Treat the reference for
 those three as orientation rather than a stable contract.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.analytics.config
-
----
 
 ## Schema
 
 ::: mortgage_data_manager.analytics.schema
 
----
-
 ## calculated — closed-form metrics
 
 ::: mortgage_data_manager.analytics.calculated
-
----
 
 ## servicing — MSR revenue PV
 
 ::: mortgage_data_manager.analytics.servicing
 
----
-
 ## transfers — MSR transfer detection
 
 ::: mortgage_data_manager.analytics.transfers
 
----
-
 ## servicer_names — entity normalization
 
 ::: mortgage_data_manager.analytics.servicer_names
-
----
 
 ## panel, features, estimated
 
@@ -76,8 +58,6 @@ those three as orientation rather than a stable contract.
 ::: mortgage_data_manager.analytics.features
 
 ::: mortgage_data_manager.analytics.estimated
-
----
 
 ## Common Pitfalls
 - **No CLI.** `analytics` is import-only. `mortgage-data analytics ...` does not exist,

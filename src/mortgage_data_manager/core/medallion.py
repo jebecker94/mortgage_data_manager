@@ -7,7 +7,7 @@ This module provides utilities for working with the medallion architecture
 from __future__ import annotations
 
 import shutil
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -70,6 +70,52 @@ def should_process_file(
     if overwrite:
         return True
     return not output_path.exists()
+
+
+def clear_partitions(root: Path, partitions: Iterable[str | Path]) -> int:
+    """Delete the partition subtrees about to be rebuilt, and nothing else.
+
+    The one home of the partition-scoped overwrite rule: every target must lie
+    strictly below ``root``, so an overwrite can never wipe the output root and
+    with it the partitions outside the requested range.
+
+    Args:
+        root: The partitioned output directory (e.g. a silver dataset folder).
+        partitions: Partition paths relative to ``root`` (``"activity_year=2020"``,
+            ``"Year=2010/Month=5"``) or absolute paths beneath it.
+
+    Returns:
+        The number of partition directories removed.
+
+    Raises:
+        ValueError: If a target is ``root`` itself or lies outside it.
+    """
+    base = root.resolve()
+    removed = 0
+    for partition in partitions:
+        target = (root / partition).resolve()
+        if target == base or not target.is_relative_to(base):
+            raise ValueError(f"{target} is not a partition below {root}")
+        if target.is_dir():
+            shutil.rmtree(target)
+            removed += 1
+    return removed
+
+
+def recreate_dir(path: Path) -> Path:
+    """Delete ``path`` if present and create it empty, for outputs rebuilt in full.
+
+    Args:
+        path: A directory the caller rewrites from scratch (never a silver root
+            built by year range; use `clear_partitions` there).
+
+    Returns:
+        ``path``, now an empty directory.
+    """
+    if path.exists():
+        shutil.rmtree(path)
+    path.mkdir(parents=True)
+    return path
 
 
 def write_hive_partitioned(

@@ -24,9 +24,8 @@ from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import should_process_file
 from mortgage_data_manager.sources.fhfa.config import (
     LAST_FIXED_WIDTH_YEAR,
-    SCHEMAS_DIR,
+    FHFAConfig,
     ImportOptions,
-    PathsConfig,
 )
 
 logger = get_logger(__name__)
@@ -385,7 +384,6 @@ def extract_dictionary_tables_for_year(
 
 def extract_enterprise_pudb_pdfs(
     *,
-    paths: PathsConfig | None = None,
     options: ImportOptions | None = None,
     raw_dir: Path | None = None,
     dictionary_root: Path | None = None,
@@ -397,10 +395,10 @@ def extract_enterprise_pudb_pdfs(
     from the zip filename.
 
     Args:
-        paths: Path configuration. Defaults to PathsConfig.from_env() if not provided.
         options: Import options. Defaults to ImportOptions() if not provided.
-        raw_dir: Override for raw data directory. Defaults to paths.raw_dir.
-        dictionary_root: Override for dictionary root directory. Defaults to paths.project_dir / 'dictionary_files'.
+        raw_dir: Raw data directory. Defaults to ``FHFAConfig.FHFA_RAW_DIR``.
+        dictionary_root: Dictionary root directory. Defaults to
+            ``FHFAConfig.PROJECT_DIR / 'dictionary_files'``.
 
     Returns:
         List of PDF file paths extracted to dictionary_files/fhfa.
@@ -410,14 +408,13 @@ def extract_enterprise_pudb_pdfs(
         >>> extracted = extract_enterprise_pudb_pdfs()
         >>> print(f"Extracted {len(extracted)} PDF files")
     """
-    _paths = paths or PathsConfig.from_env()
     _options = options or ImportOptions()
 
-    raw_root = Path(raw_dir) if raw_dir is not None else _paths.raw_dir
+    raw_root = Path(raw_dir) if raw_dir is not None else FHFAConfig.FHFA_RAW_DIR
     dict_root = (
         Path(dictionary_root)
         if dictionary_root is not None
-        else (_paths.project_dir / "dictionary_files")
+        else (FHFAConfig.PROJECT_DIR / "dictionary_files")
     )
 
     # Create fhfa subdirectory under dictionary_files
@@ -737,12 +734,12 @@ def excel_dictionary_path(year: int, dictionary_root: Path | None = None) -> Pat
 
     Args:
         year: Acquisition year of the dictionary.
-        dictionary_root: Dictionary root. Defaults to SCHEMAS_DIR.
+        dictionary_root: Dictionary root. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
 
     Returns:
         Path to ``{year}-enterprise-pudb-data-dictionary.xlsx`` (may not exist).
     """
-    dict_root = dictionary_root or SCHEMAS_DIR
+    dict_root = dictionary_root or FHFAConfig.FHFA_SCHEMAS_DIR
     return dict_root / "fhfa" / f"{year}-enterprise-pudb-data-dictionary.xlsx"
 
 
@@ -758,14 +755,14 @@ def convert_excel_dictionary(
     Args:
         excel_path: Path to Excel dictionary file
         year: Year of the dictionary
-        output_dir: Output directory. Defaults to SCHEMAS_DIR/fhfa/{year}
+        output_dir: Output directory. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR/fhfa/{year}
         overwrite: Whether to overwrite existing files
 
     Returns:
         Mapping of sheet name to output file path
     """
     if output_dir is None:
-        output_dir = SCHEMAS_DIR / "fhfa" / str(year)
+        output_dir = FHFAConfig.FHFA_SCHEMAS_DIR / "fhfa" / str(year)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -958,7 +955,7 @@ def build_master_dictionary_for_type(
         dataset: Dataset identifier (e.g., 'sf_c' for Single Family Census Tract File C)
         min_year: First year to include (inclusive)
         max_year: Last year to include (inclusive)
-        dictionary_root: Root directory containing dictionary_files/. Defaults to SCHEMAS_DIR.
+        dictionary_root: Root directory containing dictionary_files/. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
         output_path: Override output path stem. If None, saves to dictionary_files/fhfa/masters/master_{dataset}.csv
         overwrite: Whether to overwrite existing master dictionary. Default False.
 
@@ -970,7 +967,7 @@ def build_master_dictionary_for_type(
         >>> master = build_master_dictionary_for_type('sf_c', min_year=2010, max_year=2023)
         >>> print(f"Built master with {len(master)} total fields across all years")
     """
-    dict_root = dictionary_root if dictionary_root is not None else SCHEMAS_DIR
+    dict_root = dictionary_root if dictionary_root is not None else FHFAConfig.FHFA_SCHEMAS_DIR
 
     # Determine output paths
     if output_path is None:
@@ -1090,7 +1087,7 @@ def build_all_master_dictionaries(
         min_year: First year to include (inclusive). Default 2010.
         max_year: Last year to include (inclusive). Defaults to the last fixed-width
             year; the masters describe fixed-width layouts only.
-        dictionary_root: Root directory containing dictionary_files/. Defaults to SCHEMAS_DIR.
+        dictionary_root: Root directory containing dictionary_files/. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
         overwrite: Whether to overwrite existing master dictionaries. Default False.
 
     Returns:
@@ -1102,7 +1099,7 @@ def build_all_master_dictionaries(
         >>> for dataset, path in masters.items():
         ...     print(f"Built {dataset}: {path}")
     """
-    dict_root = dictionary_root if dictionary_root is not None else SCHEMAS_DIR
+    dict_root = dictionary_root if dictionary_root is not None else FHFAConfig.FHFA_SCHEMAS_DIR
     masters_dir = dict_root / "fhfa" / "masters"
     masters_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1159,7 +1156,7 @@ def load_master_dictionary(
 
     Args:
         dataset: Dataset identifier (e.g., 'sf_c', 'mf_property_b')
-        dictionary_root: Root directory containing dictionary_files/. Defaults to SCHEMAS_DIR.
+        dictionary_root: Root directory containing dictionary_files/. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
 
     Returns:
         Master dictionary as Polars DataFrame
@@ -1174,7 +1171,7 @@ def load_master_dictionary(
         >>> schema_2015 = master.filter(pl.col('year') == 2015)
         >>> print(f"2015 has {len(schema_2015)} fields")
     """
-    dict_root = dictionary_root if dictionary_root is not None else SCHEMAS_DIR
+    dict_root = dictionary_root if dictionary_root is not None else FHFAConfig.FHFA_SCHEMAS_DIR
     master_path = dict_root / "fhfa" / "masters" / f"master_{dataset}.csv"
 
     if not master_path.exists():
@@ -1202,7 +1199,7 @@ def load_year_dictionary(
     Args:
         dataset: Dataset identifier (e.g., 'sf_c', 'mf_property_b').
         year: Acquisition year.
-        dictionary_root: Root directory containing dictionary_files/. Defaults to SCHEMAS_DIR.
+        dictionary_root: Root directory containing dictionary_files/. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
 
     Returns:
         The converted dictionary, one row per field.
@@ -1210,7 +1207,7 @@ def load_year_dictionary(
     Raises:
         FileNotFoundError: If no converted dictionary exists for this dataset and year.
     """
-    dict_root = dictionary_root if dictionary_root is not None else SCHEMAS_DIR
+    dict_root = dictionary_root if dictionary_root is not None else FHFAConfig.FHFA_SCHEMAS_DIR
     path = _find_dictionary_for_year(year, cast(DatasetType, dataset), dict_root)
     if path is None:
         raise FileNotFoundError(
@@ -1229,7 +1226,7 @@ def get_available_years(
 
     Args:
         dataset: Dataset identifier (e.g., 'sf_c', 'mf_property_b')
-        dictionary_root: Root directory containing dictionary_files/. Defaults to SCHEMAS_DIR.
+        dictionary_root: Root directory containing dictionary_files/. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
 
     Returns:
         Sorted list of years available in the master dictionary

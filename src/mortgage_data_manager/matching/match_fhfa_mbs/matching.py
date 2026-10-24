@@ -597,7 +597,7 @@ def crosswalk(matches: pl.DataFrame, spec: GseSpec) -> pl.DataFrame:
         pl.col(LOAN_ID).alias(spec.id_column),
         FHFA_ID,
         pl.col("year").alias("fhfa_year"),
-        pl.col("fhfa_enterprise").cast(spec.enterprise_dtype),
+        pl.col("fhfa_enterprise").cast(pl.Int8),
         "match_round",
         pl.col("match_quality_tier").cast(pl.UInt8),
         "zip3_consistent",
@@ -760,7 +760,7 @@ def prepare_fhfa(lf: pl.LazyFrame, spec: GseSpec) -> pl.LazyFrame:
     # msa==99999 non-metro sentinel comparison below stays valid.
     prepared = lf.select(
         pl.col("record_number").cast(pl.Int64).alias(FHFA_ID),
-        pl.col("enterprise_flag").cast(spec.enterprise_dtype).alias("fhfa_enterprise"),
+        pl.col("enterprise_flag").cast(pl.Int8).alias("fhfa_enterprise"),
         pl.col("state_code").cast(pl.Int64, strict=False).alias("state_fips"),
         pl.col("msa_code").cast(pl.Int64, strict=False).alias("msa"),
         pl.col("application_channel").cast(pl.Int64).alias("channel"),

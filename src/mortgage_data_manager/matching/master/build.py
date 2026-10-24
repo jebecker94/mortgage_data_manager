@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING, Literal
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger, log_execution_time
-from mortgage_data_manager.core.medallion import write_hive_partitioned
+from mortgage_data_manager.core.medallion import clear_partitions, write_hive_partitioned
 from mortgage_data_manager.matching.master.config import MasterCrosswalkConfig as Config
 from mortgage_data_manager.matching.match_hmda_gse.matching_direct import admitted_row
 from mortgage_data_manager.sources.hmda.load import scan_hmda_years
@@ -946,9 +946,7 @@ def build_master_crosswalk(
         if df.is_empty():
             logger.info("  %d: no rows in any edge", year)
             continue
-        # partition-scoped overwrite: only the subtree being rebuilt
-        if part.exists():
-            shutil.rmtree(part)
+        clear_partitions(part.parent, [part])
         # include_key=True keeps activity_year INSIDE each file as declared Int32.
         # Without it the column exists only in the directory name, so it is
         # invisible to readers scanning with hive_partitioning=False and comes

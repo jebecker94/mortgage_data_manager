@@ -53,8 +53,7 @@ from mortgage_data_manager.matching.validation_common import (
     save_and_close,
 )
 from mortgage_data_manager.sources.fhfa.config import FHFAConfig
-from mortgage_data_manager.sources.hmda.config import HMDAConfig
-from mortgage_data_manager.sources.hmda.load import scan_hmda
+from mortgage_data_manager.sources.hmda.load import scan_hmda, scan_hmda_for_index
 
 #: Both eras write here; the era lives in the filename, not the directory.
 VALIDATION_OUTPUT_DIR = MortgageDataConfig.PROJECT_DIR / "docs" / "matching" / "figures"
@@ -159,19 +158,16 @@ def match_round_breakdown(crosswalk: pl.LazyFrame) -> pl.DataFrame:
     )
 
 
-def yearly_rates(sides: dict[str, Side], hmda_years: list[int] | None = None) -> pl.DataFrame:
+def yearly_rates(sides: dict[str, Side]) -> pl.DataFrame:
     """FHFA acquisition-year rates beside HMDA GSE-sold activity-year rates.
 
     Args:
         sides: From `sides`.
-        hmda_years: Activity years the HMDA side may contribute; None keeps all.
 
     Returns:
         One row per year with each side's counts and rate.
     """
     hmda = sides["hmda_gse"].prepared(lambda lf: lf.rename({"activity_year": "year"}))
-    if hmda_years is not None:
-        hmda = hmda.prepared(lambda lf: lf.filter(pl.col("year").is_in(hmda_years)))
     return rate_by_sides([sides["fhfa"], hmda], "year")
 
 
@@ -466,58 +462,9 @@ def _print_headline(sides: dict[str, Side], crosswalk: pl.LazyFrame, label: str)
 # =============================================================================
 
 
-def load_crosswalks(years: list[int] | None = None) -> pl.LazyFrame:
-    """Load crosswalk file.
-
-    Args:
-        years: Years to load (unused, kept for API compatibility).
-
-    Returns:
-        LazyFrame with crosswalk data.
-    """
-    crosswalk_dir = HMDAFHFAMatchingConfig.HMDA_FHFA_CROSSWALK_DIR
-
-    # Try the new combined crosswalk first
-    combined_path = HMDAFHFAMatchingConfig.get_crosswalk_path("post2018")
-    if combined_path.exists():
-        return pl.scan_parquet(combined_path)
-
-    # Fall back to old per-year files
-    if years is None:
-        years = POST_AVAILABLE_YEARS
-
-    frames = []
-    for year in years:
-        candidates = [
-            crosswalk_dir / f"crosswalk_{year}.parquet",
-            crosswalk_dir / f"crosswalk_all_rounds_{year}.parquet",
-        ]
-        path = None
-        for candidate in candidates:
-            if candidate.exists():
-                path = candidate
-                break
-
-        if path is not None:
-            lf = pl.scan_parquet(path)
-            rename_map = {}
-            schema = lf.collect_schema()
-            if "Enterprise Flag" in schema:
-                rename_map["Enterprise Flag"] = "enterprise_flag"
-            if "Record Number" in schema:
-                rename_map["Record Number"] = "record_number"
-            if "MatchRound" in schema:
-                rename_map["MatchRound"] = "match_round"
-            if rename_map:
-                lf = lf.rename(rename_map)
-            frames.append(lf)
-        else:
-            print(f"Warning: Crosswalk not found for {year}")
-
-    if not frames:
-        raise FileNotFoundError("No crosswalk files found")
-
-    return pl.concat(frames, how="diagonal")
+def load_crosswalks() -> pl.LazyFrame:
+    """The post-2018 crosswalk."""
+    return pl.scan_parquet(HMDAFHFAMatchingConfig.get_crosswalk_path("post2018"))
 
 
 def load_fhfa_data(years: list[int] | None = None) -> pl.LazyFrame:
@@ -558,60 +505,41 @@ def load_fhfa_data(years: list[int] | None = None) -> pl.LazyFrame:
     return pl.concat(frames, how="diagonal")
 
 
-def load_hmda_data(years: list[int] | None = None) -> pl.LazyFrame:
-    """Load HMDA data for specified years.
+def load_hmda_data(crosswalk: pl.LazyFrame) -> pl.LazyFrame:
+    """Load the HMDA originations that could reach FHFA, from the crosswalk's releases.
+
+    Reading the releases the crosswalk's ``HMDAIndex`` values came from keeps the
+    denominator on the same rows the matcher saw, even after a newer release lands.
 
     Args:
-        years: Years to load. Defaults to POST_AVAILABLE_YEARS.
+        crosswalk: The post-2018 crosswalk.
 
     Returns:
-        LazyFrame with HMDA data filtered to best file type per year.
+        1-4 unit originations kept in portfolio or sold to a GSE or the secondary market.
     """
-    if years is None:
-        years = POST_AVAILABLE_YEARS
-
-    hmda_silver = HMDAConfig.HMDA_SILVER_DIR / "loans" / "post2018"
-
-    # Select only columns needed for validation (plus file_type for filtering)
-    needed_cols = [
-        "HMDAIndex",
-        "activity_year",
-        "action_taken",
-        "purchaser_type",
-        "total_units",
-        "state_code",
-        "loan_amount",
-        "interest_rate",
-        "loan_purpose",
-        "file_type",
-    ]
-
-    frames = []
-    for year in years:
-        path = hmda_silver / f"activity_year={year}"
-        if path.exists():
-            lf = pl.scan_parquet(path).select(needed_cols)
-
-            # Select best file_type: a (three-year) > b (one-year) > c (snapshot)
-            file_types = lf.select("file_type").unique().collect()["file_type"].to_list()
-            best_type = "a" if "a" in file_types else ("b" if "b" in file_types else "c")
-            lf = lf.filter(pl.col("file_type") == best_type)
-
-            # Filter to originated loans
-            lf = lf.filter(pl.col("action_taken") == 1)
-            lf = lf.filter(pl.col("total_units") <= 4)  # FHFA only covers 1-4 units
-            # Include all purchaser types that could match to FHFA
-            lf = lf.filter(
+    return (
+        scan_hmda_for_index(crosswalk.select("HMDAIndex"))
+        .select(
+            "HMDAIndex",
+            "activity_year",
+            "action_taken",
+            "purchaser_type",
+            "total_units",
+            "state_code",
+            "loan_amount",
+            "interest_rate",
+            "loan_purpose",
+        )
+        .filter(
+            (pl.col("action_taken") == 1)
+            & (pl.col("total_units") <= 4)  # FHFA only covers 1-4 units
+            & (
                 (pl.col("purchaser_type") == 0)  # Not sold at origination
                 | pl.col("purchaser_type").is_in([1, 3])  # GSE
                 | (pl.col("purchaser_type") >= 5)  # Secondary market
             )
-            frames.append(lf)
-
-    if not frames:
-        raise FileNotFoundError("No HMDA data files found")
-
-    return pl.concat(frames, how="diagonal")
+        )
+    )
 
 
 def plot_validation_panel(
@@ -679,7 +607,7 @@ def run_validation(
     both = sides(
         crosswalk,
         load_fhfa_data(POST_AVAILABLE_YEARS),
-        load_hmda_data(POST_AVAILABLE_YEARS),
+        load_hmda_data(crosswalk),
         _post_fhfa_key(crosswalk),
     )
     _print_headline(both, crosswalk, f"years {POST_AVAILABLE_YEARS[0]}-{POST_AVAILABLE_YEARS[-1]}")
@@ -869,7 +797,7 @@ def load_hmda_silver_pre2018(years: list[int] | None = None) -> pl.LazyFrame:
         HMDA pre-2018 silver on the matched-cohort fields.
     """
     if years is None:
-        years = list(range(min(PRE_AVAILABLE_YEARS) - 1, max(PRE_AVAILABLE_YEARS) + 1))
+        years = PRE_AVAILABLE_YEARS
 
     needed = [
         "activity_year",
@@ -1594,10 +1522,7 @@ def run_validation_pre2018(
     print(round_breakdown)
 
     print_section("2. Match rates by year (FHFA acquisition year / HMDA GSE-sold activity year)")
-    # The HMDA loader also carries the activity year before the first FHFA year
-    # (round 2's prior-year pool), which no round can match; the denominator is the
-    # matchable cohort.
-    yearly = yearly_rates(both, hmda_years=PRE_AVAILABLE_YEARS)
+    yearly = yearly_rates(both)
     print(yearly)
     overall_fhfa = overall_rate(yearly, "fhfa_matched", "fhfa_total")
     overall_hmda = overall_rate(yearly, "hmda_gse_matched", "hmda_gse_total")

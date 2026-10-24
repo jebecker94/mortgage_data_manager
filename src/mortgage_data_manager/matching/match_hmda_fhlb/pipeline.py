@@ -12,7 +12,7 @@ from mortgage_data_manager.matching.match_hmda_fhlb import (
     matching,
     validation,
 )
-from mortgage_data_manager.matching.match_hmda_fhlb.config import DATA_DIR
+from mortgage_data_manager.matching.match_hmda_fhlb.config import HMDAFHLBMatchingConfig
 
 logger = get_logger(__name__)
 
@@ -46,7 +46,11 @@ def run_matching(
         match_folder: Directory for the prepared inputs and match results; defaults to
             the workflow's matching directory.
     """
-    folder = DATA_DIR if match_folder is None else Path(match_folder)
+    folder = (
+        HMDAFHLBMatchingConfig.HMDA_FHLB_MATCHING_DIR
+        if match_folder is None
+        else Path(match_folder)
+    )
     folder.mkdir(parents=True, exist_ok=True)
 
     if pre2018:
@@ -68,6 +72,6 @@ def run_matching(
             inputs.prepare_hmda_post2018(folder, max_year, overwrite=overwrite)
         if step in ("all", "match"):
             logger.info("--- Matching post-2018 ---")
-            validation.validate_datasets(folder)
+            validation.validate_inputs(folder)
             matching.run_rounds_post2018(folder)
             analysis.calculate_match_statistics(folder)

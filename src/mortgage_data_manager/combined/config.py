@@ -11,7 +11,6 @@ Target master datasets (the registry below):
 - ``loan_performance`` - master loan-level performance panel (loan × month)
 - ``mbs_issuance``     - master MBS/pool issuance
 - ``mbs_performance``  - master MBS/pool performance panel (pool × month)
-- ``issuer``           - issuer master (identity crosswalk across sources)
 
 Plus one derived dataset that is NOTED here but built by a sibling subpackage:
 
@@ -71,12 +70,6 @@ DATASET_MAP: Final[dict[str, dict[str, object]]] = {
         "description": "Master MBS/pool performance panel (pool x month)",
         "grain": "security_month",
         "sources": ["gnma", "umbs"],
-        "external": False,
-    },
-    "issuer": {
-        "description": "Issuer master / identity crosswalk across sources",
-        "grain": "issuer",
-        "sources": ["gnma", "fhfa", "fdic", "ncua", "hmda"],
         "external": False,
     },
     "msr_transfers": {

@@ -1,7 +1,5 @@
 # GNMA API Reference
 
-API reference for the GNMA (Ginnie Mae) subpackage.
-
 ## Module Structure
 
 ```
@@ -18,57 +16,33 @@ mortgage_data_manager.sources.gnma
 
 Silver is built **only** from `schemas/gnma/canonical/{prefix}.json`.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.gnma.config
-
----
 
 ## Download
 
 ::: mortgage_data_manager.sources.gnma.download
 
----
-
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.gnma.import_bronze
-
----
 
 ## Silver layer
 
 ::: mortgage_data_manager.sources.gnma.import_silver
 
----
-
 ## Canonical schemas
 
 ::: mortgage_data_manager.sources.gnma.canonical
-
----
 
 ## Performance
 
 ::: mortgage_data_manager.sources.gnma.performance
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.gnma.pipeline
-
----
-
-## CLI
-
-Commands, options and examples for `mortgage-data gnma` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-gnma). `mortgage-data gnma --help` is
-authoritative.
-
----
 
 ## Prefixes
 
@@ -103,8 +77,6 @@ are flagged with `default_download: false` in
 | `nimonSFS` | Pool supplemental — deterministic stratification of `dailyllmni` |
 | `hmonthlyS` | Pool supplemental — deterministic stratification of `hllmon1`+`hllmon2` |
 
----
-
 ## Data Structure
 
 ```
@@ -118,8 +90,6 @@ are flagged with `default_download: false` in
 ├── canonical/               # Canonical per-prefix JSON (the only silver path)
 └── raw/{prefix}/            # Layout PDFs fetched by `mortgage-data gnma download`
 ```
-
----
 
 ## See Also
 

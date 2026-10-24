@@ -8,7 +8,6 @@ rounds left unmatched, and writes one crosswalk tagged with ``match_round``.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
 
 import polars as pl
 
@@ -21,6 +20,7 @@ from mortgage_data_manager.matching.match_hmda_fha.rounds import ROUNDS_POST2018
 from mortgage_data_manager.matching.names import jaccard, name_tokens
 from mortgage_data_manager.matching.resolve import drop_ambiguous, unique_best
 from mortgage_data_manager.sources.hmda.load import scan_hmda, scan_hmda_for_index, scan_hmda_years
+from mortgage_data_manager.sources.usps_crosswalk.config import CensusVintage
 
 logger = get_logger(__name__)
 
@@ -67,7 +67,7 @@ def get_fha_files(
 
 def build_zip_tract_crosswalk(
     usps_dir: Path,
-    census_vintage: Literal[2010, 2020],
+    census_vintage: CensusVintage,
     output_path: Path,
 ) -> Path:
     """Build consolidated ZIP-tract crosswalk from HUD data.
@@ -75,22 +75,26 @@ def build_zip_tract_crosswalk(
     Uses the HUD subpackage's load_crosswalk_by_vintage to load all quarterly
     ZIP_TRACT data for a census vintage, then deduplicates to unique pairs.
 
-    The HUD crosswalk uses different census tract vintages:
-    - 2010 Census tracts: Used for years 2012-2022
-    - 2020 Census tracts: Used for years 2023+
+    HUD publishes each census's tracts over a fixed run of quarters:
+    - 2000 Census tracts: 2010 Q1-2011 Q4
+    - 2010 Census tracts: 2012 Q1-2022 Q4
+    - 2020 Census tracts: 2023 Q1 onward
 
     Args:
         usps_dir: Path to USPS crosswalk bronze directory (passed to load_crosswalk_by_vintage).
-        census_vintage: Census tract vintage (2010 or 2020)
+        census_vintage: Census tract vintage (2000, 2010 or 2020)
         output_path: Path to save consolidated crosswalk
 
     Returns:
         Path to the saved crosswalk file
+
+    Raises:
+        ValueError: If ``census_vintage`` is not 2000, 2010 or 2020.
     """
     from mortgage_data_manager.sources.usps_crosswalk.load import load_crosswalk_by_vintage
 
-    if census_vintage not in (2010, 2020):
-        raise ValueError(f"Invalid census_vintage: {census_vintage}. Must be 2010 or 2020")
+    if census_vintage not in (2000, 2010, 2020):
+        raise ValueError(f"Invalid census_vintage: {census_vintage}. Must be 2000, 2010 or 2020")
 
     logger.info(
         "Building %s census crosswalk from USPS crosswalk data in %s",
@@ -121,17 +125,35 @@ def build_zip_tract_crosswalk(
     return output_path
 
 
+def hmda_tract_vintage(year: int) -> CensusVintage:
+    """The census whose tracts HMDA reports for an activity year.
+
+    HMDA moved to 2010-census tracts in 2012 and to 2020-census tracts in 2022,
+    each a year before HUD's ZIP-tract quarters did.
+
+    Args:
+        year: HMDA activity year.
+
+    Returns:
+        2000 through 2011, 2010 for 2012-2021, 2020 from 2022.
+    """
+    if year <= 2011:
+        return 2000
+    return 2010 if year <= 2021 else 2020
+
+
 def get_zip_tract_for_year(
     year: int,
     crosswalk_dir: Path | None = None,
     usps_dir: Path | None = None,
 ) -> Path:
-    """Return appropriate crosswalk based on matching year.
+    """Return the ZIP-tract crosswalk for HMDA's tracts in an activity year.
 
-    Automatically builds crosswalk if it doesn't exist.
+    The file is the one built from HUD's quarters for the census HMDA reports
+    tracts on that year (`hmda_tract_vintage`), and is built if missing.
 
     Args:
-        year: Year for matching (determines census vintage)
+        year: HMDA activity year (determines census vintage)
         crosswalk_dir: Directory for crosswalk files. Defaults to config.
         usps_dir: USPS crosswalk bronze directory. Defaults to config.
 
@@ -143,7 +165,7 @@ def get_zip_tract_for_year(
     if usps_dir is None:
         usps_dir = Config.USPS_CROSSWALK_DIR
 
-    census_vintage: Literal[2010, 2020] = 2010 if year < 2020 else 2020
+    census_vintage = hmda_tract_vintage(year)
     crosswalk_file = crosswalk_dir / f"zip_tract_{census_vintage}_census.parquet"
 
     if not crosswalk_file.exists():
@@ -159,8 +181,8 @@ def get_zip_tract_for_year(
 
 
 def prepare_fha(
-    fha_folder: Path,
-    match_folder: Path,
+    fha_dir: Path,
+    intermediate_dir: Path,
     min_year: int = Config.MIN_YEAR,
     max_year: int = Config.MAX_YEAR,
     file_suffix: str = "_post2018",
@@ -168,8 +190,8 @@ def prepare_fha(
     """Prepare FHA data for merge with HMDA.
 
     Args:
-        fha_folder: Folder where FHA silver data is stored (hive-partitioned)
-        match_folder: Folder where intermediate match data will be saved
+        fha_dir: Directory where FHA silver data is stored (hive-partitioned)
+        intermediate_dir: Directory where intermediate match data will be saved
         min_year: Minimum year to include
         max_year: Maximum year to include
         file_suffix: Suffix for output file names
@@ -179,7 +201,7 @@ def prepare_fha(
     """
     logger.info("Preparing FHA data for matching (years %s-%s)", min_year, max_year)
 
-    df = pl.scan_parquet(fha_folder / "**/*.parquet")
+    df = pl.scan_parquet(fha_dir / "**/*.parquet")
 
     # Filter to post-2018 period (include Dec of prior year, Jan-Feb of next year)
     df = df.filter(
@@ -225,8 +247,8 @@ def prepare_fha(
         ]
     )
 
-    match_folder.mkdir(parents=True, exist_ok=True)
-    save_file = match_folder / f"fha_match_data{file_suffix}.parquet"
+    intermediate_dir.mkdir(parents=True, exist_ok=True)
+    save_file = intermediate_dir / f"fha_match_data{file_suffix}.parquet"
     df.sink_parquet(save_file)
     logger.info("Saved FHA match data to %s", save_file)
 
@@ -234,8 +256,8 @@ def prepare_fha(
 
 
 def prepare_hmda(
-    hmda_folder: Path,
-    match_folder: Path,
+    hmda_dir: Path,
+    intermediate_dir: Path,
     min_year: int = Config.MIN_YEAR,
     max_year: int = Config.MAX_YEAR,
     file_suffix: str = "_post2018",
@@ -245,8 +267,8 @@ def prepare_hmda(
     """Prepare HMDA data for merge with FHA.
 
     Args:
-        hmda_folder: Folder where HMDA silver data is stored (hive-partitioned)
-        match_folder: Folder where intermediate match data will be saved
+        hmda_dir: Directory where HMDA silver data is stored (hive-partitioned)
+        intermediate_dir: Directory where intermediate match data will be saved
         min_year: Minimum year to include
         max_year: Maximum year to include
         file_suffix: Suffix for output file names
@@ -288,7 +310,7 @@ def prepare_hmda(
     df_list: list[pl.LazyFrame] = []
     for year in range(min_year, max_year + 1):
         try:
-            lf = scan_hmda("post2018", year, root=hmda_folder)
+            lf = scan_hmda("post2018", year, root=hmda_dir)
         except FileNotFoundError as e:
             logger.warning("Skipping year %s: %s", year, e)
             continue
@@ -381,46 +403,24 @@ def prepare_hmda(
             .alias("HMDA Interest Rate (Nearest 125)")
         )
 
-    # Merge in ZIP codes from census tract crosswalk
-    years_in_data = df["activity_year"].unique().to_list()
-    needs_2010 = any(y < 2020 for y in years_in_data)
-    needs_2020 = any(y >= 2020 for y in years_in_data)
-
-    if needs_2010 and needs_2020:
-        df_pre2020 = df.filter(pl.col("activity_year") < 2020)
-        df_post2020 = df.filter(pl.col("activity_year") >= 2020)
-
-        crosswalk_2010 = get_zip_tract_for_year(2018, crosswalk_dir, usps_dir)
-        zip_tracts_2010 = pl.read_parquet(crosswalk_2010)
-        df_pre2020 = df_pre2020.join(
-            zip_tracts_2010,
-            left_on="census_tract",
-            right_on="TRACT",
-            how="left",
-        ).drop(["census_tract"], strict=False)
-
-        crosswalk_2020 = get_zip_tract_for_year(2020, crosswalk_dir, usps_dir)
-        zip_tracts_2020 = pl.read_parquet(crosswalk_2020)
-        df_post2020 = df_post2020.join(
-            zip_tracts_2020,
-            left_on="census_tract",
-            right_on="TRACT",
-            how="left",
-        ).drop(["census_tract"], strict=False)
-
-        df = pl.concat([df_pre2020, df_post2020], how="diagonal")
-    elif needs_2010:
-        crosswalk_file = get_zip_tract_for_year(2018, crosswalk_dir, usps_dir)
-        zip_tracts = pl.read_parquet(crosswalk_file)
-        df = df.join(zip_tracts, left_on="census_tract", right_on="TRACT", how="left").drop(
-            ["census_tract"], strict=False
-        )
-    else:
-        crosswalk_file = get_zip_tract_for_year(2020, crosswalk_dir, usps_dir)
-        zip_tracts = pl.read_parquet(crosswalk_file)
-        df = df.join(zip_tracts, left_on="census_tract", right_on="TRACT", how="left").drop(
-            ["census_tract"], strict=False
-        )
+    # Fan each loan to ZIP through the crosswalk of the census its year's tracts come from
+    years_by_vintage: dict[CensusVintage, list[int]] = {}
+    for year in df["activity_year"].unique().to_list():
+        years_by_vintage.setdefault(hmda_tract_vintage(year), []).append(year)
+    df = pl.concat(
+        [
+            df.filter(pl.col("activity_year").is_in(years))
+            .join(
+                pl.read_parquet(get_zip_tract_for_year(years[0], crosswalk_dir, usps_dir)),
+                left_on="census_tract",
+                right_on="TRACT",
+                how="left",
+            )
+            .drop(["census_tract"], strict=False)
+            for _, years in sorted(years_by_vintage.items())
+        ],
+        how="diagonal",
+    )
 
     # Ensure string columns
     string_columns = ["respondent_id", "state_code", "HMDAIndex", "lei"]
@@ -428,8 +428,8 @@ def prepare_hmda(
     if cast_exprs:
         df = df.with_columns(cast_exprs)
 
-    match_folder.mkdir(parents=True, exist_ok=True)
-    save_file = match_folder / f"hmda_match_data{file_suffix}.parquet"
+    intermediate_dir.mkdir(parents=True, exist_ok=True)
+    save_file = intermediate_dir / f"hmda_match_data{file_suffix}.parquet"
     df.write_parquet(save_file)
     logger.info("Saved HMDA match data to %s", save_file)
 
@@ -839,9 +839,9 @@ def _run_round(
 
 
 def _load_inputs(
-    match_folder: Path,
-    fha_folder: Path,
-    hmda_folder: Path,
+    intermediate_dir: Path,
+    fha_dir: Path,
+    hmda_dir: Path,
     min_year: int,
     max_year: int,
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
@@ -853,9 +853,9 @@ def _load_inputs(
     year has no single name, so it gets none.
 
     Args:
-        match_folder: Folder holding the prepared intermediates.
-        fha_folder: FHA silver folder (mortgagee and sponsor names).
-        hmda_folder: HMDA silver folder (purchaser type).
+        intermediate_dir: Directory holding the prepared intermediates.
+        fha_dir: FHA silver directory (mortgagee and sponsor names).
+        hmda_dir: HMDA silver directory (purchaser type).
         min_year: First HMDA activity year.
         max_year: Last HMDA activity year.
 
@@ -863,13 +863,13 @@ def _load_inputs(
         The HMDA and FHA frames.
     """
     hmda = (
-        pl.scan_parquet(match_folder / "hmda_match_data_post2018.parquet")
+        pl.scan_parquet(intermediate_dir / "hmda_match_data_post2018.parquet")
         .filter(pl.col("activity_year").is_between(min_year, max_year))
         .with_columns(pl.col("ZIP").cast(pl.Utf8).str.zfill(5))
         .collect()
     )
     fha = (
-        pl.scan_parquet(match_folder / "fha_match_data_post2018.parquet")
+        pl.scan_parquet(intermediate_dir / "fha_match_data_post2018.parquet")
         .filter(pl.col("Year").is_between(min_year - 1, max_year + 1))
         .with_columns(
             pl.col("Property Zip").cast(pl.Utf8).str.zfill(5),
@@ -888,7 +888,7 @@ def _load_inputs(
         return hmda, fha
 
     purchaser = (
-        scan_hmda_for_index(hmda, "post2018", root=hmda_folder)
+        scan_hmda_for_index(hmda, "post2018", root=hmda_dir)
         .filter((pl.col("loan_type") == 2) & (pl.col("action_taken") == 1))
         .select("HMDAIndex", "purchaser_type")
         .collect(engine="streaming")
@@ -904,7 +904,7 @@ def _load_inputs(
         .collect()
     )
     names = (
-        pl.scan_parquet(f"{fha_folder}/**/*.parquet")
+        pl.scan_parquet(f"{fha_dir}/**/*.parquet")
         .select(
             "FHA_Index",
             pl.col("Originating Mortgagee").alias("orig_name"),
@@ -926,10 +926,10 @@ def _load_inputs(
 def run_matching(
     min_year: int = Config.MIN_YEAR,
     max_year: int = Config.MAX_YEAR,
-    fha_folder: Path | None = None,
-    hmda_folder: Path | None = None,
-    match_folder: Path | None = None,
-    output_folder: Path | None = None,
+    fha_dir: Path | None = None,
+    hmda_dir: Path | None = None,
+    intermediate_dir: Path | None = None,
+    output_dir: Path | None = None,
     overwrite: bool = False,
 ) -> Path:
     """Run the post-2018 HMDA-FHA matcher: prepare both sides, then `ROUNDS_POST2018`.
@@ -940,10 +940,10 @@ def run_matching(
     Args:
         min_year: First HMDA activity year to match.
         max_year: Last HMDA activity year to match.
-        fha_folder: FHA silver data folder.
-        hmda_folder: HMDA silver data folder.
-        match_folder: Intermediate match data folder.
-        output_folder: Folder the crosswalk is written to.
+        fha_dir: FHA silver data directory.
+        hmda_dir: HMDA silver data directory.
+        intermediate_dir: Intermediate match data directory.
+        output_dir: Directory the crosswalk is written to.
         overwrite: Rebuild the prepared FHA/HMDA intermediates even if they exist.
 
     Returns:
@@ -954,30 +954,30 @@ def run_matching(
     """
     logger.info("Starting HMDA-FHA matching pipeline (years %s-%s)", min_year, max_year)
 
-    if fha_folder is None:
-        fha_folder = Config.FHA_SILVER_DIR
-    if hmda_folder is None:
-        hmda_folder = Config.HMDA_SILVER_DIR
-    if match_folder is None:
-        match_folder = Config.HMDA_FHA_INTERMEDIATE_DIR
-    if output_folder is None:
-        output_folder = Config.HMDA_FHA_CROSSWALK_DIR
+    if fha_dir is None:
+        fha_dir = Config.FHA_SILVER_DIR
+    if hmda_dir is None:
+        hmda_dir = Config.HMDA_SILVER_DIR
+    if intermediate_dir is None:
+        intermediate_dir = Config.HMDA_FHA_INTERMEDIATE_DIR
+    if output_dir is None:
+        output_dir = Config.HMDA_FHA_CROSSWALK_DIR
 
     Config.ensure_directories()
 
     file_suffix = "_post2018"
-    fha_match_file = match_folder / f"fha_match_data{file_suffix}.parquet"
+    fha_match_file = intermediate_dir / f"fha_match_data{file_suffix}.parquet"
     if should_process_file(fha_match_file, overwrite):
-        prepare_fha(fha_folder, match_folder, min_year, max_year, file_suffix)
+        prepare_fha(fha_dir, intermediate_dir, min_year, max_year, file_suffix)
     else:
         logger.info("Skipping FHA prep - file exists: %s", fha_match_file)
-    hmda_match_file = match_folder / f"hmda_match_data{file_suffix}.parquet"
+    hmda_match_file = intermediate_dir / f"hmda_match_data{file_suffix}.parquet"
     if should_process_file(hmda_match_file, overwrite):
-        prepare_hmda(hmda_folder, match_folder, min_year, max_year, file_suffix)
+        prepare_hmda(hmda_dir, intermediate_dir, min_year, max_year, file_suffix)
     else:
         logger.info("Skipping HMDA prep - file exists: %s", hmda_match_file)
 
-    hmda, fha = _load_inputs(match_folder, fha_folder, hmda_folder, min_year, max_year)
+    hmda, fha = _load_inputs(intermediate_dir, fha_dir, hmda_dir, min_year, max_year)
     logger.info("Loaded HMDA: %s rows, FHA: %s records", f"{len(hmda):,}", f"{len(fha):,}")
 
     roster = pl.DataFrame(schema={"lei": pl.Utf8, "orig_num": pl.Utf8, "sponsor_num": pl.Utf8})
@@ -1000,8 +1000,8 @@ def run_matching(
         if crosswalk[col].n_unique() != len(crosswalk):
             raise ValueError(f"crosswalk not 1:1 in {col}")
 
-    output_folder.mkdir(parents=True, exist_ok=True)
-    output_file = output_folder / Config.crosswalk_name("post2018", min_year, max_year)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = output_dir / Config.crosswalk_name("post2018", min_year, max_year)
     with atomic_output(output_file) as tmp:
         crosswalk.write_parquet(tmp)
     logger.info("Saved crosswalk (%s pairs) to %s", f"{len(crosswalk):,}", output_file)

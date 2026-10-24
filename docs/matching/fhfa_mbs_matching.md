@@ -233,7 +233,7 @@ resolves before writing.
 | fnma_loan_id / fhlmc_loan_id | String | loan-level id |
 | fhfa_record_id | Int | FHFA record id |
 | fhfa_year | Int | FHFA acquisition year |
-| fhfa_enterprise | Int | 1 Fannie, 2 Freddie |
+| fhfa_enterprise | Int8 | 1 Fannie, 2 Freddie |
 | zip3_consistent | Boolean | True/False when both sides carry a ZIP3, else null |
 | match_round | UInt8 | Position in the enterprise's rounds. FNMA: 1 base, 2 fixpoint, 3 seasoned, 4 MSA-free. FHLMC: 1 base, 2 product-envelope term, 3 fixpoint, 4 seasoned, 5 MSA-free, 6 occupancy |
 | match_quality_tier | UInt8 | FNMA: 1 exact rate and LTV, 2 exact rate, 3 within tolerance. FHLMC: 1 rate, amount and LTV exact, 2 rate and LTV exact, 3 rate only. A label, not a round; FHFA's hundredths truncation counts as an exact rate |

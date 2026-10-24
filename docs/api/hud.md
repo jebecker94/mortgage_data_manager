@@ -1,9 +1,5 @@
 # HUD Multifamily API Reference
 
-API reference for the HUD multifamily housing (`hud`) subpackage.
-
----
-
 ## Overview
 HUD publishes a family of FHA multifamily and assisted-housing extracts at
 <https://www.hud.gov/hud-partners/multifamily-data> as **monthly point-in-time
@@ -66,37 +62,25 @@ The Access `.zip` HUD also offers is **intentionally not downloaded**: it
 bundles the same two Section 8 Excel extracts we already fetch plus a 65 MB
 `.accdb` — pure redundancy.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.hud.config
-
----
 
 ## Download
 
 ::: mortgage_data_manager.sources.hud.download
 
----
-
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.hud.import_bronze
-
----
 
 ## Silver layer
 
 ::: mortgage_data_manager.sources.hud.import_silver
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.hud.pipeline
-
----
 
 ## Vintages & time-series value
 Every file is a monthly **point-in-time** snapshot and HUD republishes a single
@@ -124,8 +108,6 @@ Single-snapshot **event-style analysis** is supported without vintages wherever
 dates are in-band: endorsement / first-payment / maturity / termination dates
 (insured) and TRACS effective / expiration / renewal dates (assisted).
 
----
-
 ## CLI
 ```bash
 mortgage-data hud info                       # paths + logical-table registry + snapshots
@@ -135,8 +117,6 @@ mortgage-data hud bronze
 mortgage-data hud silver --overwrite
 mortgage-data hud pipeline                    # download → bronze → silver
 ```
-
----
 
 ## Common Pitfalls
 - **Two FHA-number namespaces.** Insured mortgages / addresses / portfolio use

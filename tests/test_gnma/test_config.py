@@ -56,20 +56,6 @@ class TestGNMAConfig:
         assert (gnma_temp_dir / "bronze").exists()
         assert (gnma_temp_dir / "silver").exists()
 
-    def test_backward_compatibility_exports(self):
-        """Test backward compatibility module-level exports."""
-        from mortgage_data_manager.sources.gnma.config import (
-            DATA_ROOT,
-            GNMA_DATA,
-            PROJECT_ROOT,
-            GNMAConfig,
-        )
-
-        # These should be equal to GNMAConfig class attributes
-        assert PROJECT_ROOT == GNMAConfig.PROJECT_DIR
-        assert DATA_ROOT == GNMAConfig.DATA_DIR
-        assert GNMA_DATA == GNMAConfig.GNMA_DATA_DIR
-
 
 class TestProcessorConfig:
     """Tests for ProcessorConfig dataclass."""

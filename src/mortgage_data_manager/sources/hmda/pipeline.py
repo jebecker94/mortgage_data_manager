@@ -34,9 +34,7 @@ from typing import Any
 from mortgage_data_manager.core.download import summarize_results
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.sources.hmda.config import (
-    BRONZE_DIR,
-    RAW_DIR,
-    SILVER_DIR,
+    HMDAConfig,
     resolve_datasets,
 )
 
@@ -74,7 +72,7 @@ def run_download(
         products: Products to fetch. ``None`` = the default set (everything but
             ``mlar``).
         datasets: Record types to fetch. ``None`` = all four.
-        output_dir: Root of the raw layer. ``None`` = configured RAW_DIR.
+        output_dir: Root of the raw layer. ``None`` = configured HMDAConfig.HMDA_RAW_DIR.
         min_year: First filing year to fetch. ``None`` = each series' own start.
         max_year: Last filing year to fetch. ``None`` = the current year.
         **kwargs: Forwarded to ``download_hmda_files`` — ``file_format``,
@@ -101,7 +99,7 @@ def run_download(
         ``msamd/`` and ``misc/`` under the raw root. Existing files are skipped
         unless ``overwrite`` or ``refresh`` is passed.
     """
-    dest_path = Path(output_dir) if output_dir is not None else RAW_DIR
+    dest_path = Path(output_dir) if output_dir is not None else HMDAConfig.HMDA_RAW_DIR
     dest_path.resolve().mkdir(parents=True, exist_ok=True)
 
     logger.info("=" * 60)
@@ -158,7 +156,7 @@ def bronze_post2018(
 
     results: dict[str, bool] = {}
     for dataset in datasets:
-        (BRONZE_DIR / dataset).resolve().mkdir(parents=True, exist_ok=True)
+        (HMDAConfig.HMDA_BRONZE_DIR / dataset).resolve().mkdir(parents=True, exist_ok=True)
         try:
             logger.info("Building bronze for %s...", dataset)
             build_bronze_post2018(
@@ -204,7 +202,9 @@ def silver_post2018(
 
     results: dict[str, bool] = {}
     for dataset in datasets:
-        (SILVER_DIR / dataset / "post2018").resolve().mkdir(parents=True, exist_ok=True)
+        (HMDAConfig.HMDA_SILVER_DIR / dataset / "post2018").resolve().mkdir(
+            parents=True, exist_ok=True
+        )
         try:
             logger.info("Building silver for %s...", dataset)
             build_silver_post2018(
@@ -309,7 +309,7 @@ def bronze_2007_2017(
 
     results: dict[str, bool] = {}
     for dataset in datasets:
-        (BRONZE_DIR / dataset).resolve().mkdir(parents=True, exist_ok=True)
+        (HMDAConfig.HMDA_BRONZE_DIR / dataset).resolve().mkdir(parents=True, exist_ok=True)
         try:
             build_bronze_period_2007_2017(
                 dataset, min_year=min_year, max_year=max_year, overwrite=overwrite
@@ -351,7 +351,9 @@ def silver_2007_2017(
 
     results: dict[str, bool] = {}
     for dataset in datasets:
-        (SILVER_DIR / dataset / "period_2007_2017").resolve().mkdir(parents=True, exist_ok=True)
+        (HMDAConfig.HMDA_SILVER_DIR / dataset / "period_2007_2017").resolve().mkdir(
+            parents=True, exist_ok=True
+        )
         try:
             build_silver_period_2007_2017(
                 dataset,
@@ -437,7 +439,7 @@ def bronze_pre2007(
 
     results: dict[str, bool] = {}
     for dataset in datasets:
-        (BRONZE_DIR / dataset).resolve().mkdir(parents=True, exist_ok=True)
+        (HMDAConfig.HMDA_BRONZE_DIR / dataset).resolve().mkdir(parents=True, exist_ok=True)
         try:
             build_bronze_pre2007(dataset, min_year=min_year, max_year=max_year, overwrite=overwrite)
             results[dataset] = True
@@ -479,7 +481,9 @@ def silver_pre2007(
 
     results: dict[str, bool] = {}
     for dataset in datasets:
-        (SILVER_DIR / dataset / "pre2007").resolve().mkdir(parents=True, exist_ok=True)
+        (HMDAConfig.HMDA_SILVER_DIR / dataset / "pre2007").resolve().mkdir(
+            parents=True, exist_ok=True
+        )
         try:
             build_silver_pre2007(
                 dataset,

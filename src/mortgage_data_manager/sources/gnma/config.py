@@ -63,11 +63,6 @@ class GNMAConfig(MortgageDataConfig):
     GNMA_PREFIX_DICTIONARY: Path = GNMA_SCHEMAS_DIR / "prefix_dictionary.yaml"
     GNMA_CANONICAL_DIR: Path = GNMA_SCHEMAS_DIR / "canonical"
 
-    # Backward compatibility aliases (maps old names to new)
-    RAW_DIR = GNMA_RAW_DIR
-    BRONZE_DIR = GNMA_BRONZE_DIR
-    SILVER_DIR = GNMA_SILVER_DIR
-
     # Download constants (July 2026 site rebuild: the SharePoint/aspx pages were
     # replaced by Angular SPAs backed by JSON APIs; the GMProfileInfo cookie auth
     # was replaced by a bearer token from the user-profiles service).
@@ -156,17 +151,6 @@ class GNMAConfig(MortgageDataConfig):
 
         # Create schema directory (canonical JSON schemas live under it)
         cls.GNMA_SCHEMAS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-# ==========================================
-# Backward Compatibility Exports
-# ==========================================
-
-# These module-level constants maintain backward compatibility
-# with code that imports directly from config
-PROJECT_ROOT = GNMAConfig.PROJECT_DIR
-DATA_ROOT = GNMAConfig.DATA_DIR
-GNMA_DATA = GNMAConfig.GNMA_DATA_DIR
 
 
 @dataclass

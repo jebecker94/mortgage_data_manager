@@ -20,7 +20,11 @@ from mortgage_data_manager.core.cli.formatting import (
     print_section_header,
     print_summary,
 )
-from mortgage_data_manager.core.cli.validation import version_callback_factory
+from mortgage_data_manager.core.cli.validation import (
+    validate_datasets,
+    validate_years,
+    version_callback_factory,
+)
 from mortgage_data_manager.core.logging import configure_logging
 from mortgage_data_manager.sources.fhlmc.config import (
     CRT_DATASETS,
@@ -28,9 +32,6 @@ from mortgage_data_manager.sources.fhlmc.config import (
     MIN_YEAR,
     VALID_DATASETS,
     FHLMCConfig,
-    validate_crt_datasets,
-    validate_datasets,
-    validate_years,
 )
 from mortgage_data_manager.sources.fhlmc.pipeline import (
     run_bronze,
@@ -423,15 +424,15 @@ def bronze(
     selected = datasets or list(VALID_DATASETS)
     standard = [d for d in selected if d != "crt"]
     if standard:
-        validate_datasets(standard)
+        validate_datasets(standard, VALID_DATASETS)
     if crt_parts:
-        validate_crt_datasets(crt_parts)
+        validate_datasets(crt_parts, CRT_DATASETS, "CRT datasets")
 
     if min_year > max_year:
         print_error(f"--min-year ({min_year}) must be <= --max-year ({max_year})")
         raise typer.Exit(code=1)
     year_list = list(range(min_year, max_year + 1))
-    validate_years(year_list)
+    validate_years(year_list, MIN_YEAR, MAX_YEAR)
 
     print_section_header("FHLMC Bronze Import")
     console.print(f"[cyan]Datasets:[/cyan] {', '.join(selected)}")
@@ -574,14 +575,14 @@ def pipeline(
     selected = datasets or list(VALID_DATASETS)
     standard = [d for d in selected if d != "crt"]
     if standard:
-        validate_datasets(standard)
+        validate_datasets(standard, VALID_DATASETS)
     if crt_parts:
-        validate_crt_datasets(crt_parts)
+        validate_datasets(crt_parts, CRT_DATASETS, "CRT datasets")
     if min_year > max_year:
         print_error(f"--min-year ({min_year}) must be <= --max-year ({max_year})")
         raise typer.Exit(code=1)
     year_list = list(range(min_year, max_year + 1))
-    validate_years(year_list)
+    validate_years(year_list, MIN_YEAR, MAX_YEAR)
 
     console.print(f"[cyan]Datasets:[/cyan] {', '.join(selected)}")
     console.print(f"[cyan]Years:[/cyan] {min_year}-{max_year}")

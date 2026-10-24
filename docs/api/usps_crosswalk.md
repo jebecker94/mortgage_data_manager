@@ -1,9 +1,5 @@
 # USPS Crosswalk API Reference
 
-API reference for the USPS ZIP Code Crosswalk subpackage (data published by HUD).
-
----
-
 ## Overview
 This subpackage downloads, processes and serves the USPS ZIP Code Crosswalk files published by HUD. These crosswalks map between ZIP codes and Census geographies (tracts, counties, CBSAs, congressional districts, and county subdivisions) using address-count ratios from the USPS.
 
@@ -29,8 +25,6 @@ would only restate bronze, so read across quarters with `load_crosswalk()` or
 
 Derived assets are promoted to `core.reference` rather than to a gold layer —
 see [`tract_zip3`](core.md), the residential-share-weighted tract→ZIP3 mapping.
-
----
 
 ## Crosswalk Types
 HUD publishes 12 crosswalk types organized into 6 bidirectional pairs:
@@ -72,8 +66,6 @@ Each crosswalk row includes four allocation ratios:
 
 For a given source geography, the ratios within each column sum to approximately 1.0.
 
----
-
 ## Census Vintage Boundaries
 HUD crosswalks use different Census geography definitions depending on the time period. Tract IDs are **not** comparable across vintages — the same numeric ID may refer to different geographic boundaries.
 
@@ -92,43 +84,29 @@ get_census_vintage(2015, 1)  # 2010
 get_census_vintage(2023, 3)  # 2020
 ```
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.usps_crosswalk.config
-
----
 
 ## Download
 
 ::: mortgage_data_manager.sources.usps_crosswalk.download
 
----
-
 ## Loading data
 
 ::: mortgage_data_manager.sources.usps_crosswalk.load
-
----
 
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.usps_crosswalk.import_bronze
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.usps_crosswalk.pipeline
 
----
-
 ## Validation
 
 ::: mortgage_data_manager.sources.usps_crosswalk.validate
-
----
 
 ## CLI
 **Module:** `mortgage_data_manager.sources.usps_crosswalk.cli`
@@ -183,8 +161,6 @@ Display configuration and crosswalk type information.
 mortgage-data usps-crosswalk info
 ```
 
----
-
 ## Data Structure
 ### Raw Layer
 
@@ -228,8 +204,6 @@ mortgage-data usps-crosswalk info
 | Congressional District | `cd`/`geoid` | 4 | SS-DD (state-district) |
 | County Subdivision | `county_sub`/`geoid` | 10 | SS-CCC-SSSSS |
 
----
-
 ## Common Pitfalls
 ### Mixing Census Vintages
 
@@ -242,8 +216,6 @@ The HUD API's `query=All` parameter only works reliably for 2021+ data. Download
 ### ZIP Codes Are Not Geographies
 
 ZIP codes are mail delivery routes, not areas. A ZIP can span multiple counties and states. The crosswalk ratios handle this, but be aware that ZIP-level analysis has inherent geographic imprecision.
-
----
 
 ## See Also
 - [Core API](core.md) — Shared utilities and medallion architecture

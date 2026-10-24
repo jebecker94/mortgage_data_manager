@@ -42,7 +42,7 @@ from mortgage_data_manager.sources.usps_crosswalk.config import (
 logger = get_logger(__name__)
 
 
-def validate_datasets(datasets: list[str] | None) -> list[str]:
+def resolve_datasets(datasets: list[str] | None) -> list[str]:
     """Return the requested crosswalk types, defaulting to all 12.
 
     Args:
@@ -201,7 +201,7 @@ def download_all(
     token = USPSCrosswalkConfig.USPS_CROSSWALK_API_KEY
     if not token:
         raise ValueError("USPS_CROSSWALK_API_KEY not set. Add it to your .env or the environment.")
-    types = validate_datasets(datasets)
+    types = resolve_datasets(datasets)
     through = (max_year, 4) if max_year is not None else current_quarter()
     pause = USPSCrosswalkConfig.USPS_CROSSWALK_REQUEST_DELAY if pause is None else pause
 

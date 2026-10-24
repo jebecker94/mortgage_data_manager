@@ -31,10 +31,8 @@ import re
 from pathlib import Path
 from typing import Final, TypedDict
 
-import typer
 from decouple import config
 
-from mortgage_data_manager.core.cli.formatting import console as _console
 from mortgage_data_manager.core.config import MortgageDataConfig
 
 # ---------------------------------------------------------------------------
@@ -243,22 +241,6 @@ IDENTIFIER_COLUMNS: Final[frozenset[str]] = frozenset(
         "project_zip_code_plus_4",
     }
 )
-
-
-def validate_datasets(datasets: list[str]) -> None:
-    """Validate that all identifiers are recognized HUD-MF tables.
-
-    Args:
-        datasets: Logical-table identifiers to validate.
-
-    Raises:
-        typer.Exit: If any identifier is invalid.
-    """
-    invalid = [d for d in datasets if d not in DATASET_MAP]
-    if invalid:
-        _console.print(f"[red]Error: Invalid datasets:[/red] {', '.join(invalid)}")
-        _console.print(f"[yellow]Valid datasets:[/yellow] {', '.join(VALID_DATASETS)}")
-        raise typer.Exit(code=1)
 
 
 def resolve_datasets(datasets: list[str] | None) -> list[str]:

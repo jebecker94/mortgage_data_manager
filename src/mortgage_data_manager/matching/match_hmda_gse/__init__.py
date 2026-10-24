@@ -17,7 +17,6 @@ documents lenders whose HMDA and GSE seller names differ.
 from mortgage_data_manager.matching.match_hmda_gse.config import HMDAGSEMatchingConfig
 from mortgage_data_manager.matching.match_hmda_gse.lender_seller_crosswalk import (
     build_lender_seller_crosswalk,
-    generate_markdown_report,
     load_enriched_crosswalks,
 )
 from mortgage_data_manager.matching.match_hmda_gse.matching_chain import run_matching_chain
@@ -37,7 +36,6 @@ __all__ = [
     "HMDAGSEMatchingConfig",
     # GSE crosswalk functions
     "build_lender_seller_crosswalk",
-    "generate_markdown_report",
     "load_enriched_crosswalks",
     # Matching
     "run_matching_chain",

@@ -23,8 +23,7 @@ import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.matching.match_hmda_fhlb.config import (
-    DATA_DIR,
-    PROJECT_ROOT,
+    HMDAFHLBMatchingConfig,
 )
 from mortgage_data_manager.matching.validation_common import (
     COLORS,
@@ -55,7 +54,7 @@ MIN_YEAR_PRE2018 = 2009
 MAX_YEAR_PRE2018 = 2017
 
 # Output directory for figures
-VALIDATION_OUTPUT_DIR = PROJECT_ROOT / "docs" / "matching" / "figures"
+VALIDATION_OUTPUT_DIR = HMDAFHLBMatchingConfig.PROJECT_DIR / "docs" / "matching" / "figures"
 
 # Shared chart palette; CATEGORICAL below keeps this workflow's own ordering.
 PALETTE = COLORS
@@ -307,7 +306,7 @@ def validate_fhlb_post2018(df: pl.DataFrame) -> bool:
     return check_magnitudes(df, col_map, "FHLB")
 
 
-def validate_datasets(match_folder: Path) -> None:
+def validate_inputs(match_folder: Path) -> None:
     """Run validation on cleaned parquet files before matching.
 
     Args:
@@ -354,9 +353,15 @@ def load_era_data(era: Era) -> tuple[pl.DataFrame, pl.DataFrame | None, pl.DataF
     Raises:
         FileNotFoundError: If the era's matches file has not been built.
     """
-    matches_path = DATA_DIR / f"hmda_fhlb_matches_{era.key}.parquet"
-    hmda_path = DATA_DIR / f"hmda_fhlb_members_{era.key}.parquet"
-    fhlb_path = DATA_DIR / f"fhlb_acquisitions_{era.key}.parquet"
+    matches_path = (
+        HMDAFHLBMatchingConfig.HMDA_FHLB_MATCHING_DIR / f"hmda_fhlb_matches_{era.key}.parquet"
+    )
+    hmda_path = (
+        HMDAFHLBMatchingConfig.HMDA_FHLB_MATCHING_DIR / f"hmda_fhlb_members_{era.key}.parquet"
+    )
+    fhlb_path = (
+        HMDAFHLBMatchingConfig.HMDA_FHLB_MATCHING_DIR / f"fhlb_acquisitions_{era.key}.parquet"
+    )
     if not matches_path.exists():
         raise FileNotFoundError(f"Matches file not found: {matches_path}")
     return (
@@ -372,7 +377,9 @@ def load_lender_statistics() -> pl.DataFrame | None:
     Only the post-2018 era is keyed by LEI; the pre-2018 file uses respondent ids,
     which the lender summary does not mix in.
     """
-    stats_path = DATA_DIR / "lender_match_statistics_post2018.csv"
+    stats_path = (
+        HMDAFHLBMatchingConfig.HMDA_FHLB_MATCHING_DIR / "lender_match_statistics_post2018.csv"
+    )
     return pl.read_csv(stats_path) if stats_path.exists() else None
 
 

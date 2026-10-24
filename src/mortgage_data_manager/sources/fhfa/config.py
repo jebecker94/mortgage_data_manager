@@ -1,11 +1,8 @@
 """Configuration for FHFA (Federal Housing Finance Agency) data.
 
-Configuration for FHFA (Federal Housing Finance Agency) data processing pipeline.
-
 This module provides:
     - FHFAConfig: Main configuration class inheriting from MortgageDataConfig
     - ImportOptions: Operational options for data loaders
-    - PathsConfig: Path bundle resolved from FHFAConfig for the dictionary extractor
     - ensure_parent_dir: Utility function for directory creation
 
 The FHFAConfig class follows the project's configuration inheritance pattern,
@@ -19,9 +16,7 @@ from pathlib import Path
 from typing import Literal
 
 import polars as pl
-import typer
 from decouple import config
-from rich.console import Console
 
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.types import (
@@ -30,8 +25,6 @@ from mortgage_data_manager.core.types import (
     SilverSpec,
     spec_from_columns,
 )
-
-_console = Console()
 
 #: FHFA's Public Use Database index page.
 #:
@@ -56,7 +49,6 @@ class FHFAConfig(MortgageDataConfig):
         FHFA_BRONZE_DIR: Bronze layer directory (staged parquet)
         FHFA_SILVER_DIR: Silver layer directory (transformed data)
         FHFA_GOLD_DIR: Gold layer directory (aggregations)
-        FHFA_CLEAN_DIR: Clean data directory
         FHFA_SCHEMAS_DIR: Schema files directory
 
     Example:
@@ -75,18 +67,9 @@ class FHFAConfig(MortgageDataConfig):
     FHFA_BRONZE_DIR: Path = Path(config("FHFA_BRONZE_DIR", default=str(FHFA_DATA_DIR / "bronze")))
     FHFA_SILVER_DIR: Path = Path(config("FHFA_SILVER_DIR", default=str(FHFA_DATA_DIR / "silver")))
     FHFA_GOLD_DIR: Path = Path(config("FHFA_GOLD_DIR", default=str(FHFA_DATA_DIR / "gold")))
-    FHFA_CLEAN_DIR: Path = Path(config("FHFA_CLEAN_DIR", default=str(FHFA_DATA_DIR / "clean")))
     FHFA_SCHEMAS_DIR: Path = Path(
         config("FHFA_SCHEMAS_DIR", default=str(MortgageDataConfig.SCHEMAS_DIR / "fhfa"))
     )
-
-    # Backward compatibility aliases (module-level constants expected by other modules)
-    PROJECT_DIR = MortgageDataConfig.PROJECT_DIR
-    RAW_DIR = FHFA_RAW_DIR
-    BRONZE_DIR = FHFA_BRONZE_DIR
-    SILVER_DIR = FHFA_SILVER_DIR
-    CLEAN_DIR = FHFA_CLEAN_DIR
-    SCHEMAS_DIR = FHFA_SCHEMAS_DIR
 
     @classmethod
     def get_prefix_dir(
@@ -133,57 +116,8 @@ class FHFAConfig(MortgageDataConfig):
             >>> FHFAConfig.ensure_directories()
             >>> # Creates: data/fhfa/raw, data/fhfa/bronze, etc.
         """
-        # Create medallion directories
-        for d in (cls.FHFA_RAW_DIR, cls.FHFA_BRONZE_DIR, cls.FHFA_SILVER_DIR):
+        for d in (cls.FHFA_RAW_DIR, cls.FHFA_BRONZE_DIR, cls.FHFA_SILVER_DIR, cls.FHFA_SCHEMAS_DIR):
             d.mkdir(parents=True, exist_ok=True)
-
-        # Create additional directories
-        cls.FHFA_CLEAN_DIR.mkdir(parents=True, exist_ok=True)
-        cls.FHFA_SCHEMAS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-# Module-level path constants for backward compatibility
-PROJECT_DIR = FHFAConfig.PROJECT_DIR
-DATA_ROOT = FHFAConfig.FHFA_DATA_DIR
-DATA_DIR = FHFAConfig.FHFA_DATA_DIR
-RAW_DIR = FHFAConfig.RAW_DIR
-BRONZE_DIR = FHFAConfig.BRONZE_DIR
-SILVER_DIR = FHFAConfig.SILVER_DIR
-CLEAN_DIR = FHFAConfig.CLEAN_DIR
-SCHEMAS_DIR = FHFAConfig.SCHEMAS_DIR
-
-
-@dataclass(frozen=True)
-class PathsConfig:
-    """Path bundle resolved from FHFAConfig.
-
-    ``schemas.extract_enterprise_pudb_pdfs`` takes one as its ``paths`` argument.
-    Elsewhere, use FHFAConfig class attributes or the module-level constants.
-
-    Example:
-        >>> paths = PathsConfig.from_env()
-        >>> paths.raw_dir
-        PosixPath('/path/to/data/fhfa/raw')
-    """
-
-    project_dir: Path
-    data_dir: Path
-    raw_dir: Path
-    clean_dir: Path
-
-    @classmethod
-    def from_env(cls) -> PathsConfig:
-        """Create PathsConfig using FHFAConfig class.
-
-        Returns:
-            A config whose paths are resolved from ``FHFAConfig``.
-        """
-        return cls(
-            project_dir=FHFAConfig.PROJECT_DIR,
-            data_dir=FHFAConfig.FHFA_DATA_DIR,
-            raw_dir=FHFAConfig.RAW_DIR,
-            clean_dir=FHFAConfig.CLEAN_DIR,
-        )
 
 
 @dataclass(frozen=True)
@@ -222,6 +156,10 @@ DATASET_MAP = {
 
 # Sorted list view of valid dataset identifiers (single source: DATASET_MAP)
 VALID_DATASETS: list[str] = list(DATASET_MAP.keys())
+
+#: First acquisition year covered: the HUD-era multifamily backfill extends the
+#: GSE PUDB series to 1993 (the modern enterprise data begins in 2008).
+FIRST_DATA_YEAR = 1993
 
 #: Latest acquisition year FHFA has published.
 LATEST_DATA_YEAR = 2025
@@ -544,45 +482,3 @@ FHFA_SILVER_SPECS: dict[str, SilverSpec] = {
     "mf_property_b": FHFA_MF_PROPERTY_B_SILVER,
     "mf_unit_b": FHFA_MF_UNIT_B_SILVER,
 }
-
-
-def validate_datasets(datasets: list[str]) -> None:
-    """Validate that all datasets are recognized FHFA datasets.
-
-    Args:
-        datasets: List of dataset identifiers to validate.
-
-    Raises:
-        typer.Exit: If any dataset is invalid.
-    """
-    invalid = [ft for ft in datasets if ft not in DATASET_MAP]
-    if invalid:
-        _console.print(f"[red]Error: Invalid datasets:[/red] {', '.join(invalid)}")
-        _console.print(f"[yellow]Valid types:[/yellow] {', '.join(VALID_DATASETS)}")
-        raise typer.Exit(code=1)
-
-
-def validate_years(
-    years: list[int], min_year: int = 1993, max_year: int = LATEST_DATA_YEAR
-) -> None:
-    """Validate that all years fall within the supported FHFA year range.
-
-    The lower bound is 1993 because the HUD-era multifamily backfill extends the
-    GSE PUDB series back to 1993 (the modern FHFA enterprise data begins in
-    2008; the 1993-2007 years are served by the HUD-era pipeline).
-
-    Args:
-        years: List of years to validate.
-        min_year: Minimum valid year. Defaults to 1993.
-        max_year: Maximum valid year. Defaults to `LATEST_DATA_YEAR`.
-
-    Raises:
-        typer.Exit: If any year is out of range.
-    """
-    invalid = [y for y in years if y < min_year or y > max_year]
-    if invalid:
-        _console.print(
-            f"[red]Error: Years out of valid range:[/red] {', '.join(map(str, invalid))}"
-        )
-        _console.print(f"[yellow]Valid range:[/yellow] {min_year}-{max_year}")
-        raise typer.Exit(code=1)

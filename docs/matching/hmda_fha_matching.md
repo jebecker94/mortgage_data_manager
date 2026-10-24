@@ -12,14 +12,14 @@ two matchers and two files:
 
 | Era | Years | File | Pairs | HMDA-side rate¹ | Key discriminator |
 |---|---|---|---:|---:|---|
-| Post-2018 (default) | 2018–2025 | `hmda_fha_crosswalk_post2018.parquet` | 7,261,866 | 87.7% | 12.5bp interest rate |
-| Pre-2018 | 2010–2017 | `hmda_fha_crosswalk_pre2018.parquet` | 7,118,737 | 75.5% | lender-identity bridge |
+| Post-2018 (default) | 2018–2025 | `hmda_fha_crosswalk_post2018.parquet` | 7,260,553 | 87.7% | 12.5bp interest rate |
+| Pre-2018 | 2010–2017 | `hmda_fha_crosswalk_pre2018.parquet` | 7,123,514 | 75.6% | lender-identity bridge |
 
 ¹ Of raw HMDA FHA originations (`loan_type = 2`, `action_taken = 1`).
 
 Both files have the same schema (`FHA_Index`, `HMDAIndex`, `match_round`), so
 `pl.scan_parquet("crosswalk/hmda_fha/hmda_fha_crosswalk_*.parquet")` reads both eras with no
-fills (14,380,603 pairs); see *Unioning the two eras* for the one caveat. They stay separate
+fills (14,384,067 pairs); see *Unioning the two eras* for the one caveat. They stay separate
 files because `matching/master` uses the post-2018 file as its FHA edge and starts at 2018,
 and the two rebuild on different cadences: the pre-2018 sources are closed, while post-2018
 rebuilds with every HMDA cycle.
@@ -32,8 +32,11 @@ rebuilds with every HMDA cycle.
   Sponsor numbers, geography.
 - HMDA post-2018 loans: loan characteristics, demographics, LEI, census tract.
 - HUD ZIP-tract crosswalk from the [`usps_crosswalk` subpackage](../api/usps_crosswalk.md),
-  2010 census vintage for 2018–2019 and 2020 for 2020 on, consolidated by
-  `load_crosswalk_by_vintage()` to unique ZIP-tract pairs.
+  consolidated by `load_crosswalk_by_vintage()` to unique ZIP-tract pairs, one file per
+  census HMDA reports tracts on: 2010-census tracts (HUD 2012 Q1–2022 Q4, 180,959 pairs)
+  for 2018–2021 and 2020-census tracts (HUD 2023 Q1 on, 192,817 pairs) from 2022.
+  HMDA switched to each census a year before HUD's quarters did, so the file follows the
+  HMDA activity year (`hmda_tract_vintage`), not the calendar.
 
 **Pre-2018**
 
@@ -45,10 +48,11 @@ rebuilds with every HMDA cycle.
 - FHA endorsements, `fha/silver/single_family`. The source starts in 2010-05, so activity
   year 2010 has a nine-month window. Its lower yield is a source floor and must not be
   "fixed" by widening the window.
-- The 2010-vintage ZIP-tract crosswalk for every year (`get_zip_tract_for_year`, built on
-  demand): 215,514 ZIP-tract pairs, a 2.30× fan-out. Loans lost to a null or absent tract
-  fall from 10,797 in 2010 to 1,720 in 2017, so the 2000–2010 tract boundary is not
-  binding here, unlike the pre-2018 HMDA-FHFA matcher.
+- The ZIP-tract crosswalk for the census each year's tracts come from
+  (`get_zip_tract_for_year`, built on demand): 2000-census tracts for 2010–2011 (HUD
+  2010 Q1–2011 Q4, 146,528 pairs) and 2010-census tracts for 2012–2017 (180,959 pairs), a
+  2.33× fan-out. Loans lost to a null or unmapped tract fall from 11,731 in 2010 to 1,812
+  in 2017.
 
 ## Post-2018 method
 
@@ -100,7 +104,7 @@ agreement would remove correct matches and catch almost no wrong ones.
 - Resolution: candidates scoring at least 2, strictly unique best on both sides by score,
   then by endorsement distance from mid activity year; ties are dropped.
 
-Round 2's pairs are 96.4% identity-aligned, 99.5% rate-exact at 0.5bp and 95.8% in the ZIP
+Round 2's pairs are 96.4% identity-aligned, 99.5% rate-exact at 0.5bp and 95.9% in the ZIP
 tier.
 
 ## Pre-2018 method
@@ -133,7 +137,7 @@ times in ten, against 0.1% for round 3.
 ### Base key and window
 
 The key is ZIP + loan amount at $1,000 + loan purpose. HMDA `census_tract` is fanned to ZIP
-through the 2010 crosswalk and matched against FHA `Property Zip`, which cuts candidates
+through its census's crosswalk and matched against FHA `Property Zip`, which cuts candidates
 from 220.69 per HMDA loan (county + $10k bins) to 2.66. Candidate pairs are deduplicated on
 `(HMDAIndex, FHA_Index)` after the ZIP fan, because one loan appears in several ZIP cells;
 counting per cell overstates cleanliness by about 6pp.
@@ -161,7 +165,7 @@ the key destroys a pair a year-blocked pass would never have seen.
 
 ### The lender bridge in the matcher
 
-92.4% of ZIP-joinable loans (8,672,397 of 9,382,001) have a base-key candidate in the base
+92.4% of ZIP-joinable loans (8,665,650 of 9,380,639) have a base-key candidate in the base
 window, so the binding constraint is disambiguation. The bridge (see *Lender bridge*
 below) maps FHA mortgagee numbers to HMDA respondent keys, and the matcher uses it as a
 filter:
@@ -178,9 +182,9 @@ The crosswalk is checked 1:1 on both indices before it is written.
 
 ### Round 3
 
-Rounds 1–2 leave 2,450,830 HMDA FHA originations unmatched (26.0%). Inside the base
-window, 1,491,152 still hold an unclaimed base-key candidate, 205,031 lost every candidate
-to a round 1–2 pair, and 754,647 never had one (45,043 of them because their tract joins
+Rounds 1–2 leave 2,445,221 HMDA FHA originations unmatched (25.9%). Inside the base
+window, 1,479,573 still hold an unclaimed base-key candidate, 204,254 lost every candidate
+to a round 1–2 pair, and 761,394 never had one (46,405 of them because their tract joins
 no ZIP). Round 3 runs on that remainder only, so rounds 1–2 are unchanged, and it uses no
 lender identity.
 
@@ -189,7 +193,7 @@ loans endorsed then were mostly originated the year before, but for a loan round
 not place, January is often where its partner is. A January record sits in two years'
 windows, so pools are built for every year first and a record is contested by the loans of
 both years. The tail is not lengthened: the pairs a June Y+1 tail adds agree with HMDA on
-borrower count 88.2% of the time, against 97.76% for round 3 (see *Validation*).
+borrower count 88.2% of the time, against 97.75% for round 3 (see *Validation*).
 
 The contested cells are the ones the bridge could not split; in half of them two or more
 candidates belong to the same lender. Three pieces of evidence the earlier rounds do not
@@ -197,8 +201,10 @@ use can still separate some:
 
 - County agreement: the ZIP fan can cross a county line, while HMDA's county is the
   tract's own.
-- ZIP share: HUD's USPS TRACT_ZIP residential ratio (2010-vintage quarters through 2018,
-  averaged), how much of the tract lies in each ZIP it fans to.
+- ZIP share: HUD's USPS TRACT_ZIP residential ratio, how much of the tract lies in each
+  ZIP it fans to, averaged over the quarters of the census the loan's tracts come from
+  (2000-census quarters 2010–2011 for 2010–2011 loans, 2010-census quarters through 2018
+  after).
 - Rate: HMDA `rate_spread` (APR − APOR, reported when ≥ 1.5pp) against the FHA note rate,
   net of the month's median offset on round-1 pairs, since neither source carries APOR or
   the lock date.
@@ -292,7 +298,7 @@ reads `provenance = 'name_only'`.
 Learned out of sample (each year's entries from other years' round-1 pairs only) and run as
 an additive pass over the leftovers, it adds 1.67pp (157,143 pairs). It does not ship: a route
 fitted on the crosswalk's own pairs makes the bridge depend on the crosswalk it feeds. Only
-the name route ships, and its 74.0% (rounds 1–2) is free of that circularity by
+the name route ships, and its 74.1% (rounds 1–2) is free of that circularity by
 construction: `build_name_route` takes `(fha_silver_dir, hmda_panel_dir, hmda_loans_dir)`
 and has no parameter through which a crosswalk could arrive. A learned route, if added,
 must take the pairs as a required argument.
@@ -317,10 +323,10 @@ removed inconsistent candidates and a 1:1 cell emerged; round 3 is the margin re
 
 ### Unioning the two eras
 
-Each file is 1:1, but 3,104 `FHA_Index` values appear in both (0.044% of the pre-2018
+Each file is 1:1, but 3,118 `FHA_Index` values appear in both (0.044% of the pre-2018
 file). All sit at the boundary: HMDA activity year 2017 on the pre-2018 side, against FHA
-endorsements in November 2017 (521), December 2017 (596) and January 2018 (1,987), months
-both eras' windows admit; 110 come from pre-2018 round 3. Both pairs cannot be right, so the
+endorsements in November 2017 (526), December 2017 (601) and January 2018 (1,991), months
+both eras' windows admit; 109 come from pre-2018 round 3. Both pairs cannot be right, so the
 [master crosswalk](master_crosswalk.md) withholds its FHA link on every one
 (`conflict_flags` reason `fha_cross_era`). `HMDAIndex` overlap is zero. A consumer who
 globs both files and assumes global 1:1 on `FHA_Index` must deduplicate; joining per era or
@@ -339,9 +345,10 @@ Both eras run every round in `rounds.py`, which `info` prints; to try a round, c
 there and change its fields. `--overwrite` rebuilds the prepared intermediates; without it
 they are reused. Pre-2018 intermediates prepared before round 3 existed lack the columns it
 reads (HMDA `census_tract` and `rate_spread`, FHA `Interest Rate`), and the run stops with
-an error naming `--overwrite`. `build-zip-tract` takes a census vintage, not a year, so
-`build-zip-tract 2010` serves the whole pre-2018 era. Era settings live on
-`HMDAFHAMatchingConfig`; the pre-2018 ones carry a `PRE2018_` prefix.
+an error naming `--overwrite`. Both eras read a ZIP-tract crosswalk per census vintage
+(2000, 2010 and 2020 tracts), chosen by HMDA activity year and built on demand;
+`run --step zip-tract --overwrite` rebuilds them after a USPS crosswalk refresh. Era
+settings live on `HMDAFHAMatchingConfig`; the pre-2018 ones carry a `PRE2018_` prefix.
 
 ## Results
 
@@ -352,17 +359,17 @@ an error naming `--overwrite`. `build-zip-tract` takes a census vintage, not a y
 | FHA endorsements, 2018–2025 | 8,098,782 |
 | HMDA FHA originations, all | 8,277,066 |
 | HMDA FHA originations, eligible (non-reverse, ≤4 units) | 7,994,791 |
-| Pairs | 7,261,866 |
-| Round 1 | 6,824,090 |
-| Round 2 | 437,776 |
-| FHA-side rate (7,195,638 pairs on 2018–2025 endorsements) | 88.8% |
+| Pairs | 7,260,553 |
+| Round 1 | 6,822,148 |
+| Round 2 | 438,405 |
+| FHA-side rate (7,194,304 pairs on 2018–2025 endorsements) | 88.8% |
 | HMDA-side rate, all FHA originations | 87.7% |
 | HMDA-side rate, eligible | 90.8% |
 
-The FHA-side numerator excludes the 66,228 pairs whose endorsement falls outside
-2018–2025 (the HMDA side's cross-year matches), so it is not 7,261,866 / 8,098,782.
+The FHA-side numerator excludes the 66,249 pairs whose endorsement falls outside
+2018–2025 (the HMDA side's cross-year matches), so it is not 7,260,553 / 8,098,782.
 
-Round 1 produces 94.0% of pairs. Counts are from the 2026-10-21 build.
+Round 1 produces 94.0% of pairs. Counts are from the 2026-10-23 build.
 
 ### Pre-2018 (2010–2017)
 
@@ -372,18 +379,18 @@ denominator is that year's February Y – January Y+1 window.
 
 | Year | HMDA FHA orig. | FHA in window | Months | Pool ratio | Round 1 | Round 2 | Round 3 | Pairs | HMDA-side | FHA-side |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 2010 | 1,437,916 | 1,141,416 | **9** | 0.794 | 370,466 | 369,704 | 13,374 | 753,544 | 52.4% | 66.0% |
-| 2011 | 1,074,237 | 1,065,919 | 12 | 0.992 | 369,627 | 420,316 | 14,129 | 804,072 | 74.9% | 75.4% |
-| 2012 | 1,305,118 | 1,314,381 | 12 | 1.007 | 443,781 | 571,502 | 14,996 | 1,030,279 | 78.9% | 78.4% |
-| 2013 | 1,107,275 | 1,136,365 | 12 | 1.026 | 405,011 | 476,985 | 20,198 | 902,194 | 81.5% | 79.4% |
-| 2014 | 789,989 | 780,351 | 12 | 0.988 | 304,494 | 325,494 | 16,496 | 646,484 | 81.8% | 82.8% |
-| 2015 | 1,232,830 | 1,238,943 | 12 | 1.005 | 409,488 | 567,721 | 18,472 | 995,681 | 80.8% | 80.4% |
-| 2016 | 1,322,426 | 1,319,321 | 12 | 0.998 | 411,833 | 618,754 | 21,294 | 1,051,881 | 79.5% | 79.7% |
-| 2017 | 1,157,253 | 1,151,586 | 12 | 0.995 | 378,687 | 532,351 | 23,564 | 934,602 | 80.8% | 81.2% |
-| **Total** | 9,427,044 | 9,148,282 | — | 0.970 | 3,093,387 | 3,882,827 | 142,523 | **7,118,737** | **75.5%** | **77.8%** |
+| 2010 | 1,437,916 | 1,141,416 | **9** | 0.794 | 382,952 | 363,040 | 12,079 | 758,071 | 52.7% | 66.4% |
+| 2011 | 1,074,237 | 1,065,919 | 12 | 0.992 | 380,776 | 412,412 | 13,562 | 806,750 | 75.1% | 75.7% |
+| 2012 | 1,305,118 | 1,314,381 | 12 | 1.007 | 441,773 | 572,817 | 15,193 | 1,029,783 | 78.9% | 78.3% |
+| 2013 | 1,107,275 | 1,136,365 | 12 | 1.026 | 403,367 | 478,000 | 20,466 | 901,833 | 81.4% | 79.4% |
+| 2014 | 789,989 | 780,351 | 12 | 0.988 | 303,377 | 326,259 | 16,579 | 646,215 | 81.8% | 82.8% |
+| 2015 | 1,232,830 | 1,238,943 | 12 | 1.005 | 407,710 | 568,958 | 18,657 | 995,325 | 80.7% | 80.3% |
+| 2016 | 1,322,426 | 1,319,321 | 12 | 0.998 | 410,111 | 619,833 | 21,476 | 1,051,420 | 79.5% | 79.7% |
+| 2017 | 1,157,253 | 1,151,586 | 12 | 0.995 | 377,151 | 533,287 | 23,679 | 934,117 | 80.7% | 81.1% |
+| **Total** | 9,427,044 | 9,148,282 | — | 0.970 | 3,107,217 | 3,874,606 | 141,691 | **7,123,514** | **75.6%** | **77.9%** |
 
-Round 1 alone is 32.8% of HMDA FHA originations; the bridge (round 2) adds 41.2 points and
-round 3 1.5, so rounds 1–2 total 6,976,214 (74.0%). 48,543 round-3 pairs were endorsed in
+Round 1 alone is 33.0% of HMDA FHA originations; the bridge (round 2) adds 41.1 points and
+round 3 1.5, so rounds 1–2 total 6,981,823 (74.1%). 48,662 round-3 pairs were endorsed in
 January Y; they are counted in their HMDA activity year although the record belongs to the
 previous year's window, which leaves the all-years FHA-side rate unchanged.
 
@@ -413,21 +420,21 @@ coverage ramps up.
 ![State Match Rate Map](figures/hmda_fha_state_match_rate_map.png)
 
 Most states fall in the high eighties to low nineties, with CA, FL and TX at the low end
-and WY lowest. State volume against match rate: Spearman −0.226 (p = 0.11) FHA-side and
-−0.111 (p = 0.44) HMDA-side, weak and not significant; the volume axis is log-scaled
+and WY lowest. State volume against match rate: Spearman −0.228 (p = 0.11) FHA-side and
+−0.114 (p = 0.42) HMDA-side, weak and not significant; the volume axis is log-scaled
 because volume spans two orders of magnitude.
 
 ![County Match Rate Map](figures/hmda_fha_county_match_rate_map.png)
 
 Counties (≥ 50 loans, territories excluded) vary more, consistently across the two sides.
-County volume against match rate is moderately negative: −0.540 (p < 0.0001, n = 2,817)
+County volume against match rate is moderately negative: −0.541 (p < 0.0001, n = 2,817)
 FHA-side and −0.525 (p < 0.0001, n = 2,819) HMDA-side, so larger counties match somewhat
 worse.
 
 - **Loan amount:** both sides sit around 88–95% above about $50K; the thin tail of very
   small loans matches far worse. Most FHA loans are $100K–$400K.
 - **Interest rate:** flat; the HMDA side falls above about 8.5%, where there are few loans.
-- **Purpose:** purchase 87.9% FHA-side / 90.2% HMDA-side; refinance 91.0% / 92.8%.
+- **Purpose:** purchase 87.9% FHA-side / 90.2% HMDA-side; refinance 91.0% / 92.7%.
 - **Rate type:** fixed 88.8% / 91.1%; ARM 91.2% / 82.9%. Rate type is neither a key nor a
   filter. The 8-point opposite-direction gap for ARMs, a small share of FHA volume, is
   most likely a coding disagreement between the sources (the HMDA denominator counts
@@ -462,14 +469,14 @@ the pairing:
 
 | Bridge | Pairs | Recovered above baseline |
 |---|---:|---:|
-| None (baseline) | 3,093,387 | — |
-| Real | 6,976,214 | **+41.19pp** |
-| Permuted, seed 0 | 3,101,148 | +0.08pp |
-| Permuted, seed 1 | 3,105,953 | +0.13pp |
-| Permuted, seed 2 | 3,103,680 | +0.11pp |
-| Size-matched permutation (within FHA-volume deciles) | 3,180,984 | +0.93pp |
+| None (baseline) | 3,107,217 | — |
+| Real | 6,981,823 | **+41.10pp** |
+| Permuted, seed 0 | 3,114,982 | +0.08pp |
+| Permuted, seed 1 | 3,119,734 | +0.13pp |
+| Permuted, seed 2 | 3,117,485 | +0.11pp |
+| Size-matched permutation (within FHA-volume deciles) | 3,194,787 | +0.93pp |
 
-Permuted bridges recover 0.08–0.13pp against 41.2pp, a factor of 300 or more. The
+Permuted bridges recover 0.08–0.13pp against 41.1pp, a factor of 300 or more. The
 size-matched control, which pairs large lenders with other large lenders' respondents,
 reaches 0.93pp, so the gain is not a large-lender artifact. The mechanism is identity.
 
@@ -478,21 +485,21 @@ is a frozen crosswalk with no generating code, the only independent reference av
 
 | Year | Frozen rows | Comparable pairs | Agreement | Round-2 pairs | Round-2 agreement |
 |---:|---:|---:|---:|---:|---:|
-| 2010 | 865,002 | 706,788 | 99.94% | 342,628 | 99.95% |
-| 2011 | 750,070 | 703,309 | 99.91% | 365,081 | 99.90% |
-| 2012 | 981,221 | 925,754 | 99.88% | 513,831 | 99.86% |
-| 2013 | 896,965 | 859,539 | 99.88% | 452,597 | 99.86% |
-| 2014 | 645,145 | 615,933 | 99.85% | 309,146 | 99.82% |
-| 2015 | 1,004,173 | 950,903 | 99.85% | 540,976 | 99.83% |
-| 2016 | 1,051,254 | 1,001,329 | 99.86% | 587,781 | 99.84% |
-| 2017 | 926,791 | 892,479 | 99.93% | 509,686 | 99.92% |
-| **Total** | 7,120,621 | 6,656,034 | **99.89%** | 3,621,726 | **99.87%** |
+| 2010 | 865,002 | 709,382 | 99.94% | 335,272 | 99.95% |
+| 2011 | 750,070 | 703,640 | 99.91% | 356,844 | 99.90% |
+| 2012 | 981,221 | 925,618 | 99.88% | 515,362 | 99.86% |
+| 2013 | 896,965 | 859,480 | 99.88% | 453,871 | 99.86% |
+| 2014 | 645,145 | 615,889 | 99.85% | 310,077 | 99.82% |
+| 2015 | 1,004,173 | 950,889 | 99.85% | 542,478 | 99.83% |
+| 2016 | 1,051,254 | 1,001,350 | 99.86% | 589,258 | 99.85% |
+| 2017 | 926,791 | 892,324 | 99.93% | 510,912 | 99.92% |
+| **Total** | 7,120,621 | 6,658,572 | **99.89%** | 3,614,074 | **99.87%** |
 
-Measured 2026-10-22: on round-2 pairs, where the bridge decided, a uniform draw among the
+Measured 2026-10-24: on round-2 pairs, where the bridge decided, a uniform draw among the
 round's base-key candidates for the loan (before the bridge filter, 3.19 per loan) would
-agree 45.94% of the time. When the frozen record is among the candidates at all, rounds
-1–2 select it in 6,548,810 of 6,548,845 cases (99.9995%). Round 1 agrees 99.92% on the
-2,934,059 pairs it shares with the reference, and round 3 99.51% on 100,249. The reference
+agree 45.88% of the time. When the frozen record is among the candidates at all, rounds
+1–2 select it in 6,552,367 of 6,552,401 cases (99.9995%). Round 1 agrees 99.92% on the
+2,945,293 pairs it shares with the reference, and round 3 99.51% on 99,205. The reference
 presumably used a similar method, so this measures reproducibility, not correctness. The
 comparison needs a split key (2010–2016 rows key on `(respondent_id, agency_code,
 sequence_number)`, 2017 on `HMDAIndex`) and a one-position endorsement-index offset between
@@ -503,20 +510,20 @@ respondent, against a control that permutes the FHA side within the year:
 
 | Year | Round | Pairs | Modal share | Shuffled | Held out |
 |---:|---:|---:|---:|---:|---|
-| 2012 | 1 | 443,781 | 98.28% | 12.61% | yes |
-| 2012 | 2 | 571,502 | 98.28% | 10.09% | no |
-| 2012 | 3 | 14,996 | 95.75% | 16.39% | yes |
-| 2015 | 1 | 409,488 | 98.94% | 11.01% | yes |
-| 2015 | 2 | 567,721 | 98.92% | 5.62% | no |
-| 2015 | 3 | 18,472 | 97.38% | 13.72% | yes |
+| 2012 | 1 | 441,773 | 98.27% | 12.62% | yes |
+| 2012 | 2 | 572,817 | 98.29% | 10.08% | no |
+| 2012 | 3 | 15,193 | 95.72% | 16.28% | yes |
+| 2015 | 1 | 407,710 | 98.94% | 11.03% | yes |
+| 2015 | 2 | 568,958 | 98.92% | 5.64% | no |
+| 2015 | 3 | 18,657 | 97.38% | 13.76% | yes |
 
 Rounds 1 and 3 never read lender identity, so their 95.7–98.9% against 11–16% shuffled is
 genuine confirmation; an FHA lender maps to a median of 1 HMDA respondent in the matched
-set against 32–34 under shuffling. For round 2 the statistic is true by construction once
+set against 32–33 under shuffling. For round 2 the statistic is true by construction once
 the bridge is a key and carries no information; its precision evidence is the placebo and
 the frozen reference.
 
-**County.** County is not a key, and 99.66% of round 1–2 pairs agree on 5-digit county
+**County.** County is not a key, and 99.67% of round 1–2 pairs agree on 5-digit county
 FIPS. Round 3 uses county as evidence, so it is not held out there; with it, the whole
 crosswalk agrees 99.67%.
 
@@ -525,18 +532,18 @@ field none of its rules reads: HMDA's co-applicant flag against the borrower cou
 GNMA loan the FHA record reaches. The FHA-GNMA link is the one used post-2018 (state,
 $1k-floored amount, exact rate, endorsement from 1 month before to 3 after GNMA
 origination, kept only when 1:1); GNMA disclosures carry the origination date from April
-2015, so it reaches 8–11% of 2015–2017 endorsements. Measured 2026-10-22:
+2015, so it reaches 8–11% of 2015–2017 endorsements. Measured 2026-10-24:
 
 | Population | Pairs | Borrowers agree (n) | Frozen reference agrees (n) |
 |---|---:|---:|---:|
-| Round 1 | 3,093,387 | 98.38% (171,684) | 99.92% (2,934,059) |
-| Round 2 | 3,882,827 | 98.14% (119,183) | 99.87% (3,621,726) |
-| Round 3 | 142,523 | 97.76% (6,688) | 99.51% (100,249) |
-| … endorsed in January Y | 48,543 | 97.37% (2,278) | 99.56% (40,159) |
-| … inside the base window | 93,980 | 97.96% (4,410) | 99.48% (60,090) |
-| Random pairs, same year and state | 3,093,387 | 52.24% (171,684) | 0.02% |
+| Round 1 | 3,107,217 | 98.39% (171,178) | 99.92% (2,945,293) |
+| Round 2 | 3,874,606 | 98.13% (119,577) | 99.87% (3,614,074) |
+| Round 3 | 141,691 | 97.75% (6,748) | 99.51% (99,205) |
+| … endorsed in January Y | 48,662 | 97.28% (2,283) | 99.57% (40,242) |
+| … inside the base window | 93,029 | 97.98% (4,465) | 99.47% (58,963) |
+| Random pairs, same year and state | 3,107,217 | 52.23% (171,178) | 0.02% |
 
-Round 3 and both its parts sit within a point of rounds 1 and 2, against 52% for random
+Round 3 and both its parts sit within 1.1 points of rounds 1 and 2, against 52% for random
 pairs. The frozen reference also pairs endorsements from February–June of the following
 year; the 2,713 of them the link reaches agree on borrowers 97.2%. Extending round 3's
 window to June Y+1 adds 86,108 pairs and destroys 17,717; the added pairs agree on
@@ -553,18 +560,18 @@ higher-income. Round 1 alone against everything else:
 |---|---|---|
 | Race = 5 (White) | 79.4% / 78.6% (+0.8pp) | 76.7% / 76.2% (+0.4pp) |
 | Ethnicity = 2 (not Hispanic) | 81.5% / 78.1% (+3.4pp) | 78.1% / 73.5% (+4.6pp) |
-| Sex = 1 (Male) | 64.4% / 61.5% (+2.9pp) | 61.2% / 60.9% (+0.3pp) |
-| Median income | $67k / $56k (+$11k) | $64k / $59k (+$5k) |
+| Sex = 1 (Male) | 64.5% / 61.5% (+2.9pp) | 61.2% / 60.9% (+0.3pp) |
+| Median income | $67k / $56k (+$11k) | $64k / $58k (+$6k) |
 
 The published crosswalk (rounds 1–3) against unmatched loans:
 
 | | 2012 matched / unmatched | 2015 matched / unmatched |
 |---|---|---|
 | Race = 5 (White) | 79.0% / 78.4% (+0.6pp) | 76.4% / 76.4% (−0.1pp) |
-| Ethnicity = 2 (not Hispanic) | 79.5% / 78.3% (+1.2pp) | 75.4% / 73.3% (+2.1pp) |
+| Ethnicity = 2 (not Hispanic) | 79.5% / 78.4% (+1.2pp) | 75.4% / 73.3% (+2.1pp) |
 | Sex = 1 (Male) | 63.2% / 60.0% (+3.1pp) | 61.0% / 60.7% (+0.4pp) |
 | Median income | $61k / $53k (+$8k) | $61k / $57k (+$4k) |
-| Loans | 1,030,279 / 274,839 | 995,681 / 237,149 |
+| Loans | 1,029,783 / 275,335 | 995,325 / 237,505 |
 
 The likely mechanism is mechanical: drop-all-ambiguous keeps loans in sparse cells
 (unusual amounts, less dense ZIPs), and denser urban ZIPs have both more competing loans
@@ -573,33 +580,33 @@ not remove it, and the 2012 sex gap widens slightly; round 3 leaves it about whe
 did (2012 ethnicity gap +1.0pp to +1.2pp). Distributional work (pricing, denial or
 steering by race, ethnicity or income) must weight or condition on this.
 
-**Time and geography.** From 2011 both sides sit in a 74.9–82.8% band and track each other,
+**Time and geography.** From 2011 both sides sit in a 75.1–82.8% band and track each other,
 as the pool ratios predict (within 2.6% outside 2010).
 
 ![State Match Rate Map](figures/hmda_fha_pre2018_state_match_rate_map.png)
 
-State volume against match rate is negligible: Spearman −0.116 (FHA) and +0.124 (HMDA).
+State volume against match rate is negligible: Spearman −0.118 (FHA) and +0.121 (HMDA).
 
 ![County Match Rate Map](figures/hmda_fha_pre2018_county_match_rate_map.png)
 
 County volume against match rate (≥ 50 loans, territories excluded) is moderately to
-strongly negative: −0.578 (FHA, n = 2,752, p < 1e-200) and −0.419 (HMDA, n = 2,779,
-p < 1e-100). That is slightly stronger than post-2018 and than rounds 1–2 alone (−0.545 /
-−0.396), so round 3's gains are not concentrated in dense counties. It is the geographic
+strongly negative: −0.573 (FHA, n = 2,752, p < 1e-200) and −0.410 (HMDA, n = 2,780,
+p < 1e-100). That is slightly stronger than post-2018 and than rounds 1–2 alone (−0.544 /
+−0.393), so round 3's gains are not concentrated in dense counties. It is the geographic
 face of the same mechanism as the selection bias.
 
-**Purpose.** Share of HMDA loans matched, over the 9,382,001 HMDA FHA originations whose
+**Purpose.** Share of HMDA loans matched, over the 9,380,639 HMDA FHA originations whose
 tract joins a ZIP (the raw total is 9,427,044; the purpose split needs the prepared pool):
 
 | Purpose | HMDA loans | Matched | Rate |
 |---|---:|---:|---:|
-| Purchase | 6,096,261 | 4,640,661 | 76.1% |
-| Refinance | 3,181,739 | 2,478,076 | 77.9% |
-| Other (home improvement) | 104,001 | 0 | 0.0% |
+| Purchase | 6,095,618 | 4,644,682 | 76.2% |
+| Refinance | 3,181,080 | 2,478,832 | 77.9% |
+| Other (home improvement) | 103,941 | 0 | 0.0% |
 
 FHA silver's `Loan Purpose` takes only `Purchase`, `Refi_FHA` and `Refi_Conv_Curr`, so
 home-improvement loans (1.10% of the denominator) have no counterpart; matching them to
-refinances would manufacture false pairs. With no rate key, this era reaches 75.5% against
+refinances would manufacture false pairs. With no rate key, this era reaches 75.6% against
 90.8% of eligible loans post-2018.
 
 **Negative results.** Property type has no lift: 97.5% concordant matched against 97.5%
@@ -611,18 +618,18 @@ agreement test on them is possible.
 ## Limitations
 
 1. **Larger counties match worse in both eras** (Spearman −0.54 / −0.53 post-2018,
-   −0.58 / −0.42 pre-2018): take care with sub-state geography.
+   −0.57 / −0.41 pre-2018): take care with sub-state geography.
 2. **Post-2018 exclusions:** reverse mortgages and properties over 4 units are excluded,
    and a loan with an exempt rate (−99999) cannot match.
-3. **Pre-2018 2010 is a nine-month year** (FHA silver starts 2010-05). Its 52.4% is a source
+3. **Pre-2018 2010 is a nine-month year** (FHA silver starts 2010-05). Its 52.7% is a source
    floor; widening the window only costs yield.
 4. **Pre-2018 has no interest rate**, which is why disambiguation comes from lender
-   identity and why the era's ceiling is lower: 24.5% of HMDA FHA originations (2,308,307)
+   identity and why the era's ceiling is lower: 24.4% of HMDA FHA originations (2,303,530)
    are unmatched, most in cells whose candidates share a ZIP and a lender, which nothing in
    pre-2018 HMDA separates, or with no candidate even in the reopened window.
 5. **Pre-2018 selection bias**, quantified above; required reading for distributional work.
 6. **Pre-2018 home-improvement loans (1.10%) cannot match.**
-7. **3,104 `FHA_Index` collisions across the two era files** at the November 2017 –
+7. **3,118 `FHA_Index` collisions across the two era files** at the November 2017 –
    January 2018 boundary; see *Unioning the two eras*.
 8. **No FHA-side borrower demographics**, so no demographic agreement test is possible.
 9. **The pre-2018 crosswalk is content-deterministic, not byte-deterministic**: two runs

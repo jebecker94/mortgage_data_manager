@@ -5,8 +5,8 @@ Each builder assembles one master dataset from the per-source silver layers
 implemented for all three agencies — the two GSEs (FNMA SF Loan-Perf ⋈ FNM_ILLD,
 FHLMC SF origination ⋈ FRE_ILLD, each via its mbs_umbs crosswalk) plus GNMA (a
 single ``dailyllmni`` spine, L->P CUSIP attach), as are ``build_loan_performance``,
-``build_loan_terminations``, ``build_mbs_issuance``, and ``build_mbs_performance``.
-``build_issuer`` is still a ``NotImplementedError`` scaffold.
+``build_loan_terminations``, ``build_loan_outcomes``, ``build_mbs_issuance``, and
+``build_mbs_performance``.
 
 Keep these intentionally few — this package builds a small curated set of
 masters, not the full vendor-style aggregation catalog.
@@ -56,7 +56,7 @@ from mortgage_data_manager.core.dates import (
     yyyymmdd_to_date,
 )
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import recreate_dir, should_process_file
 from mortgage_data_manager.core.reference.gnma_pool_types import (
     GNMA_POOL_TYPES,
     GNMA_PROGRAM_BY_ISSUE_TYPE,
@@ -1455,9 +1455,7 @@ def build_loan_issuance(*, overwrite: bool = False) -> pl.LazyFrame:
         return pl.scan_parquet(str(out_dir))
 
     CombinedConfig.ensure_directories()
-    if out_dir.exists():
-        shutil.rmtree(out_dir)
-    out_dir.mkdir(parents=True)
+    recreate_dir(out_dir)
 
     specs = _gse_specs()
     # Materialize each GSE's UMBS side once (streams; no blocking dedup).
@@ -2344,9 +2342,7 @@ def build_loan_performance(*, overwrite: bool = False) -> pl.LazyFrame:
         return pl.scan_parquet(str(out_dir))
 
     CombinedConfig.ensure_directories()
-    if out_dir.exists():
-        shutil.rmtree(out_dir)
-    out_dir.mkdir(parents=True)
+    recreate_dir(out_dir)
 
     specs = _gse_perf_specs()
     temps: dict[str, Path] = {}
@@ -2404,9 +2400,7 @@ def build_loan_terminations(*, overwrite: bool = False) -> pl.LazyFrame:
         return pl.scan_parquet(str(out_dir))
 
     CombinedConfig.ensure_directories()
-    if out_dir.exists():
-        shutil.rmtree(out_dir)
-    out_dir.mkdir(parents=True)
+    recreate_dir(out_dir)
 
     specs = _gse_perf_specs()
     per_agency = [_gse_term_canon_schema(spec) for spec in specs]
@@ -2662,13 +2656,9 @@ def build_loan_outcomes(*, overwrite: bool = False) -> pl.LazyFrame:
             raise FileNotFoundError(f"loan_outcomes needs {required.name} built first: {required}")
 
     CombinedConfig.ensure_directories()
-    if out_dir.exists():
-        shutil.rmtree(out_dir)
-    out_dir.mkdir(parents=True)
+    recreate_dir(out_dir)
     tmp_dir = CombinedConfig.COMBINED_DATA_DIR / "_tmp_loan_outcomes"
-    if tmp_dir.exists():
-        shutil.rmtree(tmp_dir)
-    tmp_dir.mkdir(parents=True)
+    recreate_dir(tmp_dir)
 
     terminations = pl.scan_parquet(str(term_dir), hive_partitioning=True).select(
         "agency", "loan_key", "zero_balance_code", "upb_at_removal", "actual_loss"
@@ -3524,9 +3514,7 @@ def build_mbs_issuance(*, overwrite: bool = False) -> pl.LazyFrame:
         return pl.scan_parquet(str(out_dir))
 
     CombinedConfig.ensure_directories()
-    if out_dir.exists():
-        shutil.rmtree(out_dir)
-    out_dir.mkdir(parents=True)
+    recreate_dir(out_dir)
 
     umbs = MortgageDataConfig.get_subpackage_data_dir("umbs") / "silver"
     gnma = MortgageDataConfig.get_subpackage_data_dir("gnma") / "silver"
@@ -4118,9 +4106,7 @@ def build_mbs_performance(*, overwrite: bool = False) -> pl.LazyFrame:
         return pl.scan_parquet(str(out_dir))
 
     CombinedConfig.ensure_directories()
-    if out_dir.exists():
-        shutil.rmtree(out_dir)
-    out_dir.mkdir(parents=True)
+    recreate_dir(out_dir)
 
     canon = pl.Schema(CANONICAL_MBS_PERFORMANCE_SCHEMA)
     umbs = MortgageDataConfig.get_subpackage_data_dir("umbs")
@@ -4138,9 +4124,7 @@ def build_mbs_performance(*, overwrite: bool = False) -> pl.LazyFrame:
     # so we cannot derive per file). Reindex each chunk to the canonical union so
     # the temp tree scans as one uniform table.
     tmp_dir = out_dir.parent / "_mbs_performance_tmp"
-    if tmp_dir.exists():
-        shutil.rmtree(tmp_dir)
-    tmp_dir.mkdir(parents=True)
+    recreate_dir(tmp_dir)
 
     logger.info("Building combined mbs_performance (FNMA + FHLMC + GNMA) -> %s", out_dir)
 
@@ -4442,21 +4426,6 @@ def build_mbs_performance(*, overwrite: bool = False) -> pl.LazyFrame:
     return pl.scan_parquet(str(out_dir))
 
 
-def build_issuer(*, overwrite: bool = False) -> pl.LazyFrame:
-    """Build the issuer master / cross-source identity crosswalk.
-
-    Args:
-        overwrite: Rebuild if the output already exists.
-
-    Returns:
-        The combined LazyFrame.
-
-    Raises:
-        NotImplementedError: Placeholder.
-    """
-    raise NotImplementedError("combined.build_issuer is a scaffold.")
-
-
 #: Builder dispatch for the datasets this package actually builds.
 BUILDERS = {
     "loan_issuance": build_loan_issuance,
@@ -4465,7 +4434,6 @@ BUILDERS = {
     "loan_outcomes": build_loan_outcomes,
     "mbs_issuance": build_mbs_issuance,
     "mbs_performance": build_mbs_performance,
-    "issuer": build_issuer,
 }
 
 

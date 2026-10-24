@@ -4,55 +4,37 @@
 helpers, downloads and the raw download ledger, logging, type and date helpers,
 reference tables used by more than one source, and geocoding.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.core.config
-
----
 
 ## Medallion architecture
 
 ::: mortgage_data_manager.core.medallion
 
----
-
 ## Logging
 
 ::: mortgage_data_manager.core.logging
-
----
 
 ## Downloads
 
 ::: mortgage_data_manager.core.download
 
----
-
 ## Raw download ledger
 
 ::: mortgage_data_manager.core.download_ledger
-
----
 
 ## Types and silver specs
 
 ::: mortgage_data_manager.core.types
 
----
-
 ## Dates
 
 ::: mortgage_data_manager.core.dates
 
----
-
 ## Scalars
 
 ::: mortgage_data_manager.core.scalars
-
----
 
 ## Reference tables
 
@@ -70,8 +52,6 @@ reference tables used by more than one source, and geocoding.
 
 ::: mortgage_data_manager.core.reference.avery
 
----
-
 ## Geocoding
 
 ::: mortgage_data_manager.core.geocoding.api
@@ -79,8 +59,6 @@ reference tables used by more than one source, and geocoding.
 ::: mortgage_data_manager.core.geocoding.providers
 
 ::: mortgage_data_manager.core.geocoding.cache
-
----
 
 ## Example
 
@@ -108,8 +86,6 @@ if should_process_file(out_dir, overwrite=False):
     write_hive_partitioned(lf, out_dir, partition_cols=["Year"])
     logger.info("Wrote %s", out_dir)
 ```
-
----
 
 ## See Also
 

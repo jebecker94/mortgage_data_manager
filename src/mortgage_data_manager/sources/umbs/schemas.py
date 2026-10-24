@@ -55,7 +55,7 @@ _HERE = Path(__file__).parent
 _SCHEMAS_YAML = _HERE / "schemas.yaml"
 _ALIASES_YAML = _HERE / "spec_aliases.yaml"
 _DISCOVERED_YAML = _HERE / "schemas_discovered.yaml"
-_GLOSSARY_PATH = UMBSConfig.PROJECT_DIR / "schemas" / "umbs" / "mbsglossary.xlsx"
+_GLOSSARY_PATH = UMBSConfig.SCHEMAS_DIR / "umbs" / "mbsglossary.xlsx"
 
 # Polars dtype <-> YAML name. We only persist the three dtypes that appear
 # in UMBS disclosure feeds — String, Int64, Float64. Dates and decimals are

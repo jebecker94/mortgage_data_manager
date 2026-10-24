@@ -25,7 +25,7 @@ from mortgage_data_manager.sources.usps_crosswalk.config import (
     RATIO_COLUMNS,
     USPSCrosswalkConfig,
 )
-from mortgage_data_manager.sources.usps_crosswalk.download import validate_datasets
+from mortgage_data_manager.sources.usps_crosswalk.download import resolve_datasets
 
 logger = get_logger(__name__)
 
@@ -172,7 +172,7 @@ def build_bronze(
             f"`min_year` must be <= `max_year`. Received min_year={min_year}, max_year={max_year}."
         )
 
-    types = validate_datasets(datasets)
+    types = resolve_datasets(datasets)
     written: dict[str, int] = {}
     for type_name in types:
         n = build_bronze_type(type_name, min_year=min_year, max_year=max_year, overwrite=overwrite)

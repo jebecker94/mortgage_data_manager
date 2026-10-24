@@ -1,7 +1,5 @@
 # FNMA API Reference
 
-API reference for the FNMA (Fannie Mae - Federal National Mortgage Association) subpackage.
-
 FNMA data cannot be fetched programmatically: register on Fannie Mae's Data Dynamics portal
 and download the files by hand (`mortgage-data fnma download` prints the steps). The package
 covers the single-family primary dataset (acquisitions 2000Q1 to the latest release), the
@@ -11,8 +9,6 @@ files from `schemas/fnma/sf_loan_layout.csv`, the field positions, names, types 
 transcribed from the "Combined Glossary" sheet of Fannie Mae's CRT file layout and glossary
 workbook (linked from the page below).
 
----
-
 ## Source documentation
 Fannie Mae publishes the dataset documentation on its
 [Single-Family Loan Performance Data page](https://capitalmarkets.fanniemae.com/credit-risk-transfer/fannie-mae-single-family-loan-performance-data):
@@ -20,44 +16,25 @@ the FAQs, the CRT glossary and file layout, the statistical summaries for the pr
 HARP datasets, and the R import code. The page also links to Data Dynamics, where the data
 is downloaded.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.fnma.config
-
----
 
 ## Download
 
 ::: mortgage_data_manager.sources.fnma.download
 
----
-
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.fnma.import_bronze
-
----
 
 ## Silver layer
 
 ::: mortgage_data_manager.sources.fnma.import_silver
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.fnma.pipeline
-
----
-
-## CLI
-Commands, options and examples for `mortgage-data fnma` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-fnma). `mortgage-data fnma --help` is
-authoritative.
-
----
 
 ## Complete Example
 ```python
@@ -74,8 +51,6 @@ Bronze datasets: `sf`, `exclusions`, `harp`, `multifamily` (the defaults) and th
 `performance_all`, which reads `Performance_All.zip`, the only source of the pre-2016
 history. Silver datasets: `issuances` (which also writes `terminations`), `performance`,
 `harp` and `multifamily`.
-
----
 
 ## Data Structure
 ### Directory Layout
@@ -113,8 +88,6 @@ header row, so column names and dtypes come from the layout workbook rather than
 from the file. The multifamily files differ on every one of those points: they
 are comma-delimited, they carry a header, and dollar amounts arrive as
 `"$1,234.56"` strings with parenthesized negatives.
-
----
 
 ## See Also
 - [Core API](core.md) - Shared utilities and medallion architecture

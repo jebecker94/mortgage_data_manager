@@ -39,14 +39,17 @@ parquet directly sees whichever era wrote the file. See the Release 47 notes in
 
 from __future__ import annotations
 
-import shutil
 from collections.abc import Iterable
 from pathlib import Path
 
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file, write_hive_partitioned
+from mortgage_data_manager.core.medallion import (
+    clear_partitions,
+    should_process_file,
+    write_hive_partitioned,
+)
 from mortgage_data_manager.core.types import apply_silver_types, enforce_schema
 from mortgage_data_manager.sources.fhlmc.config import (
     FHLMC_CRT_SILVER,
@@ -401,8 +404,7 @@ def import_crt_to_silver(
         logger.info("Skipping CRT silver (%s partitions exist; use overwrite)", len(existing))
         counts["skipped"] = len(bronze_files)
         return counts
-    for partition in existing:
-        shutil.rmtree(partition)
+    clear_partitions(silver_dir, existing)
 
     logger.info("Building CRT silver from %s deal files -> %s", len(bronze_files), silver_dir)
     lf = pl.concat([pl.scan_parquet(f) for f in bronze_files], how="diagonal_relaxed")

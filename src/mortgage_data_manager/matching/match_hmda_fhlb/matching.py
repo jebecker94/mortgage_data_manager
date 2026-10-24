@@ -22,7 +22,10 @@ from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.core.reference import to_planning_region
 from mortgage_data_manager.core.scalars import scalar_int
 from mortgage_data_manager.core.types import null_sentinels
-from mortgage_data_manager.matching.match_hmda_fhlb import config
+from mortgage_data_manager.matching.match_hmda_fhlb.config import (
+    HMDA_POST2018_COLS,
+    HMDAFHLBMatchingConfig,
+)
 from mortgage_data_manager.matching.match_hmda_fhlb.rounds import (
     ROUNDS_POST2018,
     ROUNDS_PRE2018,
@@ -282,7 +285,7 @@ def _load_all_hmda_originations(max_year: int) -> pl.LazyFrame:
     lf = (
         scan_hmda_years("post2018", 2018, max_year)
         .filter((pl.col("action_taken") == 1) & (pl.col("purchaser_type") != 3))
-        .select(config.HMDA_POST2018_COLS)
+        .select(HMDA_POST2018_COLS)
     )
     # Normalize CT tracts to planning-region convention (HMDA switched in 2024)
     # so they line up with the FHLB side after its own normalization.
@@ -334,13 +337,13 @@ def run_rounds_pre2018(match_folder: Path, crosswalk_folder: Path | None = None)
 
     Args:
         match_folder: Directory containing cleaned data files.
-        crosswalk_folder: Directory for crosswalk outputs. Defaults to config.CROSSWALK_DIR.
+        crosswalk_folder: Directory for crosswalk outputs. Defaults to ``HMDA_FHLB_CROSSWALK_DIR``.
 
     Returns:
         Matched records.
     """
     if crosswalk_folder is None:
-        crosswalk_folder = config.CROSSWALK_DIR
+        crosswalk_folder = HMDAFHLBMatchingConfig.HMDA_FHLB_CROSSWALK_DIR
     crosswalk_folder.mkdir(parents=True, exist_ok=True)
     logger.info("Matching HMDA to FHLB (pre-2018)")
 
@@ -375,13 +378,13 @@ def run_rounds_post2018(match_folder: Path, crosswalk_folder: Path | None = None
 
     Args:
         match_folder: Directory containing cleaned data files.
-        crosswalk_folder: Directory for crosswalk outputs. Defaults to config.CROSSWALK_DIR.
+        crosswalk_folder: Directory for crosswalk outputs. Defaults to ``HMDA_FHLB_CROSSWALK_DIR``.
 
     Returns:
         Matched records from every round, on the columns all rounds share.
     """
     if crosswalk_folder is None:
-        crosswalk_folder = config.CROSSWALK_DIR
+        crosswalk_folder = HMDAFHLBMatchingConfig.HMDA_FHLB_CROSSWALK_DIR
     crosswalk_folder.mkdir(parents=True, exist_ok=True)
 
     # Normalize CT tracts to the planning-region convention on both sides: HMDA switched

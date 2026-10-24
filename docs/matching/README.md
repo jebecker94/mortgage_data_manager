@@ -72,7 +72,7 @@ originations HMDA reports as sold to Fannie Mae or Freddie Mac (`purchaser_type`
 | Crosswalk | Links | Years | Pairs | Match rate |
 |---|---|---|---:|---|
 | [hmda_fha](hmda_fha_matching.md), post-2018 | HMDA FHA originations ↔ FHA endorsements | 2018–2025 | 7.26M | 90.8% of eligible HMDA FHA originations (non-reverse, ≤4 units); 88.8% of FHA endorsements |
-| [hmda_fha](hmda_fha_matching.md), pre-2018 | as above | 2010–2017 | 7.12M | 75.5% of HMDA FHA originations; 77.8% of FHA endorsements |
+| [hmda_fha](hmda_fha_matching.md), pre-2018 | as above | 2010–2017 | 7.12M | 75.6% of HMDA FHA originations; 77.9% of FHA endorsements |
 | [hmda_fhfa](hmda_fhfa_matching.md), post-2018 | HMDA ↔ FHFA PUDB tract file | 2018–2025 | 32.39M | 96.7% of HMDA GSE-sold; 93.0% of FHFA loans |
 | [hmda_fhfa](hmda_fhfa_matching.md), pre-2018 | as above | 2008–2017 | 33.59M | 84.0% of HMDA GSE-sold; 72.9% of FHFA loans |
 | [hmda_gse](hmda_gse_matching.md), chain | HMDA → FHFA → GSE loan-level → UMBS | 2018–2025 | 16.87M FNMA, 14.23M FHLMC | 92.0% of HMDA sales to Fannie; 92.7% of HMDA sales to Freddie |
@@ -101,7 +101,7 @@ originations HMDA reports as sold to Fannie Mae or Freddie Mac (`purchaser_type`
 
 | Crosswalk | Grain | Years | Rows | Coverage |
 |---|---|---|---:|---|
-| [master](master_crosswalk.md) | one row per HMDA loan any edge reaches | 2018–2025 | 46.44M loans | conventional edge: 96.07% of HMDA GSE-sold. A share of the spine is not an HMDA-wide rate. |
+| [master](master_crosswalk.md) | one row per HMDA loan any edge reaches | 2018–2025 | 46.43M loans | conventional edge: 96.07% of HMDA GSE-sold. A share of the spine is not an HMDA-wide rate. |
 
 ## Reading the rates
 

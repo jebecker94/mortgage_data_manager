@@ -13,13 +13,10 @@ from typing import Any
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.sources.fhfa.config import (
-    BRONZE_DIR,
     FIRST_EXCEL_DICTIONARY_YEAR,
     LAST_FIXED_WIDTH_YEAR,
     LATEST_DATA_YEAR,
-    RAW_DIR,
-    SCHEMAS_DIR,
-    SILVER_DIR,
+    FHFAConfig,
 )
 from mortgage_data_manager.sources.fhfa.download import download_hud_gse_archive
 from mortgage_data_manager.sources.fhfa.import_bronze import (
@@ -64,7 +61,7 @@ def run_schemas(
         skip_extract: Skip PDF extraction step
         skip_convert: Skip PDF/Excel conversion step
         overwrite: Replace existing files
-        dictionary_root: Dictionary root directory (default: SCHEMAS_DIR)
+        dictionary_root: Dictionary root directory (default: FHFAConfig.FHFA_SCHEMAS_DIR)
 
     Returns:
         Dictionary with pipeline results:
@@ -73,7 +70,7 @@ def run_schemas(
         - masters_built: Number of master dictionaries built
         - datasets: List of datasets in master dictionaries
     """
-    dict_root = dictionary_root or SCHEMAS_DIR
+    dict_root = dictionary_root or FHFAConfig.FHFA_SCHEMAS_DIR
     results: dict[str, Any] = {
         "pdfs_extracted": 0,
         "years_converted": 0,
@@ -85,7 +82,9 @@ def run_schemas(
     if not skip_extract:
         logger.info("Step 1: Extracting PDFs from enterprise PUDB zips")
         try:
-            pdfs = extract_enterprise_pudb_pdfs(raw_dir=RAW_DIR, dictionary_root=dict_root)
+            pdfs = extract_enterprise_pudb_pdfs(
+                raw_dir=FHFAConfig.FHFA_RAW_DIR, dictionary_root=dict_root
+            )
             results["pdfs_extracted"] = len(pdfs)
             logger.info("Extracted %s PDF files", len(pdfs))
         except Exception as e:
@@ -173,9 +172,9 @@ def run_data_pipeline(
         skip_bronze: Skip bronze loading step
         skip_silver: Skip silver transformation step
         overwrite: Overwrite existing files
-        raw_dir: Raw data directory (default: RAW_DIR)
-        bronze_dir: Bronze directory (default: BRONZE_DIR)
-        silver_dir: Silver directory (default: SILVER_DIR)
+        raw_dir: Raw data directory (default: FHFAConfig.FHFA_RAW_DIR)
+        bronze_dir: Bronze directory (default: FHFAConfig.FHFA_BRONZE_DIR)
+        silver_dir: Silver directory (default: FHFAConfig.FHFA_SILVER_DIR)
 
     Returns:
         Dictionary with workflow results:
@@ -184,9 +183,9 @@ def run_data_pipeline(
         - failed_bronze: Number of failures in bronze loading
         - failed_silver: Number of failures in silver transformation
     """
-    raw = raw_dir or RAW_DIR
-    bronze = bronze_dir or BRONZE_DIR
-    silver = silver_dir or SILVER_DIR
+    raw = raw_dir or FHFAConfig.FHFA_RAW_DIR
+    bronze = bronze_dir or FHFAConfig.FHFA_BRONZE_DIR
+    silver = silver_dir or FHFAConfig.FHFA_SILVER_DIR
 
     results = {
         "bronze_loaded": 0,

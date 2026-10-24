@@ -13,6 +13,7 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.medallion import clear_partitions, should_process_file
 from mortgage_data_manager.core.reference.ct_planning_region import to_planning_region
 from mortgage_data_manager.matching.match_hmda_sellers_purchasers.config import (
     HMDASellersPurchasersMatchingConfig as Config,
@@ -151,7 +152,8 @@ def _run_round(
     save_folder: Path,
     min_year: int = Config.MIN_YEAR_POST2018,
     max_year: int = Config.MAX_YEAR_POST2018,
-) -> None:
+    overwrite: bool = False,
+) -> bool:
     """Run one round: year by year for a same-year round, pooled otherwise.
 
     Args:
@@ -161,8 +163,20 @@ def _run_round(
         save_folder: Crosswalk directory; earlier rounds' pairs are read from it.
         min_year: First activity year.
         max_year: Last activity year.
+        overwrite: Rebuild the round even if its partition already exists. Only the
+            seller years in ``min_year``-``max_year`` are cleared first.
+
+    Returns:
+        Whether the round ran (False when it was already built).
     """
     data_folder, save_folder = Path(data_folder), Path(save_folder)
+    if not should_process_file(save_folder / f"match_round={number}", overwrite):
+        logger.info("Round %s already built; pass overwrite=True to rebuild", number)
+        return False
+    clear_partitions(
+        save_folder,
+        (f"match_round={number}/activity_year_s={y}" for y in range(min_year, max_year + 1)),
+    )
     logger.info("Starting Round %s: %s", number, config.description)
     if config.years == "same":
         for year in range(min_year, max_year + 1):
@@ -171,6 +185,7 @@ def _run_round(
     else:
         _run_pass(number, config, data_folder, save_folder, min_year, max_year)
     logger.info("Completed Round %s", number)
+    return True
 
 
 def run_round(
@@ -179,7 +194,8 @@ def run_round(
     save_folder: str | Path,
     min_year: int = Config.MIN_YEAR_POST2018,
     max_year: int = Config.MAX_YEAR_POST2018,
-) -> None:
+    overwrite: bool = False,
+) -> bool:
     """Run a single round by its position in `ROUNDS_POST2018`.
 
     Args:
@@ -188,19 +204,24 @@ def run_round(
         save_folder: Crosswalk directory; earlier rounds' pairs are read from it.
         min_year: First activity year.
         max_year: Last activity year.
+        overwrite: Rebuild the round even if it already exists.
+
+    Returns:
+        Whether the round ran (False when it was already built).
 
     Raises:
         ValueError: If ``round_num`` is not a position in `ROUNDS_POST2018`.
     """
     if not 1 <= round_num <= len(ROUNDS_POST2018):
         raise ValueError(f"Invalid round {round_num}. Valid rounds: 1-{len(ROUNDS_POST2018)}")
-    _run_round(
+    return _run_round(
         round_num,
         ROUNDS_POST2018[round_num - 1],
         Path(data_folder),
         Path(save_folder),
         min_year,
         max_year,
+        overwrite,
     )
 
 
@@ -210,6 +231,7 @@ def run_matching(
     min_year: int = Config.MIN_YEAR_POST2018,
     max_year: int = Config.MAX_YEAR_POST2018,
     rounds: list[int] | None = None,
+    overwrite: bool = False,
 ) -> None:
     """Run every round (or the listed ones) in order.
 
@@ -219,8 +241,9 @@ def run_matching(
         min_year: First activity year.
         max_year: Last activity year.
         rounds: Round positions to run; None runs all.
+        overwrite: Rebuild rounds that already exist.
     """
     for number, round_ in enumerate(ROUNDS_POST2018, start=1):
         if not rounds or number in rounds:
             logger.info("Running Round %s: %s", number, round_.description)
-            _run_round(number, round_, data_folder, save_folder, min_year, max_year)
+            _run_round(number, round_, data_folder, save_folder, min_year, max_year, overwrite)

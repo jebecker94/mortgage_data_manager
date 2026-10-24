@@ -45,7 +45,7 @@ from mortgage_data_manager.core.download import (
 )
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.sources.hmda.config import (
-    RAW_DIR,
+    HMDAConfig,
     HMDAProduct,
     HMDARecordType,
     resolve_download_datasets,
@@ -451,7 +451,7 @@ def download_hmda_files(
     Raises:
         ValueError: If an unknown product or record type is given.
     """
-    root = Path(output_dir) if output_dir is not None else RAW_DIR
+    root = Path(output_dir) if output_dir is not None else HMDAConfig.HMDA_RAW_DIR
     root.mkdir(parents=True, exist_ok=True)
 
     files = discover_files(

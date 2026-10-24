@@ -1,51 +1,28 @@
 # UMBS API Reference
 
-API reference for the UMBS (Uniform Mortgage-Backed Securities) subpackage.
-
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.umbs.config
-
----
 
 ## Schemas
 
 ::: mortgage_data_manager.sources.umbs.schemas
 
----
-
 ## Download
 
 ::: mortgage_data_manager.sources.umbs.download
-
----
 
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.umbs.import_bronze
 
----
-
 ## Silver layer
 
 ::: mortgage_data_manager.sources.umbs.import_silver
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.umbs.pipeline
-
----
-
-## CLI
-Commands, options and examples for `mortgage-data umbs` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-umbs). `mortgage-data umbs --help` is
-authoritative.
-
----
 
 ## Complete Example
 ```python
@@ -61,8 +38,6 @@ mortgage-data umbs pipeline
 Raw files are downloaded by hand from Fannie Mae's and Freddie Mac's disclosure portals
 (`mortgage-data umbs download` prints the steps). Bronze is scoped by GSE and raw folder
 (`--gse`, `--folder`), silver by GSE and kind (`--gse`, `--kind`).
-
----
 
 ## Data Structure
 ### Directory Layout
@@ -135,8 +110,6 @@ credit-score and LTV/DTI sentinels null-mapped):
   and `GN_MEGA` have no reissue twin and pass straight through, with `_record_source`
   set to `'original'`.
 
----
-
 ## Reissue (R-) files and the silver layer {#reissue-files}
 GSE disclosure folders come in matched original/reissue pairs:
 
@@ -154,8 +127,6 @@ The `R-` file is a **same-month republication of every pool/security in which an
 multi-record-type files, which bronze splits by record type. The silver merge reads one
 parquet per month, so it does not consume that layout; the ISS pairs stay registered in
 `CORRECTION_PAIRS` but are skipped.
-
----
 
 ## See Also
 - [Core API](core.md) - Shared utilities and medallion architecture

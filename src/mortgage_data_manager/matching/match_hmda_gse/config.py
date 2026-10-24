@@ -78,10 +78,6 @@ class HMDAGSEMatchingConfig(MatchingConfig):
     LENDER_SELLER_CROSSWALK_PATH: Path = (
         HMDA_GSE_OUTPUT_DIR / "hmda_gse_lender_seller_crosswalk.parquet"
     )
-    # Hand-maintained research notes (optional; loaded only if present).
-    ANNOTATIONS_PATH: Path = (
-        MatchingConfig.SCHEMAS_DIR / "lenders" / "lender_seller_annotations.yaml"
-    )
 
     # Year range for matching. Min year is 2018: HMDA LEI begins 2018, and the chain reaches
     # 2018 originations via the fhfa_mbs_2018 crosswalk + the pre-2019 UMBS snapshot.

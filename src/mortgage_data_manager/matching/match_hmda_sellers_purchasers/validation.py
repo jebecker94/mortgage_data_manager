@@ -523,9 +523,9 @@ def _panel_purchaser_volume(ax: Any, purchaser_type_rates: pl.DataFrame) -> None
 
 
 def _panel_purchaser_rates(
-    ax: Any, purchaser_type_rates: pl.DataFrame, overall_purchase_rate: float
+    ax: Any, purchaser_type_rates: pl.DataFrame, overall_rate: float
 ) -> None:
-    """Origination-side match rate per purchaser type, against the overall purchase rate."""
+    """Origination-side match rate per purchaser type, against the overall origination rate."""
     filtered, labels = _purchaser_labels(purchaser_type_rates)
     if len(filtered) == 0:
         ax.set_axis_off()
@@ -540,11 +540,11 @@ def _panel_purchaser_rates(
         alpha=0.9,
     )
     ax.axvline(
-        overall_purchase_rate * 100,
+        overall_rate * 100,
         color=COLORS["hunter"],
         linestyle="--",
         linewidth=2,
-        label=f"Overall purchase match rate ({overall_purchase_rate * 100:.1f}%)",
+        label=f"Overall origination match rate ({overall_rate * 100:.1f}%)",
     )
     for pos, rate in enumerate(rates):
         ax.text(
@@ -604,7 +604,9 @@ def plot_validation_panel(
     _panel_cross_year(fig.add_subplot(grid[1, 1]), results["cross_year_stats"])
     _panel_purchaser_volume(fig.add_subplot(grid[2, 0]), results["purchaser_type_rates"])
     _panel_purchaser_rates(
-        fig.add_subplot(grid[2, 1]), results["purchaser_type_rates"], results["purchase_match_rate"]
+        fig.add_subplot(grid[2, 1]),
+        results["purchaser_type_rates"],
+        results["origination_match_rate"],
     )
 
     ax = fig.add_subplot(grid[3, :])

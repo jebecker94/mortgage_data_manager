@@ -13,18 +13,19 @@ Start with the **[matching overview](matching/README.md)**: what links to what, 
 rate of every crosswalk, and the denominator behind each rate. Each report covers the
 method, results and validation on held-out fields.
 
-- [hmda_fha](matching/hmda_fha_matching.md): HMDA ↔ FHA endorsements
-- [hmda_fhfa](matching/hmda_fhfa_matching.md): HMDA ↔ FHFA public use database
-- [hmda_gse](matching/hmda_gse_matching.md): HMDA ↔ Fannie Mae and Freddie Mac loan-level
-- [hmda_gnma](matching/hmda_gnma_matching.md): HMDA ↔ Ginnie Mae loan-level
-- [hmda_sellers_purchasers](matching/hmda_sellers_purchasers_matching.md): HMDA
-  originations ↔ HMDA purchase records
-- [hmda_fhlb](matching/hmda_fhlb_matching.md): HMDA ↔ FHLB Acquired Member Assets
-- [fhfa_mbs](matching/fhfa_mbs_matching.md): FHFA ↔ GSE loan-level
-- [mbs_umbs](matching/mbs_umbs_matching.md): GSE loan-level ↔ UMBS disclosures
-- [crt_mbs](matching/crt_mbs_matching.md): credit-risk-transfer reference pools ↔ loan-level
-- [fhlb_mbs](matching/fhlb_mbs_matching.md): FHLB AMA ↔ Ginnie Mae loan-level
-- [master](matching/master_crosswalk.md): every post-2018 edge, one row per HMDA loan
+| Crosswalk | Links | Years | Match rate | Report |
+|---|---|---|---|---|
+| hmda_fha | HMDA ↔ FHA endorsements | 2010–2025 | 91% of HMDA FHA originations (2018–2025) | [method & validation](matching/hmda_fha_matching.md) |
+| hmda_fhfa | HMDA ↔ FHFA public use database | 2008–2025 | 97% of HMDA GSE sales (2018–2025) | [method & validation](matching/hmda_fhfa_matching.md) |
+| hmda_gse | HMDA ↔ Fannie Mae and Freddie Mac loan-level | 2018–2025 | 92% of HMDA GSE sales | [method & validation](matching/hmda_gse_matching.md) |
+| hmda_gnma | HMDA ↔ Ginnie Mae loan-level | 2018–2025 | FHA 79%, VA 57%, USDA 69% | [method & validation](matching/hmda_gnma_matching.md) |
+| hmda_sellers_purchasers | HMDA originations ↔ HMDA purchase records | 2007–2025 | 71% of purchase records (2018–2025) | [method & validation](matching/hmda_sellers_purchasers_matching.md) |
+| hmda_fhlb | HMDA ↔ FHLB Acquired Member Assets | 2009–2025 | 57–60% of AMA loans | [method & validation](matching/hmda_fhlb_matching.md) |
+| fhfa_mbs | FHFA ↔ GSE loan-level | 2018–2025 | 95–96% of FHFA loans | [method & validation](matching/fhfa_mbs_matching.md) |
+| mbs_umbs | GSE loan-level ↔ UMBS disclosures | 2019–2025 | 99.6–99.8% of matchable loans | [method & validation](matching/mbs_umbs_matching.md) |
+| crt_mbs | Freddie Mac CRT reference pools ↔ loan-level | 2013–2026 | 99.2% of CRT loans | [method & validation](matching/crt_mbs_matching.md) |
+| fhlb_mbs | FHLB AMA ↔ Ginnie Mae loan-level | 2009–2025 | 97% of the issuer's Ginnie Mae loans | [method & validation](matching/fhlb_mbs_matching.md) |
+| master | every post-2018 edge, one row per HMDA loan | 2018–2025 | 46.4M loans | [method & validation](matching/master_crosswalk.md) |
 
 ## Using the code
 

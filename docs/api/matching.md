@@ -1,11 +1,9 @@
 # Matching API Reference
 
-API reference for the `matching` subpackage: the workflows that link records across
-mortgage datasets. Each workflow's method, match rates and output schema are on its own
-page in the [matching docs](../matching/README.md); this page covers the shared shape
-and the Python entry points.
-
----
+`matching` holds the workflows that link records across mortgage datasets. Each
+workflow's method, match rates and output schema are on its own page in the
+[matching docs](../matching/README.md); this page covers the shared shape and the Python
+entry points.
 
 ## Overview
 
@@ -57,13 +55,9 @@ mortgage-data match master build
 The [CLI Reference](../cli_reference.md#mortgage-data-match) lists every command and
 option.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.matching.config
-
----
 
 ## Shared helpers
 
@@ -75,8 +69,6 @@ option.
 
 ::: mortgage_data_manager.matching.validation_common
 
----
-
 ## Workflow helpers
 
 ::: mortgage_data_manager.matching.match_hmda_fha.lender_bridge
@@ -84,8 +76,6 @@ option.
 ::: mortgage_data_manager.matching.match_hmda_gse.lender_names
 
 ::: mortgage_data_manager.matching.match_hmda_gnma.triangulation
-
----
 
 ## HMDA-FHA matching
 
@@ -108,8 +98,6 @@ output_file = run_matching(min_year=2020, max_year=2024)
       members: [run_matching_pre2018, run_rounds_pre2018]
 
 ::: mortgage_data_manager.matching.match_hmda_fha.rounds
-
----
 
 ## FHFA-MBS matching
 
@@ -137,8 +125,6 @@ UMBS ARM disclosures, pools both enterprises and all acquisition years, and is k
 the UMBS loan id
 (`crosswalk/fhfa_mbs/fhfa_mbs_crosswalk_arm.parquet`; `match fhfa-mbs run --arm`).
 
----
-
 ## Triangulation validator
 
 `match_hmda_gnma.triangulation` is a DTI-independent quality gauge for any HMDA ↔ GNMA
@@ -158,8 +144,6 @@ mortgage-data match hmda-gnma validate --by match_round   # both crosswalks
 mortgage-data match hmda-gnma validate --overwrite        # after an s/p or HMDA rebuild
 mortgage-data match hmda-gnma validate --crosswalk staged.parquet
 ```
-
----
 
 ## See Also
 

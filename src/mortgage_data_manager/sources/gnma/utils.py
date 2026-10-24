@@ -334,10 +334,10 @@ def load_prefix_dictionary(dictionary_file: str | Path) -> dict:
 
     Example:
         >>> from mortgage_data_manager.sources.gnma.utils import load_prefix_dictionary
-        >>> from mortgage_data_manager.sources.gnma.config import PROJECT_ROOT
+        >>> from mortgage_data_manager.sources.gnma.config import GNMAConfig
         >>>
         >>> prefix_dict = load_prefix_dictionary(
-        ...     PROJECT_ROOT / "prefix_dictionary.yaml"
+        ...     GNMAConfig.PROJECT_DIR / "prefix_dictionary.yaml"
         ... )
         >>> print(prefix_dict['monthly']['extension'])
         'zip'

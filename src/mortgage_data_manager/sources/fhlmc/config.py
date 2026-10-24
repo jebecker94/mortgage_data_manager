@@ -10,9 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import polars as pl
-import typer
 from decouple import config
-from rich.console import Console
 
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.types import (
@@ -26,8 +24,6 @@ from mortgage_data_manager.core.types import (
 
 if TYPE_CHECKING:
     from polars._typing import ParquetCompression
-
-_console = Console()
 
 
 class FHLMCConfig(MortgageDataConfig):
@@ -159,62 +155,6 @@ VALID_DATASETS = FHLMCConfig.VALID_DATASETS
 CRT_DATASETS = FHLMCConfig.CRT_DATASETS
 MIN_YEAR = FHLMCConfig.MIN_YEAR
 MAX_YEAR = FHLMCConfig.MAX_YEAR
-
-
-def validate_datasets(datasets: list[str]) -> None:
-    """Validate that all datasets are valid FHLMC datasets.
-
-    Args:
-        datasets: List of datasets to validate.
-
-    Raises:
-        typer.Exit: If any dataset is invalid.
-    """
-    invalid = [dt for dt in datasets if dt not in VALID_DATASETS]
-    if invalid:
-        _console.print(f"[red]Error: Invalid datasets:[/red] {', '.join(invalid)}")
-        _console.print(f"[yellow]Valid datasets:[/yellow] {', '.join(VALID_DATASETS)}")
-        raise typer.Exit(code=1)
-
-
-def validate_crt_datasets(datasets: list[str]) -> None:
-    """Validate that all datasets are valid CRT disclosure parts.
-
-    Args:
-        datasets: List of CRT parts to validate.
-
-    Raises:
-        typer.Exit: If any part is invalid.
-    """
-    invalid = [dt for dt in datasets if dt not in CRT_DATASETS]
-    if invalid:
-        _console.print(f"[red]Error: Invalid CRT datasets:[/red] {', '.join(invalid)}")
-        _console.print(f"[yellow]Valid CRT datasets:[/yellow] {', '.join(CRT_DATASETS)}")
-        raise typer.Exit(code=1)
-
-
-def validate_years(
-    years: list[int],
-    min_year: int = MIN_YEAR,
-    max_year: int = MAX_YEAR,
-) -> None:
-    """Validate that all years fall within the supported FHLMC year range.
-
-    Args:
-        years: List of years to validate.
-        min_year: Minimum valid year. Defaults to FHLMCConfig.MIN_YEAR.
-        max_year: Maximum valid year. Defaults to FHLMCConfig.MAX_YEAR.
-
-    Raises:
-        typer.Exit: If any year is out of range.
-    """
-    invalid = [y for y in years if y < min_year or y > max_year]
-    if invalid:
-        _console.print(
-            f"[red]Error: Years out of valid range:[/red] {', '.join(map(str, invalid))}"
-        )
-        _console.print(f"[yellow]Valid range:[/yellow] {min_year}-{max_year}")
-        raise typer.Exit(code=1)
 
 
 # ----------------------------------------------------------------------------- #

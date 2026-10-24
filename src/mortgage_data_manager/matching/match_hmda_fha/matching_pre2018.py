@@ -19,7 +19,7 @@ matches 0.8% of loans. What works instead, established empirically:
 4. **Bridge disambiguation.** Coverage on the base key is already ~95%, so the
    binding constraint is disambiguation, not candidate generation. The pre-2018
    FHA-lender <-> HMDA-respondent bridge removes inconsistent candidates on both
-   sides before the 1:1 rule, lifting yield from 32.8% to 74.0% of HMDA FHA
+   sides before the 1:1 rule, lifting yield from 33.0% to 74.1% of HMDA FHA
    originations. The bridge is *silent, not negative* where it knows nothing, so
    the filter can only remove candidates.
 5. **Margin tiers on the leftovers.** The last round takes every loan and
@@ -80,6 +80,7 @@ from mortgage_data_manager.matching.match_hmda_fha.lender_bridge import (
 )
 from mortgage_data_manager.matching.match_hmda_fha.matching_post2018 import (
     get_zip_tract_for_year,
+    hmda_tract_vintage,
 )
 from mortgage_data_manager.matching.match_hmda_fha.rounds import (
     ROUNDS_PRE2018,
@@ -229,7 +230,7 @@ def endorsement_window(year: int, window: tuple[int, int]) -> pl.Expr:
 
 
 def hmda_fha_origination_counts(
-    hmda_folder: Path,
+    hmda_dir: Path,
     min_year: int = Config.PRE2018_MIN_YEAR,
     max_year: int = Config.PRE2018_MAX_YEAR,
 ) -> dict[int, int]:
@@ -240,7 +241,7 @@ def hmda_fha_origination_counts(
     published rate.
 
     Args:
-        hmda_folder: HMDA ``period_2007_2017`` silver loans directory.
+        hmda_dir: HMDA ``period_2007_2017`` silver loans directory.
         min_year: First activity year to count.
         max_year: Last activity year to count.
 
@@ -250,7 +251,7 @@ def hmda_fha_origination_counts(
     counts: dict[int, int] = {}
     for year in range(min_year, max_year + 1):
         try:
-            lf = scan_hmda("period_2007_2017", year, root=hmda_folder)
+            lf = scan_hmda("period_2007_2017", year, root=hmda_dir)
         except FileNotFoundError as exc:
             logger.warning("Skipping year %s: %s", year, exc)
             continue
@@ -265,8 +266,8 @@ def hmda_fha_origination_counts(
 
 @log_execution_time
 def prepare_fha_pre2018(
-    fha_folder: Path,
-    match_folder: Path,
+    fha_dir: Path,
+    intermediate_dir: Path,
     min_year: int = Config.PRE2018_MIN_YEAR,
     max_year: int = Config.PRE2018_MAX_YEAR,
     file_suffix: str = FILE_SUFFIX,
@@ -278,8 +279,8 @@ def prepare_fha_pre2018(
     applied at match time, not here.
 
     Args:
-        fha_folder: FHA single-family silver directory (hive-partitioned).
-        match_folder: Directory for intermediate match data.
+        fha_dir: FHA single-family silver directory (hive-partitioned).
+        intermediate_dir: Directory for intermediate match data.
         min_year: First HMDA activity year to be matched.
         max_year: Last HMDA activity year to be matched.
         file_suffix: Suffix for the intermediate file name.
@@ -290,7 +291,7 @@ def prepare_fha_pre2018(
     logger.info("Preparing FHA data for pre-2018 matching (years %s-%s)", min_year, max_year)
 
     lf = (
-        pl.scan_parquet(fha_folder / "**/*.parquet")
+        pl.scan_parquet(fha_dir / "**/*.parquet")
         .filter(pl.col("Year").is_between(min_year, max_year + 1))
         .select(_FHA_READ_COLUMNS)
         .drop_nulls(["Property Zip", "Mortgage Amount"])
@@ -307,8 +308,8 @@ def prepare_fha_pre2018(
         .sort(["Year", "Month"])
     )
 
-    match_folder.mkdir(parents=True, exist_ok=True)
-    save_file = match_folder / f"fha_match_data{file_suffix}.parquet"
+    intermediate_dir.mkdir(parents=True, exist_ok=True)
+    save_file = intermediate_dir / f"fha_match_data{file_suffix}.parquet"
     lf.sink_parquet(save_file)
     logger.info("Saved FHA match data to %s", save_file)
     return save_file
@@ -316,8 +317,8 @@ def prepare_fha_pre2018(
 
 @log_execution_time
 def prepare_hmda_pre2018(
-    hmda_folder: Path,
-    match_folder: Path,
+    hmda_dir: Path,
+    intermediate_dir: Path,
     min_year: int = Config.PRE2018_MIN_YEAR,
     max_year: int = Config.PRE2018_MAX_YEAR,
     file_suffix: str = FILE_SUFFIX,
@@ -328,15 +329,15 @@ def prepare_hmda_pre2018(
 
     The census-tract to ZIP join is an **inner** join: a loan with no ZIP can
     never match on a ZIP key, and carrying it as a null row only inflates the
-    intermediate. The dropped volume is small and shrinking (10,797 loans in
-    2010, 1,720 in 2017), so the 2000 -> 2010 tract boundary is not binding for
-    this era. The raw origination counts (the honest denominator) are logged
-    here before any drop. ``census_tract`` is kept past the fan, because the margin
+    intermediate. Each year joins the crosswalk of the census its tracts come
+    from (2000-census tracts through 2011, 2010-census after), so the drop is
+    loans whose tract HUD never mapped. The raw origination counts (the honest
+    denominator) are logged here before any drop. ``census_tract`` is kept past the fan, because the margin
     tiers judge each fanned ZIP by the share of the tract it holds.
 
     Args:
-        hmda_folder: HMDA ``period_2007_2017`` silver loans directory.
-        match_folder: Directory for intermediate match data.
+        hmda_dir: HMDA ``period_2007_2017`` silver loans directory.
+        intermediate_dir: Directory for intermediate match data.
         min_year: First activity year to include.
         max_year: Last activity year to include.
         file_suffix: Suffix for the intermediate file name.
@@ -351,20 +352,24 @@ def prepare_hmda_pre2018(
     """
     logger.info("Preparing HMDA data for pre-2018 matching (years %s-%s)", min_year, max_year)
 
-    # get_zip_tract_for_year returns the 2010-census vintage for every year
-    # before 2020, and builds it on demand. Correct for the whole pre-2018 era.
-    crosswalk_file = get_zip_tract_for_year(min_year, crosswalk_dir, usps_dir)
-    zip_tracts = pl.read_parquet(crosswalk_file).select("ZIP", "TRACT").unique()
-    logger.info("ZIP-tract crosswalk: %s pairs from %s", f"{zip_tracts.height:,}", crosswalk_file)
-
+    zip_tracts: dict[int, pl.DataFrame] = {}
     frames: list[pl.LazyFrame] = []
     for year in range(min_year, max_year + 1):
         try:
-            lf = scan_hmda("period_2007_2017", year, root=hmda_folder)
+            lf = scan_hmda("period_2007_2017", year, root=hmda_dir)
         except FileNotFoundError as exc:
             logger.warning("Skipping year %s: %s", year, exc)
             continue
         logger.info("Reading HMDA %s", year)
+        vintage = hmda_tract_vintage(year)
+        if vintage not in zip_tracts:
+            crosswalk_file = get_zip_tract_for_year(year, crosswalk_dir, usps_dir)
+            zip_tracts[vintage] = pl.read_parquet(crosswalk_file).select("ZIP", "TRACT").unique()
+            logger.info(
+                "ZIP-tract crosswalk: %s pairs from %s",
+                f"{zip_tracts[vintage].height:,}",
+                crosswalk_file,
+            )
 
         frames.append(
             lf.filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
@@ -377,7 +382,7 @@ def prepare_hmda_pre2018(
                 hmda_respondent_key(),
             )
             .drop(["loan_amount", "loan_purpose", "respondent_id"])
-            .join(zip_tracts.lazy(), left_on="census_tract", right_on="TRACT", how="inner")
+            .join(zip_tracts[vintage].lazy(), left_on="census_tract", right_on="TRACT", how="inner")
         )
 
     if not frames:
@@ -386,8 +391,8 @@ def prepare_hmda_pre2018(
     # diagonal: the pre-2018 vintages order the same columns differently.
     df = pl.concat(frames, how="diagonal").sort("activity_year")
 
-    match_folder.mkdir(parents=True, exist_ok=True)
-    save_file = match_folder / f"hmda_match_data{file_suffix}.parquet"
+    intermediate_dir.mkdir(parents=True, exist_ok=True)
+    save_file = intermediate_dir / f"hmda_match_data{file_suffix}.parquet"
     df.sink_parquet(save_file)
     logger.info("Saved HMDA match data to %s", save_file)
     return save_file
@@ -541,7 +546,7 @@ RATE_CLEAR_MARGIN = 0.375
 #: A ZIP holding at least this share of the tract's residential addresses is the
 #: tract's dominant ZIP.
 DOMINANT_ZIP_SHARE = 0.5
-#: Last USPS quarter-year averaged into the residential ratios: the 2010-vintage
+#: Last USPS quarter-year averaged into the residential ratios: the 2010-census
 #: quarters up to the era's last endorsement window (Jan 2018). Fixed rather than
 #: tied to the requested years, so a year's result does not depend on the range run.
 RESIDENTIAL_RATIO_LAST_YEAR = 2018
@@ -556,26 +561,33 @@ _MARGIN_TIERS: dict[MarginTier, tuple[pl.Expr, float, pl.Expr]] = {
 
 
 def tract_zip_residential_ratio(usps_dir: Path = Config.USPS_CROSSWALK_DIR) -> pl.DataFrame:
-    """Share of each 2010-census tract's residential addresses in each ZIP.
+    """Share of each tract's residential addresses in each ZIP, per census.
 
-    HUD's USPS TRACT_ZIP ``res_ratio``, averaged over the 2010-vintage quarters
-    through `RESIDENTIAL_RATIO_LAST_YEAR`. The ZIP fan makes a tract's minor ZIPs
-    candidates as readily as its dominant one; this says how plausible each is.
+    HUD's USPS TRACT_ZIP ``res_ratio``, averaged over each census's quarters: the
+    2000-census quarters (2010-2011) and the 2010-census quarters through
+    `RESIDENTIAL_RATIO_LAST_YEAR`. A tract code can name different areas in the two
+    censuses, so a loan reads the ratios of the census its year's tracts come from.
+    The ZIP fan makes a tract's minor ZIPs candidates as readily as its dominant one;
+    this says how plausible each is.
 
     Args:
         usps_dir: USPS crosswalk bronze directory.
 
     Returns:
-        ``census_tract``, ``ZIP`` and the mean ``res_ratio``.
+        ``census_tract``, ``ZIP``, ``tract_vintage`` and the mean ``res_ratio``.
     """
     from mortgage_data_manager.sources.usps_crosswalk.load import load_crosswalk_by_vintage
 
-    return (
-        load_crosswalk_by_vintage("TRACT_ZIP", 2010, data_dir=usps_dir)
-        .filter(pl.col("year") <= RESIDENTIAL_RATIO_LAST_YEAR)
-        .group_by(pl.col("tract").alias("census_tract"), pl.col("geoid").alias("ZIP"))
-        .agg(pl.col("res_ratio").mean())
-        .collect()
+    return pl.concat(
+        [
+            load_crosswalk_by_vintage("TRACT_ZIP", vintage, data_dir=usps_dir)
+            .filter(pl.col("year") <= RESIDENTIAL_RATIO_LAST_YEAR)
+            .group_by(pl.col("tract").alias("census_tract"), pl.col("geoid").alias("ZIP"))
+            .agg(pl.col("res_ratio").mean())
+            .with_columns(pl.lit(vintage, dtype=pl.Int16).alias("tract_vintage"))
+            .collect()
+            for vintage in (2000, 2010)
+        ]
     )
 
 
@@ -616,7 +628,8 @@ def attach_recovery_evidence(
     - ``county_eq``: HMDA county = FHA county. Never a match key, so informative
       wherever a cell spans counties.
     - ``res_ratio``: the share of the HMDA tract's residential addresses in the
-      FHA record's ZIP (0 where the tract does not reach it).
+      FHA record's ZIP, in the census of the loan's year (0 where the tract does not
+      reach it).
     - ``rate_dev``: FHA note rate - HMDA ``rate_spread`` - the month's offset;
       null where HMDA reported no spread.
     - ``s_geo`` (0 to 2): county agreement plus a dominant ZIP.
@@ -624,7 +637,7 @@ def attach_recovery_evidence(
       an unreported spread is -1 when the FHA rate implies one above `SPREAD_CAP`.
 
     Args:
-        pairs: Candidate pairs.
+        pairs: Candidate pairs, with ``activity_year``.
         hmda: Per-loan HMDA attributes (``census_tract``, ``county_code``, ``rate_spread``).
         fha: FHA attributes (``Property Zip``, ``FIPS``, ``Year``, ``Month``, ``Interest Rate``).
         residential: `tract_zip_residential_ratio`.
@@ -634,15 +647,22 @@ def attach_recovery_evidence(
         The pairs with the evidence columns added.
     """
     rate_dev = pl.col("rate_dev").abs()
+    vintages = {y: hmda_tract_vintage(y) for y in pairs["activity_year"].unique().to_list()}
     return (
-        pairs.join(hmda, on="HMDAIndex", how="left")
+        pairs.with_columns(
+            pl.col("activity_year")
+            .replace_strict(vintages, return_dtype=pl.Int16)
+            .alias("tract_vintage")
+        )
+        .join(hmda, on="HMDAIndex", how="left")
         .join(fha, on="FHA_Index", how="left")
         .join(
             residential,
-            left_on=["census_tract", "Property Zip"],
-            right_on=["census_tract", "ZIP"],
+            left_on=["census_tract", "Property Zip", "tract_vintage"],
+            right_on=["census_tract", "ZIP", "tract_vintage"],
             how="left",
         )
+        .drop("tract_vintage")
         .join(offset, on=["Year", "Month"], how="left")
         .with_columns(
             (pl.col("county_code") == pl.col("FIPS")).fill_null(value=False).alias("county_eq"),
@@ -863,10 +883,10 @@ def _log_yields(crosswalk: pl.DataFrame, denominators: dict[int, int], n_rounds:
 def run_matching_pre2018(
     min_year: int = Config.PRE2018_MIN_YEAR,
     max_year: int = Config.PRE2018_MAX_YEAR,
-    fha_folder: Path | None = None,
-    hmda_folder: Path | None = None,
-    match_folder: Path | None = None,
-    output_folder: Path | None = None,
+    fha_dir: Path | None = None,
+    hmda_dir: Path | None = None,
+    intermediate_dir: Path | None = None,
+    output_dir: Path | None = None,
     overwrite: bool = False,
 ) -> Path:
     """Run the pre-2018 HMDA-FHA matching pipeline.
@@ -882,10 +902,10 @@ def run_matching_pre2018(
     Args:
         min_year: First HMDA activity year to match.
         max_year: Last HMDA activity year to match.
-        fha_folder: FHA single-family silver directory.
-        hmda_folder: HMDA ``period_2007_2017`` silver loans directory.
-        match_folder: Intermediate match data directory.
-        output_folder: Published crosswalk directory.
+        fha_dir: FHA single-family silver directory.
+        hmda_dir: HMDA ``period_2007_2017`` silver loans directory.
+        intermediate_dir: Intermediate match data directory.
+        output_dir: Published crosswalk directory.
         overwrite: Rebuild intermediates that already exist.
 
     Returns:
@@ -896,22 +916,24 @@ def run_matching_pre2018(
     """
     logger.info("Starting pre-2018 HMDA-FHA matching pipeline (years %s-%s)", min_year, max_year)
 
-    fha_folder = Config.FHA_SILVER_DIR if fha_folder is None else fha_folder
-    hmda_folder = Config.HMDA_PRE2018_SILVER_DIR if hmda_folder is None else hmda_folder
-    match_folder = Config.HMDA_FHA_INTERMEDIATE_DIR if match_folder is None else match_folder
-    output_folder = Config.HMDA_FHA_CROSSWALK_DIR if output_folder is None else output_folder
+    fha_dir = Config.FHA_SILVER_DIR if fha_dir is None else fha_dir
+    hmda_dir = Config.HMDA_PRE2018_SILVER_DIR if hmda_dir is None else hmda_dir
+    intermediate_dir = (
+        Config.HMDA_FHA_INTERMEDIATE_DIR if intermediate_dir is None else intermediate_dir
+    )
+    output_dir = Config.HMDA_FHA_CROSSWALK_DIR if output_dir is None else output_dir
 
     Config.ensure_directories()
 
-    fha_file = match_folder / f"fha_match_data{FILE_SUFFIX}.parquet"
+    fha_file = intermediate_dir / f"fha_match_data{FILE_SUFFIX}.parquet"
     if should_process_file(fha_file, overwrite):
-        prepare_fha_pre2018(fha_folder, match_folder, min_year, max_year, FILE_SUFFIX)
+        prepare_fha_pre2018(fha_dir, intermediate_dir, min_year, max_year, FILE_SUFFIX)
     else:
         logger.info("Skipping FHA prep - file exists: %s", fha_file)
 
-    hmda_file = match_folder / f"hmda_match_data{FILE_SUFFIX}.parquet"
+    hmda_file = intermediate_dir / f"hmda_match_data{FILE_SUFFIX}.parquet"
     if should_process_file(hmda_file, overwrite):
-        prepare_hmda_pre2018(hmda_folder, match_folder, min_year, max_year, FILE_SUFFIX)
+        prepare_hmda_pre2018(hmda_dir, intermediate_dir, min_year, max_year, FILE_SUFFIX)
     else:
         logger.info("Skipping HMDA prep - file exists: %s", hmda_file)
 
@@ -931,7 +953,7 @@ def run_matching_pre2018(
     crosswalk = run_rounds_pre2018(hmda_df, pl.read_parquet(fha_file), ROUNDS_PRE2018, bridge)
     _log_yields(
         crosswalk,
-        hmda_fha_origination_counts(hmda_folder, min_year, max_year),
+        hmda_fha_origination_counts(hmda_dir, min_year, max_year),
         len(ROUNDS_PRE2018),
     )
 
@@ -940,8 +962,8 @@ def run_matching_pre2018(
         if df[col].n_unique() != len(df):
             raise ValueError(f"pre-2018 crosswalk not 1:1 in {col}")
 
-    output_folder.mkdir(parents=True, exist_ok=True)
-    output_file = output_folder / Config.crosswalk_name("pre2018", min_year, max_year)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = output_dir / Config.crosswalk_name("pre2018", min_year, max_year)
     with atomic_output(output_file) as tmp:
         df.write_parquet(tmp)
     logger.info("Saved crosswalk (%s pairs) to %s", f"{len(df):,}", output_file)

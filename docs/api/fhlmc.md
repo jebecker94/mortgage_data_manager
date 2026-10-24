@@ -1,15 +1,11 @@
 # FHLMC API Reference
 
-API reference for the FHLMC (Freddie Mac - Federal Home Loan Mortgage Corporation) subpackage.
-
 FHLMC data cannot be fetched programmatically: register on Freddie Mac's Clarity Data
 Intelligence portal and download the archives by hand (`mortgage-data fhlmc download` prints
 the steps). Bronze parsing reads Freddie's file layouts, transcribed from the file-layout
 workbooks on the page below into `schemas/fhlmc/sf_file_layout_july_2026.csv` (the Release 47
 layout) and `schemas/fhlmc/sf_file_layout.csv` (the earlier one, which still describes the
 non-standard dataset).
-
----
 
 ## Source documentation
 Freddie Mac publishes the Single-Family Loan-Level Dataset documentation on its
@@ -22,50 +18,29 @@ layouts and the history of CRT disclosure changes are on Freddie Mac's
 The data itself is downloaded from
 [Clarity Data Intelligence](https://capitalmarkets.freddiemac.com/clarity).
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.fhlmc.config
-
----
 
 ## Schemas
 
 ::: mortgage_data_manager.sources.fhlmc.schemas
 
----
-
 ## Download
 
 ::: mortgage_data_manager.sources.fhlmc.download
-
----
 
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.fhlmc.import_bronze
 
----
-
 ## Silver layer
 
 ::: mortgage_data_manager.sources.fhlmc.import_silver
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.fhlmc.pipeline
-
----
-
-## CLI
-Commands, options and examples for `mortgage-data fhlmc` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-fhlmc). `mortgage-data fhlmc --help` is
-authoritative.
-
----
 
 ## Complete Example
 ```python
@@ -82,8 +57,6 @@ mortgage-data fhlmc pipeline -t crt
 Datasets: `origination`, `performance` and `reperforming` (the defaults), plus `crt`, whose
 parts (`lld`, `agg_zipcode`, `pay_hist`, `temp_buydown`, `pre_harp`) are selected with
 `--crt-parts`.
-
----
 
 ## Data Structure
 ### Raw files
@@ -165,8 +138,6 @@ established names.
    per (Reference Pool Number, Loan Identifier), hive-partitioned by `issuance_year`. Each
    null-maps the user-guide sentinels (Credit Score 9999, CLTV/DTI/LTV 999) and applies its
    `SilverSpec` dtypes. `reperforming` has no silver builder.
-
----
 
 ## See Also
 - [Core API](core.md) - Shared utilities and medallion architecture

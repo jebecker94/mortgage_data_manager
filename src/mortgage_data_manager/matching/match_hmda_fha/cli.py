@@ -19,6 +19,7 @@ from rich.console import Console
 from rich.table import Table
 
 from mortgage_data_manager.core.logging import configure_logging
+from mortgage_data_manager.core.medallion import should_process_file
 from mortgage_data_manager.matching.match_hmda_fha.config import Era
 from mortgage_data_manager.matching.match_hmda_fha.config import HMDAFHAMatchingConfig as Config
 
@@ -259,8 +260,8 @@ def run(
         str,
         typer.Option(
             "--step",
-            help="match (default), or bridge: pre2018 only, build just the lender bridge "
-            "the pre-2018 match reads",
+            help="match (default); bridge: pre2018 only, build just the lender bridge the "
+            "pre-2018 match reads; zip-tract: build just the ZIP-tract crosswalks both eras read",
         ),
     ] = "match",
     min_year: Annotated[
@@ -310,17 +311,28 @@ def run(
     circular. Both sources are closed, so it rebuilds on a method change or an
     upstream silver rebuild (with --overwrite), not on the annual HMDA cycle.
 
+    [cyan]--step zip-tract[/cyan] builds only the ZIP-tract crosswalks (2000, 2010 and
+    2020 census tracts) from the USPS crosswalk bronze. Either era's match builds a missing
+    one on demand; this step, with --overwrite, rebuilds them after a USPS refresh.
+
     Examples:
       mortgage-data match hmda-fha run
       mortgage-data match hmda-fha run --era pre2018 --step bridge
       mortgage-data match hmda-fha run --era pre2018
+      mortgage-data match hmda-fha run --step zip-tract --overwrite
     """
     if era not in ERAS:
         console.print(f"[bold red]Error:[/bold red] --era must be one of: {', '.join(ERAS)}\n")
         raise typer.Exit(code=1)
-    if step not in ("match", "bridge"):
-        console.print("[bold red]Error:[/bold red] --step must be one of: match, bridge\n")
+    if step not in ("match", "bridge", "zip-tract"):
+        console.print(
+            "[bold red]Error:[/bold red] --step must be one of: match, bridge, zip-tract\n"
+        )
         raise typer.Exit(code=1)
+
+    if step == "zip-tract":
+        _run_zip_tract(overwrite)
+        return
 
     if step == "bridge":
         if era != "pre2018":
@@ -347,9 +359,9 @@ def run(
             output_file = run_matching_pre2018(
                 min_year=min_year,
                 max_year=max_year,
-                fha_folder=fha_dir,
-                hmda_folder=hmda_dir,
-                output_folder=output_dir,
+                fha_dir=fha_dir,
+                hmda_dir=hmda_dir,
+                output_dir=output_dir,
                 overwrite=overwrite,
             )
         else:
@@ -361,9 +373,9 @@ def run(
             output_file = run_matching(
                 min_year=min_year,
                 max_year=max_year,
-                fha_folder=fha_dir,
-                hmda_folder=hmda_dir,
-                output_folder=output_dir,
+                fha_dir=fha_dir,
+                hmda_dir=hmda_dir,
+                output_dir=output_dir,
                 overwrite=overwrite,
             )
         console.print("\n[bold green]Matching complete![/bold green]")
@@ -390,44 +402,21 @@ def _run_bridge(min_year: int | None, max_year: int | None, overwrite: bool) -> 
         console.print(f"[green]{name}:[/green] {n:,} rows")
 
 
-@app.command()
-def build_zip_tract(
-    census_vintage: Annotated[
-        int,
-        typer.Argument(help="Census vintage (2010 or 2020)"),
-    ],
-    output_path: Annotated[
-        Path | None,
-        typer.Option("--output", "-o", help="Output path for crosswalk file"),
-    ] = None,
-) -> None:
-    """Build consolidated ZIP-tract crosswalk from HUD data.
-
-    The HUD crosswalk uses different census tract vintages:
-    - 2010: Census tracts used for years 2010-2019
-    - 2020: Census tracts used for years 2020+
-    """
-    from mortgage_data_manager.matching.match_hmda_fha.config import HMDAFHAMatchingConfig as Config
+def _run_zip_tract(overwrite: bool) -> None:
+    """``run --step zip-tract``: build the ZIP-tract crosswalk for each census vintage."""
     from mortgage_data_manager.matching.match_hmda_fha.matching_post2018 import (
         build_zip_tract_crosswalk,
     )
 
-    if census_vintage not in (2010, 2020):
-        console.print("[red]Error: Census vintage must be 2010 or 2020[/red]")
-        raise typer.Exit(code=1)
-
-    if output_path is None:
-        output_path = Config.HMDA_FHA_ZIP_TRACT_DIR / f"zip_tract_{census_vintage}_census.parquet"
-
-    console.print(f"\n[bold cyan]Building {census_vintage} Census Crosswalk[/bold cyan]")
-    console.print(f"  USPS crosswalk source: {Config.USPS_CROSSWALK_DIR}")
-    console.print(f"  Output: {output_path}\n")
-
-    try:
-        build_zip_tract_crosswalk(Config.USPS_CROSSWALK_DIR, census_vintage, output_path)  # type: ignore
-        console.print("\n[bold green]Crosswalk built successfully![/bold green]\n")
-    except Exception as e:
-        console.print(f"\n[bold red]Error:[/bold red] {e}\n")
+    built = 0
+    for vintage in (2000, 2010, 2020):
+        path = Config.HMDA_FHA_ZIP_TRACT_DIR / f"zip_tract_{vintage}_census.parquet"
+        if should_process_file(path, overwrite):
+            build_zip_tract_crosswalk(Config.USPS_CROSSWALK_DIR, vintage, path)
+            console.print(f"[green]Built {path}[/green]")
+            built += 1
+    if not built:
+        console.print("[yellow]Nothing built (crosswalks exist; use --overwrite).[/yellow]")
         raise typer.Exit(code=1)
 
 

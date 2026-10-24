@@ -288,8 +288,8 @@ pairs are cached under the workflow's data directory.
 
 `run --enrich` also writes, to the workflow's data directory, a chain crosswalk with the
 HMDA `lei` and `purchaser_type`, the HMDA panel's `respondent_name`, and the UMBS
-`Seller Name` and `Channel`. `lender-crosswalk` reads it to list lender/seller name pairs
-that disagree.
+`Seller Name` and `Channel`. `run --step lender-crosswalk` reads it to list lender/seller
+name pairs that disagree.
 
 ```bash
 mortgage-data match hmda-gse info                       # inputs, outputs, the rounds tuple
@@ -298,7 +298,7 @@ mortgage-data match hmda-gse run --route chain [--agency fnma|fhlmc] [--enrich]
 mortgage-data match hmda-gse run --route direct [--min-year] [--max-year] [--overwrite] [--saved-bridge]
 mortgage-data match hmda-gse validate                   # the master's conventional edge, figure
 mortgage-data match hmda-gse validate --direct          # direct pairs on held-out fields
-mortgage-data match hmda-gse lender-crosswalk [--channel R]
+mortgage-data match hmda-gse run --step lender-crosswalk [--channel R]
 ```
 
 ## Results
@@ -461,8 +461,8 @@ originator and the UMBS seller are different institutions by construction, so di
 is expected. Retail mismatches are mostly benign: DBA names ("Broker Solutions" against
 "Broker Solutions Inc. DBA New American Funding"), dropped suffixes ("Idaho Central"
 against "Idaho Central Credit Union"), mergers, affiliates and rebrands ("Quicken Loans"
-against "Rocket Mortgage"). `lender-crosswalk` lists the frequent retail pairs that
-disagree, classified by connection type.
+against "Rocket Mortgage"). `run --step lender-crosswalk` lists the frequent retail pairs
+that disagree, classified by connection type.
 
 The Federal Home Loan Bank of Chicago is the Fannie seller on 107,479 chain links (0.64%),
 through its MPF program; no FHLB seller appears on the Freddie side. See

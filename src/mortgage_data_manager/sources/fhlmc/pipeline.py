@@ -33,8 +33,8 @@ def run_bronze(
         datasets: List of datasets to process ('origination', 'performance', 'reperforming')
         years: List of years to process
         overwrite: Whether to overwrite existing files
-        raw_dir: Raw data directory (default: config.RAW_DIR)
-        bronze_dir: Bronze output directory (default: config.BRONZE_DIR)
+        raw_dir: Raw data directory (default: ``FHLMCConfig.FHLMC_RAW_DIR``)
+        bronze_dir: Bronze output directory (default: ``FHLMCConfig.FHLMC_BRONZE_DIR``)
         zip_names: If provided, only walk top-level raw zips with these exact
             names. Lets a caller target one bundle (e.g. the non-standard
             ``historical_data_excl_*`` zip) instead of every historical zip in

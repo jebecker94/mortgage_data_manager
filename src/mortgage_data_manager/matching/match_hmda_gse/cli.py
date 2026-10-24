@@ -156,6 +156,14 @@ def run(
             "issuance), or all (chain first: the direct match reads it)",
         ),
     ] = "all",
+    step: Annotated[
+        str,
+        typer.Option(
+            "--step",
+            help="match (default), or lender-crosswalk: list the frequent lender/seller "
+            "name pairs that disagree, from the enriched chain crosswalk (--route ignored)",
+        ),
+    ] = "match",
     agency: Annotated[
         str,
         typer.Option("--agency", "-a", help="Chain only: fnma, fhlmc, or all"),
@@ -174,7 +182,11 @@ def run(
     ] = False,
     output_dir: Annotated[
         Path | None,
-        typer.Option("--output-dir", "-o", help="Chain only: write the crosswalks here"),
+        typer.Option(
+            "--output-dir",
+            "-o",
+            help="Chain and lender-crosswalk only: write the crosswalks here",
+        ),
     ] = None,
     overwrite: Annotated[
         bool,
@@ -198,6 +210,19 @@ def run(
             help="Direct only: block on the saved lender bridge instead of rebuilding it",
         ),
     ] = False,
+    min_loans: Annotated[
+        int,
+        typer.Option(
+            "--min-loans", help="Lender-crosswalk only: matched loans a pair needs to be listed"
+        ),
+    ] = 100,
+    channel: Annotated[
+        str,
+        typer.Option(
+            "--channel",
+            help="Lender-crosswalk only: UMBS channel (R=Retail, C=Correspondent, B=Broker)",
+        ),
+    ] = "R",
 ) -> None:
     """Build the HMDA-GSE crosswalks.
 
@@ -217,12 +242,24 @@ def run(
     crosswalk/hmda_gse/hmda_gse_crosswalk_direct_{year}.parquet and
     hmda_gse_lender_bridge.parquet.
 
+    --step lender-crosswalk reads the enriched chain crosswalk (`--route chain
+    --enrich`) and lists the HMDA lenders and UMBS sellers that often match under
+    different names: mergers, rebrands, affiliates and DBAs. Retail by default, where
+    the originator should be the seller.
+
     Examples:
       mortgage-data match hmda-gse run
       mortgage-data match hmda-gse run --route chain --agency fnma --enrich
       mortgage-data match hmda-gse run --route direct --min-year 2024 --overwrite
       mortgage-data match hmda-gse run --route direct --saved-bridge --overwrite
+      mortgage-data match hmda-gse run --step lender-crosswalk --min-loans 500
     """
+    if step not in ("match", "lender-crosswalk"):
+        console.print("[bold red]Error:[/bold red] --step must be one of: match, lender-crosswalk")
+        raise typer.Exit(code=1)
+    if step == "lender-crosswalk":
+        _run_lender_crosswalk(min_loans, channel, output_dir)
+        return
     token = route.lower()
     if token not in (*ROUTES, "all"):
         console.print(
@@ -240,6 +277,31 @@ def run(
             saved_bridge,
             required=token == "direct",
         )
+
+
+def _run_lender_crosswalk(min_loans: int, channel: str, output_dir: Path | None) -> None:
+    """``run --step lender-crosswalk``: list lender/seller pairs whose names disagree."""
+    from mortgage_data_manager.matching.match_hmda_gse.lender_seller_crosswalk import (
+        build_lender_seller_crosswalk,
+    )
+
+    output_path = (
+        output_dir / Config.LENDER_SELLER_CROSSWALK_PATH.name
+        if output_dir
+        else Config.LENDER_SELLER_CROSSWALK_PATH
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        crosswalk = build_lender_seller_crosswalk(min_loans=min_loans, channel=channel)
+        crosswalk.write_parquet(output_path)
+        console.print(f"\n[green]Saved:[/green] {output_path}")
+    except FileNotFoundError as e:
+        console.print(f"\n[bold red]Error:[/bold red] {e}")
+        console.print(
+            "[yellow]Hint:[/yellow] Run 'mortgage-data match hmda-gse run --route chain "
+            "--enrich' first."
+        )
+        raise typer.Exit(code=1)
 
 
 def _run_chain(
@@ -395,75 +457,6 @@ def _validate_direct(min_year: int, max_year: int) -> None:
         f"\n[dim]Shuffled borrower floor ~{floor:.4f}; "
         f"chain-confirmed rows benchmark ~0.998.[/dim]\n"
     )
-
-
-@app.command()
-def lender_crosswalk(
-    min_loans: Annotated[
-        int,
-        typer.Option("--min-loans", "-l", help="Minimum number of matched loans to include a pair"),
-    ] = 100,
-    channel: Annotated[
-        str,
-        typer.Option(
-            "--channel", "-c", help="Channel to filter on (R=Retail, C=Correspondent, B=Broker)"
-        ),
-    ] = "R",
-    report: Annotated[
-        bool,
-        typer.Option("--report", "-r", help="Generate markdown documentation report"),
-    ] = False,
-    output_dir: Annotated[
-        Path | None,
-        typer.Option("--output-dir", "-o", help="Override output directory"),
-    ] = None,
-) -> None:
-    """Build lender/seller crosswalk for name mismatches.
-
-    Identifies HMDA lenders and UMBS sellers that frequently match but have
-    different names. These represent mergers, acquisitions, rebrands, affiliates,
-    and DBAs worth documenting.
-
-    The analysis focuses on Retail channel by default, where the originating
-    lender is expected to be the same as the seller to the GSEs.
-    """
-    from mortgage_data_manager.matching.match_hmda_gse.lender_seller_crosswalk import (
-        build_lender_seller_crosswalk,
-        generate_markdown_report,
-    )
-
-    # Determine output path
-    if output_dir:
-        output_path = output_dir / "hmda_gse_lender_seller_crosswalk.parquet"
-    else:
-        output_path = Config.LENDER_SELLER_CROSSWALK_PATH
-
-    # Ensure directories exist
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    try:
-        # Build crosswalk
-        crosswalk = build_lender_seller_crosswalk(min_loans=min_loans, channel=channel)
-
-        # Save
-        crosswalk.write_parquet(output_path)
-        console.print(f"\n[green]Saved:[/green] {output_path}")
-
-        # Generate report if requested
-        if report:
-            generate_markdown_report(crosswalk)
-
-        console.print("\n[bold green]Lender crosswalk complete![/bold green]\n")
-
-    except FileNotFoundError as e:
-        console.print(f"\n[bold red]Error:[/bold red] {e}")
-        console.print(
-            "[yellow]Hint:[/yellow] Run 'mortgage-data match hmda-gse run --route chain --enrich' first."
-        )
-        raise typer.Exit(code=1)
-    except Exception as e:
-        console.print(f"\n[bold red]Error:[/bold red] {e}\n")
-        raise typer.Exit(code=1)
 
 
 @app.command()

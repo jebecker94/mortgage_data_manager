@@ -1,9 +1,5 @@
 # Combined API Reference
 
-API reference for the cross-source master datasets (`combined`) subpackage.
-
----
-
 ## Overview
 `combined` assembles a **small, curated** set of cross-source master datasets from
 the per-source silver layers. It is deliberately *not* an exhaustive vendor-style
@@ -23,7 +19,6 @@ Ginnie without per-agency branching.
 | `loan_outcomes` | loan | FNMA · FHLMC · GNMA | 145,092,064 | 35 | `agency` / `orig_year` | built |
 | `mbs_issuance` | security | GNMA · UMBS | 715,762 | 42 | `agency` / `issue_year` | built |
 | `mbs_performance` | security × month | GNMA · UMBS | 90,939,164 | 33 | `agency` / `as_of_year` | built |
-| `issuer` | issuer | — | — | — | — | **scaffold** (raises `NotImplementedError`) |
 | `msr_transfers` | transfer | GNMA · UMBS | — | — | — | **external** — built by [`analytics.transfers`](analytics.md) |
 
 Rows and columns were measured 2026-10-21 on the current builds; the column counts leave
@@ -88,19 +83,13 @@ the grain only exists there, bronze) and writes one hive-partitioned tree per ma
 It is not itself a raw→bronze→silver pipeline, so it has no `download`/`bronze`/`silver`
 verbs.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.combined.config
 
----
-
 ## Builders
 
 ::: mortgage_data_manager.combined.builders
-
----
 
 ## Schema modules
 
@@ -109,8 +98,6 @@ verbs.
 ::: mortgage_data_manager.combined.loan_performance_schema
 
 ::: mortgage_data_manager.combined.mbs_performance_schema
-
----
 
 ## CLI
 ```bash
@@ -121,8 +108,6 @@ mortgage-data combined build -t mbs_issuance --overwrite
 
 `build` is the only build verb — the canonical `download`/`bronze`/`silver` verbs do
 not apply here (see *Output layout*).
-
----
 
 ## Common Pitfalls
 - **Sentinels are scrubbed, and the bounds are empirical.** Credit scores outside
@@ -161,10 +146,6 @@ not apply here (see *Output layout*).
 - **`overwrite` replaces the whole dataset tree**, not selected partitions. These are
   full rebuilds from silver, unlike the partition-scoped `overwrite` in the per-source
   silver builders.
-- **`build_issuer` is a scaffold** and raises `NotImplementedError`. It is last in the
-  dispatch order, so `build_datasets()` with no arguments builds the six real masters
-  and *then* raises — the work is not lost, but the call does not return normally. Pass
-  `-t/--datasets` explicitly to avoid it.
 - **`msr_transfers` is registered but not built here.** Detection lives in
   `analytics.transfers.detect_servicer_transfers`; the registry entry exists so the
   dataset is discoverable from `combined info`.

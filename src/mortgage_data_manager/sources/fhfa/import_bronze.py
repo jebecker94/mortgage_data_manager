@@ -14,12 +14,10 @@ import polars as pl
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import should_process_file
 from mortgage_data_manager.sources.fhfa.config import (
-    BRONZE_DIR,
     CSV_FILE_STEMS,
     DATASET_MAP,
     FIRST_CSV_YEAR,
-    RAW_DIR,
-    SCHEMAS_DIR,
+    FHFAConfig,
 )
 from mortgage_data_manager.sources.fhfa.schemas import load_master_dictionary, load_year_dictionary
 
@@ -66,7 +64,7 @@ def load_csv_with_dictionary(
         raw_bytes: The CSV file's bytes, as read from its zip.
         year: Acquisition year of the file.
         dataset: Dataset (e.g., 'sf_c', 'mf_property_b').
-        dictionary_root: Dictionary root. Defaults to SCHEMAS_DIR.
+        dictionary_root: Dictionary root. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
 
     Returns:
         Loaded data with a 'year' column added.
@@ -122,13 +120,13 @@ def load_fixed_width_with_master_from_buffer(
         buffer: Buffer containing file data
         year: Year of the data
         dataset: Dataset (e.g., 'sf_c', 'mf_property_b')
-        dictionary_root: Dictionary root. Defaults to SCHEMAS_DIR.
+        dictionary_root: Dictionary root. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
         encoding: File encoding. Default 'latin-1'.
 
     Returns:
         Loaded data with 'year' column added
     """
-    dict_root = dictionary_root or SCHEMAS_DIR
+    dict_root = dictionary_root or FHFAConfig.FHFA_SCHEMAS_DIR
     master = load_master_dictionary(dataset, dictionary_root=dict_root)
     year_dict = master.filter(pl.col("year") == year)
 
@@ -234,16 +232,16 @@ def save_to_bronze(
     Args:
         dataset: Dataset (e.g., 'sf_c', 'mf_property_b')
         years: Years to load
-        raw_dir: Raw data directory. Defaults to RAW_DIR.
-        output_dir: Output directory. Defaults to BRONZE_DIR.
-        dictionary_root: Dictionary root. Defaults to SCHEMAS_DIR.
+        raw_dir: Raw data directory. Defaults to FHFAConfig.FHFA_RAW_DIR.
+        output_dir: Output directory. Defaults to FHFAConfig.FHFA_BRONZE_DIR.
+        dictionary_root: Dictionary root. Defaults to FHFAConfig.FHFA_SCHEMAS_DIR.
         overwrite: Whether to overwrite existing bronze files. Default False.
 
     Returns:
         None
     """
-    raw = raw_dir or RAW_DIR
-    output = output_dir or BRONZE_DIR
+    raw = raw_dir or FHFAConfig.FHFA_RAW_DIR
+    output = output_dir or FHFAConfig.FHFA_BRONZE_DIR
 
     # Create bronze directory
     bronze_dir = output / dataset
@@ -571,15 +569,15 @@ def build_bronze_mf_hud_era(
     Args:
         datasets: Subset of `HUD_ERA_DATASETS` to process.
         years: Years to process (clamped to 1993-2007).
-        raw_dir: Raw root. Defaults to `RAW_DIR` (``hud_era`` subdir used).
-        output_dir: Bronze root. Defaults to `BRONZE_DIR`.
+        raw_dir: Raw root. Defaults to `FHFAConfig.FHFA_RAW_DIR` (``hud_era`` subdir used).
+        output_dir: Bronze root. Defaults to `FHFAConfig.FHFA_BRONZE_DIR`.
         overwrite: Whether to rebuild existing bronze files. Default False.
 
     Returns:
         Number of bronze files written.
     """
-    raw = raw_dir or RAW_DIR
-    output = output_dir or BRONZE_DIR
+    raw = raw_dir or FHFAConfig.FHFA_RAW_DIR
+    output = output_dir or FHFAConfig.FHFA_BRONZE_DIR
     hud_dir = raw / "hud_era"
 
     written = 0

@@ -11,7 +11,10 @@ import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import atomic_output, should_process_file
-from mortgage_data_manager.matching.match_hmda_fhlb import config
+from mortgage_data_manager.matching.match_hmda_fhlb.config import (
+    HMDA_POST2018_COLS,
+    HMDAFHLBMatchingConfig,
+)
 from mortgage_data_manager.matching.match_hmda_fhlb.utils import create_census_tract_from_fips
 from mortgage_data_manager.matching.terms import is_bin_edge, round_to_fhfa_bin
 from mortgage_data_manager.sources.hmda.load import scan_hmda
@@ -27,10 +30,10 @@ def get_fhlb_members_pre2018(
     Args:
         match_folder: Output directory for intermediate data
         overwrite: If True, overwrite existing file
-        crosswalk_folder: Directory for crosswalk outputs. Defaults to config.CROSSWALK_DIR.
+        crosswalk_folder: Directory for crosswalk outputs. Defaults to ``HMDA_FHLB_CROSSWALK_DIR``.
     """
     if crosswalk_folder is None:
-        crosswalk_folder = config.CROSSWALK_DIR
+        crosswalk_folder = HMDAFHLBMatchingConfig.HMDA_FHLB_CROSSWALK_DIR
     crosswalk_folder.mkdir(parents=True, exist_ok=True)
     output_file = crosswalk_folder / "hmda_fhlb_lender_crosswalk_pre2018.parquet"
 
@@ -40,7 +43,7 @@ def get_fhlb_members_pre2018(
 
     logger.info("Extracting FHLB members from Avery file (pre-2018)")
 
-    avery_path = config.AVERY_PRE2018_FILE_PATH
+    avery_path = HMDAFHLBMatchingConfig.AVERY_PRE2018_FILE_PATH
     if not avery_path.exists():
         raise FileNotFoundError(f"Pre-2018 Avery file not found: {avery_path}")
 
@@ -114,7 +117,7 @@ def _load_member_listings() -> pl.DataFrame:
     Raises:
         FileNotFoundError: If no member listing has been built to bronze.
     """
-    fhlb_conf = config.HMDAFHLBMatchingConfig.get_fhlb_config()
+    fhlb_conf = HMDAFHLBMatchingConfig.get_fhlb_config()
     files = sorted(
         (fhlb_conf.FHLBConfig.FHLB_BRONZE_DIR / "members").glob("fhlb_members_*.parquet")
     )
@@ -134,7 +137,7 @@ def _load_member_listings() -> pl.DataFrame:
 
 def _load_charter_aliases() -> pl.DataFrame:
     """The hand-maintained NCUA charters FHFA never printed for a member (ncua_charter, fhfb_id)."""
-    fhlb_conf = config.HMDAFHLBMatchingConfig.get_fhlb_config()
+    fhlb_conf = HMDAFHLBMatchingConfig.get_fhlb_config()
     path = fhlb_conf.FHLBConfig.FHLB_SCHEMAS_DIR / CHARTER_ALIASES_FILE
     return pl.read_csv(
         path, schema_overrides={"ncua_charter": pl.Int64, "fhfb_id": pl.Int64}
@@ -236,10 +239,10 @@ def get_fhlb_members_post2018(
         max_year: Maximum year to include.
         overwrite: If True, overwrite existing file.
         crosswalk_folder: Directory for crosswalk outputs.
-            Defaults to config.CROSSWALK_DIR.
+            Defaults to ``HMDA_FHLB_CROSSWALK_DIR``.
     """
     if crosswalk_folder is None:
-        crosswalk_folder = config.CROSSWALK_DIR
+        crosswalk_folder = HMDAFHLBMatchingConfig.HMDA_FHLB_CROSSWALK_DIR
     crosswalk_folder.mkdir(parents=True, exist_ok=True)
     output_file = crosswalk_folder / "hmda_fhlb_lender_crosswalk_post2018.parquet"
 
@@ -249,7 +252,7 @@ def get_fhlb_members_post2018(
 
     logger.info("Extracting FHLB members from Avery file (post-2018)")
 
-    avery_path = config.AVERY_FILE_PATH
+    avery_path = HMDAFHLBMatchingConfig.AVERY_FILE_PATH
     if not avery_path.exists():
         raise FileNotFoundError(f"Avery file not found: {avery_path}")
 
@@ -323,7 +326,7 @@ def prepare_fhlb_pre2018(match_folder: Path, max_year: int, overwrite: bool = Fa
 
     logger.info("Cleaning FHLB data (pre-2018)")
 
-    fhlb_conf = config.HMDAFHLBMatchingConfig.get_fhlb_config()
+    fhlb_conf = HMDAFHLBMatchingConfig.get_fhlb_config()
     fhlb_dir = fhlb_conf.FHLBConfig.FHLB_SILVER_DIR / "ama"
 
     keep_cols = [
@@ -418,7 +421,7 @@ def prepare_fhlb_post2018(match_folder: Path, max_year: int, overwrite: bool = F
 
     logger.info("Cleaning FHLB data (post-2018)")
 
-    fhlb_conf = config.HMDAFHLBMatchingConfig.get_fhlb_config()
+    fhlb_conf = HMDAFHLBMatchingConfig.get_fhlb_config()
     fhlb_dir = fhlb_conf.FHLBConfig.FHLB_SILVER_DIR / "ama"
 
     columns = [
@@ -511,10 +514,10 @@ def prepare_hmda_pre2018(
     Args:
         match_folder: Output directory
         overwrite: If True, overwrite existing file
-        crosswalk_folder: Directory for crosswalk files. Defaults to config.CROSSWALK_DIR.
+        crosswalk_folder: Directory for crosswalk files. Defaults to ``HMDA_FHLB_CROSSWALK_DIR``.
     """
     if crosswalk_folder is None:
-        crosswalk_folder = config.CROSSWALK_DIR
+        crosswalk_folder = HMDAFHLBMatchingConfig.HMDA_FHLB_CROSSWALK_DIR
     output_file = match_folder / "hmda_fhlb_members_pre2018.parquet"
 
     if not should_process_file(output_file, overwrite):
@@ -523,7 +526,7 @@ def prepare_hmda_pre2018(
 
     logger.info("Cleaning HMDA data for FHLB members (pre-2018)")
 
-    hmda_conf = config.HMDAFHLBMatchingConfig.get_hmda_config()
+    hmda_conf = HMDAFHLBMatchingConfig.get_hmda_config()
     cw_file = crosswalk_folder / "hmda_fhlb_lender_crosswalk_pre2018.parquet"
 
     if not cw_file.exists():
@@ -619,10 +622,10 @@ def prepare_hmda_post2018(
         match_folder: Output directory
         max_year: Maximum year to process
         overwrite: If True, overwrite existing file
-        crosswalk_folder: Directory for crosswalk files. Defaults to config.CROSSWALK_DIR.
+        crosswalk_folder: Directory for crosswalk files. Defaults to ``HMDA_FHLB_CROSSWALK_DIR``.
     """
     if crosswalk_folder is None:
-        crosswalk_folder = config.CROSSWALK_DIR
+        crosswalk_folder = HMDAFHLBMatchingConfig.HMDA_FHLB_CROSSWALK_DIR
     output_file = match_folder / "hmda_fhlb_members_post2018.parquet"
 
     if not should_process_file(output_file, overwrite):
@@ -649,7 +652,7 @@ def prepare_hmda_post2018(
             continue
 
         lf = lf.filter((pl.col("action_taken") == 1) & (pl.col("purchaser_type") != 3)).select(
-            config.HMDA_POST2018_COLS
+            HMDA_POST2018_COLS
         )
 
         df_year = lf.collect()

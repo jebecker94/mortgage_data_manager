@@ -128,12 +128,6 @@ class UMBSConfig(MortgageDataConfig):
     UMBS_SILVER_DIR: Path = Path(config("UMBS_SILVER_DIR", default=str(UMBS_DATA_DIR / "silver")))
     UMBS_GOLD_DIR: Path = Path(config("UMBS_GOLD_DIR", default=str(UMBS_DATA_DIR / "gold")))
 
-    # Backward compatibility aliases
-    PROJECT_DIR = MortgageDataConfig.PROJECT_DIR
-    RAW_DIR = UMBS_RAW_DIR
-    BRONZE_DIR = UMBS_BRONZE_DIR
-    SILVER_DIR = UMBS_SILVER_DIR
-
     @classmethod
     def get_prefix_dir(
         cls,
@@ -181,15 +175,6 @@ class UMBSConfig(MortgageDataConfig):
         # Create medallion directories
         for d in (cls.UMBS_RAW_DIR, cls.UMBS_BRONZE_DIR, cls.UMBS_SILVER_DIR):
             d.mkdir(parents=True, exist_ok=True)
-
-
-# Module-level path constants for backward compatibility
-PROJECT_ROOT = UMBSConfig.PROJECT_DIR
-DATA_ROOT = UMBSConfig.UMBS_DATA_DIR
-DATA_DIR = UMBSConfig.UMBS_DATA_DIR
-RAW_DIR = UMBSConfig.RAW_DIR
-BRONZE_DIR = UMBSConfig.BRONZE_DIR
-SILVER_DIR = UMBSConfig.SILVER_DIR
 
 
 # --------------------------------------------------------------------------- #

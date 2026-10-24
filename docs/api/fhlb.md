@@ -1,9 +1,5 @@
 # FHLB API Reference
 
-API reference for the FHLB (Federal Home Loan Bank) subpackage.
-
----
-
 ## Overview
 The FHLB subpackage downloads and processes Federal Home Loan Bank data published by FHFA:
 
@@ -15,8 +11,6 @@ The FHLB subpackage downloads and processes Federal Home Loan Bank data publishe
 
 Members has no silver builder; dictionaries are downloaded for reference and never built.
 
----
-
 ## Source documentation
 FHFA publishes the AMA data files and one data-definitions document per year (XLS for the
 earliest years, PDF since) on its
@@ -25,50 +19,29 @@ earliest years, PDF since) on its
 `{FHLB_DATA_DIR}/dictionaries/`. Member lists are published on FHFA's
 [FHLB Membership Data page](https://www.fhfa.gov/data/fhlb-membership).
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.fhlb.config
-
----
 
 ## Download
 
 ::: mortgage_data_manager.sources.fhlb.download
 
----
-
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.fhlb.import_bronze
-
----
 
 ## Silver layer
 
 ::: mortgage_data_manager.sources.fhlb.import_silver
 
----
-
 ## Canonical schemas
 
 ::: mortgage_data_manager.sources.fhlb.canonical
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.fhlb.pipeline
-
----
-
-## CLI
-Commands, options and examples for `mortgage-data fhlb` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-fhlb). `mortgage-data fhlb --help` is
-authoritative.
-
----
 
 ## Data Structure
 ### Raw Layer
@@ -107,8 +80,6 @@ each vintage's headers to one typed layout and fail loudly on an unrecognized vi
 - **Location**: `{FHLB_SILVER_DIR}/ama/`
 - **Transformations**: Percentage normalization, income unit fixes, indicator standardization, census tract cleaning, null handling
 
----
-
 ## Known Data Issues
 - **`Borrower1CreditScoreValue` / `Borrower2CreditScoreValue` are banded codes, not
   credit scores.** Every value in every vintage (2009-2025) is a code from 1 to 9 — the
@@ -122,8 +93,6 @@ each vintage's headers to one typed layout and fail loudly on an unrecognized vi
 - **`LoanCharacteristicsID` restarts annually before 2015** (a per-year row sequence
   `1..N`); it is a global sequence from 2015 on. Any join or window on the ID for
   early years must include `data_year`.
-
----
 
 ## See Also
 - [Core API](core.md) - Shared utilities and medallion architecture

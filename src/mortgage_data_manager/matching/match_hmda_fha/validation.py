@@ -1120,7 +1120,7 @@ def sides_pre2018(
 def pre2018_per_year_counts(
     crosswalk: pl.LazyFrame,
     fha: pl.LazyFrame,
-    hmda_folder: Path = Config.HMDA_PRE2018_SILVER_DIR,
+    hmda_dir: Path = Config.HMDA_PRE2018_SILVER_DIR,
     min_year: int = Config.PRE2018_MIN_YEAR,
     max_year: int = Config.PRE2018_MAX_YEAR,
 ) -> pl.DataFrame:
@@ -1135,14 +1135,14 @@ def pre2018_per_year_counts(
     Args:
         crosswalk: Published pre-2018 crosswalk.
         fha: Prepared FHA endorsement pool.
-        hmda_folder: HMDA ``period_2007_2017`` silver loans directory.
+        hmda_dir: HMDA ``period_2007_2017`` silver loans directory.
         min_year: First activity year.
         max_year: Last activity year.
 
     Returns:
         One row per activity year, with per-source counts and both match rates.
     """
-    denominators = hmda_fha_origination_counts(hmda_folder, min_year, max_year)
+    denominators = hmda_fha_origination_counts(hmda_dir, min_year, max_year)
     tagged = _crosswalk_years(crosswalk)
 
     pairs = (
@@ -1527,7 +1527,7 @@ def _modal_respondent_share(pairs: pl.DataFrame) -> float:
 
 def pre2018_selection_bias(
     crosswalk: pl.LazyFrame,
-    hmda_folder: Path = Config.HMDA_PRE2018_SILVER_DIR,
+    hmda_dir: Path = Config.HMDA_PRE2018_SILVER_DIR,
     years: tuple[int, ...] = (2012, 2015),
 ) -> pl.DataFrame:
     """Demographic and income profile of matched vs unmatched originations.
@@ -1544,7 +1544,7 @@ def pre2018_selection_bias(
 
     Args:
         crosswalk: The match crosswalk.
-        hmda_folder: Root of the HMDA silver layer.
+        hmda_dir: Root of the HMDA silver layer.
         years: Activity years to include.
 
     Returns:
@@ -1554,7 +1554,7 @@ def pre2018_selection_bias(
     rows = []
     for year in years:
         loans = (
-            scan_hmda("period_2007_2017", year, root=hmda_folder)
+            scan_hmda("period_2007_2017", year, root=hmda_dir)
             .filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
             .select(
                 "HMDAIndex",
@@ -1593,7 +1593,7 @@ def pre2018_selection_bias(
 def pre2018_frozen_agreement(
     crosswalk: pl.LazyFrame,
     legacy_path: Path | None = None,
-    hmda_folder: Path = Config.HMDA_PRE2018_SILVER_DIR,
+    hmda_dir: Path = Config.HMDA_PRE2018_SILVER_DIR,
     min_year: int = Config.PRE2018_MIN_YEAR,
     max_year: int = Config.PRE2018_MAX_YEAR,
 ) -> pl.DataFrame:
@@ -1616,7 +1616,7 @@ def pre2018_frozen_agreement(
     Args:
         crosswalk: Published pre-2018 crosswalk.
         legacy_path: Frozen artifact. Defaults to the archived location.
-        hmda_folder: HMDA ``period_2007_2017`` silver loans directory.
+        hmda_dir: HMDA ``period_2007_2017`` silver loans directory.
         min_year: First activity year.
         max_year: Last activity year.
 
@@ -1653,7 +1653,7 @@ def pre2018_frozen_agreement(
             )
         else:
             keys = (
-                scan_hmda("period_2007_2017", year, root=hmda_folder)
+                scan_hmda("period_2007_2017", year, root=hmda_dir)
                 .filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
                 .select("HMDAIndex", "respondent_id", "agency_code", "sequence_number")
                 .collect()

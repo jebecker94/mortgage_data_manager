@@ -4,15 +4,14 @@ from __future__ import annotations
 
 import datetime
 import re
-import shutil
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from pathlib import Path
 
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import write_hive_partitioned
+from mortgage_data_manager.core.medallion import clear_partitions, write_hive_partitioned
 from mortgage_data_manager.core.types import SilverSpec, apply_silver_types, enforce_schema
 
 from .config import HECM_SILVER, SINGLE_FAMILY_SILVER, SnapshotType
@@ -150,19 +149,6 @@ def _snapshot_periods(path: Path) -> frozenset[tuple[int, int]]:
     return frozenset((int(year), int(month)) for year, month in rows.iter_rows())
 
 
-def _remove_partitions(save_folder: Path, periods: Iterable[tuple[int, int]]) -> None:
-    """Delete exactly the ``Year=*/Month=*`` leaves about to be rewritten.
-
-    Partition-scoped by construction: every path removed is two components below
-    ``save_folder``, which is itself never touched.
-    """
-    for year, month in periods:
-        leaf = save_folder / f"Year={year}" / f"Month={month}"
-        if leaf.is_dir():
-            logger.debug("Removing stale partition %s", leaf)
-            shutil.rmtree(leaf)
-
-
 def build_silver_snapshots(
     data_folder: Path,
     save_folder: Path,
@@ -282,7 +268,7 @@ def build_silver_snapshots(
     # deterministically named file clobbering the old one) is what makes a
     # partition that shrinks -- or that was written by an older, differently
     # naming sink -- come back with exactly the rows it should have.
-    _remove_partitions(save_folder, periods)
+    clear_partitions(save_folder, (f"Year={y}/Month={m}" for y, m in periods))
 
     write_hive_partitioned(
         df,

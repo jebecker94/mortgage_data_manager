@@ -17,14 +17,17 @@ Example:
 from __future__ import annotations
 
 import re
-import shutil
 from pathlib import Path
 from typing import Literal
 
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import atomic_output, should_process_file
+from mortgage_data_manager.core.medallion import (
+    atomic_output,
+    clear_partitions,
+    should_process_file,
+)
 from mortgage_data_manager.core.types import (
     apply_silver_types,
     enforce_schema,
@@ -618,13 +621,8 @@ def build_silver_period_2007_2017(
     silver_folder.resolve().mkdir(parents=True, exist_ok=True)
 
     for year in range(min_year, max_year + 1):
-        # When overwrite=True, clear ONLY the year(s) being rebuilt — never the
-        # entire silver folder, which would wipe years outside the requested
-        # range.
         if overwrite:
-            year_dir = silver_folder / f"activity_year={year}"
-            if year_dir.exists():
-                shutil.rmtree(year_dir)
+            clear_partitions(silver_folder, [f"activity_year={year}"])
 
         for file in _bronze_files_for_year(bronze_folder, year):
             lf = pl.scan_parquet(file, low_memory=True)
@@ -816,13 +814,8 @@ def build_silver_post2018(
     silver_folder.resolve().mkdir(parents=True, exist_ok=True)
 
     for year in range(min_year, max_year + 1):
-        # When overwrite=True, clear ONLY the year(s) being rebuilt — never the
-        # entire silver folder, which would wipe years outside the requested
-        # range.
         if overwrite:
-            year_dir = silver_folder / f"activity_year={year}"
-            if year_dir.exists():
-                shutil.rmtree(year_dir)
+            clear_partitions(silver_folder, [f"activity_year={year}"])
 
         for file in _bronze_files_for_year(bronze_folder, year):
             lf = pl.scan_parquet(file, low_memory=True)

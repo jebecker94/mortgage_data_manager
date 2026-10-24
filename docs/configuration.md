@@ -11,6 +11,15 @@ Values are read once, when a config module is imported. Setting an environment v
 after `mortgage_data_manager.*.config` has been imported has no effect; change `.env` or
 the environment before the process starts.
 
+The `.env` file is found by searching upward from the installed package, so it works for
+a source checkout or editable install. A regular (non-editable) install has no project
+root; set the variables in the environment instead. Set only what you want to change:
+
+```bash
+# .env
+MORTGAGE_DATA_DIR=/data/mortgage_data
+```
+
 ## Environment variables
 
 ### Core
@@ -63,9 +72,10 @@ layer (FHFA, FHLB, FHLMC, FNMA, GNMA and UMBS). Each source's `info` command pri
 paths it resolved.
 
 These keys move a source for its own commands only. Several matching workflows find
-their HMDA, GNMA and UMBS inputs under `{MORTGAGE_DATA_DIR}/{source}/` directly, so
-to keep one source on another drive, symlink its directory into the data root instead
-(see [Common setups](#common-setups)).
+their HMDA, GNMA and UMBS inputs under `{MORTGAGE_DATA_DIR}/{source}/` directly, so to
+keep a source on another drive, symlink its directory into the data root instead
+(`ln -s /hdd/fhlmc /data/mortgage_data/fhlmc`). The whole data root can be a symlink
+too; if its drive is not mounted, every read under it raises `FileNotFoundError`.
 
 ### Matching
 
@@ -77,112 +87,15 @@ to keep one source on another drive, symlink its directory into the data root in
 Final crosswalks are written outside the data root, under
 `{MORTGAGE_DATA_CROSSWALK_DIR}/{workflow}/`.
 
-## The `.env` file
-
-Put a `.env` file in the project root and set only what you want to change:
-
-```bash
-# .env
-MORTGAGE_DATA_DIR=/data/mortgage_data
-```
-
-The file is found by searching upward from the installed package, so it works for a
-source checkout or editable install. A regular (non-editable) install has no project
-root; set the variables in the environment instead.
-
-## Directory layout
-
-The `data/` directory is not part of the repository. Directories are created when a CLI
-command first writes to them, or up front with a config's `ensure_directories()`:
-
-```python
-from mortgage_data_manager.sources.hmda.config import HMDAConfig
-
-HMDAConfig.ensure_directories()
-```
-
-With the defaults, the tree looks like this:
-
-```
-{MORTGAGE_DATA_DIR}/
-├── hmda/
-│   ├── raw/
-│   ├── bronze/
-│   └── silver/
-├── fha/
-├── gnma/
-├── fhfa/
-├── fnma/
-├── fhlmc/
-├── umbs/
-├── usps_crosswalk/     # raw + bronze only; this source has no silver
-├── hud/
-├── fhlb/
-├── combined/           # cross-source master datasets
-├── analytics/
-├── reference/          # downloaded reference files
-├── download_ledger/
-└── matching/
-    ├── {workflow}/     # intermediates for one workflow
-    └── cache/
-```
-
 ## Reading paths in code
 
-Use the config classes directly; they are never instantiated.
-
-```python
-from mortgage_data_manager.sources.hmda.config import HMDAConfig
-from mortgage_data_manager.matching.config import MatchingConfig
-
-HMDAConfig.HMDA_SILVER_DIR                           # {MORTGAGE_DATA_DIR}/hmda/silver
-MatchingConfig.get_matching_type_dir("hmda_fha")     # {MATCHING_DATA_DIR}/hmda_fha
-MatchingConfig.get_crosswalk_type_dir("hmda_fha")    # {MORTGAGE_DATA_CROSSWALK_DIR}/hmda_fha
-```
-
-Every subpackage follows the same naming: `FHAConfig.FHA_RAW_DIR`,
-`GNMAConfig.GNMA_SILVER_DIR`, `FHLBConfig.FHLB_DATA_DIR`, and so on.
-
-## Common setups
-
-**One data root.** Set `MORTGAGE_DATA_DIR` and let every subpackage take a
-subdirectory of it. This is the normal case.
-
-```bash
-# .env
-MORTGAGE_DATA_DIR=/data/mortgage_data
-```
-
-**External volume by symlink.** `ln -s /Volumes/ExternalSSD/mortgage_data data`
-works without any configuration. If the drive is not mounted, reads raise
-`FileNotFoundError`.
-
-**Split across drives.** Keep one data root and symlink the sources that live elsewhere
-into it, such as a fast SSD for what you query constantly and bulk storage for the
-archives:
-
-```bash
-ln -s /hdd/fhlmc /data/mortgage_data/fhlmc
-```
+Use the config class attributes directly, such as `HMDAConfig.HMDA_SILVER_DIR` or
+`GNMAConfig.GNMA_RAW_DIR`; the classes are never instantiated. Directories are created
+when a command first writes to them.
 
 ## Troubleshooting
 
-**Environment variables are not being read.** `.env` must be in the project root
-(the directory `MORTGAGE_DATA_PROJECT_DIR` resolves to), and `KEY=value` takes no
-spaces around the `=`. `mortgage-data info` prints the project and data directories
-that resolved, and `mortgage-data <source> info` prints one source's paths.
-
-**`FileNotFoundError` on a path that should exist.** Check the configured value
-before assuming the data is missing:
-
-```python
-from mortgage_data_manager.sources.hmda.config import HMDAConfig
-
-print(HMDAConfig.HMDA_DATA_DIR, HMDAConfig.HMDA_DATA_DIR.exists())
-```
-
-If the drive holding the data root is not mounted, every path under it fails this
-way.
-
-**Running out of space.** The raw layer is the largest, and the easiest to replace
-because it can be downloaded again. `du -sh {MORTGAGE_DATA_DIR}/*` shows where the space went.
+`mortgage-data info` prints the project and data directories that resolved, and
+`mortgage-data <source> info` prints one source's paths. If a setting is ignored, check
+that `.env` is in that project directory and that `KEY=value` has no spaces around
+the `=`.

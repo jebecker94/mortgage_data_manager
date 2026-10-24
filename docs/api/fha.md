@@ -1,10 +1,5 @@
 # FHA API Reference
 
-API reference for the FHA (Federal Housing Administration) subpackage, covering the HUD single-family
-and HECM portfolio snapshots.
-
----
-
 ## Overview
 HUD publishes two monthly loan-level Excel snapshots of the FHA-insured portfolio. This subpackage
 downloads them, converts them to parquet, and cleans them into a hive-partitioned silver layer.
@@ -30,13 +25,9 @@ names, attaches county and state FIPS codes, applies the `SilverSpec` dtypes (in
 zero-padding on identifiers that bronze's integer storage strips), and partitions by `Year` and
 `Month`.
 
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.fha.config
-
----
 
 ## Download
 
@@ -44,38 +35,21 @@ zero-padding on identifiers that bronze's integer storage strips), and partition
 
 ::: mortgage_data_manager.sources.fha.lender_list
 
----
-
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.fha.import_bronze
-
----
 
 ## Silver layer
 
 ::: mortgage_data_manager.sources.fha.import_silver
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.fha.pipeline
 
----
-
 ## Utilities
 
 ::: mortgage_data_manager.sources.fha.utils
-
----
-
-## CLI
-Commands, options and examples for `mortgage-data fha` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-fha). `mortgage-data fha --help` is
-authoritative.
-
----
 
 ## Data Structure
 ### Layers
@@ -229,8 +203,6 @@ recent = (
 )
 ```
 
----
-
 ## Coverage and Known Issues
 ### Temporal Coverage
 
@@ -276,8 +248,6 @@ act on them:
   remain across the three; a no-op on every other vintage), so that month's
   servicer and NMLS coverage is near-empty by design rather than mis-parsed. Its other identifier
   columns and its 4,223 rows are unaffected.
-
----
 
 ## See Also
 - [HMDA API Reference](hmda.md) -- companion origination data

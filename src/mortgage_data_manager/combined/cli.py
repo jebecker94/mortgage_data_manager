@@ -1,7 +1,7 @@
 """Typer CLI for the combined master datasets.
 
 Surfaced as ``mortgage-data combined <command>``. Builds the small curated set
-of cross-source master datasets (loan/MBS issuance + performance, issuer).
+of cross-source master datasets (loan/MBS issuance + performance).
 """
 
 from __future__ import annotations

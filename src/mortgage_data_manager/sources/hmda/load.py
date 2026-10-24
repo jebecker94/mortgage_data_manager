@@ -28,7 +28,12 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.sources.hmda.config import HMDAConfig, HMDADataset, HMDAPeriod
+from mortgage_data_manager.sources.hmda.config import (
+    HMDA_INDEX_COLUMN,
+    HMDAConfig,
+    HMDADataset,
+    HMDAPeriod,
+)
 from mortgage_data_manager.sources.hmda.utils import hmda_index_file_type, hmda_index_year
 
 logger = get_logger(__name__)
@@ -198,7 +203,7 @@ def scan_hmda_for_index(
         FileNotFoundError: If a release the index names is no longer on disk.
     """
     if isinstance(index, pl.Series):
-        index = index.to_frame(HMDAConfig.HMDA_INDEX_COLUMN)
+        index = index.to_frame(HMDA_INDEX_COLUMN)
     releases = (
         index.lazy()
         .select(hmda_index_year().alias("year"), hmda_index_file_type().alias("file_type"))

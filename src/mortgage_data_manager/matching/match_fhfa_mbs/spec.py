@@ -139,14 +139,11 @@ class GseSpec:
         id_column: Loan key on the written crosswalk. The engine works in
             ``loan_id`` and renames on the way out.
         enterprise_flag: FHFA ``enterprise_flag`` value (1 Fannie, 2 Freddie).
-        enterprise_dtype: Dtype the written ``fhfa_enterprise`` column carries.
-            Per enterprise because the two crosswalks have always disagreed
-            (Int8 vs Int64); normalising it is a consumer-facing change of its own.
         load: Scan the enterprise's loan-level data for an acquisition year, with
             ``prior_years`` earlier origination cohorts alongside.
         prepare: Map that data onto the canonical matching schema.
-        crosswalk_columns: Written column order, again per enterprise only because
-            the two crosswalks have always disagreed.
+        crosswalk_columns: Written column order, per enterprise only because the two
+            crosswalks have always disagreed.
         tolerances: Numeric slack.
         options: Everything else.
         rounds: The enterprise's rounds, in run order (``rounds.py``).
@@ -158,7 +155,6 @@ class GseSpec:
     name: str
     id_column: str
     enterprise_flag: int
-    enterprise_dtype: type[pl.DataType]
     load: Callable[[int, int], pl.LazyFrame]
     prepare: Callable[[pl.LazyFrame], pl.LazyFrame]
     crosswalk_columns: tuple[str, ...]

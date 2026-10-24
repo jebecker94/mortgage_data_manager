@@ -1,51 +1,28 @@
 # FHFA API Reference
 
-API reference for the FHFA (Federal Housing Finance Agency) subpackage.
-
----
-
 ## Configuration
 
 ::: mortgage_data_manager.sources.fhfa.config
-
----
 
 ## Download
 
 ::: mortgage_data_manager.sources.fhfa.download
 
----
-
 ## Bronze layer
 
 ::: mortgage_data_manager.sources.fhfa.import_bronze
-
----
 
 ## Silver layer
 
 ::: mortgage_data_manager.sources.fhfa.import_silver
 
----
-
 ## Schemas
 
 ::: mortgage_data_manager.sources.fhfa.schemas
 
----
-
 ## Pipeline
 
 ::: mortgage_data_manager.sources.fhfa.pipeline
-
----
-
-## CLI
-Commands, options and examples for `mortgage-data fhfa` live in the
-[CLI Reference](../cli_reference.md#mortgage-data-fhfa). `mortgage-data fhfa --help` is
-authoritative.
-
----
 
 ## Complete Example
 ```python
@@ -59,8 +36,6 @@ mortgage-data fhfa pipeline
 ```
 
 Valid datasets: `sf_a`, `sf_b`, `sf_c`, `sf_d`, `mf_c`, `mf_property_b`, `mf_unit_b`.
-
----
 
 ## Data Structure
 ### Directory Layout
@@ -168,8 +143,6 @@ with these in mind:
   ethnicity does not use it. The co-borrower credit-score model keeps `10`.
   Both score-model fields drop `9` (not applicable).
 
----
-
 ## Schema Inventories
 Column names and dtypes are **derived from the data dictionaries, not listed here.**
 FHFA revises dictionaries between vintages, and a pasted inventory goes stale silently —
@@ -204,8 +177,6 @@ Two conventions the dictionaries do not state:
 - **Silver column names are snake_case**; bronze keeps the dictionary's display names
   (`Loan-to-Value Ratio (LTV) at Origination`), so the same field is spelled differently in
   the two layers.
-
----
 
 ## See Also
 - [Core API](core.md) - Shared utilities and medallion architecture

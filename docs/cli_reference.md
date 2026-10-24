@@ -1814,7 +1814,6 @@ $ mortgage-data match hmda-fha [OPTIONS] COMMAND [ARGS]...
 
 * `info`: Show HMDA-FHA matching configuration and...
 * `run`: Run the HMDA-FHA matching pipeline for one...
-* `build-zip-tract`: Build consolidated ZIP-tract crosswalk...
 * `validate`: Run validation analysis and generate...
 
 #### `mortgage-data match hmda-fha info`
@@ -1855,10 +1854,15 @@ the HMDA loan register -- never a crosswalk -- so the yield it unlocks is not
 circular. Both sources are closed, so it rebuilds on a method change or an
 upstream silver rebuild (with --overwrite), not on the annual HMDA cycle.
 
+`--step zip-tract` builds only the ZIP-tract crosswalks (2000, 2010 and
+2020 census tracts) from the USPS crosswalk bronze. Either era&#x27;s match builds a missing
+one on demand; this step, with --overwrite, rebuilds them after a USPS refresh.
+
 Examples:
   mortgage-data match hmda-fha run
   mortgage-data match hmda-fha run --era pre2018 --step bridge
   mortgage-data match hmda-fha run --era pre2018
+  mortgage-data match hmda-fha run --step zip-tract --overwrite
 
 **Usage**:
 
@@ -1869,36 +1873,13 @@ $ mortgage-data match hmda-fha run [OPTIONS]
 **Options**:
 
 * `--era <str>`: Matching era: &#x27;post2018&#x27; (default) or &#x27;pre2018&#x27; (2010-2017)  [default: post2018]
-* `--step <str>`: match (default), or bridge: pre2018 only, build just the lender bridge the pre-2018 match reads  [default: match]
+* `--step <str>`: match (default); bridge: pre2018 only, build just the lender bridge the pre-2018 match reads; zip-tract: build just the ZIP-tract crosswalks both eras read  [default: match]
 * `-m, --min-year <int>`: Minimum year to match (default: the era&#x27;s)
 * `-M, --max-year <int>`: Maximum year to match (default: the era&#x27;s)
 * `--overwrite`: Rebuild the data-prep intermediates even if they exist
 * `--fha-dir <path>`: Override FHA silver data directory
 * `--hmda-dir <path>`: Override HMDA silver data directory
 * `-o, --output-dir <path>`: Override output directory
-* `--help`: Show this message and exit.
-
-#### `mortgage-data match hmda-fha build-zip-tract`
-
-Build consolidated ZIP-tract crosswalk from HUD data.
-
-The HUD crosswalk uses different census tract vintages:
-- 2010: Census tracts used for years 2010-2019
-- 2020: Census tracts used for years 2020+
-
-**Usage**:
-
-```console
-$ mortgage-data match hmda-fha build-zip-tract [OPTIONS] {census_vintage}
-```
-
-**Arguments**:
-
-* `census_vintage`: Census vintage (2010 or 2020)  [required]
-
-**Options**:
-
-* `-o, --output <path>`: Output path for crosswalk file
 * `--help`: Show this message and exit.
 
 #### `mortgage-data match hmda-fha validate`
@@ -2161,7 +2142,6 @@ $ mortgage-data match hmda-gse [OPTIONS] COMMAND [ARGS]...
 
 * `info`: Show information about HMDA-GSE matching...
 * `run`: Build the HMDA-GSE crosswalks.
-* `lender-crosswalk`: Build lender/seller crosswalk for name...
 * `validate`: Run validation analysis on HMDA-GSE matches.
 
 #### `mortgage-data match hmda-gse info`
@@ -2198,11 +2178,17 @@ against the chain and an ``fhfa_verdict``. Output:
 crosswalk/hmda_gse/hmda_gse_crosswalk_direct_{year}.parquet and
 hmda_gse_lender_bridge.parquet.
 
+--step lender-crosswalk reads the enriched chain crosswalk (`--route chain
+--enrich`) and lists the HMDA lenders and UMBS sellers that often match under
+different names: mergers, rebrands, affiliates and DBAs. Retail by default, where
+the originator should be the seller.
+
 Examples:
   mortgage-data match hmda-gse run
   mortgage-data match hmda-gse run --route chain --agency fnma --enrich
   mortgage-data match hmda-gse run --route direct --min-year 2024 --overwrite
   mortgage-data match hmda-gse run --route direct --saved-bridge --overwrite
+  mortgage-data match hmda-gse run --step lender-crosswalk --min-loans 500
 
 **Usage**:
 
@@ -2213,39 +2199,17 @@ $ mortgage-data match hmda-gse run [OPTIONS]
 **Options**:
 
 * `-r, --route <str>`: chain (HMDA → FHFA → MBS → UMBS), direct (HMDA ↔ combined loan issuance), or all (chain first: the direct match reads it)  [default: all]
+* `--step <str>`: match (default), or lender-crosswalk: list the frequent lender/seller name pairs that disagree, from the enriched chain crosswalk (--route ignored)  [default: match]
 * `-a, --agency <str>`: Chain only: fnma, fhlmc, or all  [default: all]
 * `-m, --min-year <int>`: Minimum HMDA activity year  [default: 2018]
 * `-M, --max-year <int>`: Maximum HMDA activity year  [default: 2025]
 * `-e, --enrich`: Chain only: also write the enriched crosswalk
-* `-o, --output-dir <path>`: Chain only: write the crosswalks here
+* `-o, --output-dir <path>`: Chain and lender-crosswalk only: write the crosswalks here
 * `--overwrite`: Direct only: rebuild years that already exist and rerun the bridge pass
 * `--keep-double-claims`: Direct only: admit increment rows whose target the chain already claims (not recommended)
 * `--saved-bridge`: Direct only: block on the saved lender bridge instead of rebuilding it
-* `--help`: Show this message and exit.
-
-#### `mortgage-data match hmda-gse lender-crosswalk`
-
-Build lender/seller crosswalk for name mismatches.
-
-Identifies HMDA lenders and UMBS sellers that frequently match but have
-different names. These represent mergers, acquisitions, rebrands, affiliates,
-and DBAs worth documenting.
-
-The analysis focuses on Retail channel by default, where the originating
-lender is expected to be the same as the seller to the GSEs.
-
-**Usage**:
-
-```console
-$ mortgage-data match hmda-gse lender-crosswalk [OPTIONS]
-```
-
-**Options**:
-
-* `-l, --min-loans <int>`: Minimum number of matched loans to include a pair  [default: 100]
-* `-c, --channel <str>`: Channel to filter on (R=Retail, C=Correspondent, B=Broker)  [default: R]
-* `-r, --report`: Generate markdown documentation report
-* `-o, --output-dir <path>`: Override output directory
+* `--min-loans <int>`: Lender-crosswalk only: matched loans a pair needs to be listed  [default: 100]
+* `--channel <str>`: Lender-crosswalk only: UMBS channel (R=Retail, C=Correspondent, B=Broker)  [default: R]
 * `--help`: Show this message and exit.
 
 #### `mortgage-data match hmda-gse validate`
@@ -3315,7 +3279,7 @@ $ mortgage-data combined build [OPTIONS]
 
 **Options**:
 
-* `-t, --datasets <str>`: Masters to build (repeatable). Default: all buildable (loan_issuance, loan_performance, loan_terminations, loan_outcomes, mbs_issuance, mbs_performance, issuer).
+* `-t, --datasets <str>`: Masters to build (repeatable). Default: all buildable (loan_issuance, loan_performance, loan_terminations, loan_outcomes, mbs_issuance, mbs_performance).
 * `--overwrite`: Rebuild existing outputs.
 * `-v, --verbose`: Enable verbose (DEBUG level) logging output.
 * `-q, --quiet`: Suppress progress bars and reduce output.

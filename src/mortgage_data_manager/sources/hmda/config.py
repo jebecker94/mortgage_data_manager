@@ -37,14 +37,6 @@ class HMDAConfig(MortgageDataConfig):
     HMDA_BRONZE_DIR: Path = Path(config("HMDA_BRONZE_DIR", default=str(HMDA_DATA_DIR / "bronze")))
     HMDA_SILVER_DIR: Path = Path(config("HMDA_SILVER_DIR", default=str(HMDA_DATA_DIR / "silver")))
 
-    # Backward compatibility aliases
-    RAW_DIR = HMDA_RAW_DIR
-    BRONZE_DIR = HMDA_BRONZE_DIR
-    SILVER_DIR = HMDA_SILVER_DIR
-
-    # HMDA-specific constants
-    HMDA_INDEX_COLUMN = "HMDAIndex"
-
     @classmethod
     def ensure_directories(cls) -> None:
         """Create necessary HMDA directories if they don't exist."""
@@ -103,16 +95,8 @@ class HMDAConfig(MortgageDataConfig):
         return cls.HMDA_SILVER_DIR / dataset / period
 
 
-# ============================================================================
-# Convenience exports for backward compatibility
-# ============================================================================
-
-PROJECT_DIR = HMDAConfig.PROJECT_DIR
-DATA_DIR = HMDAConfig.HMDA_DATA_DIR
-RAW_DIR = HMDAConfig.HMDA_RAW_DIR
-BRONZE_DIR = HMDAConfig.HMDA_BRONZE_DIR
-SILVER_DIR = HMDAConfig.HMDA_SILVER_DIR
-HMDA_INDEX_COLUMN = HMDAConfig.HMDA_INDEX_COLUMN
+#: Name of the synthesized row identifier carried from bronze into every silver table.
+HMDA_INDEX_COLUMN: Final = "HMDAIndex"
 
 
 # ============================================================================

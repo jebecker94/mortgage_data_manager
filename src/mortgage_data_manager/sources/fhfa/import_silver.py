@@ -23,11 +23,9 @@ from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import should_process_file
 from mortgage_data_manager.core.types import apply_silver_types, enforce_schema
 from mortgage_data_manager.sources.fhfa.config import (
-    BRONZE_DIR,
     DATASET_MAP,
     FHFA_SILVER_SPECS,
-    SCHEMAS_DIR,
-    SILVER_DIR,
+    FHFAConfig,
 )
 
 logger = get_logger(__name__)
@@ -41,7 +39,7 @@ _CENSUS_VINTAGES = (1990, 2000, 2010, 2020, 2030, 2040)
 
 def _load_rename_map() -> dict[str, str]:
     """Load the raw-FHFA -> snake_case column rename dictionary."""
-    df = pl.read_csv(SCHEMAS_DIR / "unique_column_names_dict.csv")
+    df = pl.read_csv(FHFAConfig.FHFA_SCHEMAS_DIR / "unique_column_names_dict.csv")
     return dict(zip(df["Field Name"].to_list(), df["Standardized Name"].to_list()))
 
 
@@ -60,15 +58,15 @@ def save_to_silver(
     Args:
         dataset: Dataset (e.g., 'sf_c', 'mf_property_b').
         years: Years to load.
-        bronze_dir: Bronze data directory. Defaults to ``BRONZE_DIR / dataset``.
-        silver_dir: Silver data directory. Defaults to ``SILVER_DIR / dataset``.
+        bronze_dir: Bronze data directory. Defaults to ``FHFAConfig.FHFA_BRONZE_DIR / dataset``.
+        silver_dir: Silver data directory. Defaults to ``FHFAConfig.FHFA_SILVER_DIR / dataset``.
         drop_patterns: Substring patterns for dropping columns. If provided,
             replaces ``DEFAULT_DROP_PATTERNS``.
         additional_drop_patterns: Patterns to add to ``DEFAULT_DROP_PATTERNS``.
         overwrite: Whether to replace existing silver files. Default False.
     """
-    bronze_dir = bronze_dir if bronze_dir else BRONZE_DIR / dataset
-    silver_dir = silver_dir if silver_dir else SILVER_DIR / dataset
+    bronze_dir = bronze_dir if bronze_dir else FHFAConfig.FHFA_BRONZE_DIR / dataset
+    silver_dir = silver_dir if silver_dir else FHFAConfig.FHFA_SILVER_DIR / dataset
     silver_dir.mkdir(parents=True, exist_ok=True)
 
     if dataset not in DATASET_MAP:

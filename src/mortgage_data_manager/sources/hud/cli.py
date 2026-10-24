@@ -20,13 +20,15 @@ from mortgage_data_manager.core.cli.download_options import (
     VerboseOption,
 )
 from mortgage_data_manager.core.cli.formatting import console
-from mortgage_data_manager.core.cli.validation import version_callback_factory
+from mortgage_data_manager.core.cli.validation import (
+    validate_datasets,
+    version_callback_factory,
+)
 from mortgage_data_manager.core.logging import configure_logging
 from mortgage_data_manager.sources.hud.config import (
     DATASET_MAP,
     VALID_DATASETS,
     HUDConfig,
-    validate_datasets,
 )
 from mortgage_data_manager.sources.hud.download import missing_sources, snapshot_dates
 from mortgage_data_manager.sources.hud.pipeline import (
@@ -135,7 +137,7 @@ def download_command(
     """Download HUD multifamily workbooks + Data Element Dictionaries."""
     configure_logging(level=_log_level(verbose, quiet))
     if datasets is not None:
-        validate_datasets(datasets)
+        validate_datasets(datasets, VALID_DATASETS)
     counts = run_download(
         datasets,
         overwrite=overwrite,
@@ -162,7 +164,7 @@ def bronze_command(
     """Convert raw workbooks → typed bronze parquet (one per table)."""
     configure_logging(level=_log_level(verbose, quiet))
     if datasets is not None:
-        validate_datasets(datasets)
+        validate_datasets(datasets, VALID_DATASETS)
     counts = run_bronze(datasets, overwrite=overwrite)
     console.print(f"[bold]Bronze:[/bold] wrote {counts['built']} table parquets")
     if counts["built"] == 0:
@@ -179,7 +181,7 @@ def silver_command(
     """Build cleaned, key-normalized silver parquet from bronze."""
     configure_logging(level=_log_level(verbose, quiet))
     if datasets is not None:
-        validate_datasets(datasets)
+        validate_datasets(datasets, VALID_DATASETS)
     counts = run_silver(datasets, overwrite=overwrite)
     console.print(f"[bold]Silver:[/bold] built {counts['built']} table parquets")
     if counts["built"] == 0:
@@ -206,7 +208,7 @@ def pipeline_command(
     """End-to-end: download → bronze → silver."""
     configure_logging(level=_log_level(verbose, quiet))
     if datasets is not None:
-        validate_datasets(datasets)
+        validate_datasets(datasets, VALID_DATASETS)
     results = run_pipeline(
         datasets,
         overwrite=overwrite,
