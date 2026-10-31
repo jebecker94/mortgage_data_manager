@@ -30,41 +30,6 @@ logger = get_logger(__name__)
 # =============================================================================
 
 
-def get_fha_files(
-    fha_dir: Path,
-    year: int,
-    months: range | None = None,
-) -> list[Path]:
-    """Get FHA files for year.
-
-    FHA data is hive-partitioned by Year and Month.
-
-    Args:
-        fha_dir: Base FHA silver directory
-        year: Year to get files for
-        months: Optional range of months. Defaults to all 12 months.
-
-    Returns:
-        List of paths to FHA parquet files for the year/months
-    """
-    if months is None:
-        months = range(1, 13)
-
-    files: list[Path] = []
-    year_dir = fha_dir / f"Year={year}"
-    if not year_dir.exists():
-        logger.warning("FHA year directory not found: %s", year_dir)
-        return files
-
-    for month in months:
-        month_dir = year_dir / f"Month={month}"
-        if month_dir.exists():
-            month_files = list(month_dir.glob("*.parquet"))
-            files.extend(month_files)
-
-    return sorted(files)
-
-
 def build_zip_tract_crosswalk(
     usps_dir: Path,
     census_vintage: CensusVintage,

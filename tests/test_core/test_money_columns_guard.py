@@ -30,7 +30,6 @@ _ROOTS = sorted(
         *_DATA_DIR.glob("*/silver"),
         *_DATA_DIR.glob("*/gold"),
         _DATA_DIR / "combined",
-        _DATA_DIR / "analytics",
         _DATA_DIR / "matching" / "bridges",
         _DATA_DIR / "usps_crosswalk" / "bronze",
     ]

@@ -139,3 +139,16 @@ def to_date_from_datetime(expr: pl.Expr) -> pl.Expr:
         A ``pl.Date`` expression.
     """
     return expr.cast(pl.Date)
+
+
+def months_between(start: pl.Expr, end: pl.Expr) -> pl.Expr:
+    """Whole calendar months from ``start`` to ``end``, ignoring the day of the month.
+
+    Args:
+        start: Date expression.
+        end: Date expression.
+
+    Returns:
+        An integer expression, negative when ``end`` is the earlier month.
+    """
+    return (end.dt.year() * 12 + end.dt.month()) - (start.dt.year() * 12 + start.dt.month())

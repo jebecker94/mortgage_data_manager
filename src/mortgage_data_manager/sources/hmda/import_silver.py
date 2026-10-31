@@ -760,9 +760,16 @@ def _harmonize_schema(lf: pl.LazyFrame) -> pl.LazyFrame:
     for column in POST2018_FLOAT_COLUMNS:
         if column in lf_columns:
             lf = lf.with_columns(pl.col(column).cast(pl.Float64, strict=False).alias(column))
+    # Through Float64: the 2020 snapshot publishes loan_amount as "165000.0", which a direct
+    # integer cast nulls.
     for column in POST2018_INTEGER_COLUMNS:
         if column in lf_columns:
-            lf = lf.with_columns(pl.col(column).cast(pl.Int64, strict=False).alias(column))
+            lf = lf.with_columns(
+                pl.col(column)
+                .cast(pl.Float64, strict=False)
+                .cast(pl.Int64, strict=False)
+                .alias(column)
+            )
 
     # Clean income columns (only if column exists)
     if "income" in lf_columns:

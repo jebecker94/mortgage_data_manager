@@ -41,11 +41,6 @@ CT_CROSSWALK_URL = (
     "2022-tract-crosswalk/main/2022tractcrosswalk.csv"
 )
 
-# HMDA reporting year in which CT tract GEOIDs first appear under planning-region
-# codes (a hard cut: pre-2024 = county-coded, 2024+ = planning-region-coded).
-PLANREG_FIRST_YEAR: int = 2024
-
-
 _REFERENCE_DIR = MortgageDataConfig.REFERENCE_DIR
 
 
@@ -104,24 +99,6 @@ def load_ct_planreg_relationship() -> pl.LazyFrame:
     if not parquet.exists():
         _build_parquet_cache()
     return pl.scan_parquet(parquet)
-
-
-def needs_ct_planreg_bridge(early_year: int, late_year: int) -> bool:
-    """Report whether a year pair straddles the 2023/2024 CT planning-region cut.
-
-    HMDA switched CT tract GEOIDs from county-based to planning-region-based in
-    its 2024 reporting year. A join that pairs a pre-2024 (county-coded) CT
-    record with a 2024+ (planning-region-coded) CT record needs bridging; one
-    where both sides fall on the same side of the cut does not.
-
-    Args:
-        early_year: The earlier (or seller) reporting year.
-        late_year: The later (or purchaser) reporting year.
-
-    Returns:
-        True if the pair crosses the cut (``early_year < 2024 <= late_year``).
-    """
-    return early_year < PLANREG_FIRST_YEAR <= late_year
 
 
 def to_planning_region(lf: pl.LazyFrame, tract_col: str = "census_tract") -> pl.LazyFrame:

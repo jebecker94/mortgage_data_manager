@@ -51,7 +51,7 @@ __author__ = "Jonathan E. Becker"
 from .config import HMDAConfig
 
 # Import download functions
-from .download import determine_raw_subfolder, discover_files, download_hmda_files
+from .download import discover_files, download_hmda_files
 
 # Import core data processing functions
 from .import_bronze import (
@@ -110,5 +110,4 @@ __all__ = [
     # Download functions
     "download_hmda_files",
     "discover_files",
-    "determine_raw_subfolder",
 ]

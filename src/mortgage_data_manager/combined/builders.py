@@ -49,6 +49,7 @@ from mortgage_data_manager.combined.mbs_performance_schema import (
     GSE_TERMINAL_STATUS_INDICATORS,
     UMBS_ERA_START,
 )
+from mortgage_data_manager.core.amortization import scheduled_principal, smm_to_cpr
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.dates import (
     mmddyyyy_to_date,
@@ -2281,7 +2282,14 @@ def _build_gse_loan_terminations(
         sf_files = sf_files[:max_sf_files]
     total = 0
     for i, sf_file in enumerate(sf_files):
-        chunk = _assemble_gse_terminations(spec, pl.scan_parquet(str(sf_file))).collect(
+        # Fannie's Exclusion files (``{quarter}EXCL``) hold a different population: the
+        # ARM, Alt-A and other loans left out of the standard dataset. Keep them separable.
+        file_spec = (
+            replace(spec, source_universe="fnma_exclusion")
+            if sf_file.stem.endswith("EXCL")
+            else spec
+        )
+        chunk = _assemble_gse_terminations(file_spec, pl.scan_parquet(str(sf_file))).collect(
             engine="streaming"
         )
         n = _write_term_chunk(
@@ -3958,9 +3966,7 @@ def _assemble_gnmega_mbs_performance(scan: pl.LazyFrame, *, month: str) -> pl.La
 def _apply_mbs_performance_derivations(lf: pl.LazyFrame) -> pl.LazyFrame:
     """Apply the §4 windowed prepayment derivations (over ``[agency, pool_id]``).
 
-    The input must already be sorted by ``[agency, pool_id, as_of_date]``. Mirrors
-    ``analytics.calculated.scheduled_principal`` locally (never import
-    ``analytics`` — the dependency is analytics->combined, one-way). Uses the
+    The input must already be sorted by ``[agency, pool_id, as_of_date]``. Uses the
     backward-looking (prior-month) convention the spec mandates: the first
     observed month per pool leaves prior-dependent fields null. ``smm`` is clipped
     to ``[0, 1]`` with non-finite nulled; ``unscheduled_principal`` keeps its raw
@@ -3995,8 +4001,6 @@ def _apply_mbs_performance_derivations(lf: pl.LazyFrame) -> pl.LazyFrame:
     ).cast(pl.Float64)
     rate_amort = pl.coalesce(pl.col("wac"), pl.col("passthrough_rate"))
     warm_amort_prev = pl.coalesce(warm_wa_prev, months_to_maturity.clip(lower_bound=1.0))
-    i = rate_amort / 100.0 / 12.0  # monthly fraction
-    growth = (1.0 + i) ** warm_amort_prev
     smm_raw = (pl.col("unscheduled_principal") / pl.col("_smm_denom")).clip(
         lower_bound=0.0, upper_bound=1.0
     )
@@ -4012,15 +4016,7 @@ def _apply_mbs_performance_derivations(lf: pl.LazyFrame) -> pl.LazyFrame:
             .then(pl.lit("wa_block"))
             .otherwise(pl.lit("proxy"))
             .alias("amort_basis"),
-            # Level-payment principal portion; 0 in the degenerate cases that remain
-            # (i<=0, term<=0) rather than straight-line.
-            pl.when(rate_amort.is_null() | warm_amort_prev.is_null() | upb_prev.is_null())
-            .then(pl.lit(None, dtype=pl.Float64))
-            .when((i > 0) & (warm_amort_prev > 0) & (growth > 1.0))
-            .then(upb_prev * i / (growth - 1.0))
-            .otherwise(0.0)
-            .clip(lower_bound=0.0)
-            .alias("scheduled_principal"),
+            scheduled_principal(upb_prev, rate_amort, warm_amort_prev).alias("scheduled_principal"),
             upb_prev.alias("_upb_prev"),
         )
         .with_columns(
@@ -4299,7 +4295,7 @@ def build_mbs_performance(*, overwrite: bool = False) -> pl.LazyFrame:
                 # annualizes it. This is the form Ginnie publishes — against its
                 # disclosed CPRmon the compounded version puts 99.91% of material
                 # pools within +-0.5 CPR, the rolling-mean version only 88.6%.
-                (100.0 * (1.0 - (1.0 - pl.col("smm")) ** 12)).alias("cpr_1m"),
+                smm_to_cpr(pl.col("smm")).alias("cpr_1m"),
                 (1.0 - pl.col("smm"))
                 .log()
                 .rolling_sum(window_size=3, min_samples=3)
@@ -4441,8 +4437,7 @@ def build_datasets(datasets: list[str] | None = None, *, overwrite: bool = False
     """Build the requested combined master datasets.
 
     Args:
-        datasets: Subset of buildable masters. ``None`` = all buildable
-            (excludes the external ``msr_transfers``).
+        datasets: Subset of buildable masters. ``None`` = all buildable.
         overwrite: Rebuild existing outputs.
 
     Returns:

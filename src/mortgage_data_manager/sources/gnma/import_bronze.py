@@ -7,7 +7,6 @@ Functions:
     - import_zip_to_parquet: Convert ZIP file to parquet
     - import_txt_to_parquet: Convert TXT file to parquet
     - import_prefix_bronze: Import all files for a prefix to bronze
-    - import_all_bronze: Import all prefixes to bronze
 
 """
 
@@ -22,7 +21,7 @@ from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import should_process_file
 
 from .config import GNMAConfig, ProcessorConfig
-from .utils import ConversionResult, load_prefix_dictionary
+from .utils import ConversionResult
 
 logger = get_logger(__name__)
 
@@ -30,7 +29,6 @@ __all__ = [
     "import_zip_to_parquet",
     "import_txt_to_parquet",
     "import_prefix_bronze",
-    "import_all_bronze",
 ]
 
 
@@ -397,49 +395,3 @@ def import_prefix_bronze(
         )
 
     return result
-
-
-def import_all_bronze(
-    prefixes: list[str] | None = None,
-    base_folder: str | Path | None = None,
-    config: ProcessorConfig | None = None,
-    exclude_prefixes: list[str] | None = None,
-) -> dict[str, ConversionResult]:
-    """Import all prefixes to bronze layer.
-
-    Args:
-        prefixes: List of prefixes to import (None for all from dictionary)
-        base_folder: Folder containing raw files
-        config: Optional configuration
-        exclude_prefixes: Optional list of prefixes to exclude
-
-    Returns:
-        Dictionary mapping prefix to ConversionResult
-    """
-    if config is None:
-        config = ProcessorConfig()
-
-    if base_folder is None:
-        # Raw folder is the source of downloaded ZIP/TXT files
-        base_folder = config.raw_folder
-
-    base_folder = Path(base_folder)
-
-    # Load prefix dictionary if prefixes not provided
-    if prefixes is None:
-        prefix_dict = load_prefix_dictionary(config.prefix_file)
-        prefixes = list(prefix_dict.keys())
-
-    if exclude_prefixes is None:
-        exclude_prefixes = []
-
-    results: dict[str, ConversionResult] = {}
-
-    logger.info("Importing %s prefixes to bronze", len(prefixes))
-
-    for prefix in prefixes:
-        if prefix not in exclude_prefixes:
-            logger.info("Processing prefix: %s", prefix)
-            results[prefix] = import_prefix_bronze(prefix, base_folder, None, config)
-
-    return results

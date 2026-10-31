@@ -118,7 +118,7 @@ def scan_performance_bronze(path: Path) -> pl.LazyFrame:
     the established ``Current Loan Delinquency Status`` encoding: R47 zero-pads
     it to two characters (``"00"``, ``"01"``, capped at 99) where the pre-R47
     files — and therefore every existing consumer, including the ``event_class``
-    taxonomy and the analytics credit model — use the unpadded form (``"0"``,
+    taxonomy — use the unpadded form (``"0"``,
     ``"1"``). Non-numeric levels such as ``"RA"`` are left untouched. The three
     attributes R47 appended (Servicer Name, Mortgage Insurance Cancellation
     Indicator, Bankruptcy Cramdown Costs) keep their R47 names.

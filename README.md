@@ -44,7 +44,7 @@ Python 3.12+:
 
 ```bash
 uv pip install -e ".[all]"
-mortgage-data info                      # what is configured and what is on disk
+mortgage-data info                      # what is configured
 mortgage-data hmda pipeline post2018 --min-year 2020 --max-year 2024
 mortgage-data match info                # the matching workflows
 ```

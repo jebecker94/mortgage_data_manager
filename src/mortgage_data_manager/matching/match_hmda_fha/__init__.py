@@ -22,7 +22,6 @@ Example usage:
 from mortgage_data_manager.matching.match_hmda_fha.config import HMDAFHAMatchingConfig
 from mortgage_data_manager.matching.match_hmda_fha.matching_post2018 import (
     build_zip_tract_crosswalk,
-    get_fha_files,
     get_zip_tract_for_year,
     hmda_tract_vintage,
     prepare_fha,
@@ -56,7 +55,6 @@ __all__ = [
     "run_matching",
     "prepare_fha",
     "prepare_hmda",
-    "get_fha_files",
     "get_zip_tract_for_year",
     "hmda_tract_vintage",
     "build_zip_tract_crosswalk",

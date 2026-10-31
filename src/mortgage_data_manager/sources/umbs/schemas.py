@@ -40,7 +40,6 @@ from typing import Any
 
 import polars as pl
 import yaml
-from openpyxl import load_workbook
 
 from mortgage_data_manager.core.logging import configure_logging, get_logger
 from mortgage_data_manager.sources.umbs.config import UMBSConfig
@@ -245,6 +244,8 @@ def _parse_glossary_sheet(
     sheet_name: str, glossary_path: Path
 ) -> dict[str, type[pl.DataType] | pl.DataType | None]:
     """Return ``{spec_name: polars_dtype}`` for one glossary sheet."""
+    from openpyxl import load_workbook
+
     wb = load_workbook(glossary_path, read_only=True, data_only=True)
     if sheet_name not in wb.sheetnames:
         raise KeyError(

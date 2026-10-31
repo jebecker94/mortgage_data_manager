@@ -27,11 +27,6 @@ class FHLBMBSMatchingConfig(MatchingConfig):
     FHLB_MBS_CROSSWALK_DIR: Path = MatchingConfig.get_crosswalk_type_dir("fhlb_mbs")
 
     @classmethod
-    def get_gnma_config(cls) -> type[GNMAConfig]:
-        """The GNMA config class, source of the Ginnie loan-level paths."""
-        return GNMAConfig
-
-    @classmethod
     def get_fhlb_config(cls) -> type[FHLBConfig]:
         """The FHLB config class, source of the AMA paths."""
         return FHLBConfig

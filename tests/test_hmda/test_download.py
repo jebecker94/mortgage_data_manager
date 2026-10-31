@@ -2,14 +2,9 @@
 
 The table is pure logic — filename construction and coverage bookkeeping with no
 network — and it is the only thing standing between a CLI invocation and the
-right bytes, so its edges are worth pinning:
-
-* ``determine_raw_subfolder`` routes on the filename *stem*. Matching against
-  the full name sent every ``hmda_{year}_panel.zip`` and
-  ``hmda_{year}_transmittal_sheet.zip`` to ``misc/`` — 22 files of the pre-2018
-  archive landing where no bronze builder looks for them.
-* Series CFPB has stopped publishing carry a closed last year. Reopening one by
-  accident means probing a URL that will 404 on every run forever.
+right bytes, so its edges are worth pinning. In particular, series CFPB has
+stopped publishing carry a closed last year: reopening one by accident means
+probing a URL that will 404 on every run forever.
 """
 
 from __future__ import annotations
@@ -20,33 +15,8 @@ import pytest
 
 from mortgage_data_manager.sources.hmda.download import (
     build_url,
-    determine_raw_subfolder,
     discover_files,
 )
-
-
-@pytest.mark.parametrize(
-    ("filename", "expected"),
-    [
-        # Current-platform names carry their record type in a "public_x" token.
-        ("2023_public_lar_csv.zip", "loans"),
-        ("2023_public_panel_csv.zip", "panel"),
-        ("2023_public_ts_csv.zip", "transmittal_series"),
-        ("2023_public_msamd_csv.zip", "msamd"),
-        ("2022_public_lar_three_year_csv.zip", "loans"),
-        # Pre-2018 archive names end on the record type, so the extension has to
-        # be stripped before the token patterns are applied.
-        ("hmda_2007_panel.zip", "panel"),
-        ("hmda_2016_transmittal_sheet.zip", "transmittal_series"),
-        ("hmda_2016_nationwide_all-records_codes.zip", "loans"),
-        # Combined Modified LAR is loan-level.
-        ("2025_combined_mlar_header.zip", "loans"),
-        # Anything unrecognized falls through to misc rather than guessing.
-        ("arid2017_to_lei_xref_csv.zip", "misc"),
-    ],
-)
-def test_determine_raw_subfolder_routes_every_published_name_shape(filename, expected):
-    assert determine_raw_subfolder(filename) == expected
 
 
 @pytest.mark.parametrize(
@@ -148,16 +118,6 @@ def test_default_products_exclude_mlar():
     products = {f.product for f in discover_files(max_year=2025)}
     assert "mlar" not in products
     assert products == {"snapshot", "one_year", "three_year", "historic"}
-
-
-def test_every_generated_file_routes_to_the_subfolder_the_table_assigned():
-    # The table and the filename router are independent derivations of the same
-    # fact; a disagreement means one of them is wrong.
-    files = discover_files(
-        ["snapshot", "one_year", "three_year", "historic", "mlar"], max_year=2026
-    )
-    mismatched = [f for f in files if determine_raw_subfolder(f.filename) != f.subfolder]
-    assert mismatched == []
 
 
 def test_destination_nests_under_the_record_type_subfolder():

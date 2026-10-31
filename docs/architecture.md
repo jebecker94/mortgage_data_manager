@@ -25,8 +25,7 @@ src/mortgage_data_manager/
 │   └── fhlb/           # FHLB Acquired Member Assets
 ├── matching/           # Record linkage: one `match_{workflow}/` per pair of sources,
 │                       #   plus `master/`, which joins them onto one HMDA spine
-├── combined/           # Cross-source master datasets
-└── analytics/          # Derived analytics
+└── combined/           # Cross-source master datasets
 ```
 
 A data-source subpackage has the same files every time:
@@ -68,11 +67,6 @@ and JSON is flattened, but the rows are otherwise left alone.
 is hive-partitioned (for example `activity_year=2024/file_type=c/` for HMDA,
 `Year=2024/Month=6/` for FHA) so a query reads only the partitions it needs.
 
-**Gold** holds derived assets that more than one analysis depends on, such as a
-benchmark or a scored dataset. Each gold asset has a builder in its subpackage, a path
-in the config, and a `gold` CLI verb. Gold is only built when something needs it, so
-most sources have none.
-
 Each layer is written by one module:
 
 ```
@@ -92,7 +86,7 @@ directories. The [configuration guide](configuration.md) lists every setting.
 
 Every subpackage exposes a Typer app, and `cli/main.py` mounts them all under one
 `mortgage-data` command. The same verbs recur across sources: `download`, `bronze`,
-`silver`, `gold`, `pipeline` and `info`, with the same option names wherever they apply
+`silver`, `pipeline` and `info`, with the same option names wherever they apply
 (`--min-year`/`--max-year`, `--overwrite`, `--output-dir`, `--datasets`/`-t`, `--pause`).
 The matching workflows under `mortgage-data match` use `info`, `run` and `validate`. The
 [CLI reference](cli_reference.md) lists every command.

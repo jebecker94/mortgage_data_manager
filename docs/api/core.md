@@ -36,6 +36,10 @@ reference tables used by more than one source, and geocoding.
 
 ::: mortgage_data_manager.core.scalars
 
+## Amortization
+
+::: mortgage_data_manager.core.amortization
+
 ## Reference tables
 
 ::: mortgage_data_manager.core.reference.tract_zip3
@@ -47,8 +51,6 @@ reference tables used by more than one source, and geocoding.
 ::: mortgage_data_manager.core.reference.states
 
 ::: mortgage_data_manager.core.reference.gnma_pool_types
-
-::: mortgage_data_manager.core.reference.macro
 
 ::: mortgage_data_manager.core.reference.avery
 

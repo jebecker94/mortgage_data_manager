@@ -18,7 +18,6 @@ from pathlib import Path
 from typing import Literal, cast
 
 import polars as pl
-import pymupdf
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import should_process_file
@@ -97,6 +96,8 @@ def extract_dictionary_tables_for_year(
         return
 
     formats = set(output_formats)
+
+    import pymupdf
 
     pdf_files = [p for p in year_dir.iterdir() if p.is_file() and p.suffix.lower() == ".pdf"]
     for pdf_path in pdf_files:

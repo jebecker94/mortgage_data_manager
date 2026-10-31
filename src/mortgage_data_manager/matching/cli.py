@@ -124,7 +124,7 @@ def list_workflows() -> None:
         console.print(f"  • [cyan]mortgage_data_manager.matching.{module}[/cyan]")
     # The assembler over all of the above, not a pairwise matcher.
     console.print("  • [cyan]mortgage_data_manager.matching.master[/cyan]")
-    console.print("\n[yellow]Use Python API to access matching functionality.[/yellow]\n")
+    console.print("\n[yellow]Run one with `mortgage-data match <workflow> run`.[/yellow]\n")
 
 
 def cli_main() -> None:

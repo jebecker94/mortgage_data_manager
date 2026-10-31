@@ -77,12 +77,6 @@ class ConversionResult:
     def total_attempted(self) -> int:
         return cast(int, self.successful + self.failed)
 
-    @property
-    def success_rate(self) -> float:
-        if self.total_attempted == 0:
-            return 0.0
-        return cast(float, (self.successful / self.total_attempted) * 100)
-
     def add_success(self, file_path: str):
         self.successful += 1
         self.processed_files.append(file_path)
@@ -116,12 +110,6 @@ class ProcessingResult:
     @property
     def total_attempted(self) -> int:
         return cast(int, self.successful + self.failed)
-
-    @property
-    def success_rate(self) -> float:
-        if self.total_attempted == 0:
-            return 0.0
-        return cast(float, (self.successful / self.total_attempted) * 100)
 
     def add_success(
         self, file_path: str | Path, output_path: str | Path, record_count: int, record_type: str

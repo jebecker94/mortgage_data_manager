@@ -1,7 +1,5 @@
 """Tests for core configuration module."""
 
-from pathlib import Path
-
 from mortgage_data_manager.core.config import MortgageDataConfig
 
 
@@ -49,17 +47,3 @@ def test_ensure_directories_creates_data_root(temp_project_dir, monkeypatch):
     MortgageDataConfig.ensure_directories()
 
     assert data_dir.is_dir()
-
-
-def test_get_project_root():
-    """Test getting project root."""
-    root = MortgageDataConfig.get_project_root()
-    assert isinstance(root, Path)
-    assert root == MortgageDataConfig.PROJECT_DIR
-
-
-def test_validate_paths(temp_project_dir, monkeypatch):
-    """Test path validation."""
-    monkeypatch.setattr(MortgageDataConfig, "DATA_DIR", temp_project_dir / "data")
-
-    assert MortgageDataConfig.validate_paths() is True

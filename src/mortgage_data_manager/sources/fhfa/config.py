@@ -3,7 +3,6 @@
 This module provides:
     - FHFAConfig: Main configuration class inheriting from MortgageDataConfig
     - ImportOptions: Operational options for data loaders
-    - ensure_parent_dir: Utility function for directory creation
 
 The FHFAConfig class follows the project's configuration inheritance pattern,
 supporting environment variable overrides and medallion architecture paths.
@@ -131,15 +130,6 @@ class ImportOptions:
     overwrite_raw_dicts: bool = False
     overwrite_clean_dicts: bool = False
     excel_engine: Literal["xlrd", "openpyxl", "odf", "pyxlsb", "calamine"] | None = "openpyxl"
-
-
-def ensure_parent_dir(path: Path) -> None:
-    """Ensure that the parent directory of ``path`` exists.
-
-    Args:
-        path: Path whose parent directory should be created.
-    """
-    path.parent.mkdir(parents=True, exist_ok=True)
 
 
 # Dataset to (family, letter, suffix) mapping

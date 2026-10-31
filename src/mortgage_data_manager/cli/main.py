@@ -83,7 +83,6 @@ def info():
             [
                 ("match", "Matching workflows that link records across sources"),
                 ("combined", "Combined cross-source master datasets"),
-                ("analytics", "MBS analytics (library, no CLI)"),
             ],
         ),
         (

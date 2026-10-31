@@ -6,7 +6,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import addfips
 import polars as pl
 import yaml
 
@@ -219,6 +218,8 @@ def add_county_fips(
         )
 
     logger.info("Generating FIPS codes for %d unique counties...", len(unique_pairs))
+    import addfips
+
     af = addfips.AddFIPS()
     fips_values: list[str | None] = []
     unresolved: list[tuple[str, str]] = []

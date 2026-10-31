@@ -15,11 +15,10 @@ Ginnie without per-agency branching.
 |---|---|---|---:|---:|---|---|
 | `loan_issuance` | loan | FNMA · FHLMC · GNMA | 158,104,240 | 153 | `agency` / `issuance_year` | built |
 | `loan_performance` | loan × month | FNMA · FHLMC · GNMA | 8,143,744,319 | 41 | `agency` / `reporting_year` | built |
-| `loan_terminations` | loan × event | FNMA · FHLMC | 79,177,009 | 30 | `agency` / `zero_balance_year` | built |
+| `loan_terminations` | loan × event | FNMA · FHLMC | 93,568,657 | 31 | `agency` / `zero_balance_year` | built |
 | `loan_outcomes` | loan | FNMA · FHLMC · GNMA | 145,092,064 | 35 | `agency` / `orig_year` | built |
 | `mbs_issuance` | security | GNMA · UMBS | 715,762 | 42 | `agency` / `issue_year` | built |
 | `mbs_performance` | security × month | GNMA · UMBS | 90,939,164 | 33 | `agency` / `as_of_year` | built |
-| `msr_transfers` | transfer | GNMA · UMBS | — | — | — | **external** — built by [`analytics.transfers`](analytics.md) |
 
 Rows and columns were measured 2026-10-21 on the current builds; the column counts leave
 out the two partition keys. The GSE loan panels carry every reporting month from 2000
@@ -146,6 +145,3 @@ not apply here (see *Output layout*).
 - **`overwrite` replaces the whole dataset tree**, not selected partitions. These are
   full rebuilds from silver, unlike the partition-scoped `overwrite` in the per-source
   silver builders.
-- **`msr_transfers` is registered but not built here.** Detection lives in
-  `analytics.transfers.detect_servicer_transfers`; the registry entry exists so the
-  dataset is discoverable from `combined info`.

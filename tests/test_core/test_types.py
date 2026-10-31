@@ -1,7 +1,7 @@
 """Unit tests for the shared silver-type helpers in ``core.types``.
 
 These cover stable pure logic: geographic zero-pad recovery, sentinel
-null-mapping, fixed-point rescaling, smallest-int sizing, the declarative
+null-mapping, fixed-point rescaling, the declarative
 :class:`SilverSpec` applier (including conform-to-target), and the
 :func:`enforce_schema` regression guard. The ZIP-recovery cases are regression
 tests for the integer-stored-geo leading-zero-loss bug found in the silver audit.
@@ -20,8 +20,6 @@ from mortgage_data_manager.core.types import (
     fixed_point,
     null_sentinels,
     pad_geo,
-    smallest_int,
-    to_state_fips,
     to_zip,
     yn_to_bool,
 )
@@ -42,9 +40,9 @@ def test_to_zip_recovers_leading_zeros_from_int() -> None:
     ]
 
 
-def test_to_state_fips_drops_float_suffix() -> None:
+def test_pad_geo_drops_float_suffix() -> None:
     # Float-stored FIPS (1.0) must become "01", not "1.0".
-    assert _col([1.0, 56.0, None], pl.Float64, to_state_fips(pl.col("x"))) == ["01", "56", None]
+    assert _col([1.0, 56.0, None], pl.Float64, pad_geo(pl.col("x"), 2)) == ["01", "56", None]
 
 
 def test_pad_geo_preserves_non_numeric_codes() -> None:
@@ -70,20 +68,6 @@ def test_yn_to_bool() -> None:
         None,
         None,
     ]
-
-
-@pytest.mark.parametrize(
-    ("lo", "hi", "expected"),
-    [
-        (0, 100, pl.Int8),
-        (1, 32, pl.Int8),
-        (0, 1111, pl.Int16),
-        (-99999, 72, pl.Int32),  # sentinel underflows Int16 -> forces Int32
-        (0, 3_000_000_000, pl.Int64),
-    ],
-)
-def test_smallest_int(lo: int, hi: int, expected: type[pl.DataType]) -> None:
-    assert smallest_int(lo, hi) is expected
 
 
 def test_apply_silver_types_conforms_to_target() -> None:

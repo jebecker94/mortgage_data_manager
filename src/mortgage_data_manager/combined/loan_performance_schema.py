@@ -203,6 +203,7 @@ GSE_TERM_PLAN: Final[list[TermField]] = [
     {"name": "principal_forgiveness", "sf": ["Principal Forgiveness Amount"]},
     {"name": "principal_writeoff", "sf": ["Foreclosure Principal Write-off Amount"]},
     {"name": "repurchase_make_whole_proceeds", "sf": ["Repurchase Make Whole Proceeds"]},
+    {"name": "other_foreclosure_proceeds", "sf": ["Other Foreclosure Proceeds"]},
 ]
 
 #: Zero-Balance-Code -> unified event taxonomy. FNMA discloses 2-char strings, FHLMC

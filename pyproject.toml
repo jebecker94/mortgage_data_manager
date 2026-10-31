@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mortgage-data-manager"
-version = "0.2.1"
+version = "0.3.0"
 description = "Loan-level matching across U.S. public mortgage datasets (HMDA, FHA, FHFA, GSE, Ginnie Mae, UMBS, FHLB), with the pipelines that feed it"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -15,7 +15,7 @@ license = {text = "MIT"}
 
 # Core dependencies shared across all subpackages
 dependencies = [
-    "polars>=1.26.0",
+    "polars>=1.26.0,<2",
     "pandas>=2.2.0",
     "pyarrow>=19.0.0",
     "python-decouple>=3.8",
@@ -24,49 +24,44 @@ dependencies = [
     "beautifulsoup4>=4.12.0",
     "typer>=0.9.0",
     "rich>=13.0.0",
-    "lxml>=6.0.0",
 ]
 
 [project.optional-dependencies]
 # Subpackage-specific dependencies
-hmda = [
-    "scipy>=1.15.0",
-]
+hmda = []
 fha = [
     "fastexcel>=0.0.1",
-    "openpyxl>=3.1.5",
     "addfips>=0.4.0",
 ]
 mbs = [
+    "fastexcel>=0.0.1",
     "pymupdf>=1.23.0",
     "openpyxl>=3.1.0",
     "python-dateutil>=2.8.0",
 ]
 matching = [
     "addfips>=0.4.0",
+    "fastexcel>=0.0.1",
     "numpy>=1.26.0",
+    "openpyxl>=3.1.0",
+    "scipy>=1.15.0",
     # validation figures (plotly, written to PNG through kaleido)
     "plotly>=6.3.0",
     "kaleido>=1.0.0",
+    "matplotlib>=3.10.0",
 ]
 usps_crosswalk = []
 hud = [
     "fastexcel>=0.0.1",
 ]
-analytics = [
-    "numpy>=1.26.0",
-    "scikit-learn>=1.4.0",
-    "statsmodels>=0.14.0",
-    "patsy>=0.5.6",
-    "xgboost>=2.0.0",
-    "fredapi>=0.5.2",
-    "seaborn>=0.13.0",
-    "matplotlib>=3.10.0",
+fhlb = [
+    "openpyxl>=3.1.0",
+    "xlrd>=2.0.1",
 ]
 
 # Convenience groups
 all = [
-    "mortgage-data-manager[hmda,fha,mbs,matching,usps_crosswalk,hud,analytics]"
+    "mortgage-data-manager[hmda,fha,mbs,matching,usps_crosswalk,hud,fhlb]"
 ]
 docs = [
     "mkdocs>=1.6.0",
@@ -112,13 +107,6 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.ruff.lint.per-file-ignores]
-# Statistical-modeling modules use the conventional uppercase `X` for the
-# feature/design matrix (statsmodels/scikit-learn/XGBoost idiom). Allow it here
-# rather than rename to a non-idiomatic lowercase.
-"src/mortgage_data_manager/analytics/estimated.py" = ["N803", "N806"]
-"src/mortgage_data_manager/analytics/features.py" = ["N803", "N806"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

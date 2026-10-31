@@ -37,17 +37,6 @@ class MBSUMBSMatchingConfig(MatchingConfig):
         return FNMAConfig
 
     @classmethod
-    def get_umbs_bronze_dir(cls) -> Path:
-        """Get UMBS bronze directory path.
-
-        Returns:
-            Path to the UMBS bronze data directory.
-            UMBS bronze data is organized as: bronze/{GSE}/{folder}/
-            For FHLMC UMBS data: bronze/FHLMC/FRE_ILLD/
-        """
-        return cls.UMBS_BRONZE_DIR
-
-    @classmethod
     def get_mbs_dir(cls, gse: str) -> Path:
         """Get the GSE single-family loan-level silver directory — the MBS side of the match.
 

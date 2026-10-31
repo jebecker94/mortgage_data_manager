@@ -23,6 +23,17 @@ mortgage-data raw register --source <fnma|fhlmc|umbs> --note "<where it came fro
 mortgage-data raw audit     # lists raw files not yet recorded
 ```
 
+## HMDA Lender File (Avery file)
+
+The `hmda_fhlb` and direct `hmda_gse` matchers read the Philadelphia Fed's Lender File, which
+has no CLI verb. It needs no account:
+
+```python
+from mortgage_data_manager.core.reference.avery import download_avery_files
+
+download_avery_files()  # both workbooks, into {MORTGAGE_DATA_REFERENCE_DIR}/avery_lender_file/
+```
+
 ## Fannie Mae Single-Family Loan Performance Data
 
 **Access.** A free Data Dynamics account. The terms allow research and academic use and

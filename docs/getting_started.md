@@ -5,8 +5,8 @@ Install the package, build a first dataset, and read it.
 ## Installation
 
 The base install has the shared utilities and the CLI. Each source's dependencies are an
-extra: `hmda`, `fha`, `mbs` (GNMA, FHFA, FNMA, FHLMC and UMBS), `matching`, `hud` and
-`analytics`. `all` installs every one, `dev` adds the toolchain and `docs` the
+extra: `hmda`, `fha`, `mbs` (GNMA, FHFA, FNMA, FHLMC and UMBS), `fhlb`, `matching` and
+`hud`. `all` installs every one, `dev` adds the toolchain and `docs` the
 documentation build.
 
 ```bash
@@ -26,7 +26,7 @@ Each source moves through raw, bronze and silver
 mortgage-data hmda download --dry-run                     # list what would be fetched
 mortgage-data hmda download --min-year 2020 --max-year 2024
 mortgage-data hmda pipeline post2018 --min-year 2020 --max-year 2024
-mortgage-data info                                        # resolved paths, what is on disk
+mortgage-data info                                        # resolved paths
 ```
 
 Fannie Mae, Freddie Mac and UMBS files must be downloaded by hand first, and GNMA needs

@@ -12,12 +12,6 @@ Target master datasets (the registry below):
 - ``mbs_issuance``     - master MBS/pool issuance
 - ``mbs_performance``  - master MBS/pool performance panel (pool × month)
 
-Plus one derived dataset that is NOTED here but built by a sibling subpackage:
-
-- ``msr_transfers``    - MSR (mortgage servicing rights) transfers, detected by
-  `analytics.transfers.detect_servicer_transfers`. Registered here for
-  cross-reference only; this subpackage does not build it.
-
 The ``sources`` field lists the per-source silver inputs each master is
 expected to draw on — a wiring sketch, refined as builders are implemented.
 """
@@ -32,58 +26,42 @@ from decouple import config
 from mortgage_data_manager.core.config import MortgageDataConfig
 
 #: Registry of combined master datasets. ``grain`` is the row grain; ``sources``
-#: are the per-source silver inputs the builder will draw on (sketch);
-#: ``external`` marks datasets not built by THIS subpackage (a sibling subpackage
-#: like ``analytics`` produces them).
+#: are the per-source silver inputs the builder will draw on (sketch).
 DATASET_MAP: Final[dict[str, dict[str, object]]] = {
     "loan_issuance": {
         "description": "Master loan-level issuance/origination",
         "grain": "loan",
         "sources": ["hmda", "fha", "gnma", "umbs", "fnma", "fhlmc"],
-        "external": False,
     },
     "loan_performance": {
         "description": "Master loan-level performance panel (loan x month)",
         "grain": "loan_month",
         "sources": ["gnma", "umbs", "fnma", "fhlmc"],
-        "external": False,
     },
     "loan_terminations": {
         "description": "GSE loan termination / loss-waterfall events (one row per event)",
         "grain": "loan_event",
         "sources": ["fnma", "fhlmc"],
-        "external": False,
     },
     "loan_outcomes": {
         "description": "Loan-grain outcome summary (observation window, delinquency, modification, terminal event)",
         "grain": "loan",
         "sources": ["gnma", "umbs", "fnma", "fhlmc"],
-        "external": False,
     },
     "mbs_issuance": {
         "description": "Master MBS/pool issuance",
         "grain": "security",
         "sources": ["gnma", "umbs", "fhfa"],
-        "external": False,
     },
     "mbs_performance": {
         "description": "Master MBS/pool performance panel (pool x month)",
         "grain": "security_month",
         "sources": ["gnma", "umbs"],
-        "external": False,
-    },
-    "msr_transfers": {
-        "description": "MSR transfers (built in-package by analytics.transfers; not by combined)",
-        "grain": "transfer",
-        "sources": ["gnma", "umbs"],
-        "external": True,
     },
 }
 
-#: Master datasets this package actually builds (excludes external ones).
-BUILDABLE_DATASETS: Final[list[str]] = [
-    name for name, meta in DATASET_MAP.items() if not meta["external"]
-]
+#: Master datasets this package builds.
+BUILDABLE_DATASETS: Final[list[str]] = list(DATASET_MAP)
 VALID_DATASETS: Final[list[str]] = list(DATASET_MAP.keys())
 
 

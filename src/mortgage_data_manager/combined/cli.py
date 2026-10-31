@@ -74,19 +74,14 @@ def info_command() -> None:
     registry.add_column("Description", style="green")
     registry.add_column("Grain", style="green")
     registry.add_column("Sources", style="green")
-    registry.add_column("Built here?", style="green")
     for dataset, meta in DATASET_MAP.items():
         registry.add_row(
             dataset,
             str(meta["description"]),
             str(meta["grain"]),
             ", ".join(meta["sources"]) or "—",  # type: ignore[arg-type]
-            "no (external)" if meta["external"] else "yes",
         )
     console.print(registry)
-    console.print(
-        "[yellow]Note:[/yellow] msr_transfers is built by analytics.transfers, not by combined."
-    )
 
 
 @app.command("build")

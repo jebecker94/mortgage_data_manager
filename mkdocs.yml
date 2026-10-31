@@ -94,5 +94,4 @@ nav:
       - umbs: api/umbs.md
       - usps_crosswalk: api/usps_crosswalk.md
       - combined: api/combined.md
-      - analytics: api/analytics.md
       - matching: api/matching.md

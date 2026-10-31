@@ -22,12 +22,10 @@ Main functions:
     - discover_files: expand a selection into candidate files (no network)
     - plan_downloads: HEAD-probe candidates and return the fetchable ones
     - download_hmda_files: discover, plan, and fetch
-    - determine_raw_subfolder: route a filename to its ``raw/`` subfolder
 """
 
 from __future__ import annotations
 
-import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
@@ -153,61 +151,6 @@ class HMDAFile:
             The file's destination path under ``root``.
         """
         return root / self.subfolder / self.filename
-
-
-def determine_raw_subfolder(file_name: str) -> str:
-    """Route a downloaded file into a subfolder under ``raw/`` by filename.
-
-    `discover_files` knows each file's record type outright and does not
-    need this; it remains the fallback for callers holding only a name.
-
-    Args:
-        file_name: Name of the HMDA file (with or without extension).
-
-    Returns:
-        Subfolder name: 'loans', 'msamd', 'panel', 'transmittal_series', or 'misc'.
-
-    Example:
-        >>> determine_raw_subfolder("2023_public_lar_csv.zip")
-        'loans'
-        >>> determine_raw_subfolder("2023_public_panel_csv.zip")
-        'panel'
-        >>> determine_raw_subfolder("hmda_2016_transmittal_sheet.zip")
-        'transmittal_series'
-    """
-    # Match on the stem: the token patterns below anchor on a separator or the
-    # end of the string, and an extension would hide the ones that fall at the
-    # end ("hmda_2016_panel.zip" ends in "panel." not "panel").
-    name = Path(file_name).stem.lower()
-
-    # MSAMD geography files
-    if "msamd" in name:
-        return "msamd"
-
-    # Transmittal Series (TS) files
-    if (
-        ("public_ts" in name)
-        or ("transmiss" in name)
-        or ("transmittal" in name)
-        or re.search(r"(^|[_-])ts([_-]|$)", name)
-    ):
-        return "transmittal_series"
-
-    # Panel files
-    if ("public_panel" in name) or re.search(r"(^|[_-])panel([_-]|$)", name):
-        return "panel"
-
-    # Loan files (LAR/MLAR/nationwide loan-level)
-    if (
-        ("mlar" in name)
-        or ("public_lar" in name)
-        or re.search(r"(^|[_-])lar([_-]|$)", name)
-        or ("nationwide" in name)
-    ):
-        return "loans"
-
-    # Other miscellaneous assets
-    return "misc"
 
 
 def _format_suffix(product: HMDAProduct, year: int, file_format: HMDAFileFormat) -> str:
@@ -498,7 +441,6 @@ __all__ = [
     "HISTORIC_SERVER",
     "HMDAFile",
     "build_url",
-    "determine_raw_subfolder",
     "discover_files",
     "download_hmda_files",
     "plan_downloads",

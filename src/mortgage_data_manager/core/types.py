@@ -107,18 +107,6 @@ def to_zip3(expr: pl.Expr) -> pl.Expr:
     return pad_geo(expr, 3)
 
 
-def to_state_fips(expr: pl.Expr) -> pl.Expr:
-    """Standardize a 2-digit state FIPS code to zero-padded ``Utf8``.
-
-    Args:
-        expr: The column expression to standardize.
-
-    Returns:
-        A Utf8 expression zero-padded to 2 characters.
-    """
-    return pad_geo(expr, 2)
-
-
 # --------------------------------------------------------------------------- #
 # Sentinels (audit rule 9)
 # --------------------------------------------------------------------------- #
@@ -172,35 +160,8 @@ def fixed_point(expr: pl.Expr, scale: int, dtype: PolarsType = pl.Float32) -> pl
 # Polars keeps Int32 for sum(), group_by().sum() and sum_horizontal() and wraps on
 # overflow without an error (only Int8/Int16 are widened first), so an Int32 dollar
 # column silently corrupts any total above ~$2.1B: about 10,000 mortgages.
-# smallest_int is for codes, flags and small counts.
+# Narrow integers are for codes, flags and small counts.
 # --------------------------------------------------------------------------- #
-_SIGNED_INT_RANGES: tuple[tuple[type[pl.DataType], int, int], ...] = (
-    (pl.Int8, -(2**7), 2**7 - 1),
-    (pl.Int16, -(2**15), 2**15 - 1),
-    (pl.Int32, -(2**31), 2**31 - 1),
-    (pl.Int64, -(2**63), 2**63 - 1),
-)
-
-
-def smallest_int(lo: int, hi: int) -> type[pl.DataType]:
-    """Return the smallest signed integer dtype that holds the inclusive range ``[lo, hi]``.
-
-    Sizes for any in-band sentinel too: pass the sentinel-inclusive min/max so a
-    ``-99999`` sentinel forces ``Int32`` rather than silently overflowing ``Int16``.
-
-    Args:
-        lo: Minimum value the column must hold (sentinels included).
-        hi: Maximum value the column must hold (sentinels included).
-
-    Returns:
-        The narrowest ``pl.Int*`` dtype covering ``[lo, hi]``.
-    """
-    for dtype, dmin, dmax in _SIGNED_INT_RANGES:
-        if lo >= dmin and hi <= dmax:
-            return dtype
-    return pl.Int64
-
-
 #: Column names that denote a dollar amount, and the words that mark a same-named
 #: column as something else (a ratio, a code, a count). Used by the data guards.
 _MONEY_NAME = re.compile(

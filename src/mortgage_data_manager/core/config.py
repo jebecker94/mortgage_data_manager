@@ -85,7 +85,7 @@ class MortgageDataConfig:
 
     # Third-party reference data downloaded from outside any subpackage and shared across
     # modules and matching workflows (Census tract relationships, the HMDA Lender File,
-    # macro series, ...), one subfolder per source; see ``core.reference``. Hand-maintained
+    # ...), one subfolder per source; see ``core.reference``. Hand-maintained
     # tables live under SCHEMAS_DIR instead, where git reviews them.
     REFERENCE_DIR: Path = Path(
         config("MORTGAGE_DATA_REFERENCE_DIR", default=str(DATA_DIR / "reference"))
@@ -174,23 +174,6 @@ class MortgageDataConfig:
         return cls.PRIVATE_DATA_DIR / subpackage
 
     @classmethod
-    def get_private_medallion_dir(
-        cls,
-        subpackage: str,
-        stage: Literal["raw", "bronze", "silver", "gold"],
-    ) -> Path:
-        """Get the medallion stage directory for a proprietary subpackage.
-
-        Args:
-            subpackage: Name of the proprietary subpackage (e.g. 'vendor_source')
-            stage: Medallion stage ('raw', 'bronze', 'silver', or 'gold')
-
-        Returns:
-            Path to the private medallion stage directory
-        """
-        return cls.get_private_subpackage_data_dir(subpackage) / stage
-
-    @classmethod
     def get_private_crosswalk_dir(cls, workflow: str) -> Path:
         """Get the crosswalk directory for a proprietary matching workflow.
 
@@ -217,32 +200,3 @@ class MortgageDataConfig:
             >>> MortgageDataConfig.ensure_directories()
         """
         cls.DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-    @classmethod
-    def get_project_root(cls) -> Path:
-        """Get the project root directory.
-
-        Returns:
-            Path to the project root
-
-        Example:
-            >>> MortgageDataConfig.get_project_root()
-            PosixPath('/Users/username/mortgage_data_manager')
-        """
-        return cls.PROJECT_DIR
-
-    @classmethod
-    def validate_paths(cls) -> bool:
-        """Validate that all configured paths exist or can be created.
-
-        Returns:
-            True if all paths are valid, False otherwise
-
-        Raises:
-            PermissionError: If unable to create directories due to permissions
-        """
-        try:
-            cls.ensure_directories()
-            return True
-        except PermissionError as e:
-            raise PermissionError(f"Cannot create directories due to insufficient permissions: {e}")

@@ -84,6 +84,12 @@ Key fields in HMDA data:
 | `county_code` | str | Five-digit county FIPS code |
 | `census_tract` | str | Eleven-digit census tract |
 
+`loan_amount` is a $10,000-bin midpoint, so it always ends in 5000. Two 2020 applications
+report about $500 billion and $200 billion in the `a` and `b` releases, together about 9% of
+that year's dollars. The `c` snapshot holds them as 1,784,395,000 and -1,863,205,000, which is
+where those amounts land after a 32-bit overflow, so use a median or trim the tail for dollar
+totals.
+
 For complete field reference, see the [FFIEC HMDA documentation](https://ffiec.cfpb.gov/documentation/).
 
 ## See Also

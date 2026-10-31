@@ -7,15 +7,17 @@ from dataclasses import dataclass
 from multiprocessing import get_context
 from os import cpu_count
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-import fastexcel
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 
 from .config import SnapshotType
+
+if TYPE_CHECKING:
+    import fastexcel
 
 logger = get_logger(__name__)
 
@@ -517,6 +519,8 @@ def _convert_snapshot(task: _SnapshotConversionTask) -> None:
     """Worker function for converting one monthly snapshot workbook to parquet."""
     logger.info("Reading and Converting File: %s", task.input_file)
     spec = _BRONZE_SPECS[task.snapshot_type]
+
+    import fastexcel
 
     try:
         frames = spec.read_frames(fastexcel.read_excel(task.input_file))
