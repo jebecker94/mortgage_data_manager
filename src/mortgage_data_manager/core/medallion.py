@@ -50,6 +50,48 @@ def atomic_output(path: Path) -> Iterator[Path]:
     tmp.rename(path)
 
 
+@contextmanager
+def atomic_output_dir(path: Path) -> Iterator[Path]:
+    """Yield an empty sibling temp directory; swap it in under ``path`` on success.
+
+    The directory analog of `atomic_output`, for a tree rebuilt in full. The previous
+    tree stays readable until the new one is complete, so a killed build leaves the
+    last good build in place rather than a partial tree that `should_process_file`
+    would skip forever. The new tree is written to ``.<name>.tmp`` and the old one is
+    moved to ``.<name>.old`` for the swap, then deleted. A run killed between those
+    two renames is repaired on the next attempt by restoring ``.<name>.old``.
+
+    Args:
+        path: Final directory to publish to on success.
+
+    Yields:
+        The empty temp directory to write into.
+
+    Example:
+        >>> with atomic_output_dir(out_dir) as tmp:
+        ...     write_tree(tmp)
+    """
+    tmp = path.with_name(f".{path.name}.tmp")
+    old = path.with_name(f".{path.name}.old")
+    if old.exists() and not path.exists():
+        old.rename(path)
+    for stale in (tmp, old):
+        if stale.exists():
+            shutil.rmtree(stale)
+    tmp.mkdir(parents=True)
+    try:
+        yield tmp
+    except BaseException:
+        shutil.rmtree(tmp, ignore_errors=True)
+        raise
+    replacing = path.exists()
+    if replacing:
+        path.rename(old)
+    tmp.rename(path)
+    if replacing:
+        shutil.rmtree(old)
+
+
 def should_process_file(
     output_path: Path,
     overwrite: bool = False,

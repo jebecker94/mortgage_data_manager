@@ -41,6 +41,15 @@ from typing import TYPE_CHECKING, Any, Literal, NamedTuple
 import numpy as np
 import polars as pl
 
+from mortgage_data_manager.core.harmonized import (
+    FHFA_CHANNEL_CODE,
+    FHFA_LOAN_PURPOSE_CODE,
+    GSE_CHANNEL,
+    GSE_LOAN_PURPOSE,
+    GSE_OCCUPANCY,
+    OCCUPANCY_CODE,
+    recode,
+)
 from mortgage_data_manager.matching.validation_common import (
     COLORS,
     RateSeries,
@@ -368,33 +377,15 @@ def load_fhlmc_validation_data(
     # Map categorical codes
     fhlmc = fhlmc.with_columns(
         [
-            # Channel
-            pl.when(pl.col("channel_str") == "R")
-            .then(1)
-            .when(pl.col("channel_str") == "B")
-            .then(2)
-            .when(pl.col("channel_str") == "C")
-            .then(3)
-            .otherwise(None)
-            .alias("channel"),
-            # Loan purpose
-            pl.when(pl.col("purpose_str") == "P")
-            .then(1)
-            .when(pl.col("purpose_str").is_in(["R", "N"]))
-            .then(2)
-            .when(pl.col("purpose_str") == "C")
-            .then(7)
-            .otherwise(None)
-            .alias("loan_purpose"),
-            # Occupancy
-            pl.when(pl.col("occupancy_str") == "P")
-            .then(1)
-            .when(pl.col("occupancy_str") == "S")
-            .then(2)
-            .when(pl.col("occupancy_str") == "I")
-            .then(3)
-            .otherwise(None)
-            .alias("occupancy_code"),
+            recode(
+                pl.col("channel_str"), GSE_CHANNEL, FHFA_CHANNEL_CODE["FHLMC"], dtype=pl.Int32
+            ).alias("channel"),
+            recode(
+                pl.col("purpose_str"), GSE_LOAN_PURPOSE, FHFA_LOAN_PURPOSE_CODE, dtype=pl.Int32
+            ).alias("loan_purpose"),
+            recode(pl.col("occupancy_str"), GSE_OCCUPANCY, OCCUPANCY_CODE, dtype=pl.Int32).alias(
+                "occupancy_code"
+            ),
             # FTHB
             pl.when(pl.col("fthb_str") == "Y")
             .then(1)

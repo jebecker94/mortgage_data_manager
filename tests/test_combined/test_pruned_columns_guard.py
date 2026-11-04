@@ -4,7 +4,7 @@ The 2026-07-09 schema audit pruned output columns whose every source layer was v
 never-populated (``PRUNED_ALWAYS_NULL_FIELDS`` in ``combined.loan_issuance_schema``). These
 tests re-verify that evidence against the CURRENT silver data: if a disclosure vintage ever
 starts populating one of those source columns, the matching test FAILS — the signal to
-un-prune the field (delete its registry row; its plan entry still documents the wiring) and
+un-prune the field (move its registry row back into the plan, aliases as listed) and
 rebuild ``loan_issuance``.
 
 A field may be dead in the CURRENT vintages yet populated in an older era -- the audit read

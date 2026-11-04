@@ -1,4 +1,4 @@
-"""Declarative field plans for the GSE ``loan_performance`` + ``loan_terminations`` masters.
+"""Declarative field plans for the ``loan_performance`` + ``loan_terminations`` masters.
 
 The column allow-lists below are the ones the field-volatility analysis
 proved are GENUINELY TIME-VARYING within a loan id — everything static lives once
@@ -17,12 +17,15 @@ on ``loan_issuance`` and joins by ``loan_key``. Two outputs:
     is populated for ~1 month in ~42 (pure per-month waste).
 
 Per-GSE source aliases are coalesced (vintage/GSE renames OR-ed); ``resolve`` picks
-the canonical source when a field is on both spines.
+the canonical source when a field is on both spines. The GNMA rows, a single source,
+have a plan table of their own (`GNMA_LOAN_PERFORMANCE_PLAN`).
 """
 
 from __future__ import annotations
 
 from typing import Final, TypedDict
+
+from mortgage_data_manager.combined._common import LegField
 
 
 class PerfField(TypedDict):
@@ -217,7 +220,10 @@ ZBC_EVENT_TYPE: Final[dict[str, str]] = {
     "09": "reo_disposition",
     "15": "note_sale",
     "16": "reperforming_or_other_sale",
-    "96": "removal",
+    # Freddie 96 = a confirmed underwriting or servicing defect. The remedy may be a
+    # repurchase, an alternative remedy or a waiver, and some loans keep reporting
+    # afterwards, so it is not filed under repurchase.
+    "96": "confirmed_defect",
 }
 #: ZBC codes that are credit/default-driven terminal events (vs voluntary prepay).
 ZBC_CREDIT_EVENT_CODES: Final[frozenset[str]] = frozenset({"02", "03", "09"})
@@ -228,7 +234,7 @@ ZBC_CREDIT_EVENT_CODES: Final[frozenset[str]] = frozenset({"02", "03", "09"})
 #: which cross-agency pooling is safe. Consistent with ``is_credit_event``:
 #: ``event_class == 'credit_event'`` ⟺ ``is_credit_event`` (GSE ZBC 02/03/09; GNMA
 #: removal 2/3 — GNMA 4 loss-mitigation stays a separate ``workout_removal`` because it is
-#: excluded from the credit-event flag by the §4.8 resolution).
+#: excluded from the credit-event flag).
 EVENT_CLASS: Final[dict[str, str]] = {
     # GSE (ZBC-derived event_type)
     "prepaid_or_matured": "voluntary_payoff",
@@ -238,7 +244,7 @@ EVENT_CLASS: Final[dict[str, str]] = {
     "repurchase": "repurchase",
     "note_sale": "loan_sale",
     "reperforming_or_other_sale": "loan_sale",
-    "removal": "other_removal",
+    "confirmed_defect": "other_removal",
     # GNMA (removal-reason-derived event_type)
     "voluntary_prepay": "voluntary_payoff",
     "dq_buyout": "credit_event",
@@ -252,8 +258,41 @@ EVENT_CLASS: Final[dict[str, str]] = {
 #: Y/N/plan-letter code spaces ('7' is the MODAL value of the MI-cancellation and
 #: borrower-assistance columns, ~70-76% of rows). Normalized to null in the combined
 #: outputs. Pure yes/no
-#: indicators are normalized to Boolean at emit time (``builders._yn_bool``, which also
+#: indicators are normalized to Boolean at emit time (``core.harmonized.flag_to_bool``, which also
 #: nulls 7/9); this scrub list covers the remaining letter-coded columns.
 GSE_NA_CODES: Final[frozenset[str]] = frozenset({"7", "9"})
 #: Perf-panel columns carrying those N/A codes inside a richer letter code space.
 PERF_NA_CODE_COLUMNS: Final[tuple[str, ...]] = ("borrower_assistance_plan",)
+
+
+#: GNMA rows: the llmon L record (llmon1 = Ginnie I, llmon2 = Ginnie II; llmon silver
+#: shares the dailyllmni layout), time-varying fields only. Readers are
+#: ``_gnma_loan_readers`` plus ``rmm``; ``cusip`` / ``pool_type`` are joined afterward
+#: from the P record. ``loan_terminations`` reads its Ginnie columns through this plan.
+GNMA_LOAN_PERFORMANCE_PLAN: Final[list[LegField]] = [
+    # loan_key = Disclosure Sequence Number alone, matching the issuance loan_key 1:1.
+    LegField("loan_key", "raw", ("disclosure_sequence_number",)),
+    LegField("loan_key_kind", "const", value="gnma_seq"),
+    LegField("agency", "const", value="GNMA"),
+    LegField("source_universe", "const", value="gnma_disclosure"),
+    LegField("program", "derived"),
+    LegField("reporting_period", "derived"),
+    LegField("reporting_year", "derived"),
+    LegField("pool_id", "raw", ("pool_id",)),
+    LegField("issuer_id", "str", ("issuer_id",)),
+    LegField("current_upb", "gnma_num", ("unpaid_principal_balance",)),
+    LegField("current_interest_rate", "gnma_num", ("loan_interest_rate",)),
+    LegField("loan_age", "int", ("loan_age_in_months",)),
+    # RMM junk reaches 967 months against a 480-month product ceiling -> window scrub.
+    LegField("remaining_months_to_maturity", "rmm", ("remaining_loan_term_in_months",)),
+    # Already the 0-6 capped cycle count (6 = 6+).
+    LegField("delinquency_months", "int", ("months_delinquent",)),
+    LegField("delinquency_raw", "str", ("months_delinquent",)),
+    LegField("months_prepaid", "int", ("months_pre_paid",)),
+    LegField("event_flag", "flag_y", ("current_month_liquidation_flag",)),
+    LegField("event_type", "derived"),
+    LegField("event_class", "derived"),
+    LegField("event_raw_code", "str", ("removal_reason",)),
+    LegField("is_credit_event", "derived"),
+    LegField("property_state", "str", ("state",)),
+]

@@ -1,15 +1,17 @@
-"""Declarative field plan for the FNMA ``loan_issuance`` combined master.
+"""Declarative field plans for the combined ``loan_issuance`` master.
 
-This is the committed, single-source-of-truth column map for fusing the two
-Fannie loan-level spines:
+The GSE plans come first; the GNMA rows, a single source, have a plan table of their own
+(`GNMA_LOAN_ISSUANCE_PLAN`).
 
-  * base  = SF Loan-Performance issuances  ("MBS",  ``fnma/silver/issuances``)
-  * enrich = FNM_ILLD UMBS pool-disclosure ("UMBS", ``umbs/silver/FNMA/ILLD``)
-            UNION the first FNM_MLLD monthly snapshot (pre-2019-06 recovery, D-6)
+Each GSE fuses two loan-level spines, bridged by its strictly 1:1 ``mbs_umbs``
+crosswalk:
 
-bridged by the strictly-1:1 ``crosswalk/mbs_umbs/mbs_umbs_crosswalk_fnma.parquet``.
+  * base   = the SF loan-level release (Fannie ``fnma/silver/issuances``, Freddie
+             ``fhlmc/silver/origination``)
+  * enrich = the UMBS ILLD at-issuance disclosure (``umbs/silver/{GSE}/ILLD``), plus
+             the first monthly MLLD/FU snapshot for loans issued before 2019-06
 
-Each entry maps one unified output field to its source column(s):
+Each plan entry maps one unified output field to its source column(s):
 
   name         unified output column name
   sf           list of SF source columns (vintage aliases OR-ed via coalesce)
@@ -20,18 +22,18 @@ Each entry maps one unified output field to its source column(s):
                  umbs_only     pass through from ILLD
                  shared_keep   in both, agree >=99.8% -> coalesce(SF, ILLD)
                  shared_harmon in both, code/encoding differs -> bespoke transform
-                 drop          filler / verified-never-populated -> not carried
-                               (see PRUNED_ALWAYS_NULL_FIELDS at the bottom)
+                 drop          filler or constant at source -> not carried
 
-The harmonization decisions (D-1..D-6) are documented in the maintainer's
-harmonization spec. The plan itself is generated from the validated
-column table; every
-SF and ILLD source column is asserted accounted for there.
+Source columns that are never populated are not in the plans at all: they are
+listed, with their aliases, in `PRUNED_ALWAYS_NULL_FIELDS` at the bottom, which a
+data guard re-checks against current silver.
 """
 
 from __future__ import annotations
 
 from typing import Final, TypedDict
+
+from mortgage_data_manager.combined._common import LegField
 
 
 class FieldSpec(TypedDict):
@@ -43,13 +45,13 @@ class FieldSpec(TypedDict):
     disposition: str
 
 
-#: The three primary loan dates parsed to ``pl.Date`` (first-of-month), per D-2.
+#: The three primary loan dates parsed to ``pl.Date`` (first-of-month).
 DATE_FIELDS: Final[frozenset[str]] = frozenset(
     {"first_payment_date", "maturity_date", "origination_date"}
 )
 
 #: Fields coalesced ILLD-first because ILLD is the higher-fidelity source.
-#: - ``mi_percent`` (D-4): ILLD is 100%-populated with explicit 0 = "no MI"; SF is null
+#: - ``mi_percent``: ILLD is 100%-populated with explicit 0 = "no MI"; SF is null
 #:   when there is no MI.
 #: - ``seller_name`` / ``servicer_name`` / ``mi_cancellation_ind``: the SF disclosure
 #:   VALUE-MASKS small entities as "Other" (only ~50-80 distinct sellers/servicers) while
@@ -59,6 +61,243 @@ DATE_FIELDS: Final[frozenset[str]] = frozenset(
 IL_FIRST_FIELDS: Final[frozenset[str]] = frozenset(
     {"mi_percent", "seller_name", "servicer_name", "mi_cancellation_ind"}
 )
+
+#: ILLD-only modification, step-rate and restated-origination fields, identical in both
+#: GSE plans (the restated ``orig_*`` fields carry a reissued loan's original terms).
+_ILLD_MODIFICATION_FIELDS: Final[list[FieldSpec]] = [
+    {
+        "name": "umbs_modification_program",
+        "sf": [],
+        "il": ["Modification Program"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "umbs_modification_type",
+        "sf": [],
+        "il": ["Modification Type"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "umbs_number_of_modifications",
+        "sf": [],
+        "il": ["Number of Modifications"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "umbs_total_capitalized_amount",
+        "sf": [],
+        "il": ["Total Capitalized Amount"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "umbs_original_deferred_amount",
+        "sf": [],
+        "il": ["Original Deferred Amount"],
+        "disposition": "drop",  # always 0 at issuance
+    },
+    {
+        "name": "umbs_current_deferred_upb",
+        "sf": [],
+        "il": ["Current Deferred UPB"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "umbs_loan_age_as_of_mod",
+        "sf": [],
+        "il": ["Loan Age As Of Modification"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "step_indicator",
+        "sf": [],
+        "il": ["Interest Rate Step Indicator"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "step_initial_fixed_period",
+        "sf": [],
+        "il": ["Initial Step Fixed-Rate Period"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "step_total_steps",
+        "sf": [],
+        "il": ["Total Number of Steps"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "step_remaining_steps",
+        "sf": [],
+        "il": ["Number of Remaining Steps"],
+        "disposition": "drop",  # always 0 at issuance
+    },
+    {
+        "name": "step_terminal_rate",
+        "sf": [],
+        "il": ["Terminal Step Rate"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "step_terminal_date",
+        "sf": [],
+        "il": ["Terminal Step Date"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "step_periodic_cap_up",
+        "sf": [],
+        "il": ["Periodic Step Cap Up Percent"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_upb_restated",
+        "sf": [],
+        "il": ["Origination Mortgage Loan Amount"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_rate_restated",
+        "sf": [],
+        "il": ["Origination Interest Rate"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_amort_restated",
+        "sf": [],
+        "il": ["Origination Amortization Type"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_io_restated",
+        "sf": [],
+        "il": ["Origination Interest Only Loan Indicator"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_fpd_restated",
+        "sf": [],
+        "il": ["Origination First Payment Date"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_maturity_restated",
+        "sf": [],
+        "il": ["Origination Maturity Date"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_term_restated",
+        "sf": [],
+        "il": ["Origination Loan Term"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_ltv_restated",
+        "sf": [],
+        "il": ["Origination Loan-To-Value (LTV)"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_cltv_restated",
+        "sf": [],
+        "il": ["Origination Combined Loan-To-Value (CLTV)"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_dti_restated",
+        "sf": [],
+        "il": ["Origination Debt-To-Income Ratio"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_credit_score_restated",
+        "sf": [],
+        "il": ["Origination Credit Score"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_purpose_restated",
+        "sf": [],
+        "il": ["Origination Loan Purpose"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_occupancy_restated",
+        "sf": [],
+        "il": ["Origination Occupancy Status"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "orig_channel_restated",
+        "sf": [],
+        "il": ["Origination Channel"],
+        "disposition": "umbs_only",
+    },
+]
+
+#: ARM cap, floor and rounding fields, identical in both GSE plans.
+_ARM_CAP_FLOOR_FIELDS: Final[list[FieldSpec]] = [
+    {
+        "name": "arm_init_cap_down",
+        "sf": [],
+        "il": ["Initial Interest Rate Cap Down Percent"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_periodic_cap_down",
+        "sf": [],
+        "il": ["Periodic Interest Rate Cap Down Percent"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_lookback",
+        "sf": [],
+        "il": ["Interest Rate Lookback"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_rounding_method",
+        "sf": [],
+        "il": ["Interest Rate Rounding Method"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_rounding_pct",
+        "sf": [],
+        "il": ["Interest Rate Rounding Method Percent"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_convertibility",
+        "sf": [],
+        "il": ["Convertibility Indicator"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_life_ceiling",
+        "sf": [],
+        "il": ["Life Ceiling Interest Rate"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_life_ceiling_net",
+        "sf": [],
+        "il": ["Life Ceiling Net Interest Rate"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_life_floor",
+        "sf": [],
+        "il": ["Life Floor Interest Rate"],
+        "disposition": "umbs_only",
+    },
+    {
+        "name": "arm_life_floor_net",
+        "sf": [],
+        "il": ["Life Floor Net Interest Rate"],
+        "disposition": "umbs_only",
+    },
+]
 
 FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
     {"name": "loan_key_sf", "sf": ["Loan Identifier"], "il": [], "disposition": "key"},
@@ -82,14 +321,12 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
     {"name": "cusip", "sf": [], "il": ["CUSIP"], "disposition": "umbs_only"},
     {"name": "security_id", "sf": [], "il": ["Security Identifier"], "disposition": "umbs_only"},
     {"name": "pool_prefix", "sf": [], "il": ["Prefix"], "disposition": "umbs_only"},
-    {"name": "reference_pool_id", "sf": ["Reference Pool ID"], "il": [], "disposition": "sf_only"},
     {
         "name": "loan_participation_pct",
         "sf": [],
         "il": ["Loan Participation Percent"],
         "disposition": "umbs_only",
     },
-    {"name": "deal_name", "sf": ["Deal Name"], "il": [], "disposition": "sf_only"},
     {
         "name": "seller_name",
         "sf": ["Seller Name"],
@@ -102,7 +339,6 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "il": ["Servicer Name"],
         "disposition": "shared_keep",
     },
-    {"name": "master_servicer", "sf": ["Master Servicer"], "il": [], "disposition": "sf_only"},
     {"name": "seller_city", "sf": [], "il": ["Seller City"], "disposition": "umbs_only"},
     {"name": "seller_state", "sf": [], "il": ["Seller State"], "disposition": "umbs_only"},
     {"name": "servicer_city", "sf": [], "il": ["Servicer City"], "disposition": "umbs_only"},
@@ -281,22 +517,10 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "disposition": "drop",
     },
     {
-        "name": "credit_score_current",
-        "sf": ["Current Classic FICO®", "Borrower Credit Score Current "],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
         "name": "co_borrower_credit_score_issuance",
         "sf": ["Co-Borrower Credit Score At Issuance"],
         "il": [],
         "disposition": "drop",
-    },
-    {
-        "name": "co_borrower_credit_score_current",
-        "sf": ["Co-Borrower Credit Score Current"],
-        "il": [],
-        "disposition": "sf_only",
     },
     {
         "name": "updated_credit_score",
@@ -305,7 +529,6 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "disposition": "umbs_only",
     },
     {"name": "vs4_score", "sf": [], "il": ["VS4", "Origination VS4"], "disposition": "umbs_only"},
-    {"name": "vs4_updated", "sf": [], "il": ["Updated VS4"], "disposition": "umbs_only"},
     {
         "name": "number_of_borrowers",
         "sf": ["Number of Borrowers"],
@@ -460,7 +683,7 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "name": "servicing_activity_ind",
         "sf": ["Servicing Activity Indicator"],
         "il": [],
-        "disposition": "sf_only",
+        "disposition": "drop",  # always N (false) on the issuance row
     },
     {"name": "arm_index", "sf": ["Index"], "il": ["Index"], "disposition": "shared_keep"},
     {
@@ -494,88 +717,20 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "il": ["Periodic Interest Rate Cap Up Percent"],
         "disposition": "shared_keep",
     },
-    {
-        "name": "arm_life_cap_up",
-        "sf": ["Lifetime Interest Rate Cap Up Percent"],
-        "il": [],
-        "disposition": "sf_only",
-    },
     {"name": "arm_product_type", "sf": ["ARM Product Type"], "il": [], "disposition": "sf_only"},
-    {"name": "arm_plan_number", "sf": ["ARM Plan Number"], "il": [], "disposition": "sf_only"},
-    {"name": "arm_cap_structure", "sf": ["ARM Cap Structure"], "il": [], "disposition": "sf_only"},
-    {
-        "name": "arm_balloon_ind",
-        "sf": ["ARM Balloon Indicator"],
-        "il": [],
-        "disposition": "sf_only",
-    },
     {
         "name": "arm_initial_fixed_le5yr_ind",
         "sf": ["ARM Initial Fixed-Rate Period  ≤ 5 YR Indicator"],
         "il": [],
         "disposition": "sf_only",
     },
+    *_ARM_CAP_FLOOR_FIELDS,
     {
-        "name": "arm_init_cap_down",
-        "sf": [],
-        "il": ["Initial Interest Rate Cap Down Percent"],
-        "disposition": "umbs_only",
+        "name": "modification_flag",
+        "sf": ["Modification Flag"],
+        "il": [],
+        "disposition": "drop",  # always N (false) on the issuance row
     },
-    {
-        "name": "arm_periodic_cap_down",
-        "sf": [],
-        "il": ["Periodic Interest Rate Cap Down Percent"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_lookback",
-        "sf": [],
-        "il": ["Interest Rate Lookback"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_rounding_method",
-        "sf": [],
-        "il": ["Interest Rate Rounding Method"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_rounding_pct",
-        "sf": [],
-        "il": ["Interest Rate Rounding Method Percent"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_convertibility",
-        "sf": [],
-        "il": ["Convertibility Indicator"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_ceiling",
-        "sf": [],
-        "il": ["Life Ceiling Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_ceiling_net",
-        "sf": [],
-        "il": ["Life Ceiling Net Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_floor",
-        "sf": [],
-        "il": ["Life Floor Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_floor_net",
-        "sf": [],
-        "il": ["Life Floor Net Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {"name": "modification_flag", "sf": ["Modification Flag"], "il": [], "disposition": "sf_only"},
     {
         "name": "borrower_assistance_plan",
         "sf": ["Borrower Assistance Plan"],
@@ -586,213 +741,15 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "name": "alternative_delinquency_resolution",
         "sf": ["Alternative Delinquency Resolution"],
         "il": ["Alternative Delinquency Resolution"],
-        "disposition": "shared_keep",
-    },
-    {
-        "name": "alternative_delinquency_resolution_count",
-        "sf": ["Alternative Delinquency  Resolution Count"],
-        "il": ["Number of Alternative Delinquency Resolutions"],
-        "disposition": "shared_keep",
-    },
-    {
-        "name": "total_deferral_amount",
-        "sf": ["Total Deferral Amount "],
-        "il": ["Total Deferral Amount"],
-        "disposition": "shared_keep",
+        "disposition": "drop",  # always 7 (not applicable) on the issuance row
     },
     {
         "name": "payment_deferral_mod_event_ind",
         "sf": ["Payment Deferral Modification Event Indicator"],
         "il": [],
-        "disposition": "sf_only",
+        "disposition": "drop",  # always 7 (not applicable) on the issuance row
     },
-    {
-        "name": "umbs_modification_program",
-        "sf": [],
-        "il": ["Modification Program"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_modification_type",
-        "sf": [],
-        "il": ["Modification Type"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_number_of_modifications",
-        "sf": [],
-        "il": ["Number of Modifications"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_total_capitalized_amount",
-        "sf": [],
-        "il": ["Total Capitalized Amount"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_original_deferred_amount",
-        "sf": [],
-        "il": ["Original Deferred Amount"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_current_deferred_upb",
-        "sf": [],
-        "il": ["Current Deferred UPB"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_loan_age_as_of_mod",
-        "sf": [],
-        "il": ["Loan Age As Of Modification"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_indicator",
-        "sf": [],
-        "il": ["Interest Rate Step Indicator"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_initial_fixed_period",
-        "sf": [],
-        "il": ["Initial Step Fixed-Rate Period"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_total_steps",
-        "sf": [],
-        "il": ["Total Number of Steps"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_remaining_steps",
-        "sf": [],
-        "il": ["Number of Remaining Steps"],
-        "disposition": "umbs_only",
-    },
-    {"name": "step_next_rate", "sf": [], "il": ["Next Step Rate"], "disposition": "umbs_only"},
-    {
-        "name": "step_terminal_rate",
-        "sf": [],
-        "il": ["Terminal Step Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_terminal_date",
-        "sf": [],
-        "il": ["Terminal Step Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_adj_frequency",
-        "sf": [],
-        "il": ["Step Rate Adjustment Frequency"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_next_adj_date",
-        "sf": [],
-        "il": ["Next Step Rate Adjustment Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_months_to_next_adj",
-        "sf": [],
-        "il": ["Months to Next Step Rate Adjustment Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_periodic_cap_up",
-        "sf": [],
-        "il": ["Periodic Step Cap Up Percent"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_upb_restated",
-        "sf": [],
-        "il": ["Origination Mortgage Loan Amount"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_rate_restated",
-        "sf": [],
-        "il": ["Origination Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_amort_restated",
-        "sf": [],
-        "il": ["Origination Amortization Type"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_io_restated",
-        "sf": [],
-        "il": ["Origination Interest Only Loan Indicator"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_fpd_restated",
-        "sf": [],
-        "il": ["Origination First Payment Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_maturity_restated",
-        "sf": [],
-        "il": ["Origination Maturity Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_term_restated",
-        "sf": [],
-        "il": ["Origination Loan Term"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_ltv_restated",
-        "sf": [],
-        "il": ["Origination Loan-To-Value (LTV)"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_cltv_restated",
-        "sf": [],
-        "il": ["Origination Combined Loan-To-Value (CLTV)"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_dti_restated",
-        "sf": [],
-        "il": ["Origination Debt-To-Income Ratio"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_credit_score_restated",
-        "sf": [],
-        "il": ["Origination Credit Score"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_purpose_restated",
-        "sf": [],
-        "il": ["Origination Loan Purpose"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_occupancy_restated",
-        "sf": [],
-        "il": ["Origination Occupancy Status"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_channel_restated",
-        "sf": [],
-        "il": ["Origination Channel"],
-        "disposition": "umbs_only",
-    },
+    *_ILLD_MODIFICATION_FIELDS,
     {
         "name": "delinquency_status",
         "sf": ["Current Loan Delinquency Status"],
@@ -804,191 +761,6 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "sf": ["Loan Payment History"],
         "il": ["Loan Performance History"],
         "disposition": "shared_harmon",
-    },
-    {
-        "name": "delinquent_accrued_interest",
-        "sf": ["Delinquent Accrued Interest"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {"name": "zero_balance_code", "sf": ["Zero Balance Code"], "il": [], "disposition": "sf_only"},
-    {
-        "name": "zero_balance_effective_date",
-        "sf": ["Zero Balance Effective Date"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "zero_balance_code_change_date",
-        "sf": ["Zero Balance Code Change Date"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "upb_at_removal",
-        "sf": ["UPB at the Time of Removal"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {"name": "repurchase_date", "sf": ["Repurchase Date"], "il": [], "disposition": "sf_only"},
-    {
-        "name": "scheduled_principal_current",
-        "sf": ["Scheduled Principal Current"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "total_principal_current",
-        "sf": ["Total Principal Current"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "unscheduled_principal_current",
-        "sf": ["Unscheduled Principal Current"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "last_paid_installment_date",
-        "sf": ["Last Paid Installment Date"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {"name": "foreclosure_date", "sf": ["Foreclosure Date"], "il": [], "disposition": "sf_only"},
-    {"name": "disposition_date", "sf": ["Disposition Date"], "il": [], "disposition": "sf_only"},
-    {"name": "foreclosure_costs", "sf": ["Foreclosure Costs"], "il": [], "disposition": "sf_only"},
-    {
-        "name": "property_preservation_costs",
-        "sf": ["Property Preservation and Repair Costs"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "asset_recovery_costs",
-        "sf": ["Asset Recovery Costs"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "misc_holding_expenses",
-        "sf": ["Miscellaneous Holding Expenses and Credits"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "holding_taxes",
-        "sf": ["Associated Taxes for Holding Property"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "net_sales_proceeds",
-        "sf": ["Net Sales Proceeds"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "credit_enhancement_proceeds",
-        "sf": ["Credit Enhancement Proceeds"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "repurchase_make_whole_proceeds",
-        "sf": ["Repurchase Make Whole Proceeds"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "repurchase_make_whole_proceeds_flag",
-        "sf": ["Repurchase Make Whole Proceeds Flag"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "other_foreclosure_proceeds",
-        "sf": ["Other Foreclosure Proceeds"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "foreclosure_principal_writeoff",
-        "sf": ["Foreclosure Principal Write-off Amount"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "mod_noninterest_bearing_upb",
-        "sf": ["Modification-Related Non-Interest Bearing UPB"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "principal_forgiveness_amount",
-        "sf": ["Principal Forgiveness Amount"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "original_list_start_date",
-        "sf": ["Original List Start Date"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "original_list_price",
-        "sf": ["Original List Price"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "current_list_start_date",
-        "sf": ["Current List Start Date"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "current_list_price",
-        "sf": ["Current List Price"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "current_period_mod_loss",
-        "sf": ["Current Period Modification Loss Amount"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "cumulative_mod_loss",
-        "sf": ["Cumulative Modification Loss Amount"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "current_period_credit_event_gainloss",
-        "sf": ["Current Period Credit Event Net Gain or Loss"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "cumulative_credit_event_gainloss",
-        "sf": ["Cumulative Credit Event Net Gain or Loss"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "loan_holdback_ind",
-        "sf": ["Loan Holdback Indicator"],
-        "il": [],
-        "disposition": "sf_only",
-    },
-    {
-        "name": "loan_holdback_effective_date",
-        "sf": ["Loan Holdback Effective Date"],
-        "il": [],
-        "disposition": "sf_only",
     },
     {
         "name": "_filler",
@@ -1180,7 +952,6 @@ FHLMC_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "disposition": "umbs_only",
     },
     {"name": "vs4_score", "sf": [], "il": ["VS4", "Origination VS4"], "disposition": "umbs_only"},
-    {"name": "vs4_updated", "sf": [], "il": ["Updated VS4"], "disposition": "umbs_only"},
     {
         "name": "number_of_borrowers",
         "sf": ["Number of Borrowers"],
@@ -1330,66 +1101,7 @@ FHLMC_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "il": ["Periodic Interest Rate Cap Up Percent"],
         "disposition": "umbs_only",
     },
-    {
-        "name": "arm_init_cap_down",
-        "sf": [],
-        "il": ["Initial Interest Rate Cap Down Percent"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_periodic_cap_down",
-        "sf": [],
-        "il": ["Periodic Interest Rate Cap Down Percent"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_lookback",
-        "sf": [],
-        "il": ["Interest Rate Lookback"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_rounding_method",
-        "sf": [],
-        "il": ["Interest Rate Rounding Method"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_rounding_pct",
-        "sf": [],
-        "il": ["Interest Rate Rounding Method Percent"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_convertibility",
-        "sf": [],
-        "il": ["Convertibility Indicator"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_ceiling",
-        "sf": [],
-        "il": ["Life Ceiling Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_ceiling_net",
-        "sf": [],
-        "il": ["Life Ceiling Net Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_floor",
-        "sf": [],
-        "il": ["Life Floor Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "arm_life_floor_net",
-        "sf": [],
-        "il": ["Life Floor Net Interest Rate"],
-        "disposition": "umbs_only",
-    },
+    *_ARM_CAP_FLOOR_FIELDS,
     {
         "name": "borrower_assistance_plan",
         "sf": [],
@@ -1400,207 +1112,9 @@ FHLMC_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
         "name": "alternative_delinquency_resolution",
         "sf": [],
         "il": ["Alternative Delinquency Resolution"],
-        "disposition": "umbs_only",
+        "disposition": "drop",  # always 7 (not applicable) on the issuance row
     },
-    {
-        "name": "alternative_delinquency_resolution_count",
-        "sf": [],
-        "il": ["Number of Alternative Delinquency Resolutions"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "total_deferral_amount",
-        "sf": [],
-        "il": ["Total Deferral Amount"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_modification_program",
-        "sf": [],
-        "il": ["Modification Program"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_modification_type",
-        "sf": [],
-        "il": ["Modification Type"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_number_of_modifications",
-        "sf": [],
-        "il": ["Number of Modifications"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_total_capitalized_amount",
-        "sf": [],
-        "il": ["Total Capitalized Amount"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_original_deferred_amount",
-        "sf": [],
-        "il": ["Original Deferred Amount"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_current_deferred_upb",
-        "sf": [],
-        "il": ["Current Deferred UPB"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "umbs_loan_age_as_of_mod",
-        "sf": [],
-        "il": ["Loan Age As Of Modification"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_indicator",
-        "sf": [],
-        "il": ["Interest Rate Step Indicator"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_initial_fixed_period",
-        "sf": [],
-        "il": ["Initial Step Fixed-Rate Period"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_total_steps",
-        "sf": [],
-        "il": ["Total Number of Steps"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_remaining_steps",
-        "sf": [],
-        "il": ["Number of Remaining Steps"],
-        "disposition": "umbs_only",
-    },
-    {"name": "step_next_rate", "sf": [], "il": ["Next Step Rate"], "disposition": "umbs_only"},
-    {
-        "name": "step_terminal_rate",
-        "sf": [],
-        "il": ["Terminal Step Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_terminal_date",
-        "sf": [],
-        "il": ["Terminal Step Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_adj_frequency",
-        "sf": [],
-        "il": ["Step Rate Adjustment Frequency"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_next_adj_date",
-        "sf": [],
-        "il": ["Next Step Rate Adjustment Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_months_to_next_adj",
-        "sf": [],
-        "il": ["Months to Next Step Rate Adjustment Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "step_periodic_cap_up",
-        "sf": [],
-        "il": ["Periodic Step Cap Up Percent"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_upb_restated",
-        "sf": [],
-        "il": ["Origination Mortgage Loan Amount"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_rate_restated",
-        "sf": [],
-        "il": ["Origination Interest Rate"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_amort_restated",
-        "sf": [],
-        "il": ["Origination Amortization Type"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_io_restated",
-        "sf": [],
-        "il": ["Origination Interest Only Loan Indicator"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_fpd_restated",
-        "sf": [],
-        "il": ["Origination First Payment Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_maturity_restated",
-        "sf": [],
-        "il": ["Origination Maturity Date"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_term_restated",
-        "sf": [],
-        "il": ["Origination Loan Term"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_ltv_restated",
-        "sf": [],
-        "il": ["Origination Loan-To-Value (LTV)"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_cltv_restated",
-        "sf": [],
-        "il": ["Origination Combined Loan-To-Value (CLTV)"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_dti_restated",
-        "sf": [],
-        "il": ["Origination Debt-To-Income Ratio"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_credit_score_restated",
-        "sf": [],
-        "il": ["Origination Credit Score"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_purpose_restated",
-        "sf": [],
-        "il": ["Origination Loan Purpose"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_occupancy_restated",
-        "sf": [],
-        "il": ["Origination Occupancy Status"],
-        "disposition": "umbs_only",
-    },
-    {
-        "name": "orig_channel_restated",
-        "sf": [],
-        "il": ["Origination Channel"],
-        "disposition": "umbs_only",
-    },
+    *_ILLD_MODIFICATION_FIELDS,
     {"name": "delinquency_status", "sf": [], "il": ["Days Delinquent"], "disposition": "umbs_only"},
     {
         "name": "loan_payment_history",
@@ -1638,6 +1152,61 @@ FHLMC_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
 ]
 
 
+#: GNMA rows: one ``dailyllmni`` L file per issuance month, a single source, so the plan
+#: is a `LegField` table (see `mortgage_data_manager.combined._common`) rather than a
+#: two-spine one. Sources are canonical silver columns; readers are ``_gnma_loan_readers``
+#: plus the issuance decodes in `mortgage_data_manager.combined.loan_issuance`. Pool-level
+#: ``cusip`` / ``program`` / ``pool_type`` are joined afterward from the P record.
+GNMA_LOAN_ISSUANCE_PLAN: Final[list[LegField]] = [
+    # loan_key = Disclosure Sequence Number alone: verified globally unique (across
+    # Ginnie I/II, no cross-pool/cross-program collisions), stable month-to-month, and
+    # identical between dailyllmni issuance and llmon performance (99.96%), so the old
+    # Pool-ID prefix was redundant. pool_id is retained as its own column.
+    LegField("loan_key", "raw", ("disclosure_sequence_number",)),
+    LegField("loan_key_kind", "const", value="gnma_seq"),
+    LegField("agency", "const", value="GNMA"),
+    LegField("source_dataset", "const", value="gnma_dailyllmni"),
+    LegField("issuance_month", "derived"),
+    LegField("issuance_year", "derived"),
+    LegField("pool_id", "raw", ("pool_id",)),
+    LegField("issuer_id", "str", ("issuer_id",)),
+    # ``Seller Issuer ID`` (V1.6+) is deliberately NOT emitted: GNMA publishes the slot
+    # but it is blank in every dailyllmni month (2026-07-09 audit; the guard test on
+    # PRUNED_ALWAYS_NULL_FIELDS alerts if GNMA ever starts populating it).
+    LegField("first_payment_date", "date", ("first_payment_date",)),
+    LegField("maturity_date", "date", ("maturity_date_of_loan",)),
+    LegField("origination_date", "date", ("loan_origination_date",)),
+    LegField("orig_quarter", "derived"),
+    LegField("original_upb", "gnma_num", ("original_principal_balance",)),
+    LegField("issuance_investor_upb", "gnma_num", ("upb_at_issuance",)),
+    LegField("loan_term", "int", ("original_loan_term_in_months",)),
+    LegField("loan_age", "int", ("loan_age_in_months",)),
+    LegField("remaining_months_to_maturity", "int", ("remaining_loan_term_in_months",)),
+    LegField("note_rate", "gnma_num", ("loan_interest_rate",)),
+    LegField("ltv", "ratio", ("loan_to_value",)),
+    LegField("cltv", "ratio", ("combined_ltv",)),
+    LegField("dti", "ratio", ("total_debt_expense_ratio_percent",)),
+    LegField("representative_credit_score", "fico", ("credit_score",)),
+    LegField("number_of_borrowers", "int", ("number_of_borrowers",)),
+    LegField("number_of_units", "int", ("property_type",)),  # Ginnie's property type is a count
+    LegField("loan_purpose", "derived"),
+    LegField("loan_purpose_raw", "str", ("loan_purpose",)),
+    LegField("is_modified_reissue", "derived"),
+    LegField("refi_type", "str", ("refinance_type",)),
+    LegField("channel", "channel", ("third_party_origination_type",)),
+    LegField("channel_raw", "str", ("third_party_origination_type",)),
+    LegField("amortization_type", "derived"),
+    LegField("first_time_homebuyer", "yn", ("first_time_home_buyer",)),
+    LegField("property_state", "str", ("state",)),
+    LegField("government_insurer", "insurer", ("agency",)),
+    LegField("gov_upfront_mip_rate", "gnma_num", ("upfront_mip",)),
+    LegField("gov_annual_mip_rate", "gnma_num", ("annual_mip",)),
+    LegField("down_payment_assistance", "str", ("down_payment_assistance",)),
+    LegField("buydown", "str", ("buy_down_status",)),
+    LegField("arm_index", "arm_index", ("index_type",)),
+]
+
+
 class PrunedField(TypedDict):
     """One pruned output field and the never-populated source column(s) behind it."""
 
@@ -1666,7 +1235,7 @@ class PrunedField(TypedDict):
 #:
 #: ``tests/test_combined/test_pruned_columns_guard.py`` walks this registry against the
 #: source silver layers and FAILS if any column ever starts populating — the signal to
-#: un-prune it (delete its row here; its plan entry above still documents the wiring).
+#: un-prune it (move its row back into the plan above, aliases as listed here).
 PRUNED_ALWAYS_NULL_FIELDS: Final[list[PrunedField]] = [
     {
         "name": "alternative_delinquency_resolution_count",
@@ -1882,15 +1451,3 @@ PRUNED_ALWAYS_NULL_FIELDS: Final[list[PrunedField]] = [
         "gnma": [],
     },
 ]
-
-#: Names of the pruned fields (drives the disposition flip below + the GNMA assembler).
-PRUNED_FIELD_NAMES: Final[frozenset[str]] = frozenset(f["name"] for f in PRUNED_ALWAYS_NULL_FIELDS)
-
-# Flip the pruned entries' dispositions to ``drop`` in ONE auditable place. The plan
-# entries above keep their source-alias documentation; the builders simply stop emitting
-# these columns. (``issuance_full_upb`` and ``seller_issuer_id`` are not plan names —
-# they are handled at their emit sites.)
-for _plan in (FNMA_LOAN_ISSUANCE_PLAN, FHLMC_LOAN_ISSUANCE_PLAN):
-    for _spec in _plan:
-        if _spec["name"] in PRUNED_FIELD_NAMES:
-            _spec["disposition"] = "drop"

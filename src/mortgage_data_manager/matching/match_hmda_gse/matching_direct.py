@@ -42,6 +42,7 @@ from typing import Literal
 
 import polars as pl
 
+from mortgage_data_manager.core.harmonized import GSE_OCCUPANCY, HMDA_OCCUPANCY, invert, recode
 from mortgage_data_manager.core.logging import get_logger, log_execution_time
 from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.core.reference import load_tract_zip3
@@ -140,15 +141,7 @@ def _occupancy_unified(expr: pl.Expr, *, hmda: bool) -> pl.Expr:
         An expression on the unified P/S/I occupancy vocabulary.
     """
     if hmda:
-        return (
-            pl.when(expr == 1)
-            .then(pl.lit("P"))
-            .when(expr == 2)
-            .then(pl.lit("S"))
-            .when(expr == 3)
-            .then(pl.lit("I"))
-            .otherwise(None)
-        )
+        return recode(expr, HMDA_OCCUPANCY, invert(GSE_OCCUPANCY))
     return expr.cast(pl.Utf8)
 
 

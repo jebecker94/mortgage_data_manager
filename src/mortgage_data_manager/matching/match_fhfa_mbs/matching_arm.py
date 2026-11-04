@@ -41,6 +41,17 @@ from pathlib import Path
 
 import polars as pl
 
+from mortgage_data_manager.core.harmonized import (
+    FHFA_CHANNEL_CODE,
+    FHFA_LOAN_PURPOSE_CODE,
+    FHFA_PROPERTY_TYPE_CODE,
+    GSE_CHANNEL,
+    GSE_LOAN_PURPOSE,
+    GSE_OCCUPANCY,
+    GSE_PROPERTY_TYPE,
+    OCCUPANCY_CODE,
+    compose,
+)
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.core.reference.states import STATE_TO_FIPS
@@ -153,14 +164,14 @@ FNMA_ARM = UmbsArmSource(
     spec=FNMA,
     files=fnma_arm_files,
     # FHFA codes Fannie correspondent loans 9, unlike Freddie's 3.
-    channel_codes={"R": 1, "B": 2, "C": 9},
+    channel_codes=compose(GSE_CHANNEL, FHFA_CHANNEL_CODE["FNMA"]),
 )
 
 FHLMC_ARM = UmbsArmSource(
     spec=FHLMC,
     files=fhlmc_arm_files,
     # FU's 'T' (third party, unspecified) has no FHFA code and stays null.
-    channel_codes={"R": 1, "B": 2, "C": 3},
+    channel_codes=compose(GSE_CHANNEL, FHFA_CHANNEL_CODE["FHLMC"]),
     term_bins=TERM_TO_FHFA_BIN,
     max_borrowers=FHLMC.max_borrowers,
 )
@@ -252,9 +263,13 @@ def prepare_umbs_arms(lf: pl.LazyFrame, source: UmbsArmSource) -> pl.LazyFrame:
         pl.col("Number of Units").cast(pl.Int64).alias("num_units"),
         borrowers.alias("num_borrowers"),
         code("First Time Home Buyer Indicator", {"Y": 1, "N": 2}).alias("fthb"),
-        code("Loan Purpose", {"P": 1, "R": 2, "N": 2, "C": 7}).alias("loan_purpose"),
-        code("Occupancy Status", {"P": 1, "S": 2, "I": 3}).alias("occupancy_code"),
-        code("Property Type", {"SF": 1, "PU": 1, "CO": 1, "CP": 1, "MH": 2}).alias("property_type"),
+        code("Loan Purpose", compose(GSE_LOAN_PURPOSE, FHFA_LOAN_PURPOSE_CODE)).alias(
+            "loan_purpose"
+        ),
+        code("Occupancy Status", compose(GSE_OCCUPANCY, OCCUPANCY_CODE)).alias("occupancy_code"),
+        code("Property Type", compose(GSE_PROPERTY_TYPE, FHFA_PROPERTY_TYPE_CODE)).alias(
+            "property_type"
+        ),
         pl.col("First Payment Date")
         .dt.offset_by("-2mo")
         .dt.year()

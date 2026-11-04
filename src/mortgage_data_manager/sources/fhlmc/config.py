@@ -167,11 +167,11 @@ MAX_YEAR = FHLMCConfig.MAX_YEAR
 # ----------------------------------------------------------------------------- #
 # Closed Freddie code sets. NOTE: Loan Purpose levels (C/N/P) genuinely differ
 # from Fannie's (C/P/R) — C=cash-out refi, N=no-cash-out refi, P=purchase — so
-# this is FHLMC-native, not the FNMA enum. Channel/Occupancy/Property Type
-# happen to share Fannie's levels; declared locally to keep the modules
-# decoupled (Enum dtype equality is by level set, so cross-GSE concat still
-# matches).
-_FHLMC_CHANNEL = pl.Enum(["B", "C", "R"])
+# this is FHLMC-native, not the FNMA enum. Channel adds T (third-party origination,
+# unspecified broker or correspondent; 8.7M standard-dataset loans, mostly 1999-2009), which Fannie
+# never publishes. Occupancy/Property Type happen to share Fannie's levels; declared
+# locally to keep the modules decoupled (Enum dtype equality is by level set).
+_FHLMC_CHANNEL = pl.Enum(["B", "C", "R", "T"])
 _FHLMC_OCCUPANCY_STATUS = pl.Enum(["I", "P", "S"])
 _FHLMC_PROPERTY_TYPE = pl.Enum(["CO", "CP", "MH", "PU", "SF"])
 _FHLMC_LOAN_PURPOSE = pl.Enum(["C", "N", "P"])
@@ -182,7 +182,7 @@ _FHLMC_PROGRAM_INDICATOR = pl.Enum(["F", "H", "R"])
 _FHLMC_MI_CANCELLATION = pl.Enum(["7", "N", "Y"])
 # Performance-side closed sets.
 _FHLMC_MODIFICATION_FLAG = pl.Enum(["P", "Y"])
-_FHLMC_DEFERRED_PAYMENT_PLAN = pl.Enum(["P", "Y"])
+_FHLMC_DEFERRED_PAYMENT_PLAN = pl.Enum(["C", "P", "Y"])
 _FHLMC_BORROWER_ASSISTANCE = pl.Enum(["F", "R", "T"])
 
 # Missing-value sentinels (per Freddie's SF LLD user guide), null-mapped before

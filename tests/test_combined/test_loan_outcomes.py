@@ -13,25 +13,28 @@ from datetime import date
 
 import polars as pl
 
-from mortgage_data_manager.combined.builders import (
+from mortgage_data_manager.combined.loan_outcomes import (
     _finalize_loan_outcomes,
     _months_between,
+    _outcome_frontiers,
     loan_outcome_partial_aggs,
     loan_outcome_reduce_aggs,
 )
 
 
 def _panel() -> pl.DataFrame:
-    # Loan A: three months over two "files", 60 DPD peak, modified, prepays in 202002.
+    # Loan A: three months over two "files", 60 DPD peak, modified, prepays in 202002;
+    # its terminal row blanks the age, as the GSE disclosures do.
     # Loan B: two months, never delinquent, no flags, still active.
     return pl.DataFrame(
         {
             "loan_key": ["A", "A", "A", "B", "B"],
             "loan_key_kind": ["sf_seq"] * 5,
             "source_universe": ["gse_disclosure"] * 5,
+            "month_source": ["sf_only"] * 5,
             "reporting_period": [201911, 201912, 202002, 202001, 202002],
             "current_upb": [100.0, 99.0, 0.0, 50.0, 49.0],
-            "loan_age": [1, 2, 4, 1, 2],
+            "loan_age": [1, 2, None, 1, 2],
             "delinquency_months": [0, 2, 0, 0, 0],
             "servicer_name": ["S1", "S1", "S2", "S3", "S3"],
             "modification_flag": [None, "Y", None, None, None],
@@ -55,7 +58,8 @@ def _panel() -> pl.DataFrame:
 def _reduce(partials: list[pl.DataFrame], info: dict[str, bool]) -> pl.DataFrame:
     stacked = pl.concat(partials).lazy()
     reduced = stacked.group_by("loan_key").agg(loan_outcome_reduce_aggs())
-    return _finalize_loan_outcomes(reduced, info).collect().sort("loan_key")
+    frontiers = _outcome_frontiers(stacked)
+    return _finalize_loan_outcomes(reduced, info, frontiers).collect().sort("loan_key")
 
 
 def test_two_level_fold_matches_single_pass() -> None:
@@ -79,7 +83,10 @@ def test_two_level_fold_matches_single_pass() -> None:
     assert a["first_reporting_period"] == 201911
     assert a["last_reporting_period"] == 202002
     assert a["n_months_observed"] == 3
-    assert a["last_upb"] == 0.0
+    # the terminal row's zero balance and blank age give way to the latest disclosed
+    assert (a["last_upb"], a["last_upb_period"]) == (99.0, 201912)
+    assert a["last_loan_age"] == 4
+    assert a["observed_at_frontier"] is True
     assert a["last_servicer_name"] == "S2"
     assert a["peak_delinquency_months"] == 2
     assert (a["ever_30"], a["ever_60"], a["ever_90"]) == (True, True, False)

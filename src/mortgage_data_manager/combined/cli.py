@@ -14,13 +14,13 @@ from rich.table import Table
 from mortgage_data_manager import __version__
 from mortgage_data_manager.combined.builders import build_datasets
 from mortgage_data_manager.combined.config import (
-    BUILDABLE_DATASETS,
     DATASET_MAP,
+    VALID_DATASETS,
     CombinedConfig,
 )
 from mortgage_data_manager.core.cli.download_options import QuietOption, VerboseOption
 from mortgage_data_manager.core.cli.formatting import console
-from mortgage_data_manager.core.cli.validation import version_callback_factory
+from mortgage_data_manager.core.cli.validation import validate_datasets, version_callback_factory
 from mortgage_data_manager.core.logging import configure_logging
 
 app = typer.Typer(
@@ -56,7 +56,7 @@ DatasetsOption = Annotated[
     typer.Option(
         "--datasets",
         "-t",
-        help=f"Masters to build (repeatable). Default: all buildable ({', '.join(BUILDABLE_DATASETS)}).",
+        help=f"Masters to build (repeatable), run in registry order. Default: all ({', '.join(VALID_DATASETS)}).",
     ),
 ]
 
@@ -95,8 +95,15 @@ def build_command(
 ) -> None:
     """Build the requested combined master datasets."""
     configure_logging(level=_log_level(verbose, quiet))
+    if datasets:
+        validate_datasets(datasets, VALID_DATASETS)
     built = build_datasets(datasets, overwrite=overwrite)
-    console.print(f"[green]Built:[/green] {', '.join(built) or 'nothing'}")
+    if not built:
+        console.print(
+            "[yellow]Nothing built: every requested master exists (use --overwrite).[/yellow]"
+        )
+        raise typer.Exit(code=1)
+    console.print(f"[green]Built:[/green] {', '.join(built)}")
 
 
 def cli_main() -> None:

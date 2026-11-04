@@ -14,6 +14,7 @@ import pytest
 
 from mortgage_data_manager.core.medallion import (
     atomic_output,
+    atomic_output_dir,
     clear_partitions,
     should_process_file,
     write_hive_partitioned,
@@ -60,6 +61,43 @@ def test_atomic_output_removes_stale_temp_from_killed_run(tmp_path):
         assert not tmp.exists()  # stale temp was cleared, not reused
         tmp.write_text("fresh")
     assert final.read_text() == "fresh"
+
+
+def test_atomic_output_dir_keeps_old_tree_until_swap(tmp_path):
+    final = tmp_path / "dataset"
+    (final / "part=1").mkdir(parents=True)
+    (final / "part=1" / "old.parquet").write_text("old")
+    with pytest.raises(RuntimeError):
+        with atomic_output_dir(final) as tmp:
+            (tmp / "new.parquet").write_text("partial")
+            raise RuntimeError("builder died")
+    # a failed rebuild leaves the previous tree untouched and no temp behind
+    assert (final / "part=1" / "old.parquet").read_text() == "old"
+    assert not tmp.exists()
+    with atomic_output_dir(final) as tmp:
+        assert list(tmp.iterdir()) == []
+        (tmp / "new.parquet").write_text("new")
+    assert [p.name for p in final.iterdir()] == ["new.parquet"]
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["dataset"]
+
+
+def test_atomic_output_dir_first_build(tmp_path):
+    final = tmp_path / "dataset"
+    with atomic_output_dir(final) as tmp:
+        (tmp / "new.parquet").write_text("new")
+    assert [p.name for p in final.iterdir()] == ["new.parquet"]
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["dataset"]
+
+
+def test_atomic_output_dir_restores_tree_from_interrupted_swap(tmp_path):
+    final = tmp_path / "dataset"
+    old = tmp_path / ".dataset.old"  # killed after moving the old tree aside
+    old.mkdir()
+    (old / "kept.parquet").write_text("kept")
+    with pytest.raises(RuntimeError):
+        with atomic_output_dir(final):
+            raise RuntimeError("builder died")
+    assert (final / "kept.parquet").read_text() == "kept"
 
 
 def test_write_hive_partitioned_leaves_no_temp_tree(tmp_path):

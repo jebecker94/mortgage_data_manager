@@ -1,19 +1,8 @@
-"""Configuration for the combined (cross-source master) datasets.
+"""Configuration and registry for the combined cross-source master datasets.
 
-This subpackage assembles a SMALL, deliberate set of cross-source master
-datasets from the per-source silver layers — NOT the exhaustive aggregation
-catalog a commercial vendor like eMBS publishes (e.g. security-level state-
-concentration summaries by month; explicitly out of scope for this package).
-
-Target master datasets (the registry below):
-
-- ``loan_issuance``    - master loan-level issuance/origination
-- ``loan_performance`` - master loan-level performance panel (loan × month)
-- ``mbs_issuance``     - master MBS/pool issuance
-- ``mbs_performance``  - master MBS/pool performance panel (pool × month)
-
-The ``sources`` field lists the per-source silver inputs each master is
-expected to draw on — a wiring sketch, refined as builders are implemented.
+`DATASET_MAP` lists the six masters in build order. Each entry gives the row
+``grain``, the per-source ``sources`` the builder reads, and ``depends_on``: the
+combined masters it reads, which must be built first.
 """
 
 from __future__ import annotations
@@ -25,43 +14,46 @@ from decouple import config
 
 from mortgage_data_manager.core.config import MortgageDataConfig
 
-#: Registry of combined master datasets. ``grain`` is the row grain; ``sources``
-#: are the per-source silver inputs the builder will draw on (sketch).
-DATASET_MAP: Final[dict[str, dict[str, object]]] = {
+#: Registry of combined master datasets, in build order.
+DATASET_MAP: Final[dict[str, dict[str, str | list[str]]]] = {
     "loan_issuance": {
         "description": "Master loan-level issuance/origination",
         "grain": "loan",
-        "sources": ["hmda", "fha", "gnma", "umbs", "fnma", "fhlmc"],
+        "sources": ["gnma", "umbs", "fnma", "fhlmc"],
+        "depends_on": [],
     },
     "loan_performance": {
         "description": "Master loan-level performance panel (loan x month)",
         "grain": "loan_month",
         "sources": ["gnma", "umbs", "fnma", "fhlmc"],
+        "depends_on": [],
     },
     "loan_terminations": {
-        "description": "GSE loan termination / loss-waterfall events (one row per event)",
+        "description": "Loan termination events with the GSE loss waterfall (one per loan)",
         "grain": "loan_event",
-        "sources": ["fnma", "fhlmc"],
+        "sources": ["gnma", "fnma", "fhlmc"],
+        "depends_on": [],
     },
     "loan_outcomes": {
         "description": "Loan-grain outcome summary (observation window, delinquency, modification, terminal event)",
         "grain": "loan",
-        "sources": ["gnma", "umbs", "fnma", "fhlmc"],
+        "sources": ["gnma", "fhlmc"],
+        "depends_on": ["loan_issuance", "loan_performance", "loan_terminations"],
     },
     "mbs_issuance": {
         "description": "Master MBS/pool issuance",
         "grain": "security",
-        "sources": ["gnma", "umbs", "fhfa"],
+        "sources": ["gnma", "umbs"],
+        "depends_on": [],
     },
     "mbs_performance": {
         "description": "Master MBS/pool performance panel (pool x month)",
         "grain": "security_month",
         "sources": ["gnma", "umbs"],
+        "depends_on": [],
     },
 }
 
-#: Master datasets this package builds.
-BUILDABLE_DATASETS: Final[list[str]] = list(DATASET_MAP)
 VALID_DATASETS: Final[list[str]] = list(DATASET_MAP.keys())
 
 

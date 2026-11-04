@@ -32,6 +32,10 @@ reference tables used by more than one source, and geocoding.
 
 ::: mortgage_data_manager.core.dates
 
+## Harmonized code spaces
+
+::: mortgage_data_manager.core.harmonized
+
 ## Scalars
 
 ::: mortgage_data_manager.core.scalars

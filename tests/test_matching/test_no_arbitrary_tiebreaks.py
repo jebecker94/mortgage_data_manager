@@ -23,7 +23,7 @@ _SRC = Path(__file__).resolve().parents[2] / "src" / "mortgage_data_manager"
 #: Modules whose picks decide a link or a value a matcher compares.
 _SCOPE: tuple[Path, ...] = (
     _SRC / "matching",
-    _SRC / "combined" / "builders.py",
+    _SRC / "combined",
     _SRC / "core" / "reference",
     _SRC / "sources" / "fnma" / "import_silver.py",
     _SRC / "sources" / "fhlmc" / "import_silver.py",

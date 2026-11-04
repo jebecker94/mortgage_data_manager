@@ -22,6 +22,13 @@ from pathlib import Path
 
 import polars as pl
 
+from mortgage_data_manager.core.harmonized import (
+    HMDA_LOAN_PURPOSE,
+    PURPOSE_CLASS,
+    encode,
+    gnma_loan_purpose,
+    recode,
+)
 from mortgage_data_manager.core.logging import get_logger, log_execution_time
 from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.matching.match_hmda_gnma.config import HMDAGNMAMatchingConfig as Config
@@ -67,14 +74,7 @@ _HMDA_COLS = [
 
 def _hmda_purpose_cat() -> pl.Expr:
     """Coarse purpose category from HMDA loan_purpose (P / R / O)."""
-    lp = pl.col("loan_purpose")
-    return (
-        pl.when(lp == 1)
-        .then(pl.lit("P"))
-        .when(lp.is_in([31, 32]))
-        .then(pl.lit("R"))
-        .otherwise(pl.lit("O"))
-    )
+    return recode(pl.col("loan_purpose"), HMDA_LOAN_PURPOSE, PURPOSE_CLASS).fill_null("O")
 
 
 def _gnma_purpose_cat() -> pl.Expr:
@@ -83,8 +83,7 @@ def _gnma_purpose_cat() -> pl.Expr:
     Ginnie's loan-level layout codes 3 / 4 as loan modifications and 5 as re-performing:
     re-pooled loans, not originations, so they get no category and never join an HMDA loan.
     """
-    gp = pl.col("gnma_purpose")
-    return pl.when(gp == "1").then(pl.lit("P")).when(gp == "2").then(pl.lit("R")).otherwise(None)
+    return encode(gnma_loan_purpose(pl.col("gnma_purpose"), None), PURPOSE_CLASS)
 
 
 def _dti_one_sided() -> pl.Expr:

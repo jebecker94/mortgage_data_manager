@@ -3279,7 +3279,7 @@ $ mortgage-data combined build [OPTIONS]
 
 **Options**:
 
-* `-t, --datasets <str>`: Masters to build (repeatable). Default: all buildable (loan_issuance, loan_performance, loan_terminations, loan_outcomes, mbs_issuance, mbs_performance).
+* `-t, --datasets <str>`: Masters to build (repeatable), run in registry order. Default: all (loan_issuance, loan_performance, loan_terminations, loan_outcomes, mbs_issuance, mbs_performance).
 * `--overwrite`: Rebuild existing outputs.
 * `-v, --verbose`: Enable verbose (DEBUG level) logging output.
 * `-q, --quiet`: Suppress progress bars and reduce output.

@@ -23,6 +23,17 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.config import MortgageDataConfig
+from mortgage_data_manager.core.harmonized import (
+    FHFA_CHANNEL_CODE,
+    FHFA_LOAN_PURPOSE_CODE,
+    FHFA_PROPERTY_TYPE_CODE,
+    GSE_CHANNEL,
+    GSE_LOAN_PURPOSE,
+    GSE_OCCUPANCY,
+    GSE_PROPERTY_TYPE,
+    OCCUPANCY_CODE,
+    recode,
+)
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.core.reference.states import STATE_TO_FIPS
@@ -116,7 +127,9 @@ def prepare_fnma(lf: pl.LazyFrame) -> pl.LazyFrame:
         pl.col("Property State").replace_strict(STATE_TO_FIPS, default=None).alias("state_fips"),
         _fnma_msa(msa_column).alias("msa"),
         # FHFA codes Fannie correspondent loans 9, unlike Freddie's 3.
-        pl.col("Channel").replace_strict({"R": 1, "B": 2, "C": 9}, default=None).alias("channel"),
+        recode(pl.col("Channel"), GSE_CHANNEL, FHFA_CHANNEL_CODE["FNMA"], dtype=pl.Int64).alias(
+            "channel"
+        ),
         pl.col("Original Interest Rate").cast(pl.Float64).alias("interest_rate"),
         pl.col("Original UPB").cast(pl.Float64).alias("loan_amount"),
         # FHFA's "LTV at origination" is CLTV where available, so use CLTV first.
@@ -131,15 +144,11 @@ def prepare_fnma(lf: pl.LazyFrame) -> pl.LazyFrame:
         pl.col("Number of Units").cast(pl.Int64).alias("num_units"),
         pl.col("Number of Borrowers").cast(pl.Int64).alias("num_borrowers"),
         fthb.alias("fthb"),
-        pl.col("Loan Purpose ")
-        .replace_strict({"P": 1, "R": 2, "C": 7}, default=None)
-        .alias("loan_purpose"),
-        pl.col("Occupancy Status")
-        .replace_strict({"P": 1, "S": 2, "I": 3}, default=None)
-        .alias("occupancy_code"),
-        pl.col("Property Type")
-        .replace_strict({"SF": 1, "PU": 1, "CO": 1, "CP": 1, "MH": 2}, default=None)
-        .alias("property_type"),
+        _fhfa_code("Loan Purpose ", GSE_LOAN_PURPOSE, FHFA_LOAN_PURPOSE_CODE).alias("loan_purpose"),
+        _fhfa_code("Occupancy Status", GSE_OCCUPANCY, OCCUPANCY_CODE).alias("occupancy_code"),
+        _fhfa_code("Property Type", GSE_PROPERTY_TYPE, FHFA_PROPERTY_TYPE_CODE).alias(
+            "property_type"
+        ),
         year_of("Origination Date", pl.Int64).alias("origination_year"),
         year_of("First Payment Date", pl.Int32).alias("fpd_year"),
         pl.col("Zip Code Short").alias("zip3"),
@@ -358,6 +367,11 @@ def filter_acquisition_consistent(
     return kept.drop("first_reporting_period")
 
 
+def _fhfa_code(column: str, codes: dict[str, str], targets: dict[str, int]) -> pl.Expr:
+    """A GSE code column in FHFA's numeric code space (see `core.harmonized`)."""
+    return recode(pl.col(column), codes, targets, dtype=pl.Int64)
+
+
 def _fnma_msa(msa_column: str) -> pl.Expr:
     """Fannie MSA as the FHFA parent CBSA, non-metro coded 0.
 
@@ -415,7 +429,9 @@ def prepare_fhlmc(lf: pl.LazyFrame) -> pl.LazyFrame:
         pl.col("Property State").replace_strict(STATE_TO_FIPS, default=None).alias("state_fips"),
         _fhlmc_msa().alias("msa"),
         # FHFA codes Freddie correspondent loans 3, unlike Fannie's 9.
-        pl.col("Channel").replace_strict({"R": 1, "B": 2, "C": 3}, default=None).alias("channel"),
+        recode(pl.col("Channel"), GSE_CHANNEL, FHFA_CHANNEL_CODE["FHLMC"], dtype=pl.Int64).alias(
+            "channel"
+        ),
         pl.col("Original Interest Rate").cast(pl.Float64).alias("interest_rate"),
         pl.col("Original UPB").cast(pl.Float64).alias("loan_amount"),
         # FHFA's "LTV at origination" is CLTV where available, so use CLTV first.
@@ -436,15 +452,11 @@ def prepare_fhlmc(lf: pl.LazyFrame) -> pl.LazyFrame:
         pl.col("First Time Homebuyer Flag")
         .replace_strict({"Y": 1, "N": 2}, default=None)
         .alias("fthb"),
-        pl.col("Loan Purpose")
-        .replace_strict({"P": 1, "R": 2, "N": 2, "C": 7}, default=None)
-        .alias("loan_purpose"),
-        pl.col("Occupancy Status")
-        .replace_strict({"P": 1, "S": 2, "I": 3}, default=None)
-        .alias("occupancy_code"),
-        pl.col("Property Type")
-        .replace_strict({"SF": 1, "PU": 1, "CO": 1, "CP": 1, "MH": 2}, default=None)
-        .alias("property_type"),
+        _fhfa_code("Loan Purpose", GSE_LOAN_PURPOSE, FHFA_LOAN_PURPOSE_CODE).alias("loan_purpose"),
+        _fhfa_code("Occupancy Status", GSE_OCCUPANCY, OCCUPANCY_CODE).alias("occupancy_code"),
+        _fhfa_code("Property Type", GSE_PROPERTY_TYPE, FHFA_PROPERTY_TYPE_CODE).alias(
+            "property_type"
+        ),
         # F{YY}Q{Q}{sequence}, e.g. F23Q10031582 -> 2023.
         (pl.col("Loan Sequence Number").str.slice(1, 2).cast(pl.Int64) + 2000).alias(
             "origination_year"

@@ -30,6 +30,12 @@ from pathlib import Path
 
 import polars as pl
 
+from mortgage_data_manager.core.harmonized import (
+    HMDA_LOAN_PURPOSE,
+    encode,
+    gnma_loan_purpose,
+    recode,
+)
 from mortgage_data_manager.core.logging import get_logger, log_execution_time
 from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.matching.match_hmda_gnma.config import HMDAGNMAMatchingConfig as Config
@@ -170,18 +176,13 @@ def load_gnma_purpose(min_pool_yyyymm: str = "201801") -> pl.DataFrame:
     return purpose
 
 
+#: The three-way purpose block both sides key on; an unspecified refinance has no block.
+_PURPOSE_BLOCK: dict[str, str] = {"purchase": "P", "refi_cash_out": "RC", "refi_rate_term": "RT"}
+
+
 def _h_purpose_block() -> pl.Expr:
     """HMDA purpose as the three-way block: purchase / cash-out refi / rate-term refi."""
-    hp = pl.col("loan_purpose")
-    return (
-        pl.when(hp == 1)
-        .then(pl.lit("P"))
-        .when(hp == 32)
-        .then(pl.lit("RC"))
-        .when(hp == 31)
-        .then(pl.lit("RT"))
-        .otherwise(None)
-    )
+    return recode(pl.col("loan_purpose"), HMDA_LOAN_PURPOSE, _PURPOSE_BLOCK)
 
 
 def _g_purpose_block() -> pl.Expr:
@@ -196,17 +197,7 @@ def _g_purpose_block() -> pl.Expr:
     Returns:
         The GNMA purpose block expression, null where it cannot be determined.
     """
-    gp = pl.col("g_purpose")
-    gr = pl.col("g_refi")
-    return (
-        pl.when(gp == "1")
-        .then(pl.lit("P"))
-        .when((gp == "2") & (gr == "2"))
-        .then(pl.lit("RC"))
-        .when((gp == "2") & gr.is_in(["1", "3"]))
-        .then(pl.lit("RT"))
-        .otherwise(None)
-    )
+    return encode(gnma_loan_purpose(pl.col("g_purpose"), pl.col("g_refi")), _PURPOSE_BLOCK)
 
 
 #: The extra block keys a round can name in ``sub_keys``: ``name -> (HMDA expression, GNMA
