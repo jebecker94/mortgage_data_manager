@@ -448,7 +448,7 @@ def download_layout_schemas(
         if info is None:
             logger.warning("No layout PDF published for prefix: %s", prefix)
             continue
-        file_path = _get_prefix_schema_folder(prefix, config) / f"{prefix}_layout.pdf"
+        file_path = _prefix_schema_dir(prefix, config) / f"{prefix}_layout.pdf"
         results.append(download_schema_file(info["href"], file_path, session, config, overwrite))
     return results
 
@@ -458,7 +458,7 @@ def download_layout_schemas(
 # =============================================================================
 
 
-def _get_prefix_data_folder(prefix: str, config: DownloadConfig) -> Path:
+def _prefix_data_dir(prefix: str, config: DownloadConfig) -> Path:
     """Get the appropriate download folder for a given prefix.
 
     Args:
@@ -483,7 +483,7 @@ def _get_prefix_data_folder(prefix: str, config: DownloadConfig) -> Path:
     return prefix_path
 
 
-def _get_prefix_schema_folder(prefix: str, config: DownloadConfig) -> Path:
+def _prefix_schema_dir(prefix: str, config: DownloadConfig) -> Path:
     """Get the appropriate schema download folder for a given prefix.
 
     Args:
@@ -664,8 +664,8 @@ def download_prefix_data(
     miss_threshold = config.consecutive_miss_exit_threshold
 
     # Get prefix folder
-    prefix_folder = _get_prefix_data_folder(prefix, config)
-    manifest = prefix_folder / ".bulk_downloads"
+    prefix_dir = _prefix_data_dir(prefix, config)
+    manifest = prefix_dir / ".bulk_downloads"
 
     while current_date <= end_date:
         # Create file name
@@ -678,7 +678,7 @@ def download_prefix_data(
 
         file_name = f"{prefix}_{date_suffix}.{prefix_config['extension']}"
         file_url = f"{config.base_url}/{file_name}"
-        local_path = prefix_folder / file_name
+        local_path = prefix_dir / file_name
 
         # Check if file is linked on page
         if config.require_link_on_page:
@@ -806,7 +806,7 @@ def download_prefix_schemas(
         One DownloadResult per schema file listed for the prefix.
     """
     logger.info("Downloading schemas for prefix: %s", prefix)
-    schema_folder = _get_prefix_schema_folder(prefix, config)
+    schema_dir = _prefix_schema_dir(prefix, config)
     results: list[DownloadResult] = []
     for link_info in find_schema_links(prefix, session, config, bad_text_filters):
         # Prefer the listing's own filename (already prefix-scoped, e.g.
@@ -817,7 +817,7 @@ def download_prefix_schemas(
             filename = f"{prefix}_{sanitized_text}.pdf"
         results.append(
             download_schema_file(
-                link_info["href"], schema_folder / filename, session, config, overwrite
+                link_info["href"], schema_dir / filename, session, config, overwrite
             )
         )
     return results
@@ -860,6 +860,7 @@ _DAILY_SNAPSHOT_FILES: set[str] = {
     "dailySFPS.zip",
     "dailySFS.zip",
     "dailyll_new.zip",
+    "dailyllpd_new.zip",  # v2.0 (pipe-delimited) daily new issuance, from 2026-08
     "hdailyPS.txt",
     "hdailyS.txt",
     "hdailyll_new.zip",
@@ -877,14 +878,15 @@ _DAILY_SNAPSHOT_FILES: set[str] = {
 # Maps bulk filename -> prefix used in the prefix dictionary.
 _UNDATED_MONTHLY_FILES: dict[str, str] = {
     "dailyllmni.zip": "dailyllmni",
+    "dailyllmnipd.zip": "dailyllmnipd",
     "hdailyllmni.zip": "hdailyllmni",
     "mfpldailymni3.zip": "mfpldailymni3",
 }
 
 
-def _record_bulk_download(prefix_folder: Path, filename: str) -> None:
-    """Append a filename to the bulk download manifest for a prefix folder."""
-    manifest = prefix_folder / ".bulk_downloads"
+def _record_bulk_download(prefix_dir: Path, filename: str) -> None:
+    """Append a filename to the bulk download manifest for a prefix directory."""
+    manifest = prefix_dir / ".bulk_downloads"
     existing = set()
     if manifest.exists():
         existing = set(manifest.read_text().splitlines())
@@ -1034,19 +1036,19 @@ def download_bulk_data(
         # For undated monthly files, download to temp first, then determine date
         if filename in _UNDATED_MONTHLY_FILES:
             dict_prefix = _UNDATED_MONTHLY_FILES[filename]
-            prefix_folder = _get_prefix_data_folder(dict_prefix, config)
-            temp_path = prefix_folder / filename
+            prefix_dir = _prefix_data_dir(dict_prefix, config)
+            temp_path = prefix_dir / filename
             result = download_data_file(href, temp_path, session, config, overwrite=True)
             if result.status == DownloadStatus.SUCCESS:
                 period = _determine_reporting_period(filename, temp_path)
                 if period:
                     final_name = f"{dict_prefix}_{period}.{ext}"
-                    final_path = prefix_folder / final_name
+                    final_path = prefix_dir / final_name
                     if final_path.exists() and final_path != temp_path:
                         final_path.unlink()
                     temp_path.rename(final_path)
                     logger.info("Renamed %s -> %s (period: %s)", filename, final_name, period)
-                    _record_bulk_download(prefix_folder, final_name)
+                    _record_bulk_download(prefix_dir, final_name)
                     result = dataclasses.replace(result, path=final_path)
                     # The fetch was ledgered under the undated name; ledger the file
                     # that actually stays on disk too.
@@ -1069,10 +1071,10 @@ def download_bulk_data(
 
         # Dated files — download to the appropriate prefix folder
         if date_suffix is not None:
-            prefix_folder = _get_prefix_data_folder(prefix, config)
-            result = download_data_file(href, prefix_folder / filename, session, config)
+            prefix_dir = _prefix_data_dir(prefix, config)
+            result = download_data_file(href, prefix_dir / filename, session, config)
             if result.status == DownloadStatus.SUCCESS:
-                _record_bulk_download(prefix_folder, filename)
+                _record_bulk_download(prefix_dir, filename)
             results.append(result)
             continue
 

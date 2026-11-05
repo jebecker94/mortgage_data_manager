@@ -18,7 +18,7 @@ from pathlib import Path
 import pandas as pd
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.usps_crosswalk.config import (
     CROSSWALK_TYPES_BY_NAME,
     GEO_CODE_LENGTHS,
@@ -143,7 +143,8 @@ def build_bronze_type(
         if df is None:
             continue
         out_dir.mkdir(parents=True, exist_ok=True)
-        df.to_parquet(out_path, index=False)
+        with atomic_output(out_path) as tmp:
+            df.to_parquet(tmp, index=False)
         logger.info("Wrote %s (%d rows)", out_path.name, len(df))
         written += 1
 

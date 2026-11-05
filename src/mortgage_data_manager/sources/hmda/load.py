@@ -19,17 +19,25 @@ Two ways to choose the release:
 
 Partition keys are also stored inside every file, so scans read the file list
 directly rather than parsing them from the path.
+
+Two shared readers sit on top: `scan_originations` (``action_taken`` 1, optionally
+by loan type) and `null_sentinel_codes`, which nulls the codes silver keeps live for
+"exempt" or "not reported" (`SENTINEL_CODES`). `lei_latest_names` reads the derived
+latest-panel-name table.
 """
 
 from __future__ import annotations
 
+from collections.abc import Collection, Iterable
 from pathlib import Path
 
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.types import null_sentinels
 from mortgage_data_manager.sources.hmda.config import (
     HMDA_INDEX_COLUMN,
+    SENTINEL_CODES,
     HMDAConfig,
     HMDADataset,
     HMDAPeriod,
@@ -223,10 +231,102 @@ def scan_hmda_for_index(
     )
 
 
+#: ``action_taken`` code for an originated loan.
+ORIGINATED = 1
+
+
+def scan_originations(
+    period: HMDAPeriod,
+    min_year: int | None = None,
+    max_year: int | None = None,
+    *,
+    loan_types: Collection[int] | None = None,
+    file_type: str | None = None,
+    root: Path | None = None,
+) -> pl.LazyFrame:
+    """Scan originated loans (``action_taken`` 1) over a span of years, one release each.
+
+    `scan_hmda_years` followed by the origination filter, and by a loan-type filter
+    when ``loan_types`` is given; a row with a null code fails either filter.
+
+    Args:
+        period: Silver era subfolder.
+        min_year: First activity year, inclusive.
+        max_year: Last activity year, inclusive.
+        loan_types: ``loan_type`` codes to keep (1 conventional, 2 FHA, 3 VA, 4 RHS/FSA);
+            ``None`` keeps every type.
+        file_type: Release to read for every year; ``None`` takes each year's best.
+        root: Period directory to read; defaults to the configured silver layout.
+
+    Returns:
+        A lazy frame of the originations, in silver row order.
+    """
+    lf = scan_hmda_years(period, min_year, max_year, file_type=file_type, root=root)
+    lf = lf.filter(pl.col("action_taken") == ORIGINATED)
+    if loan_types is not None:
+        lf = lf.filter(pl.col("loan_type").is_in(list(loan_types)))
+    return lf
+
+
+def null_sentinel_codes[F: (pl.DataFrame, pl.LazyFrame)](
+    frame: F, period: HMDAPeriod, columns: Iterable[str] | None = None
+) -> F:
+    """Null the codes that stand for an absent value, per `SENTINEL_CODES`.
+
+    Silver keeps these codes live (-99999 and 1111 for a partial-exemption answer,
+    8888/9999 for an age that does not apply, the pre-2018 income ceiling) so a reader
+    can still tell "exempt" from "not reported". This is the one place that turns them
+    into nulls. Category codes that are real answers (``purchaser_type`` 0,
+    ``co_applicant_sex`` 5, "not applicable" codes) are left alone, and so are dollar
+    amounts that happen to read 1111/8888/9999.
+
+    Args:
+        frame: HMDA loans silver of one era, eager or lazy.
+        period: The era ``frame`` was read from; the codes differ by era.
+        columns: Columns to clean; ``None`` cleans every column the era has codes for.
+            A listed column with no codes, or absent from ``frame``, is left as is.
+
+    Returns:
+        ``frame`` with those codes replaced by null, dtypes unchanged.
+    """
+    codes = SENTINEL_CODES[period]
+    present = set(frame.collect_schema().names())
+    wanted = codes if columns is None else [c for c in columns if c in codes]
+    return frame.with_columns(
+        [null_sentinels(pl.col(c), codes[c]).alias(c) for c in wanted if c in present]
+    )
+
+
+def lei_latest_names(path: Path | None = None) -> pl.LazyFrame:
+    """The latest post-2018 panel ``respondent_name`` per LEI.
+
+    Built by ``import_silver.build_silver_lei_names``: one row per LEI with an
+    unambiguous latest name (``lei``, ``respondent_name``, ``activity_year`` = the year
+    it was filed under).
+
+    Args:
+        path: Table to read; defaults to ``HMDAConfig.HMDA_LEI_NAME_FILE``.
+
+    Returns:
+        A lazy frame over the table.
+
+    Raises:
+        FileNotFoundError: If the table has not been built.
+    """
+    path = path or HMDAConfig.HMDA_LEI_NAME_FILE
+    if not path.exists():
+        raise FileNotFoundError(f"LEI name table not built: {path} (run the hmda panel silver)")
+    return pl.scan_parquet(path)
+
+
 __all__ = [
     "FILE_TYPE_PREFERENCE",
+    "ORIGINATED",
     "best_file_type",
+    "lei_latest_names",
+    "null_sentinel_codes",
     "scan_hmda",
     "scan_hmda_for_index",
     "scan_hmda_years",
+    "scan_originations",
 ]

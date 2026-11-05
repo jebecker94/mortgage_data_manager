@@ -7,7 +7,7 @@ Surfaces download, schemas, bronze, silver, and pipeline subcommand groups.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
 
@@ -565,6 +565,31 @@ def list_years(
 # ============================================================================
 
 
+def _accumulate(totals: dict[str, int], counts: dict[str, int]) -> None:
+    """Add one dataset's year counts into the running totals."""
+    for key in totals:
+        totals[key] += counts[key]
+
+
+def _report_year_counts(totals: dict[str, int], requested: int) -> None:
+    """Print the dataset-year counts; exit 1 on any failure or when nothing was found."""
+    console.print("\n[bold]Summary:[/bold]")
+    console.print(f"  [green]✓ Written:[/green] {totals['written']}/{requested} dataset-years")
+    console.print(f"  Skipped (already built): {totals['skipped']}")
+    console.print(f"  Missing input: {totals['missing']}")
+    if totals["failed"]:
+        console.print(f"  [red]✗ Failed:[/red] {totals['failed']}/{requested} dataset-years")
+    if totals["failed"] or totals["written"] + totals["skipped"] == 0:
+        raise typer.Exit(code=1)
+
+
+def _exit_on_pipeline_failure(results: dict[str, Any]) -> None:
+    """Print the results and exit 1 when any bronze or silver dataset-year failed."""
+    if results.get("failed_bronze") or results.get("failed_silver"):
+        print_summary("Pipeline Finished With Failures", dict(results), style="red")
+        raise typer.Exit(code=1)
+
+
 @app.command()
 def bronze(
     datasets: Annotated[
@@ -625,41 +650,23 @@ def bronze(
     console.print(f"[cyan]Raw directory:[/cyan] {raw}")
     console.print(f"[cyan]Output directory:[/cyan] {output}\n")
 
-    # Track results
-    total_tasks = len(datasets) * len(years)
-    completed = 0
-    failed = 0
-
+    totals = {"written": 0, "skipped": 0, "missing": 0, "failed": 0}
     with create_progress() as progress:
         task = progress.add_task("Loading to bronze...", total=len(datasets))
 
         for dataset in datasets:
             progress.update(task, description=f"Loading {dataset}...")
-
-            try:
-                save_to_bronze(
-                    dataset=dataset,
-                    years=years,
-                    raw_dir=raw,
-                    output_dir=output,
-                    overwrite=overwrite,
-                )
-                completed += len(years)
-                print_success(f"Loaded {dataset} for {len(years)} year(s)")
-            except Exception as e:
-                failed += len(years)
-                print_error(f"Failed {dataset}: {str(e)}")
-
+            counts = save_to_bronze(
+                dataset=dataset,
+                years=years,
+                raw_dir=raw,
+                output_dir=output,
+                overwrite=overwrite,
+            )
+            _accumulate(totals, counts)
             progress.update(task, advance=1)
 
-    # Summary
-    console.print("\n[bold]Summary:[/bold]")
-    console.print(f"  [green]✓ Completed:[/green] {completed}/{total_tasks} file-year combinations")
-    if failed > 0:
-        console.print(f"  [red]✗ Failed:[/red] {failed}/{total_tasks} file-year combinations")
-
-    if failed == total_tasks:
-        raise typer.Exit(code=1)
+    _report_year_counts(totals, len(datasets) * len(years))
 
 
 # ============================================================================
@@ -743,42 +750,24 @@ def silver(
     else:
         console.print()
 
-    # Track results
-    total_tasks = len(datasets) * len(years)
-    completed = 0
-    failed = 0
-
+    totals = {"written": 0, "skipped": 0, "missing": 0, "failed": 0}
     with create_progress() as progress:
         task = progress.add_task("Transforming to silver...", total=len(datasets))
 
         for dataset in datasets:
             progress.update(task, description=f"Transforming {dataset}...")
-
-            try:
-                save_to_silver(
-                    dataset=dataset,
-                    years=years,
-                    bronze_dir=bronze / dataset if bronze_dir is None else bronze / dataset,
-                    silver_dir=output / dataset if output_dir is None else output / dataset,
-                    additional_drop_patterns=drop_patterns if drop_patterns else None,
-                    overwrite=overwrite,
-                )
-                completed += len(years)
-                print_success(f"Transformed {dataset} for {len(years)} year(s)")
-            except Exception as e:
-                failed += len(years)
-                print_error(f"Failed {dataset}: {str(e)}")
-
+            counts = save_to_silver(
+                dataset=dataset,
+                years=years,
+                bronze_dir=bronze / dataset,
+                silver_dir=output / dataset,
+                additional_drop_patterns=drop_patterns if drop_patterns else None,
+                overwrite=overwrite,
+            )
+            _accumulate(totals, counts)
             progress.update(task, advance=1)
 
-    # Summary
-    console.print("\n[bold]Summary:[/bold]")
-    console.print(f"  [green]✓ Completed:[/green] {completed}/{total_tasks} file-year combinations")
-    if failed > 0:
-        console.print(f"  [red]✗ Failed:[/red] {failed}/{total_tasks} file-year combinations")
-
-    if failed == total_tasks:
-        raise typer.Exit(code=1)
+    _report_year_counts(totals, len(datasets) * len(years))
 
 
 # ============================================================================
@@ -869,6 +858,7 @@ def pipeline(
             skip_silver=skip_silver,
             overwrite=overwrite,
         )
+        _exit_on_pipeline_failure(hud_results)
         print_summary("HUD-era Backfill Complete", dict(hud_results), style="green")
         return
 
@@ -914,6 +904,7 @@ def pipeline(
             schema_max_year=schema_max_year,
             overwrite=overwrite,
         )
+    _exit_on_pipeline_failure(results.get("data", results))
     print_summary("Pipeline Complete", dict(results), style="green")
 
 

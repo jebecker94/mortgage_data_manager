@@ -31,6 +31,7 @@ from mortgage_data_manager.core.download_ledger import (
     relative_destination,
 )
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.sources.usps_crosswalk.config import (
     CROSSWALK_TYPES_BY_NAME,
     VALID_CROSSWALK_NAMES,
@@ -265,9 +266,8 @@ def download_all(
 
             path = USPSCrosswalkConfig.raw_path(name, year, quarter)
             path.parent.mkdir(parents=True, exist_ok=True)
-            tmp = path.with_name(path.name + ".tmp")
-            tmp.write_text(json.dumps(data), encoding="utf-8")
-            tmp.replace(path)
+            with atomic_output(path) as tmp:
+                tmp.write_text(json.dumps(data), encoding="utf-8")
             out.append(
                 _record(name, year, quarter, status=DownloadStatus.SUCCESS, http_status=http_status)
             )

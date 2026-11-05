@@ -21,7 +21,6 @@ from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.core.reference import to_planning_region
 from mortgage_data_manager.core.scalars import scalar_int
-from mortgage_data_manager.core.types import null_sentinels
 from mortgage_data_manager.matching.match_hmda_fhlb.config import (
     HMDA_POST2018_COLS,
     HMDAFHLBMatchingConfig,
@@ -33,7 +32,7 @@ from mortgage_data_manager.matching.match_hmda_fhlb.rounds import (
     Tolerances,
 )
 from mortgage_data_manager.matching.resolve import drop_ambiguous
-from mortgage_data_manager.sources.hmda.load import scan_hmda_years
+from mortgage_data_manager.sources.hmda.load import null_sentinel_codes, scan_originations
 
 logger = get_logger(__name__)
 
@@ -107,18 +106,14 @@ def _screen_post2018(lf: pl.LazyFrame, tolerances: Tolerances) -> pl.LazyFrame:
     Returns:
         The surviving pairs, one-to-one on both sides.
     """
-    lf = lf.with_columns(
-        [
-            null_sentinels(pl.col(c), [-99999]).cast(pl.Float64).alias(c)
-            for c in (
-                "income",
-                "loan_term",
-                "interest_rate",
-                "combined_loan_to_value_ratio",
-                "debt_to_income_ratio",
-            )
-        ]
-    )
+    numeric = [
+        "income",
+        "loan_term",
+        "interest_rate",
+        "combined_loan_to_value_ratio",
+        "debt_to_income_ratio",
+    ]
+    lf = null_sentinel_codes(lf, "post2018", numeric).with_columns(pl.col(numeric).cast(pl.Float64))
     hmda_ltv, fhlb_ltv = pl.col("combined_loan_to_value_ratio"), pl.col("LTVRatioPercent")
     fee_pass = pl.lit(False)
     for loan_type, factors in LTV_FEE_FACTORS.items():
@@ -130,7 +125,7 @@ def _screen_post2018(lf: pl.LazyFrame, tolerances: Tolerances) -> pl.LazyFrame:
         # refinance (31, 32) with an FHLB purchase (1).
         ~((pl.col("loan_purpose") == 1) & pl.col("LoanPurposeType").is_in([6, 2])),
         ~(pl.col("loan_purpose").is_in([31, 32]) & (pl.col("LoanPurposeType") == 1)),
-        _not_beyond("TotalMonthlyIncomeAmount", "income", tolerances.income),
+        _not_beyond("TotalAnnualIncomeAmount", "income", tolerances.income),
         _not_beyond("LoanAmortizationMaxTermMonths", "loan_term", tolerances.term),
         _not_beyond("NoteRatePercent", "interest_rate", tolerances.rate),
         _not_beyond("loan_amount", "NoteAmount", tolerances.amount),
@@ -173,7 +168,7 @@ def _screen_pre2018(lf: pl.LazyFrame, tolerances: Tolerances) -> pl.LazyFrame:
     district = pl.col("FHFBID_right")  # the FHLB side's copy, suffixed by the join
     lf = lf.filter(
         (purpose == pl.col("loan_purpose")) | ((purpose == 2) & (pl.col("loan_purpose") == 3)),
-        (pl.col("Total Yearly Income Amount") - pl.col("income").cast(pl.Float64)).abs()
+        (pl.col("TotalAnnualIncomeAmount") - pl.col("income").cast(pl.Float64)).abs()
         <= tolerances.income,
         *_sex_consistent("Borrower 1 Gender Type", "Borrower 2 Gender Type"),
         (pl.col("FHFBID") == district) | district.is_null() | (district == 0),
@@ -283,8 +278,8 @@ def _load_all_hmda_originations(max_year: int) -> pl.LazyFrame:
         purchaser_type != 3 (drops loans reported sold to Freddie Mac).
     """
     lf = (
-        scan_hmda_years("post2018", 2018, max_year)
-        .filter((pl.col("action_taken") == 1) & (pl.col("purchaser_type") != 3))
+        scan_originations("post2018", 2018, max_year)
+        .filter(pl.col("purchaser_type") != 3)
         .select(HMDA_POST2018_COLS)
     )
     # Normalize CT tracts to planning-region convention (HMDA switched in 2024)

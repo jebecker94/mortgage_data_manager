@@ -363,7 +363,7 @@ TotalDebtExpenseRatioPercent
   Type: Float64
   Years: All years (2009-2024) (16/16)
 
-TotalMonthlyIncomeAmount
+TotalAnnualIncomeAmount
   Type: Int64
   Years: All years (2009-2024) (16/16)
 

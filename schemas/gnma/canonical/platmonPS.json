@@ -3105,7 +3105,7 @@
         },
         {
           "id": "re_pooled_loans",
-          "arrow_type": "int64",
+          "arrow_type": "string",
           "pdf_text": "Re-Pooled Loans",
           "layouts": [
             {
@@ -3223,7 +3223,7 @@
         },
         {
           "id": "fha_partial_claims",
-          "arrow_type": "int64",
+          "arrow_type": "string",
           "pdf_text": "FHA Partial Claims",
           "layouts": [
             {
@@ -4182,5 +4182,7 @@
       ]
     }
   },
-  "corrections": []
+  "corrections": [
+    "26.re_pooled_loans and 27.fha_partial_claims int64 -> string: both are Y flags, so the int cast nulled every value (validator-caught, 2026-11-04)."
+  ]
 }

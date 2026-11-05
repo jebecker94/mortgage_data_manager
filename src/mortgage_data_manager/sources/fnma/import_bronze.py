@@ -28,7 +28,7 @@ from typing import cast
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.fnma.config import FNMAConfig
 
 logger = get_logger(__name__)
@@ -209,7 +209,8 @@ def _csv_to_parquet(
     row_count = lf.select(pl.len()).collect().item()
     logger.info("  %s: %s rows", csv_path.name, f"{row_count:,}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    lf.sink_parquet(output_path, compression="snappy")
+    with atomic_output(output_path) as tmp:
+        lf.sink_parquet(tmp, compression="snappy")
     size_mb = output_path.stat().st_size / 1024**2
     logger.info("  Wrote %s (%.1f MB)", output_path.name, size_mb)
     return cast(int, row_count)
@@ -568,7 +569,8 @@ def import_harp(
                 row_count = lf.select(pl.len()).collect().item()
                 logger.info("  %s: %s rows", HARP_MAPPING_TXT, f"{row_count:,}")
                 mapping_out.parent.mkdir(parents=True, exist_ok=True)
-                lf.sink_parquet(mapping_out, compression="snappy")
+                with atomic_output(mapping_out) as tmp:
+                    lf.sink_parquet(tmp, compression="snappy")
                 logger.info("  Wrote %s", mapping_out.name)
             successful += 1
         except Exception:
@@ -604,7 +606,8 @@ def _mf_csv_to_parquet(
     row_count = int(lf.select(pl.len()).collect().item())
     logger.info("  %s: %s rows", csv_path.name, f"{row_count:,}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    lf.sink_parquet(output_path, compression="snappy")
+    with atomic_output(output_path) as tmp:
+        lf.sink_parquet(tmp, compression="snappy")
     size_mb = output_path.stat().st_size / 1024**2
     logger.info("  Wrote %s (%.1f MB)", output_path.name, size_mb)
     return row_count

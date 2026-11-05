@@ -27,7 +27,6 @@ ALLOWED: dict[str, str] = {
     "sources/usps_crosswalk/download.py": "JSON API where 404 = not published; records to the ledger itself",
     "sources/hmda/download.py": "HEAD publication probe only; bytes go through batch_download",
     "sources/gnma/download.py": "authenticated Session for login/listing; bytes go through atomic_download",
-    "core/geocoding/providers.py": "geocoder API calls, not a raw layer",
     "matching/match_hmda_fha/validation.py": "fetches a public GeoJSON for a validation figure, not a raw layer",
 }
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Annotated, Literal
 
 import typer
+from rich.table import Table
 
 from mortgage_data_manager import __version__
 from mortgage_data_manager.core.cli.download_options import (
@@ -20,6 +21,10 @@ from mortgage_data_manager.core.cli.formatting import (
 from mortgage_data_manager.core.cli.validation import version_callback_factory
 from mortgage_data_manager.core.logging import configure_logging, get_logger
 from mortgage_data_manager.sources.umbs.config import UMBSConfig
+from mortgage_data_manager.sources.umbs.download import (
+    get_manual_download_instructions,
+    raw_coverage,
+)
 from mortgage_data_manager.sources.umbs.pipeline import run_bronze, run_pipeline, run_silver
 
 app = typer.Typer(
@@ -147,11 +152,18 @@ def silver(
         console.print(
             f"  {pair}: wrote {counts['wrote']}, "
             f"skipped {counts['skipped_existing']} existing, "
-            f"{counts.get('missing_pair', 0)} missing pair(s)"
+            f"{counts.get('missing_pair', 0)} missing pair(s), "
+            f"failed {counts['failed']}"
         )
     wrote = sum(c["wrote"] for c in results.values())
     skipped = sum(c["skipped_existing"] for c in results.values())
-    console.print(f"\n[bold green]Done.[/bold green] Wrote {wrote}, skipped {skipped} existing.")
+    failed = sum(c["failed"] for c in results.values())
+    console.print(
+        f"\n[bold green]Done.[/bold green] Wrote {wrote}, skipped {skipped} existing, "
+        f"failed {failed}."
+    )
+    if failed > 0:
+        raise typer.Exit(code=1)
 
 
 @app.command()
@@ -185,18 +197,21 @@ def pipeline(
     )
     wrote = sum(c["wrote"] for c in silver_results.values())
     skipped = sum(c["skipped_existing"] for c in silver_results.values())
-    console.print(f"Silver: wrote {wrote}, skipped {skipped} existing.")
+    silver_failed = sum(c["failed"] for c in silver_results.values())
+    console.print(f"Silver: wrote {wrote}, skipped {skipped} existing, failed {silver_failed}.")
 
     console.print("\n[bold green]Pipeline complete.[/bold green]")
-    if bronze_counts["failed"] > 0:
+    if bronze_counts["failed"] > 0 or silver_failed > 0:
         raise typer.Exit(code=1)
 
 
 @app.command()
 def info() -> None:
-    """Display UMBS configuration information.
+    """Display UMBS configuration information and raw coverage.
 
-    Shows the current configuration paths and settings for UMBS data.
+    Shows the configuration paths, then one row per raw feed A reads: files on disk,
+    first and last month, months missing since the feed's first published month,
+    and months holding more than one file (an original plus a republication).
 
     Examples:
       mortgage-data umbs info
@@ -213,6 +228,8 @@ def info() -> None:
         },
     )
 
+    _print_raw_coverage()
+
     console.print("\n[bold cyan]Available Commands:[/bold cyan]")
     console.print("  download    - Download data files for UMBS")
     console.print("  bronze      - Import raw zip files to bronze parquet")
@@ -221,90 +238,42 @@ def info() -> None:
     console.print("  info        - Show this configuration information")
 
 
+def _print_raw_coverage() -> None:
+    """Print the raw coverage table (`raw_coverage`) for the configured raw root."""
+    table = Table(title="Raw coverage", title_style="bold cyan")
+    for col in ("GSE", "Prefix", "Folder", "Files", "First", "Last", "Missing", "Multi-file"):
+        table.add_column(col)
+    for row in raw_coverage(UMBSConfig.UMBS_RAW_DIR).iter_rows(named=True):
+        missing = row["missing_months"]
+        table.add_row(
+            row["gse"],
+            row["prefix"],
+            row["folder"],
+            str(row["files"]),
+            row["first_month"] or "-",
+            row["last_month"] or "-",
+            f"[red]{', '.join(missing)}[/red]" if missing else "none",
+            ", ".join(row["multi_file_months"]) or "none",
+        )
+    console.print()
+    console.print(table)
+
+
 @app.command()
 def download() -> None:
     """Instructions for downloading UMBS (Uniform Mortgage-Backed Securities) data.
 
     [yellow]Manual Download Required[/yellow]
 
-    UMBS data is available through both Fannie Mae and Freddie Mac platforms.
-    Registration is required on one or both platforms.
+    Both GSEs publish the disclosure files behind a registered login or on SFTP.
+    Prints the feeds A reads (prefix, raw folder, file name, first month), the
+    look-alike files to avoid, and the rule to keep mid-month republications.
 
-    [bold cyan]Access Options:[/bold cyan]
-
-    Option 1: Fannie Mae Capital Markets
-       https://capitalmarkets.fanniemae.com/mortgage-backed-securities/single-family-mbs
-
-    Option 2: Freddie Mac Capital Markets
-       https://capitalmarkets.freddiemac.com/mbs/products/umbs
-
-    [bold cyan]After Download:[/bold cyan]
-
-    Run the import command to process files:
-      $ mortgage-data umbs bronze
-
-    [bold cyan]Documentation:[/bold cyan]
-
-    See docs/manual_downloads.md for detailed instructions.
+    Examples:
+      mortgage-data umbs download
     """
     print_section_header("UMBS Data Download Instructions")
-
-    console.print()
-    console.print("[yellow bold]Manual Download Required[/yellow bold]")
-    console.print()
-    console.print(
-        "UMBS (Uniform Mortgage-Backed Securities) data is available through both "
-        "Fannie Mae and Freddie Mac platforms. These are passthrough securities "
-        "issued by both enterprises since June 2019 as part of the Single Security Initiative."
-    )
-    console.print()
-
-    console.print("[cyan bold]Access Option 1: Fannie Mae[/cyan bold]")
-    console.print()
-    console.print("  [bold]Portal:[/bold]")
-    console.print(
-        "  [link=https://capitalmarkets.fanniemae.com/mortgage-backed-securities/single-family-mbs]"
-        "https://capitalmarkets.fanniemae.com/.../single-family-mbs[/link]"
-    )
-    console.print()
-    console.print("  [bold]Registration:[/bold] Data Dynamics account (free)")
-    console.print(
-        "  [bold]Data Available:[/bold] MBS issuance, monthly disclosures, supplemental info"
-    )
-    console.print()
-
-    console.print("[cyan bold]Access Option 2: Freddie Mac[/cyan bold]")
-    console.print()
-    console.print("  [bold]Portal:[/bold]")
-    console.print(
-        "  [link=https://capitalmarkets.freddiemac.com/mbs/products/umbs]"
-        "https://capitalmarkets.freddiemac.com/mbs/products/umbs[/link]"
-    )
-    console.print()
-    console.print("  [bold]Registration:[/bold] Clarity Data Intelligence account (free)")
-    console.print("  [bold]Data Available:[/bold] CRT issuance, monthly disclosures, MBS info")
-    console.print()
-
-    console.print("[cyan bold]File Placement:[/cyan bold]")
-    console.print()
-    console.print("  Download files to: [bold]data/umbs/raw/[/bold]")
-    console.print()
-
-    console.print("[cyan bold]About UMBS:[/cyan bold]")
-    console.print()
-    console.print("  - Issued since June 2019 (Single Security Initiative)")
-    console.print("  - Backed by 30-, 20-, 15-, and 10-year fixed-rate mortgages")
-    console.print("  - Same characteristics regardless of issuer (Fannie or Freddie)")
-    console.print("  - TBA-eligible securities")
-    console.print()
-
-    console.print("[cyan bold]After Download:[/cyan bold]")
-    console.print()
-    console.print("  Process raw files to bronze layer:")
-    console.print("  [green]$ mortgage-data umbs bronze[/green]")
-    console.print()
-
-    console.print("[dim]See docs/manual_downloads.md for complete instructions.[/dim]")
+    console.print(get_manual_download_instructions(), markup=False, highlight=False)
 
 
 def cli_main():

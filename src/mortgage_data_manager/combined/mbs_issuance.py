@@ -320,7 +320,11 @@ def _assemble_gnma_mbs_issuance(lf: pl.LazyFrame, *, month: str) -> pl.LazyFrame
     Returns:
         The file mapped to the unified ``mbs_issuance`` grain.
     """
-    av = set(lf.collect_schema().names())
+    schema = lf.collect_schema()
+    # ``issue_date`` is a Date in the canonical schema, YYYYMMDD text in silver built
+    # before it; the date readers parse text, so a Date is rendered back first.
+    lf = lf.with_columns(pl.col(c).dt.strftime("%Y%m%d") for c, t in schema.items() if t == pl.Date)
+    av = set(schema.names())
     read = _mbs_readers(av)
     pind = _pick_str(["Pool Indicator"], av)
     ptype = _pick_str(["Pool Type"], av)
@@ -409,7 +413,8 @@ def _assemble_gnma_legacy_mbs_issuance(
     read = _mbs_readers(av)
     ptype = _pick_str(["pool_type"], av)
     pind = _pick_str(["pool_indicator"], av)
-    is_platinum = ptype.is_in(list(_GNMA_PLATINUM_POOL_TYPES))
+    # fill_null: a blank pool type (null once silver nulls blanks) is no listed type.
+    is_platinum = ptype.is_in(list(_GNMA_PLATINUM_POOL_TYPES)).fill_null(value=False)
     wagm = read["nissues_rate"](("wagm",))
     loans = read["int64"](("number_of_loans_in_pool",))
     pool_upb = _pick(["pool_upb"], av, pl.Float64)
@@ -432,7 +437,7 @@ def _assemble_gnma_legacy_mbs_issuance(
         .cast(pl.Int64),
     }
     mapped = (
-        lf.filter(~ptype.is_in(list(_GNMA_PROJECT_POOL_TYPES)))
+        lf.filter(~ptype.is_in(list(_GNMA_PROJECT_POOL_TYPES)).fill_null(value=False))
         .select(_plan_exprs(GNMA_LEGACY_MBS_ISSUANCE_PLAN, read, derived))
         # 2015-11 carries one byte-identical duplicate row (pool 784062).
         .unique()
@@ -512,7 +517,8 @@ def _assemble_gnma_platinum_mbs_issuance(lf: pl.LazyFrame, *, month: str) -> pl.
         .fill_null(int(month[:4]))
         .cast(pl.Int64),
     }
-    return lf.filter((cusip != "") & (pind != GNMA_PLATINUM_HMBS_INDICATOR)).select(
+    # ne_missing: a blank indicator (null once silver nulls blanks) is not HMBS.
+    return lf.filter((cusip != "") & pind.ne_missing(GNMA_PLATINUM_HMBS_INDICATOR)).select(
         _plan_exprs(GNMA_PLATINUM_MBS_ISSUANCE_PLAN, _mbs_readers(av), derived)
     )
 
@@ -596,7 +602,7 @@ def _log_gnma_issuance_seam(nissues_dir: Path, ps_dir: Path, ps_first: int) -> N
     out_of_scope = list(_GNMA_PROJECT_POOL_TYPES | _GNMA_PLATINUM_POOL_TYPES)
     legacy = (
         pl.scan_parquet([str(f) for f in overlap])
-        .filter(~pl.col("pool_type").str.strip_chars().is_in(out_of_scope))
+        .filter(~pl.col("pool_type").str.strip_chars().is_in(out_of_scope).fill_null(value=False))
         .select(pl.col("pool_number").str.strip_chars().alias("pool_id"))
         .unique()
     )

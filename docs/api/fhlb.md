@@ -78,16 +78,21 @@ each vintage's headers to one typed layout and fail loudly on an unrecognized vi
 **AMA:**
 - **Format**: `fhlb_ama_{year}.parquet`, one per year
 - **Location**: `{FHLB_SILVER_DIR}/ama/`
-- **Transformations**: Percentage normalization, income unit fixes, indicator standardization, census tract cleaning, null handling
+- **Transformations**: Percentage normalization, 2019+ income to annual, indicator
+  standardization, census tract cleaning, `Bank` filled from `FHLBankID`, null handling
 
 ## Known Data Issues
-- **`Borrower1CreditScoreValue` / `Borrower2CreditScoreValue` are banded codes, not
-  credit scores.** Every value in every vintage (2009-2025) is a code from 1 to 9 — the
-  FHLB PUDB publishes a banded credit indicator, not FICO. On `Borrower2`, code `9`
-  carries 38-45% of rows in every year from 2014 on and almost certainly means "no
-  co-borrower / not available". Do not treat these columns as scores; the band
-  definitions are in each year's data-definitions document on FHFA's
-  [Public Use Database page](https://www.fhfa.gov/data/pudb).
+- **`Borrower1CreditScoreValue` / `Borrower2CreditScoreValue` are bands, not credit
+  scores**: 1 = below 620, 2 = 620-659, 3 = 660-699, 4 = 700-759, 5 = 760 or more, and
+  9 = missing or not applicable (for borrower 2 also no co-borrower), per each year's
+  data-definitions document. Silver keeps code 9 as published.
+- **Silver `TotalAnnualIncomeAmount` is bronze `TotalMonthlyIncomeAmount`, in annual
+  dollars.** FHFA publishes annual income through 2018 and monthly qualifying income from
+  2019 under the bronze name; silver multiplies 2019 on by 12 and renames the column, so
+  every year is annual whole dollars.
+- **`Bank` is null in the 2009-2014 files**: 2010-2014 carry the bank name in
+  `FHLBankID` instead, and silver copies it into `Bank`. The 2009 file names no bank.
+- **`FHFBID` is published only in 2009-2014**; from 2015 the files have no such column.
 - **`NoteDate` and `LoanAcquisitionDate` carry bare 4-digit years**, not full dates,
   in every vintage — only the names suggest otherwise.
 - **`LoanCharacteristicsID` restarts annually before 2015** (a per-year row sequence

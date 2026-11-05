@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Bronze-layer import for GNMA: raw disclosure files to parquet.
 
-Functions for converting raw data files to parquet format (raw → bronze layer).
+Each raw file becomes one parquet with a single text column holding the file's lines
+as published (line endings stripped). A file either converts whole or fails: a ZIP
+member that cannot be read fails the archive rather than being left out, and nothing is
+published under the final name until the write completes (`atomic_output`).
 
 Functions:
     - import_zip_to_parquet: Convert ZIP file to parquet
@@ -13,12 +16,15 @@ Functions:
 from __future__ import annotations
 
 import zipfile
+from collections.abc import Iterable
+from dataclasses import replace
 from pathlib import Path
 
-import polars as pl
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 
 from .config import GNMAConfig, ProcessorConfig
 from .utils import ConversionResult
@@ -26,45 +32,81 @@ from .utils import ConversionResult
 logger = get_logger(__name__)
 
 __all__ = [
+    "BronzeImportError",
     "import_zip_to_parquet",
     "import_txt_to_parquet",
     "import_prefix_bronze",
 ]
 
 
+class BronzeImportError(Exception):
+    """A raw GNMA file could not be converted to bronze in full."""
+
+
 def _get_output_path(
-    input_path: Path, output_folder: Path | None = None, raw_folder: Path | None = None
+    input_path: Path, output_dir: Path | None = None, raw_dir: Path | None = None
 ) -> Path:
     """Generate the output path for a converted file, preserving prefix subfolder.
 
-    Staged files are output to the bronze layer by default.
-
     Args:
         input_path: Input file path
-        output_folder: Optional output folder (defaults to bronze layer)
-        raw_folder: Optional raw folder (for determining relative structure)
+        output_dir: Bronze root to write under (defaults to the bronze layer)
+        raw_dir: Raw root ``input_path`` lies under (for the prefix sub-directory)
 
     Returns:
         Path for output file in the bronze layer
     """
-    if output_folder is None:
-        # Default to bronze layer for staged parquet files
-        output_folder = GNMAConfig.GNMA_BRONZE_DIR
+    output_dir = Path(output_dir) if output_dir is not None else GNMAConfig.GNMA_BRONZE_DIR
+    name = input_path.with_suffix(".parquet").name
+    # Keep the prefix sub-directory: raw/{prefix}/file.zip -> bronze/{prefix}/file.parquet
+    if raw_dir is not None and input_path.is_relative_to(raw_dir):
+        relative_parts = input_path.relative_to(raw_dir).parts
+        if len(relative_parts) > 1:
+            return output_dir / relative_parts[0] / name
+    return output_dir / name
 
-    output_folder = Path(output_folder)
 
-    # Maintain the same relative structure: data/gnma/bronze/{prefix}/file.parquet
-    if raw_folder is not None:
-        try:
-            raw_folder = Path(raw_folder)
-            relative_parts = input_path.relative_to(raw_folder).parts
-            if len(relative_parts) >= 1:
-                prefix_folder = output_folder / relative_parts[0]
-                return prefix_folder / input_path.with_suffix(".parquet").name
-        except Exception:
-            pass
+def _decode(line: bytes, encoding: str, fallback_encoding: str) -> str:
+    """One raw line decoded (fallback encoding on failure), line ending stripped."""
+    try:
+        text = line.decode(encoding)
+    except UnicodeDecodeError:
+        # Raises in turn if the fallback cannot decode it either: a line is never dropped.
+        text = line.decode(fallback_encoding)
+    return text.rstrip("\r\n")
 
-    return output_folder / input_path.with_suffix(".parquet").name
+
+def _write_lines(lines: Iterable[bytes], output_path: Path, config: ProcessorConfig) -> int:
+    """Stream decoded lines into one single-column parquet, atomically.
+
+    Lines are written in row groups of ``config.chunk_size`` so memory stays bounded by
+    one chunk however large the file.
+
+    Returns:
+        The number of lines written.
+
+    Raises:
+        BronzeImportError: If there are no lines to write.
+    """
+    column = config.text_column_name
+    schema = pa.schema([(column, pa.large_string())])
+    total = 0
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with atomic_output(output_path) as tmp:
+        with pq.ParquetWriter(tmp, schema, compression="zstd") as writer:
+            buffer: list[str] = []
+            for raw_line in lines:
+                buffer.append(_decode(raw_line, config.encoding, config.fallback_encoding))
+                if len(buffer) >= config.chunk_size:
+                    writer.write_table(pa.table({column: buffer}, schema=schema))
+                    total += len(buffer)
+                    buffer = []
+            if buffer:
+                writer.write_table(pa.table({column: buffer}, schema=schema))
+                total += len(buffer)
+        if total == 0:
+            raise BronzeImportError(f"No lines to write to {output_path.name}")
+    return total
 
 
 def import_zip_to_parquet(
@@ -73,7 +115,10 @@ def import_zip_to_parquet(
     config: ProcessorConfig | None = None,
     chunk_size: int | None = None,
 ) -> bool:
-    """Convert a ZIP file containing text files to Parquet format using streaming.
+    """Convert a ZIP file's text members to one bronze parquet, streaming.
+
+    Every text member (by ``config.supported_extensions``) is read in name order and
+    appended; a member that fails to read fails the whole archive.
 
     Args:
         zip_file_path: Path to the ZIP file
@@ -82,100 +127,44 @@ def import_zip_to_parquet(
         chunk_size: Optional override for chunk size
 
     Returns:
-        True if conversion successful, False otherwise
+        True once the file is written, or when it exists and ``config.overwrite`` is off.
+
+    Raises:
+        BronzeImportError: If the archive holds no text member, or no lines.
     """
     if config is None:
         config = ProcessorConfig()
+    if chunk_size is not None:
+        config = _with_chunk_size(config, chunk_size)
 
     zip_path = Path(zip_file_path)
-
-    # Destination
     if output_file_path is None:
         output_path = _get_output_path(zip_path, config.bronze_folder, config.raw_folder)
     else:
         output_path = Path(output_file_path)
 
-    # Skip existing using core medallion utility
     if not should_process_file(output_path, overwrite=config.overwrite):
         logger.debug("Skipping existing file: %s", output_path)
         return True
 
-    text_column_name = config.text_column_name
-    encoding = config.encoding
-    fallback_encoding = config.fallback_encoding
-    supported_extensions = config.supported_extensions
-    chunk_size = chunk_size or config.chunk_size
+    with zipfile.ZipFile(zip_path, "r") as zip_ref:
+        text_files = [
+            name
+            for name in zip_ref.namelist()
+            if any(name.lower().endswith(ext) for ext in config.supported_extensions)
+        ]
+        if not text_files:
+            raise BronzeImportError(f"No text files found in {zip_path}")
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    try:
-        with zipfile.ZipFile(zip_path, "r") as zip_ref:
-            text_files = [
-                name
-                for name in zip_ref.namelist()
-                if any(name.lower().endswith(ext) for ext in supported_extensions)
-            ]
-            if not text_files:
-                logger.warning("No text files found in %s", zip_path)
-                return False
-
-            all_chunks = []
-            total_rows = 0
-
+        def lines() -> Iterable[bytes]:
             for text_file in text_files:
                 logger.debug("  Extracting: %s", text_file)
-                try:
-                    with zip_ref.open(text_file) as file:
-                        buffer = []
-                        while True:
-                            line = file.readline()
-                            if not line:
-                                break
-                            try:
-                                decoded_line = line.decode(encoding).rstrip("\r\n")
-                            except UnicodeDecodeError:
-                                try:
-                                    decoded_line = line.decode(fallback_encoding).rstrip("\r\n")
-                                except Exception:
-                                    logger.warning("Skipping undecodable line in %s", text_file)
-                                    continue
-                            buffer.append(decoded_line)
-                            if len(buffer) >= chunk_size:
-                                df = pl.LazyFrame({text_column_name: buffer})
-                                all_chunks.append(df)
-                                total_rows += len(buffer)
-                                buffer = []
-                        if buffer:
-                            df = pl.LazyFrame({text_column_name: buffer})
-                            all_chunks.append(df)
-                            total_rows += len(buffer)
-                except Exception as e:
-                    logger.error("Error processing %s: %s", text_file, e)
-                    continue
+                with zip_ref.open(text_file) as member:
+                    yield from member
 
-            if all_chunks:
-                try:
-                    combined_df = pl.concat(all_chunks, how="diagonal")
-                    combined_df.sink_parquet(output_path)
-                    logger.debug("Saved %s lines to %s", total_rows, output_path)
-                    return True
-                except Exception as e:
-                    logger.error("Error combining chunks for %s: %s", zip_path, e)
-                    return False
-            else:
-                logger.warning("No content found in %s", zip_path)
-                if output_path.exists():
-                    output_path.unlink()
-                return False
-
-    except Exception as e:
-        logger.error("Error converting %s: %s", zip_path, e)
-        if output_path.exists():
-            try:
-                output_path.unlink()
-            except Exception:
-                pass
-        return False
+        total = _write_lines(lines(), output_path, config)
+    logger.debug("Saved %s lines to %s", total, output_path)
+    return True
 
 
 def import_txt_to_parquet(
@@ -184,7 +173,10 @@ def import_txt_to_parquet(
     config: ProcessorConfig | None = None,
     chunk_size: int | None = None,
 ) -> bool:
-    """Convert a TXT file to Parquet format using streaming.
+    """Convert a TXT file to one bronze parquet, streaming.
+
+    Each line is decoded with ``config.encoding``, falling back to
+    ``config.fallback_encoding`` for that line only.
 
     Args:
         txt_file_path: Path to the TXT file
@@ -193,13 +185,17 @@ def import_txt_to_parquet(
         chunk_size: Optional override for chunk size
 
     Returns:
-        True if conversion successful, False otherwise
+        True once the file is written, or when it exists and ``config.overwrite`` is off.
+
+    Raises:
+        BronzeImportError: If the file holds no lines.
     """
     if config is None:
         config = ProcessorConfig()
+    if chunk_size is not None:
+        config = _with_chunk_size(config, chunk_size)
 
     txt_path = Path(txt_file_path)
-
     if output_file_path is None:
         output_path = _get_output_path(txt_path, config.bronze_folder, config.raw_folder)
     else:
@@ -209,189 +205,77 @@ def import_txt_to_parquet(
         logger.debug("Skipping existing file: %s", output_path)
         return True
 
-    text_column_name = config.text_column_name
-    encoding = config.encoding
-    fallback_encoding = config.fallback_encoding
-    chunk_size = chunk_size or config.chunk_size
+    with open(txt_path, "rb") as handle:
+        total = _write_lines(handle, output_path, config)
+    logger.debug("Saved %s lines to %s", total, output_path)
+    return True
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    try:
-        all_chunks = []
-        total_rows = 0
-        buffer = []
-        with open(txt_path, encoding=encoding) as txt_file:
-            while True:
-                line = txt_file.readline()
-                if not line:
-                    break
-                try:
-                    line = line.rstrip("\r\n")
-                    buffer.append(line)
-                    if len(buffer) >= chunk_size:
-                        df = pl.LazyFrame({text_column_name: buffer})
-                        all_chunks.append(df)
-                        total_rows += len(buffer)
-                        buffer = []
-                except Exception as e:
-                    logger.warning("Error processing line in %s: %s", txt_path, e)
-                    continue
-
-        if buffer:
-            df = pl.LazyFrame({text_column_name: buffer})
-            all_chunks.append(df)
-            total_rows += len(buffer)
-
-        if all_chunks:
-            try:
-                combined_df = pl.concat(all_chunks, how="diagonal")
-                combined_df.sink_parquet(output_path)
-                logger.debug("Saved %s lines to %s", total_rows, output_path)
-                return True
-            except Exception as e:
-                logger.error("Error combining chunks for %s: %s", txt_path, e)
-                return False
-        else:
-            logger.warning("No content found in %s", txt_path)
-            if output_path.exists():
-                output_path.unlink()
-            return False
-
-    except UnicodeDecodeError:
-        # Try with fallback encoding
-        try:
-            eager_chunks: list[pl.DataFrame] = []
-            total_rows = 0
-            buffer = []
-            with open(txt_path, encoding=fallback_encoding) as txt_file:
-                while True:
-                    line = txt_file.readline()
-                    if not line:
-                        break
-                    try:
-                        line = line.rstrip("\r\n")
-                        buffer.append(line)
-                        if len(buffer) >= chunk_size:
-                            chunk_df = pl.LazyFrame({text_column_name: buffer}).collect()
-                            eager_chunks.append(chunk_df)
-                            total_rows += len(buffer)
-                            buffer = []
-                    except Exception as e:
-                        logger.warning("Error processing line in %s: %s", txt_path, e)
-                        continue
-            if buffer:
-                chunk_df = pl.LazyFrame({text_column_name: buffer}).collect()
-                eager_chunks.append(chunk_df)
-                total_rows += len(buffer)
-            if eager_chunks:
-                try:
-                    combined_eager = pl.concat(eager_chunks, how="diagonal")
-                    combined_eager.write_parquet(output_path)
-                    logger.debug("Saved %s lines to %s", total_rows, output_path)
-                    return True
-                except Exception as e:
-                    logger.error("Error combining chunks for %s: %s", txt_path, e)
-                    return False
-            else:
-                logger.warning("No content found in %s", txt_path)
-                if output_path.exists():
-                    output_path.unlink()
-                return False
-        except Exception as e:
-            logger.error("Error converting %s with fallback encoding: %s", txt_path, e)
-            if output_path.exists():
-                try:
-                    output_path.unlink()
-                except Exception:
-                    pass
-            return False
-    except Exception as e:
-        logger.error("Error converting %s: %s", txt_path, e)
-        if output_path.exists():
-            try:
-                output_path.unlink()
-            except Exception:
-                pass
-        return False
+def _with_chunk_size(config: ProcessorConfig, chunk_size: int) -> ProcessorConfig:
+    """A copy of ``config`` with ``chunk_size`` replaced."""
+    return replace(config, chunk_size=chunk_size)
 
 
 def import_prefix_bronze(
     prefix: str,
-    base_folder: str | Path,
-    output_folder: str | Path | None = None,
+    raw_dir: str | Path,
+    output_dir: str | Path | None = None,
     config: ProcessorConfig | None = None,
     show_progress: bool = True,
 ) -> ConversionResult:
     """Import all raw files for a specific prefix to bronze layer.
 
+    A file that fails is counted in ``failed`` with its error, and the batch carries on.
+
     Args:
         prefix: Data prefix (e.g., 'llmon1', 'monthly')
-        base_folder: Folder containing raw files
-        output_folder: Optional output folder
+        raw_dir: Raw root holding the ``{prefix}/`` sub-directory of raw files
+        output_dir: Bronze root to write under; defaults to ``config.bronze_folder``
         config: Optional configuration
         show_progress: Whether to show progress updates
 
     Returns:
-        ConversionResult with detailed results
+        ConversionResult with detailed results; empty (``total`` 0) when the prefix's raw
+        folder does not exist.
     """
     if config is None:
         config = ProcessorConfig()
 
-    base_folder = Path(base_folder)
-
-    # Determine prefix folder
-    prefix_folder = base_folder / prefix
-    if not prefix_folder.exists():
-        logger.error("Prefix folder not found: %s", prefix_folder)
-        return ConversionResult()
-
+    raw_dir = Path(raw_dir)
     result = ConversionResult()
 
-    # ZIP files
-    zip_files = list(prefix_folder.glob(f"{prefix}_*.zip"))
-    result.total = len(zip_files)
-    for idx, zip_file in enumerate(zip_files, 1):
-        if output_folder:
-            output_file = _get_output_path(zip_file, Path(output_folder), base_folder)
-        else:
-            output_file = _get_output_path(zip_file, config.bronze_folder, base_folder)
-        if not should_process_file(output_file, overwrite=config.overwrite):
-            result.add_skip(str(zip_file))
-            continue
-        try:
-            success = import_zip_to_parquet(zip_file, output_file, config)
-            if success:
-                result.add_success(str(zip_file))
-            else:
-                result.add_failure(str(zip_file), "Conversion returned False")
-        except Exception as e:
-            result.add_failure(str(zip_file), str(e))
+    prefix_dir = raw_dir / prefix
+    if not prefix_dir.exists():
+        logger.warning("Prefix directory not found: %s", prefix_dir)
+        return result
 
-    # TXT files
-    txt_files = list(
-        {*prefix_folder.glob(f"{prefix}_*.txt"), *prefix_folder.glob(f"{prefix}_*.TXT")}
-    )
-    result.total += len(txt_files)
-    for txt_file in txt_files:
-        if output_folder:
-            output_file = _get_output_path(txt_file, Path(output_folder), base_folder)
-        else:
-            output_file = _get_output_path(txt_file, config.bronze_folder, base_folder)
+    out_root = Path(output_dir) if output_dir else config.bronze_folder
+    zip_files = sorted(prefix_dir.glob(f"{prefix}_*.zip"))
+    txt_files = sorted({*prefix_dir.glob(f"{prefix}_*.txt"), *prefix_dir.glob(f"{prefix}_*.TXT")})
+    result.total = len(zip_files) + len(txt_files)
+    jobs = [(f, import_zip_to_parquet) for f in zip_files] + [
+        (f, import_txt_to_parquet) for f in txt_files
+    ]
+    for raw_file, convert in jobs:
+        output_file = _get_output_path(raw_file, out_root, raw_dir)
         if not should_process_file(output_file, overwrite=config.overwrite):
-            result.add_skip(str(txt_file))
+            result.add_skip(str(raw_file))
             continue
         try:
-            success = import_txt_to_parquet(txt_file, output_file, config)
-            if success:
-                result.add_success(str(txt_file))
-            else:
-                result.add_failure(str(txt_file), "Conversion returned False")
-        except Exception as e:
-            result.add_failure(str(txt_file), str(e))
+            convert(raw_file, output_file, config)
+        except Exception as e:  # noqa: BLE001 - counted as a failure; the batch carries on
+            logger.error("Error converting %s: %s", raw_file, e)
+            result.add_failure(str(raw_file), f"{type(e).__name__}: {e}")
+        else:
+            result.add_success(str(raw_file))
 
     if show_progress:
         logger.info(
-            "Imported %s to bronze: %s/%s successful", prefix, result.successful, result.total
+            "Imported %s to bronze: %s/%s successful, %s failed",
+            prefix,
+            result.successful,
+            result.total,
+            result.failed,
         )
 
     return result

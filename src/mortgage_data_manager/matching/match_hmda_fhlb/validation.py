@@ -128,7 +128,6 @@ MAGNITUDE_CHECKS = {
     # Dollars (Raw) - Expect average around 100k-500k
     "amount": (10_000, 5_000_000),
     # Income (Raw Annual) - Expect average around 50k-300k
-    # Note: FHLB "TotalMonthlyIncomeAmount" is treated as Annual in matching logic
     "income": (20_000, 1_000_000),
     # Rate (Percent) - Expect average around 2.0 - 10.0
     # If decimal (0.05), it will be < 1.0
@@ -283,7 +282,7 @@ def validate_fhlb_post2018(df: pl.DataFrame) -> bool:
         "Loan Type",
         "PropertyUnitCount",
         "PropertyUsageType",
-        "TotalMonthlyIncomeAmount",
+        "TotalAnnualIncomeAmount",
         "LoanAmortizationMaxTermMonths",
         "NoteRatePercent",
         "LTVRatioPercent",
@@ -295,8 +294,7 @@ def validate_fhlb_post2018(df: pl.DataFrame) -> bool:
     # 2. Magnitude Check
     col_map = {
         "amount": "NoteAmount",
-        # Validating "TotalMonthly" against "Annual" range per README findings
-        "income": "TotalMonthlyIncomeAmount",
+        "income": "TotalAnnualIncomeAmount",
         "rate": "NoteRatePercent",
         "term": "LoanAmortizationMaxTermMonths",
         "ltv": "LTVRatioPercent",

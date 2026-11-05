@@ -6,6 +6,7 @@ inheriting from the base MortgageDataConfig.
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 from typing import Final, Literal
 
@@ -63,6 +64,13 @@ DATASET_MAP: Final[dict[str, SnapshotType]] = {
 }
 
 VALID_DATASETS: Final[list[str]] = list(DATASET_MAP)
+
+#: Snapshot-filename years the bronze/silver builders select by default: the first
+#: published snapshot year through the current calendar year. HUD publishes a snapshot
+#: every month, so the current year always has data once January's file is out; a
+#: hard-coded ceiling went stale (it stayed at 2025 after the 2026 snapshots landed).
+DEFAULT_MIN_YEAR: Final[int] = 2010
+DEFAULT_MAX_YEAR: Final[int] = date.today().year
 
 
 def resolve_datasets(datasets: list[str] | None) -> list[str]:

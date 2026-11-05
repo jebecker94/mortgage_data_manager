@@ -37,6 +37,11 @@ from mortgage_data_manager.matching.config import MatchingConfig
 from mortgage_data_manager.matching.master.config import MasterCrosswalkConfig
 from mortgage_data_manager.matching.match_hmda_gnma.config import HMDAGNMAMatchingConfig
 from mortgage_data_manager.matching.names import jaccard, name_tokens
+from mortgage_data_manager.sources.gnma.load import (
+    one_row_per_loan,
+    scan_latest_issuer_names,
+    scan_new_issuance,
+)
 from mortgage_data_manager.sources.hmda.load import scan_hmda_years
 
 logger = get_logger(__name__)
@@ -62,20 +67,7 @@ def issuer_names() -> pl.DataFrame:
     Returns:
         One row per GNMA ``issuer_id`` with an unambiguous latest issuer name.
     """
-    return (
-        pl.scan_parquet(HMDAGNMAMatchingConfig.GNMA_ISSRINFO_DIR / "**" / "*.parquet")
-        .select(
-            pl.col("issuer_id").cast(pl.Utf8).str.strip_chars(),
-            pl.col("issuer_name").str.strip_chars(),
-            "record_as_of_date",
-        )
-        .filter(pl.col("issuer_id").is_not_null() & pl.col("issuer_name").is_not_null())
-        .filter(pl.col("record_as_of_date") == pl.col("record_as_of_date").max().over("issuer_id"))
-        .select("issuer_id", "issuer_name")
-        .unique()
-        .filter(pl.len().over("issuer_id") == 1)
-        .collect()
-    )
+    return scan_latest_issuer_names().collect()
 
 
 def panel_names(min_year: int = 2018, max_year: int | None = None) -> pl.DataFrame:
@@ -234,7 +226,7 @@ def attach_issuer_id(pairs: pl.DataFrame) -> pl.DataFrame:
     """Add ``issuer_id`` to pairs that carry only ``gnma_loan_id``.
 
     The FHA-chain master crosswalk stores no issuer; the VA/USDA master does. Reads
-    only the loans present in ``pairs`` from the GNMA ``dailyllmni`` silver.
+    only the loans present in ``pairs`` from the GNMA new-issuance feed.
 
     Args:
         pairs: The pair table to annotate.
@@ -245,23 +237,16 @@ def attach_issuer_id(pairs: pl.DataFrame) -> pl.DataFrame:
     if "issuer_id" in pairs.columns:
         return pairs
     ids = pairs.select("gnma_loan_id").unique().lazy()
-    issuer = (
-        # The monthly files' schemas drift (columns added over time); only two are read.
-        pl.scan_parquet(
-            HMDAGNMAMatchingConfig.GNMA_SILVER_DIR / "*.parquet",
-            extra_columns="ignore",
-            missing_columns="insert",
-        )
+    loans = (
+        scan_new_issuance()
         .select(
             pl.col("disclosure_sequence_number").cast(pl.Utf8).alias("gnma_loan_id"),
             pl.col("issuer_id").cast(pl.Utf8),
         )
         .join(ids, on="gnma_loan_id", how="semi")
-        .unique()
-        # A loan id listed under two issuers names neither.
-        .filter(pl.len().over("gnma_loan_id") == 1)
-        .collect(engine="streaming")
     )
+    # A loan id listed under two issuers names neither.
+    issuer = one_row_per_loan(loans, "gnma_loan_id").collect(engine="streaming")
     return pairs.join(issuer, on="gnma_loan_id", how="left")
 
 

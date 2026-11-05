@@ -610,6 +610,9 @@ FHLMC:
     Origination Mortgage Loan Amount: Float64
     Origination Maturity Date: Int64
     Number of Alternative Delinquency Resolutions: Int64
+    Pricing Indicator: String
+    Fannie Score: Int64
+    Freddie Score: Int64
   FRE_IS:
     Security Notification Indicator: String
     Third Party Origination UPB Percent: Float64
@@ -717,6 +720,10 @@ FHLMC:
     WA Origination Interest Rate: Float64
     WA Net Accrual Interest Rate: Float64
     Prefix: String
+    WA Fannie Score: Int64
+    WA Freddie Score: Int64
+    WA Classic FICO Used In Pricing: Int64
+    WA VS4 Used In Pricing: Int64
   FRE_RILLD:
     Mortgage Margin: Float64
     Initial Interest Rate Cap Up Percent: Float64
@@ -834,6 +841,9 @@ FHLMC:
     Origination Mortgage Loan Amount: Float64
     Origination Maturity Date: Int64
     Number of Alternative Delinquency Resolutions: Int64
+    Pricing Indicator: String
+    Fannie Score: Int64
+    Freddie Score: Int64
   FRE_RIS:
     Security Notification Indicator: String
     Third Party Origination UPB Percent: Float64
@@ -941,6 +951,10 @@ FHLMC:
     WA Origination Interest Rate: Float64
     WA Net Accrual Interest Rate: Float64
     Prefix: String
+    WA Fannie Score: Int64
+    WA Freddie Score: Int64
+    WA Classic FICO Used In Pricing: Int64
+    WA VS4 Used In Pricing: Int64
   FT:
     Principal Paydown Factor: Float64
     Accretion Factor: String
@@ -1793,6 +1807,9 @@ FNMA:
     Origination Mortgage Loan Amount: Float64
     Origination Maturity Date: Int64
     Number of Alternative Delinquency Resolutions: Int64
+    Pricing Indicator: String
+    Fannie Score: Int64
+    Freddie Score: Int64
   FNM_IS:
     Security Notification Indicator: String
     Third Party Origination UPB Percent: Float64
@@ -1900,6 +1917,10 @@ FNMA:
     WA Origination Interest Rate: Float64
     WA Net Accrual Interest Rate: Float64
     Prefix: String
+    WA Fannie Score: Int64
+    WA Freddie Score: Int64
+    WA Classic FICO Used In Pricing: Int64
+    WA VS4 Used In Pricing: Int64
   FNM_MF:
     Security Notification Indicator: String
     Third Party Origination UPB Percent: Float64
@@ -2298,6 +2319,9 @@ FNMA:
     Origination Mortgage Loan Amount: Float64
     Origination Maturity Date: Int64
     Number of Alternative Delinquency Resolutions: Int64
+    Pricing Indicator: String
+    Fannie Score: Int64
+    Freddie Score: Int64
   FNM_RIS:
     Security Notification Indicator: String
     Third Party Origination UPB Percent: Float64
@@ -2405,6 +2429,10 @@ FNMA:
     WA Origination Interest Rate: Float64
     WA Net Accrual Interest Rate: Float64
     Prefix: String
+    WA Fannie Score: Int64
+    WA Freddie Score: Int64
+    WA Classic FICO Used In Pricing: Int64
+    WA VS4 Used In Pricing: Int64
   FNM_SMBS:
     Principal Paydown Factor: Float64
     Accretion Factor: String

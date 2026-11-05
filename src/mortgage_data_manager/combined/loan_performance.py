@@ -21,9 +21,8 @@ from mortgage_data_manager.combined._common import (
     _count_rows,
     _flag_str,
     _g_raw,
+    _gnma_loan_months,
     _gnma_loan_readers,
-    _gnma_pool_header,
-    _gnma_silver_dir,
     _gse_crosswalk,
     _opt_str,
     _period_index,
@@ -50,20 +49,21 @@ from mortgage_data_manager.combined.loan_performance_schema import (
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.harmonized import credit_score, flag_to_bool
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.sources.gnma.load import PORTFOLIO_CUTOVER, scan_portfolio
 
 logger = get_logger(__name__)
 
 
 # ===================== loan_performance (loan x month grain) ================
-# GNMA perf = the llmon L record (loan x reporting-month): llmon1 = Ginnie I,
-# llmon2 = Ginnie II (UNION both, split by `program`; llmon2 ~95% of volume). One row
-# per (loan, As-of month); the time-varying fields only -- origination-snapshot
-# covariates (purpose/LTV/FICO/...) live on `loan_issuance` and join by `loan_key`.
-# Silver is canonical and already decoded. `Months Delinquent` is already the 0-6
-# capped cycle count (6 = 6+). Events: `Current Month Liquidation Flag` Y/N +
-# `Removal Reason` -> unified `event_type`; credit event = Removal Reason 2 or 3
-# (delinquent buyout, foreclosure with claim). Pool-level CUSIP/pool_type attach via
-# L->P on Pool ID (same file).
+# GNMA perf = the loan-level portfolio (loan x reporting-month) through
+# `sources.gnma.load.scan_portfolio`: llmon1 (Ginnie I) + llmon2 (Ginnie II) before
+# 2026-07, the single llmon file from it, split by `program`. One row per (loan, As-of
+# month); the time-varying fields only -- origination-snapshot covariates
+# (purpose/LTV/FICO/...) live on `loan_issuance` and join by `loan_key`. Silver is
+# canonical and already decoded. `Months Delinquent` is already the 0-6 capped cycle
+# count (6 = 6+). Events: `Current Month Liquidation Flag` Y/N + `Removal Reason` ->
+# unified `event_type`; credit event = Removal Reason 2 or 3 (delinquent buyout,
+# foreclosure with claim). Pool-level CUSIP/pool_type come with each loan row.
 
 #: GNMA Removal Reason -> unified event_type (official V1.8 codes).
 _GNMA_REMOVAL_REASON: dict[str, str] = {
@@ -80,11 +80,32 @@ _GNMA_REMOVAL_REASON: dict[str, str] = {
 _GNMA_CREDIT_EVENT_CODES: frozenset[str] = frozenset({"2", "3"})
 
 
-#: GNMA llmon file families -> unified program value.
-_GNMA_LLMON_PROGRAMS: tuple[tuple[str, str], ...] = (
-    ("llmon1", "ginnie_i"),
-    ("llmon2", "ginnie_ii"),
-)
+#: Months by which the v2.0 portfolio (from `PORTFOLIO_CUTOVER`) is ahead of v1.8 on loan
+#: age and behind it on remaining term: exactly one on every loan with both values, in both
+#: overlap months (12,423,780 loans in 2026-07, 12,465,887 in 2026-08).
+_GNMA_V20_AGE_SHIFT = 1
+
+
+def _gnma_portfolio_month(month: str) -> pl.LazyFrame:
+    """One GNMA portfolio month, on the v1.8 loan-age convention throughout.
+
+    Ginnie's v2.0 layout counts loan age one month higher, and remaining term one month
+    lower, than v1.8 did for the same loan. Silver keeps both as published; combined
+    takes them back to v1.8 from `PORTFOLIO_CUTOVER` so the series has no step there.
+
+    Args:
+        month: The reporting month ``YYYYMM``.
+
+    Returns:
+        The month's loan rows (`scan_portfolio` columns, ``program`` included).
+    """
+    lf = scan_portfolio(min_month=month, max_month=month)
+    if month < PORTFOLIO_CUTOVER:
+        return lf
+    return lf.with_columns(
+        pl.col("loan_age_in_months") - _GNMA_V20_AGE_SHIFT,
+        pl.col("remaining_loan_term_in_months") + _GNMA_V20_AGE_SHIFT,
+    )
 
 
 def _gnma_event_type(rr: pl.Expr) -> pl.Expr:
@@ -115,60 +136,44 @@ def _gnma_perf_readers(schema: pl.Schema) -> Readers:
     return {**read, "rmm": rmm}
 
 
-def _assemble_gnma_loan_performance(family: str, program: str, month: str) -> pl.LazyFrame:
-    """Assemble one GNMA llmon L month into unified loan_performance rows.
+def _assemble_gnma_loan_performance(month: str) -> pl.LazyFrame:
+    """Assemble one GNMA portfolio month into unified loan_performance rows.
 
     Args:
-        family: The llmon file family (``llmon1`` = Ginnie I, ``llmon2`` = Ginnie II).
-        program: The unified ``program`` value for this family.
-        month: The reporting month ``YYYYMM`` (the L file's As-of month).
+        month: The reporting month ``YYYYMM``.
 
     Returns:
         A LazyFrame of unified loan-performance rows for ``month`` (pre-reindex).
     """
-    lf = pl.scan_parquet(str(_gnma_silver_dir(family, "L") / f"{family}_{month}_L.parquet"))
+    lf = _gnma_portfolio_month(month)
     schema = lf.collect_schema()
-    if _g_raw("pool_id", schema) is None or _g_raw("disclosure_sequence_number", schema) is None:
-        raise ValueError(f"GNMA {family} {month}: missing Pool ID / Disclosure Sequence Number")
     read = _gnma_perf_readers(schema)
     rr = read["str"](_plan_src(GNMA_LOAN_PERFORMANCE_PLAN, "event_raw_code"))
     derived = {
-        "program": pl.lit(program),
+        "program": pl.col("program"),
         "reporting_period": pl.lit(int(month), dtype=pl.Int64),
         "reporting_year": pl.lit(int(month[:4]), dtype=pl.Int64),
         "event_type": _gnma_event_type(rr),
         "event_class": _event_class_expr(_gnma_event_type(rr)),
         "is_credit_event": rr.is_in(list(_GNMA_CREDIT_EVENT_CODES)).fill_null(value=False),
     }
-    out = lf.select(_plan_exprs(GNMA_LOAN_PERFORMANCE_PLAN, read, derived))
-
-    # --- attach pool-level CUSIP / pool_type via L->P on Pool ID ---
-    p_path = _gnma_silver_dir(family, "P") / f"{family}_{month}_P.parquet"
-    if p_path.exists():
-        header = _gnma_pool_header(p_path, with_program=False).rename({"_pool_key": "pool_id"})
-        out = out.join(header, on="pool_id", how="left")
-    else:
-        logger.warning("GNMA %s %s: no P record file; cusip/pool_type null.", family, month)
-        out = out.with_columns(
-            pl.lit(None, dtype=pl.String).alias("cusip"),
-            pl.lit(None, dtype=pl.String).alias("pool_type"),
-        )
-    return out
+    return lf.select(
+        *_plan_exprs(GNMA_LOAN_PERFORMANCE_PLAN, read, derived),
+        read["raw"](("cusip_number",)).alias("cusip"),
+        read["raw"](("pool_type",)).alias("pool_type"),
+    )
 
 
 def _gnma_perf_canon_schema() -> pl.Schema:
     """Resolve GNMA's loan_performance output schema (constant column set)."""
-    months = sorted(
-        p.stem.split("_")[1] for p in _gnma_silver_dir("llmon2", "L").glob("llmon2_*_L.parquet")
-    )
-    return _assemble_gnma_loan_performance("llmon2", "ginnie_ii", months[-1]).collect_schema()
+    return _assemble_gnma_loan_performance(_gnma_loan_months("portfolio")[-1]).collect_schema()
 
 
 def _build_gnma_loan_performance(out_dir: Path, canon: pl.Schema) -> int:
-    """Build GNMA's loan_performance rows, one llmon L month file at a time.
+    """Build GNMA's loan_performance rows, one portfolio month at a time.
 
-    Unions Ginnie I (``llmon1``) + Ginnie II (``llmon2``), split by ``program``;
-    each month file streams independently so peak memory stays one month wide.
+    Ginnie I and II together, split by ``program``; each month streams independently so
+    peak memory stays one month wide.
 
     Args:
         out_dir: Dataset root.
@@ -177,20 +182,14 @@ def _build_gnma_loan_performance(out_dir: Path, canon: pl.Schema) -> int:
     Returns:
         Rows written for GNMA.
     """
+    months = _gnma_loan_months("portfolio")
+    logger.info("  GNMA: %d portfolio months", len(months))
     total = 0
-    for family, program in _GNMA_LLMON_PROGRAMS:
-        l_files = sorted(_gnma_silver_dir(family, "L").glob(f"{family}_*_L.parquet"))
-        logger.info("  GNMA %s (%s): %d llmon L month files", family, program, len(l_files))
-        for f in l_files:
-            month = f.stem.split("_")[1]
-            chunk = _assemble_gnma_loan_performance(family, program, month).collect(
-                engine="streaming"
-            )
-            n = _write_partitioned(
-                chunk, canon, out_dir, "reporting_year", "GNMA", f"{family}_{month}"
-            )
-            total += n
-            logger.debug("    GNMA/%s/%s: %d rows", family, month, n)
+    for month in months:
+        chunk = _assemble_gnma_loan_performance(month).collect(engine="streaming")
+        n = _write_partitioned(chunk, canon, out_dir, "reporting_year", "GNMA", f"gnma_{month}")
+        total += n
+        logger.debug("    GNMA/%s: %d rows", month, n)
     return total
 
 
@@ -777,12 +776,12 @@ def _build_gse_loan_terminations(spec: _GsePerfSpec, out_dir: Path, canon: pl.Sc
 
 
 def _gnma_src(name: str) -> str:
-    """The llmon silver column behind GNMA ``loan_performance`` column ``name``."""
+    """The portfolio silver column behind GNMA ``loan_performance`` column ``name``."""
     return _plan_src(GNMA_LOAN_PERFORMANCE_PLAN, name)[0]
 
 
 def _gnma_removal_state(lf: pl.LazyFrame, month: str) -> list[pl.Expr]:
-    """`_removal_state` for one llmon L month file."""
+    """`_removal_state` for one portfolio month."""
     read = _gnma_loan_readers(lf.collect_schema())
 
     def col(name: str, reader: str) -> pl.Expr:
@@ -797,28 +796,26 @@ def _gnma_removal_state(lf: pl.LazyFrame, month: str) -> list[pl.Expr]:
     )
 
 
-def _assemble_gnma_terminations(family: str, month: str, prev_month: str | None) -> pl.LazyFrame:
-    """One llmon L month's removals as termination events, state carried from ``prev_month``.
+def _assemble_gnma_terminations(month: str, prev_month: str | None) -> pl.LazyFrame:
+    """One portfolio month's removals as termination events, state carried from ``prev_month``.
 
     Ginnie publishes no loss waterfall, so a removal carries the event, its month and
     the loan's state. A loan absent from ``prev_month`` keeps only what its removal row
     discloses.
 
     Args:
-        family: The llmon file family (``llmon1`` = Ginnie I, ``llmon2`` = Ginnie II).
         month: The removal month ``YYYYMM``.
-        prev_month: The family's previous month file, or None for its first.
+        prev_month: The previous portfolio month, or None for the first.
 
     Returns:
         A LazyFrame of termination rows for ``month`` (pre-reindex).
     """
-    l_dir = _gnma_silver_dir(family, "L")
-    lf = pl.scan_parquet(str(l_dir / f"{family}_{month}_L.parquet"))
+    lf = _gnma_portfolio_month(month)
     schema = lf.collect_schema()
 
     dsn, liq = _g_raw(_gnma_src("loan_key"), schema), _g_raw(_gnma_src("event_flag"), schema)
     if dsn is None or liq is None:
-        raise ValueError(f"GNMA {family} {month}: missing Disclosure Sequence Number / flag")
+        raise ValueError(f"GNMA {month}: missing Disclosure Sequence Number / flag")
     rr = _opt_str(_g_raw(_gnma_src("event_raw_code"), schema))
     event_type = _gnma_event_type(rr)
     term = lf.filter(liq == "Y").select(
@@ -838,10 +835,10 @@ def _assemble_gnma_terminations(family: str, month: str, prev_month: str | None)
     if prev_month is None:
         prev = term.select("loan_key", *_REMOVAL_STATE_COLS).head(0)
     else:
-        p = pl.scan_parquet(str(l_dir / f"{family}_{prev_month}_L.parquet"))
+        p = _gnma_portfolio_month(prev_month)
         p_dsn = _g_raw(_gnma_src("loan_key"), p.collect_schema())
         if p_dsn is None:
-            raise ValueError(f"GNMA {family} {prev_month}: missing Disclosure Sequence Number")
+            raise ValueError(f"GNMA {prev_month}: missing Disclosure Sequence Number")
         prev = _last_active_rows(
             p.select(p_dsn.alias("loan_key"), *_gnma_removal_state(p, prev_month)),
             term.select("loan_key"),
@@ -851,32 +848,20 @@ def _assemble_gnma_terminations(family: str, month: str, prev_month: str | None)
 
 def _gnma_term_canon_schema() -> pl.Schema:
     """Resolve GNMA's loan_terminations output schema (constant column set)."""
-    months = _gnma_llmon_months("llmon2")
-    return _assemble_gnma_terminations("llmon2", months[-1], months[-2]).collect_schema()
-
-
-def _gnma_llmon_months(family: str) -> list[str]:
-    """The ``YYYYMM`` months of a family's llmon L files, in order."""
-    return sorted(
-        f.stem.split("_")[1] for f in _gnma_silver_dir(family, "L").glob(f"{family}_*_L.parquet")
-    )
+    months = _gnma_loan_months("portfolio")
+    return _assemble_gnma_terminations(months[-1], months[-2]).collect_schema()
 
 
 def _gnma_repeat_removals() -> pl.DataFrame:
     """Loans Ginnie removes in more than one month (37 of 22.3M), which have no one event."""
-    scans = []
-    for family, _ in _GNMA_LLMON_PROGRAMS:
-        for month in _gnma_llmon_months(family):
-            lf = pl.scan_parquet(str(_gnma_silver_dir(family, "L") / f"{family}_{month}_L.parquet"))
-            schema = lf.collect_schema()
-            dsn, liq = (
-                _g_raw(_gnma_src("loan_key"), schema),
-                _g_raw(_gnma_src("event_flag"), schema),
-            )
-            if dsn is not None and liq is not None:
-                scans.append(lf.filter(liq == "Y").select(dsn.alias("loan_key")))
+    lf = scan_portfolio()
+    schema = lf.collect_schema()
+    dsn, liq = _g_raw(_gnma_src("loan_key"), schema), _g_raw(_gnma_src("event_flag"), schema)
+    if dsn is None or liq is None:
+        raise ValueError("GNMA portfolio: missing Disclosure Sequence Number / flag")
     return (
-        pl.concat(scans)
+        lf.filter(liq == "Y")
+        .select(dsn.alias("loan_key"))
         .group_by("loan_key")
         .len()
         .filter(pl.col("len") > 1)
@@ -886,7 +871,7 @@ def _gnma_repeat_removals() -> pl.DataFrame:
 
 
 def _build_gnma_loan_terminations(out_dir: Path, canon: pl.Schema) -> int:
-    """Write Ginnie I and II removals, one llmon L month (plus the month before) at a time.
+    """Write Ginnie I and II removals, one portfolio month (plus the month before) at a time.
 
     A loan removed in two months is left out: which removal ended it is unknowable.
 
@@ -899,17 +884,16 @@ def _build_gnma_loan_terminations(out_dir: Path, canon: pl.Schema) -> int:
         repeats.select(pl.len()).collect().item(),
     )
     total = 0
-    for family, _ in _GNMA_LLMON_PROGRAMS:
-        months = _gnma_llmon_months(family)
-        for prev_month, month in zip([None, *months[:-1]], months, strict=True):
-            chunk = (
-                _assemble_gnma_terminations(family, month, prev_month)
-                .join(repeats, on="loan_key", how="anti")
-                .collect(engine="streaming")
-            )
-            total += _write_partitioned(
-                chunk, canon, out_dir, "zero_balance_year", "GNMA", f"{family}_{month}"
-            )
+    months = _gnma_loan_months("portfolio")
+    for prev_month, month in zip([None, *months[:-1]], months, strict=True):
+        chunk = (
+            _assemble_gnma_terminations(month, prev_month)
+            .join(repeats, on="loan_key", how="anti")
+            .collect(engine="streaming")
+        )
+        total += _write_partitioned(
+            chunk, canon, out_dir, "zero_balance_year", "GNMA", f"gnma_{month}"
+        )
     logger.info("  GNMA: %d termination events", total)
     return total
 
@@ -922,8 +906,9 @@ def build_loan_performance(*, overwrite: bool = False) -> pl.LazyFrame:
     balance/rate/seasoning/delinquency/servicer/forbearance/event); origination-
     snapshot covariates live on ``loan_issuance`` and join by ``loan_key``.
 
-    GNMA is a single disclosure spine (llmon L: Ginnie I ``llmon1`` ∪ Ginnie II
-    ``llmon2``, split by ``program``). Each GSE FUSES its SF Loan-Performance panel
+    GNMA is a single disclosure spine (the loan-level portfolio, Ginnie I and II split by
+    ``program``; ``llmon1`` ∪ ``llmon2`` before 2026-07 and ``llmon`` from it, with loan
+    age and remaining term kept on the earlier convention). Each GSE FUSES its SF Loan-Performance panel
     (base) with the UMBS MLLD/FU monthly factor (enrichment + ~9-month recency tail)
     via the strictly-1:1 mbs_umbs crosswalk on ``reporting_period`` — a full-outer
     month join that retains a matched loan's SF-only early months and UMBS-only

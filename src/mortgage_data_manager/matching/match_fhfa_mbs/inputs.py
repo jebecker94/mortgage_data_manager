@@ -144,7 +144,7 @@ def prepare_fnma(lf: pl.LazyFrame) -> pl.LazyFrame:
         pl.col("Number of Units").cast(pl.Int64).alias("num_units"),
         pl.col("Number of Borrowers").cast(pl.Int64).alias("num_borrowers"),
         fthb.alias("fthb"),
-        _fhfa_code("Loan Purpose ", GSE_LOAN_PURPOSE, FHFA_LOAN_PURPOSE_CODE).alias("loan_purpose"),
+        _fhfa_code("Loan Purpose", GSE_LOAN_PURPOSE, FHFA_LOAN_PURPOSE_CODE).alias("loan_purpose"),
         _fhfa_code("Occupancy Status", GSE_OCCUPANCY, OCCUPANCY_CODE).alias("occupancy_code"),
         _fhfa_code("Property Type", GSE_PROPERTY_TYPE, FHFA_PROPERTY_TYPE_CODE).alias(
             "property_type"

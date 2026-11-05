@@ -43,7 +43,7 @@ from typing import Any
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 
 logger = get_logger(__name__)
 
@@ -296,7 +296,8 @@ def process_zip_to_parquet(
 
                 # Sink to parquet
                 logger.info("Writing to %s", output_file.relative_to(output_file.parents[2]))
-                df.sink_parquet(output_file, compression="zstd")
+                with atomic_output(output_file) as tmp:
+                    df.sink_parquet(tmp, compression="zstd")
 
                 logger.info("Successfully processed %s", zip_path.name)
                 return True
@@ -550,12 +551,13 @@ def process_zip_to_per_rt_parquet(
                 for i in range(1, n_fields):
                     rename_map[f"_c{i}"] = f"column_{i}"
 
-                (
-                    lf.filter(pl.col("_c0") == rt)
-                    .select(use_cols)
-                    .rename(rename_map)
-                    .sink_parquet(out_path, compression="zstd")
-                )
+                with atomic_output(out_path) as tmp:
+                    (
+                        lf.filter(pl.col("_c0") == rt)
+                        .select(use_cols)
+                        .rename(rename_map)
+                        .sink_parquet(tmp, compression="zstd")
+                    )
                 written[rt] = n_fields
                 logger.info("  RT=%3s: %2s cols → %s", rt, n_fields, out_path.name)
 

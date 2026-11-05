@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import polars as pl
 
+from mortgage_data_manager.core.types import apply_silver_types
 from mortgage_data_manager.sources.umbs.config import UMBS_SILVER_SPECS, _sentinels_for
 
 
@@ -67,3 +68,24 @@ def test_loan_level_and_pool_level_specs_are_both_covered():
     # both grains need the map.
     assert "Debt-To-Income (DTI)" in UMBS_SILVER_SPECS["ILLD"].sentinels
     assert "WA Debt-To-Income (DTI)" in UMBS_SILVER_SPECS["IS"].sentinels
+
+
+def test_code_nine_not_available_is_null_mapped():
+    # The Disclosure Guide codes 9 = Not Available on these loan-level code columns. The
+    # enums keep the "9" level (one dtype across rebuilds), so the mask must come from the
+    # sentinel map; a regression here ships "9" as a value again.
+    spec = UMBS_SILVER_SPECS["ILLD"]
+    for col in (
+        "First Time Home Buyer Indicator",
+        "Loan Purpose",
+        "Occupancy Status",
+        "Channel",
+        "Pricing Indicator",
+    ):
+        assert spec.sentinels[col] == ("9",)
+    assert UMBS_SILVER_SPECS["FU"] is spec and UMBS_SILVER_SPECS["MLLD"] is spec
+
+    frame = pl.LazyFrame({"Channel": ["R", "9"], "Loan Purpose": ["P", "9"]})
+    out = apply_silver_types(frame, spec).collect()
+    assert out["Channel"].to_list() == ["R", None]
+    assert out["Loan Purpose"].to_list() == ["P", None]

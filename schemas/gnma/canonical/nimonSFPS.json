@@ -4965,7 +4965,11 @@
         },
         {
           "id": "issue_date",
-          "arrow_type": "string",
+          "arrow_type": "date32",
+          "decode": {
+            "kind": "date",
+            "pattern": "YYYYMMDD"
+          },
           "pdf_text": "Issue Date",
           "layouts": [
             {
@@ -5490,5 +5494,7 @@
       ]
     }
   },
-  "corrections": []
+  "corrections": [
+    "PS.issue_date string -> date32 (YYYYMMDD), so it stacks with nissues P/D pool_issue_date (2026-11-04)."
+  ]
 }

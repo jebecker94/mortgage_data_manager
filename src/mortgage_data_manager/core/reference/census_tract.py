@@ -25,6 +25,7 @@ import polars as pl
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.download import DownloadStatus, atomic_download
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.medallion import atomic_output
 
 logger = get_logger(__name__)
 
@@ -36,6 +37,41 @@ VINTAGE_2020_FIRST_YEAR: int = 2022
 
 
 _REFERENCE_DIR = MortgageDataConfig.REFERENCE_DIR
+
+#: Zero-pad widths of the census tract GEOID components: state, county, tract.
+_GEOID_WIDTHS: tuple[int, int, int] = (2, 3, 6)
+
+
+def tract_geoid(*parts: str | pl.Expr) -> pl.Expr:
+    """The 11-character census tract GEOID (2 state + 3 county + 6 tract digits) as Utf8.
+
+    Pass either the three components, each numeric or a digit string with or without
+    its leading zeros, or one already-composed GEOID whose leading zeros an integer
+    round-trip may have dropped. The result is null when any component is null. A
+    component wider than its slot is kept whole, so a malformed code yields a string
+    longer than 11 characters rather than silently borrowing digits from its neighbour.
+
+    Args:
+        *parts: Column names or expressions: ``(state, county, tract)``, or ``(geoid,)``.
+
+    Returns:
+        A Utf8 expression holding the GEOID.
+
+    Raises:
+        ValueError: If neither one nor three parts are given.
+
+    Example:
+        >>> lf.with_columns(tract_geoid("state_code", "county", "census_tract").alias("geoid"))
+    """
+    exprs = [pl.col(p) if isinstance(p, str) else p for p in parts]
+    if len(exprs) == 1:
+        return exprs[0].cast(pl.Utf8).str.zfill(11)
+    if len(exprs) != 3:
+        raise ValueError(f"tract_geoid takes (state, county, tract) or (geoid,), got {len(exprs)}")
+    state, county, tract = (
+        e.cast(pl.Int64).cast(pl.Utf8).str.zfill(w) for e, w in zip(exprs, _GEOID_WIDTHS)
+    )
+    return state + county + tract
 
 
 def _cache_dir() -> Path:
@@ -64,7 +100,7 @@ def _build_parquet_cache() -> Path:
             )
 
     parquet = _parquet_path()
-    pl.read_csv(
+    rel = pl.read_csv(
         raw,
         separator="|",
         schema_overrides={
@@ -80,7 +116,9 @@ def _build_parquet_cache() -> Path:
         "AREALAND_PART",
         "AREALAND_TRACT_20",
         "AREALAND_TRACT_10",
-    ).write_parquet(parquet)
+    )
+    with atomic_output(parquet) as tmp:
+        rel.write_parquet(tmp)
     logger.info("Cached tract relationship file as parquet: %s", parquet)
     return parquet
 
@@ -197,12 +235,14 @@ def _build_parquet_cache_2000_2010() -> Path:
             )
 
     parquet = _parquet_path_2000_2010()
-    pl.read_csv(
+    rel = pl.read_csv(
         raw,
         has_header=False,
         new_columns=_REL_2000_2010_COLUMNS,
         schema_overrides={"GEOID00": pl.Utf8, "GEOID10": pl.Utf8, "POPPCT10": pl.Float64},
-    ).select("GEOID00", "GEOID10", "POPPCT10").write_parquet(parquet)
+    ).select("GEOID00", "GEOID10", "POPPCT10")
+    with atomic_output(parquet) as tmp:
+        rel.write_parquet(tmp)
     logger.info("Cached 2000↔2010 tract relationship file as parquet: %s", parquet)
     return parquet
 

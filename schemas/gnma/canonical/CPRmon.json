@@ -274,8 +274,8 @@
         }
       ]
     },
-    "TT": {
-      "role": "detail",
+    "CT": {
+      "role": "trailer",
       "present": [
         {
           "from": "2025-07",
@@ -327,8 +327,7 @@
       ]
     }
   },
-  "control_record_types": [
-    "CT"
-  ],
-  "corrections": []
+  "corrections": [
+    "Trailer record type TT -> CT: the files' trailer is 'CT|YYYYMM|pool_count' (the layout names the record CT; its CT-01 text says 'Record Type = TT'). TT never occurred, so silver TT was empty and the trailer was dropped as a control row (validator-caught, 2026-11-04)."
+  ]
 }

@@ -1,6 +1,6 @@
 """FHLB-GNMA Matching Logic using Polars.
 
-Matches GNMA loan-level disclosure data (dailyllmni silver) with
+Matches GNMA loan-level new-issuance data (the dailyllmni / dailyllmnipd silver) with
 FHLB AMA (Acquired Member Assets) data to identify loans that were
 acquired by Federal Home Loan Banks from GNMA issuers.
 """
@@ -17,54 +17,36 @@ from mortgage_data_manager.core.reference.states import STATE_TO_FIPS
 from mortgage_data_manager.matching.match_fhlb_mbs.config import FHLBMBSMatchingConfig as Config
 from mortgage_data_manager.matching.match_fhlb_mbs.rounds import ROUNDS, MatchRound, Tolerances
 from mortgage_data_manager.matching.resolve import drop_ambiguous, mutual_best
+from mortgage_data_manager.sources.gnma.load import scan_new_issuance
 
 logger = get_logger(__name__)
 
 
 def load_gnma(
-    gnma_dir: Path,
+    silver_dir: Path | None = None,
     min_year: int = 2009,
     max_year: int = 2025,
     issuer_id: int | None = 3937,
 ) -> pl.DataFrame:
-    """Load GNMA silver dailyllmni loan-level data.
-
-    Uses diagonal_relaxed concat to handle schema evolution across files
-    (GNMA adds columns over time).
+    """Load GNMA new-issuance loans through `sources.gnma.load.scan_new_issuance`.
 
     Args:
-        gnma_dir: Directory containing GNMA silver L parquet files
+        silver_dir: GNMA silver root; None for ``GNMAConfig.GNMA_SILVER_DIR``.
         min_year: Minimum year to include (based on First Payment Date)
         max_year: Maximum year to include
         issuer_id: Filter to specific issuer ID (3937 is common for FHLB matching)
 
     Returns:
-        Combined GNMA loan-level data
+        GNMA loan-level rows, one per file row, for the issuer and years.
     """
-    parquet_files = sorted(gnma_dir.glob("*.parquet"))
-
-    if not parquet_files:
-        raise FileNotFoundError(f"No parquet files found in {gnma_dir}")
-
-    logger.info("Loading %d GNMA silver files...", len(parquet_files))
-
-    # Read all files and concat with diagonal_relaxed to handle schema differences
-    dfs = [pl.read_parquet(f) for f in parquet_files]
-    df = pl.concat(dfs, how="diagonal_relaxed")
-
-    logger.info("  Total rows loaded: %d", len(df))
-
-    # Filter by issuer if specified
+    lf = scan_new_issuance(silver_dir=silver_dir)
     if issuer_id is not None:
-        df = df.filter(pl.col("issuer_id").cast(pl.Int64, strict=False) == issuer_id)
-        logger.info("  After issuer filter (%s): %d", issuer_id, len(df))
-
+        lf = lf.filter(pl.col("issuer_id").cast(pl.Int64, strict=False) == issuer_id)
     # Filter by first payment date year (present in every file, unlike origination date).
     # First payment is typically 1 month after origination, so this is a good proxy
     fp_year = pl.col("first_payment_date").dt.year().cast(pl.Int64, strict=False)
-    df = df.filter((fp_year >= min_year) & (fp_year <= max_year + 1))  # +1 for 1-month offset
-    logger.info("  After year filter (%d-%d): %d", min_year, max_year, len(df))
-
+    df = lf.filter((fp_year >= min_year) & (fp_year <= max_year + 1)).collect(engine="streaming")
+    logger.info("GNMA loans (issuer %s, %d-%d): %d", issuer_id, min_year, max_year, len(df))
     return df
 
 

@@ -9,15 +9,15 @@ import polars as pl
 
 from mortgage_data_manager.combined._common import (
     _build_dataset,
+    _gnma_loan_months,
     _gnma_num,
-    _gnma_silver_dir,
     _period_index,
 )
 from mortgage_data_manager.combined.config import CombinedConfig
-from mortgage_data_manager.combined.loan_performance import _GNMA_LLMON_PROGRAMS
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import recreate_dir
+from mortgage_data_manager.sources.gnma.load import one_row_per_loan, scan_portfolio
 
 logger = get_logger(__name__)
 
@@ -276,7 +276,7 @@ def _months_between(later: pl.Expr, earlier: pl.Expr) -> pl.Expr:
 
 
 def _gnma_first_month_statics() -> pl.LazyFrame:
-    """First-payment date and original balance of the loans in Ginnie's first llmon month.
+    """First-payment date and original balance of the loans in Ginnie's first portfolio month.
 
     Ginnie's issuance feed starts 2013-09, so the loans already outstanding then have
     no ``loan_issuance`` row. The first monthly panel file carries both fields for them.
@@ -285,19 +285,9 @@ def _gnma_first_month_statics() -> pl.LazyFrame:
     Returns:
         ``agency``, ``loan_key``, ``first_payment_date``, ``original_upb``.
     """
-    frames = []
-    for family, _ in _GNMA_LLMON_PROGRAMS:
-        files = sorted(_gnma_silver_dir(family, "L").glob(f"{family}_*_L.parquet"))
-        if files:
-            frames.append(
-                pl.scan_parquet(str(files[0])).select(
-                    pl.col("disclosure_sequence_number").cast(pl.String).alias("loan_key"),
-                    pl.col("first_payment_date"),
-                    _gnma_num(pl.col("original_principal_balance")).alias("original_upb"),
-                )
-            )
-    if not frames:
-        logger.warning("No GNMA llmon files; pre-2013-09 loans keep null issuance statics")
+    months = _gnma_loan_months("portfolio")
+    if not months:
+        logger.warning("No GNMA portfolio files; pre-2013-09 loans keep null issuance statics")
         return pl.LazyFrame(
             schema={
                 "agency": pl.String,
@@ -306,12 +296,12 @@ def _gnma_first_month_statics() -> pl.LazyFrame:
                 "original_upb": pl.Float64,
             }
         )
-    return (
-        pl.concat(frames)
-        .unique()
-        .unique(subset="loan_key", keep="none")
-        .select(pl.lit("GNMA").alias("agency"), pl.all())
+    first = scan_portfolio(min_month=months[0], max_month=months[0]).select(
+        pl.col("disclosure_sequence_number").cast(pl.String).alias("loan_key"),
+        pl.col("first_payment_date"),
+        _gnma_num(pl.col("original_principal_balance")).alias("original_upb"),
     )
+    return one_row_per_loan(first, "loan_key").select(pl.lit("GNMA").alias("agency"), pl.all())
 
 
 def _loan_outcomes_partials(agency_dir: Path, tmp_dir: Path) -> list[Path]:

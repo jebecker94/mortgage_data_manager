@@ -39,7 +39,7 @@ import polars as pl
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.download import retry_request
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.fha.config import FHAConfig
 
 logger = get_logger(__name__)
@@ -394,7 +394,8 @@ def download_lender_list(
             )
             continue
 
-        filepath.write_text(response.text, encoding="utf-8")
+        with atomic_output(filepath) as tmp:
+            tmp.write_text(response.text, encoding="utf-8")
         logger.info("Saved %s (%d lenders advertised)", filepath.name, count)
         saved.append(filepath)
 
@@ -488,7 +489,8 @@ def build_bronze_lender_list(
 
     df = pl.DataFrame(records, schema=BRONZE_SCHEMA)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    df.write_parquet(out_path)
+    with atomic_output(out_path) as tmp:
+        df.write_parquet(tmp)
     logger.info(
         "Wrote %d lender records (%d unique mortgagee IDs) to %s",
         len(df),

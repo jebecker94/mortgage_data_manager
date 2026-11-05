@@ -42,6 +42,7 @@ import polars as pl
 import yaml
 
 from mortgage_data_manager.core.logging import configure_logging, get_logger
+from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.sources.umbs.config import UMBSConfig
 
 logger = get_logger(__name__)
@@ -283,7 +284,8 @@ def _write_yaml(
     """Write a nested ``{gse: {folder: {col: dtype_name}}}`` dict to YAML."""
     body = yaml.safe_dump(schemas, sort_keys=False, default_flow_style=False, width=200)
     header = "\n".join(f"# {line}" if line else "#" for line in header_lines)
-    output_path.write_text(header + "\n\n" + body)
+    with atomic_output(output_path) as tmp:
+        tmp.write_text(header + "\n\n" + body)
 
 
 # ---------------------------------------------------------------------------

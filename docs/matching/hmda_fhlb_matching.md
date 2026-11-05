@@ -95,9 +95,9 @@ Round 3 runs round 1's criteria on the leftovers against every HMDA origination.
 reaches correspondent chains (a non-member originates, sells to a member, and the member
 delivers to its Bank) and any member the supplement still misses.
 
-FHLB `TotalMonthlyIncomeAmount` behaves as annual income: compared directly with HMDA's
-annual income it matches closely, while treating it as monthly does not. The matcher uses
-it as annual.
+FHLB silver `TotalAnnualIncomeAmount` is annual income in every year (FHFA publishes it
+monthly from 2019 and silver annualizes it), and the matcher compares it directly with
+HMDA's annual income.
 
 ### Pre-2018
 
@@ -244,8 +244,8 @@ member-to-Bank sale.
 
 1. **No FHLB purchaser code.** HMDA has no code for a sale to an FHLB, so match quality
    can be validated only indirectly.
-2. **Income field.** `TotalMonthlyIncomeAmount` behaves as annual income and is treated as
-   annual.
+2. **Income field.** `TotalAnnualIncomeAmount` is annual income in every year; FHFA
+   publishes it monthly from 2019, and silver annualizes it.
 3. **Unmatched ceiling.** 202,423 AMA loans (42.8%) stay unmatched. Measured 2026-10-21,
    84.1% of them share round 1's exact keys (year, tract, amount bin, loan type, units,
    occupancy) with at least one HMDA origination, but no candidate survived the

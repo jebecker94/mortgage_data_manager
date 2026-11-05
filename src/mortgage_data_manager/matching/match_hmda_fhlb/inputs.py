@@ -17,7 +17,7 @@ from mortgage_data_manager.matching.match_hmda_fhlb.config import (
 )
 from mortgage_data_manager.matching.match_hmda_fhlb.utils import create_census_tract_from_fips
 from mortgage_data_manager.matching.terms import is_bin_edge, round_to_fhfa_bin
-from mortgage_data_manager.sources.hmda.load import scan_hmda
+from mortgage_data_manager.sources.hmda.load import scan_originations
 
 logger = get_logger(__name__)
 
@@ -340,7 +340,7 @@ def prepare_fhlb_pre2018(match_folder: Path, max_year: int, overwrite: bool = Fa
         "CensusTractIdentifier",
         "PropertyUsageType",
         "LoanPurposeType",
-        "TotalMonthlyIncomeAmount",
+        "TotalAnnualIncomeAmount",
         "Borrower1SexType",
         "Borrower2SexType",
         "FHFBID",
@@ -353,16 +353,13 @@ def prepare_fhlb_pre2018(match_folder: Path, max_year: int, overwrite: bool = Fa
             logger.warning("FHLB data not found for %s: %s", year, ffile)
             continue
 
-        file_cols = pl.scan_parquet(ffile).collect_schema().names()
-        valid_cols = [c for c in keep_cols if c in file_cols]
-
-        df_year = pl.read_parquet(ffile, columns=valid_cols)
-
-        for c in keep_cols:
-            if c not in df_year.columns:
-                df_year = df_year.with_columns(pl.lit(None).cast(pl.Int64).alias(c))
-
-        dfs.append(df_year)
+        # Every column is in every AMA silver year; a missing one means stale silver (e.g.
+        # an income column renamed upstream), and a null stand-in would silently drop
+        # every candidate pair at the income screen.
+        missing = [c for c in keep_cols if c not in pl.scan_parquet(ffile).collect_schema()]
+        if missing:
+            raise ValueError(f"FHLB AMA silver {ffile.name} lacks {missing}; rebuild FHLB silver")
+        dfs.append(pl.read_parquet(ffile, columns=keep_cols))
 
     if not dfs:
         raise FileNotFoundError(f"No FHLB data found in {fhlb_dir}")
@@ -388,7 +385,6 @@ def prepare_fhlb_pre2018(match_folder: Path, max_year: int, overwrite: bool = Fa
             "NoteDate": "Note Date",
             "PropertyUsageType": "Property Usage Type",
             "LoanPurposeType": "Loan Purpose Type",
-            "TotalMonthlyIncomeAmount": "Total Yearly Income Amount",
             "Borrower1SexType": "Borrower 1 Gender Type",
             "Borrower2SexType": "Borrower 2 Gender Type",
         }
@@ -433,7 +429,7 @@ def prepare_fhlb_post2018(match_folder: Path, max_year: int, overwrite: bool = F
         "FIPSCountyCode",
         "CensusTractIdentifier",
         "LoanPurposeType",
-        "TotalMonthlyIncomeAmount",
+        "TotalAnnualIncomeAmount",
         "LoanAmortizationMaxTermMonths",
         "NoteRatePercent",
         "LoanAcquisitionActualUPBAmt",
@@ -646,14 +642,12 @@ def prepare_hmda_post2018(
     for year in range(2018, max_year + 1):
         try:
             # Release selection (most mature available) belongs to hmda.load.
-            lf = scan_hmda("post2018", year)
+            lf = scan_originations("post2018", year, year)
         except FileNotFoundError as e:
             logger.warning("HMDA silver data not found for %s: %s", year, e)
             continue
 
-        lf = lf.filter((pl.col("action_taken") == 1) & (pl.col("purchaser_type") != 3)).select(
-            HMDA_POST2018_COLS
-        )
+        lf = lf.filter(pl.col("purchaser_type") != 3).select(HMDA_POST2018_COLS)
 
         df_year = lf.collect()
         total_loans_counts[year] = len(df_year)

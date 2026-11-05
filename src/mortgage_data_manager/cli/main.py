@@ -89,7 +89,6 @@ def info():
             "Utilities",
             [
                 ("raw", "Raw download ledger"),
-                ("geocode", "Geocoder cache"),
             ],
         ),
     ]
@@ -160,11 +159,6 @@ def _register_subcommands() -> None:
     from mortgage_data_manager.sources.fhlb.cli import app as fhlb_app
 
     app.add_typer(fhlb_app, name="fhlb", help="FHLB data operations")
-
-    # Register top-level geocode CLI (cache management)
-    from mortgage_data_manager.cli.geocode import app as geocode_app
-
-    app.add_typer(geocode_app, name="geocode", help="Inspect/manage the global geocoder cache")
 
     # Raw download ledger (register / audit / changes / info)
     from mortgage_data_manager.cli.raw import app as raw_app

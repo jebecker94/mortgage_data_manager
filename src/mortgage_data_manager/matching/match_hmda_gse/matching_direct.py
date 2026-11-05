@@ -45,7 +45,7 @@ import polars as pl
 from mortgage_data_manager.core.harmonized import GSE_OCCUPANCY, HMDA_OCCUPANCY, invert, recode
 from mortgage_data_manager.core.logging import get_logger, log_execution_time
 from mortgage_data_manager.core.medallion import atomic_output, should_process_file
-from mortgage_data_manager.core.reference import load_tract_zip3
+from mortgage_data_manager.core.reference import load_tract_zip3, tract_geoid
 from mortgage_data_manager.matching.match_hmda_gse.config import HMDAGSEMatchingConfig as Config
 from mortgage_data_manager.matching.match_hmda_gse.lender_names import (
     MASKED_SELLER_NAMES,
@@ -56,7 +56,7 @@ from mortgage_data_manager.matching.match_hmda_gse.lender_names import (
 from mortgage_data_manager.matching.match_hmda_gse.rounds import BRIDGE_PASS, ROUNDS, Round
 from mortgage_data_manager.matching.names import normalize_name
 from mortgage_data_manager.matching.terms import is_bin_edge, round_to_fhfa_bin
-from mortgage_data_manager.sources.hmda.load import scan_hmda
+from mortgage_data_manager.sources.hmda.load import scan_hmda, scan_originations
 
 logger = get_logger(__name__)
 
@@ -200,12 +200,8 @@ def load_hmda(year: int) -> pl.LazyFrame:
         borrower count are deliberately absent -- both are held-out validators.
     """
     lf = (
-        scan_hmda("post2018", year, root=Config.HMDA_SILVER_DIR)
-        .filter(
-            (pl.col("action_taken") == 1)
-            & (pl.col("loan_type") == 1)
-            & (pl.col("lien_status") == 1)
-        )
+        scan_originations("post2018", year, year, loan_types=[1], root=Config.HMDA_SILVER_DIR)
+        .filter(pl.col("lien_status") == 1)
         .select(_HMDA_COLS)
         .with_columns(
             pl.lit(year, dtype=pl.Int32).alias("activity_year"),
@@ -214,7 +210,7 @@ def load_hmda(year: int) -> pl.LazyFrame:
             pl.col("loan_term").cast(pl.Int32).alias("term"),
             _purpose_coarse(pl.col("loan_purpose"), hmda=True).alias("purpose"),
             _occupancy_unified(pl.col("occupancy_type"), hmda=True).alias("occ"),
-            pl.col("census_tract").cast(pl.Utf8).str.zfill(11).alias("tract"),
+            tract_geoid("census_tract").alias("tract"),
         )
         .filter(pl.col("rate3").is_not_null() & pl.col("term").is_not_null())
     )

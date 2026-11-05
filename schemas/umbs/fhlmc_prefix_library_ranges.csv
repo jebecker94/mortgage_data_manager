@@ -1,0 +1,24 @@
+prefix,pool_number_first,pool_number_last,pool_term,description,acquisition_type
+CI,QN0000,QR9999,15 Year,15 Year Fixed Rate Guar,Guar
+CI,RC0000,RC0999,15 Year,15 Year Fixed Rate Multilender,MultiLender
+CI,RC1000,RC9999,15 Year,15 Year Fixed Rate Cash,Cash
+CI,RR0000,RR4999,15 Year,15 Year Fixed Rate Multilender,MultiLender
+CI,TI0000,TK9999,15 Year,15 Year Fixed Rate Guar (roll-over),Guar
+CL,QA0000,QJ9999,30 Year,30 Year Fixed Rate Guar,Guar
+CL,QX0000,QZ9999,30 Year,30 Year Fixed Rate Guar (roll-over),Guar
+CL,RA0000,RA0999,30 Year,30 Year Fixed Rate MultiLender,MultiLender
+CL,RA1000,RA9999,30 Year,30 Year Fixed Rate Cash,Cash
+CL,RG0000,RG4999,30 Year,30 Year Fixed Rate Cash WALA 0-2,Cash
+CL,RG5000,RG9999,30 Year,30 Year Fixed Rate MultiLender WALA 0-2,MultiLender
+CL,RJ0000,RJ9999,30 Year,30 Year Fixed Rate Cash,Cash
+CL,RQ0000,RQ4999,30 Year,30 Year Fixed Rate MultiLender,MultiLender
+CL,TA0000,TB9999,30 Year,30 Year Fixed Rate Guar (roll-over),Guar
+CL,TC0000,TH9999,30 Year,30 Year Fixed Rate Guar (roll-over),Guar
+CN,QS0000,QT9999,10 Year,10 Year Fixed Rate Guar,Guar
+CN,RD0000,RD4999,10 Year,10 Year Fixed Rate Cash,Cash
+CN,RD5000,RD9999,10 Year,10 Year Fixed Rate MultiLender,MultiLender
+CN,ZA0000,ZH9999,10 Year,Exchanged - 10 Year Fixed Rate MultiLender,MultiLender
+CN,ZI0000,ZR9999,10 Year,Exchanged - 10 Year Fixed Rate Guar,Guar
+CT,QK0000,QM9999,20 Year,20 Year Fixed Rate Guar,Guar
+CT,RB0000,RB4999,20 Year,20 Year Fixed Rate Cash,Cash
+CT,RB5000,RB9999,20 Year,20 Year Fixed Rate MultiLender,MultiLender

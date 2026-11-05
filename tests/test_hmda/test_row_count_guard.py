@@ -4,7 +4,7 @@ An interrupted extraction leaves a partial CSV that still parses cleanly, so a
 truncated bronze is written and reported as success — and an existence-based skip
 then makes it permanent, indistinguishable from a complete build. These tests
 re-verify every pinned (dataset, activity year, file_type) in
-``hmda/expected_row_counts.json`` against the CURRENT parquet footers, in both
+``schemas/hmda/expected_row_counts.json`` against the CURRENT parquet footers, in both
 layers — bronze and silver carry identical counts for these datasets.
 
 The manifest was pinned 2026-08-31 from bronze footers, cross-checked row-exact

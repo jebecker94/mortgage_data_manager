@@ -14,7 +14,13 @@ from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import clear_partitions, write_hive_partitioned
 from mortgage_data_manager.core.types import SilverSpec, apply_silver_types, enforce_schema
 
-from .config import HECM_SILVER, SINGLE_FAMILY_SILVER, SnapshotType
+from .config import (
+    DEFAULT_MAX_YEAR,
+    DEFAULT_MIN_YEAR,
+    HECM_SILVER,
+    SINGLE_FAMILY_SILVER,
+    SnapshotType,
+)
 from .utils import add_county_fips
 
 logger = get_logger(__name__)
@@ -102,13 +108,13 @@ def _prepare_snapshot_export(
     return df
 
 
-def _existing_partitions(save_folder: Path) -> set[tuple[int, int]]:
-    """Return the set of year/month partitions already present in ``save_folder``."""
+def _existing_partitions(output_dir: Path) -> set[tuple[int, int]]:
+    """Return the set of year/month partitions already present in ``output_dir``."""
     partitions: set[tuple[int, int]] = set()
-    if not save_folder.exists():
+    if not output_dir.exists():
         return partitions
 
-    for year_dir in save_folder.glob("Year=*"):
+    for year_dir in output_dir.glob("Year=*"):
         try:
             year = int(year_dir.name.split("=", 1)[1])
         except (IndexError, ValueError):
@@ -150,19 +156,19 @@ def _snapshot_periods(path: Path) -> frozenset[tuple[int, int]]:
 
 
 def build_silver_snapshots(
-    data_folder: Path,
-    save_folder: Path,
+    bronze_dir: Path,
+    output_dir: Path,
     *,
     file_type: SnapshotType = "single_family",
-    min_year: int = 2010,
-    max_year: int = 2025,
+    min_year: int = DEFAULT_MIN_YEAR,
+    max_year: int = DEFAULT_MAX_YEAR,
     overwrite: bool = False,
 ) -> list[tuple[int, int]]:
     """Build the hive-partitioned silver database from bronze monthly snapshots.
 
     Args:
-        data_folder: Directory holding the bronze parquet monthly snapshots.
-        save_folder: Destination directory for the hive-partitioned silver database.
+        bronze_dir: Directory holding the bronze parquet monthly snapshots.
+        output_dir: Destination directory for the hive-partitioned silver database.
         file_type: Which dataset's schema adjustments and `SilverSpec` to apply.
         min_year: Earliest snapshot-filename year to include, inclusive.
         max_year: Latest snapshot-filename year to include, inclusive.
@@ -204,7 +210,7 @@ def build_silver_snapshots(
     # is preserved, not "corrected": the snapshot's own period is what HUD
     # published, and the endorsement period is what the data means.
     produced: dict[Path, frozenset[tuple[int, int]]] = {}
-    for file in sorted(data_folder.glob("*.parquet")):
+    for file in sorted(bronze_dir.glob("*.parquet")):
         period = _infer_snapshot_period(file)
         if period is None:
             logger.debug("Skipping unrecognised snapshot filename: %s", file.name)
@@ -221,9 +227,9 @@ def build_silver_snapshots(
     # Skipping on the endorsement period rather than the filename period is what
     # makes an already-current incremental run a no-op; keying it on the filename
     # re-selected the 2010-04 snapshot forever and rewrote (2010, 5) each time.
-    existing = set() if overwrite else _existing_partitions(save_folder)
+    existing = set() if overwrite else _existing_partitions(output_dir)
     if not overwrite:
-        logger.info("Detected %d existing partitions in %s.", len(existing), save_folder)
+        logger.info("Detected %d existing partitions in %s.", len(existing), output_dir)
 
     targets = {period for period in snapshots_by_period if period not in existing}
 
@@ -245,7 +251,7 @@ def build_silver_snapshots(
             "No snapshots to build between %d and %d in %s.",
             min_year,
             max_year,
-            data_folder,
+            bronze_dir,
         )
         return []
 
@@ -268,14 +274,14 @@ def build_silver_snapshots(
     # deterministically named file clobbering the old one) is what makes a
     # partition that shrinks -- or that was written by an older, differently
     # naming sink -- come back with exactly the rows it should have.
-    clear_partitions(save_folder, (f"Year={y}/Month={m}" for y, m in periods))
+    clear_partitions(output_dir, (f"Year={y}/Month={m}" for y, m in periods))
 
     write_hive_partitioned(
         df,
-        save_folder,
+        output_dir,
         partition_cols=["Year", "Month"],
         include_key=True,
     )
 
-    logger.info("Wrote %d partitions to %s.", len(periods), save_folder)
+    logger.info("Wrote %d partitions to %s.", len(periods), output_dir)
     return periods

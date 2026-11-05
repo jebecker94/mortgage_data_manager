@@ -400,7 +400,7 @@
         },
         {
           "id": "loan_type",
-          "arrow_type": "int64",
+          "arrow_type": "string",
           "pdf_text": "Loan Type",
           "layouts": [
             {
@@ -746,5 +746,7 @@
       ]
     }
   },
-  "corrections": []
+  "corrections": [
+    "92.loan_type int64 -> string: the codes are alphabetic (F, V, R, N), so the int cast nulled every value (validator-caught, 2026-11-04)."
+  ]
 }

@@ -84,8 +84,8 @@ def run_silver(
 
     Returns:
         Per-pair counts, keyed by ``GSE/kind``. Correction-pair results carry
-        ``wrote``/``skipped_existing``/``missing_pair``; performance-kind results
-        (MLLD/FU/MF/GN_MEGA) omit ``missing_pair``.
+        ``wrote``/``skipped_existing``/``missing_pair``/``failed``; performance-kind
+        results (MLLD/FU/MF/GN_MEGA) omit ``missing_pair``.
     """
     from mortgage_data_manager.sources.umbs.import_silver import run_silver_import
 

@@ -74,7 +74,7 @@ from mortgage_data_manager.matching.match_hmda_fha.config import HMDAFHAMatching
 from mortgage_data_manager.matching.names import jaccard, name_tokens, normalize_name
 from mortgage_data_manager.sources.fha.config import FHAConfig
 from mortgage_data_manager.sources.hmda.config import HMDAConfig
-from mortgage_data_manager.sources.hmda.load import scan_hmda_years
+from mortgage_data_manager.sources.hmda.load import scan_originations
 
 logger = get_logger(__name__)
 
@@ -292,8 +292,7 @@ def _hmda_fha_volume(loans_dir: Path, min_year: int, max_year: int) -> pl.DataFr
         One row per ``(resp_key, agency_code)``, carrying its FHA origination volume.
     """
     return (
-        scan_hmda_years("period_2007_2017", min_year, max_year, root=loans_dir)
-        .filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
+        scan_originations("period_2007_2017", min_year, max_year, loan_types=[2], root=loans_dir)
         .select(hmda_respondent_key(), "agency_code")
         .group_by(_HMDA_KEY)
         .agg(hmda_fha_loans=pl.len())

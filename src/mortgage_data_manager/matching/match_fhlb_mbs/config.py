@@ -33,8 +33,8 @@ class FHLBMBSMatchingConfig(MatchingConfig):
 
     @classmethod
     def get_gnma_silver_dir(cls) -> Path:
-        """The GNMA silver dailyllmni loan-level (``L``) directory."""
-        return GNMAConfig.GNMA_SILVER_DIR / "dailyllmni" / "L"
+        """The GNMA silver root the new-issuance loader reads (``sources.gnma.load``)."""
+        return GNMAConfig.GNMA_SILVER_DIR
 
     @classmethod
     def get_fhlb_ama_silver_dir(cls) -> Path:

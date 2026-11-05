@@ -10,7 +10,7 @@ Each data source is its own subpackage under `sources/`. The sources share one k
 ```
 src/mortgage_data_manager/
 ├── core/               # Configuration, medallion helpers, downloads, logging,
-│                       #   reference tables, geocoding
+│                       #   reference tables
 ├── cli/                # The unified `mortgage-data` entry point
 ├── sources/            # One subpackage per data source
 │   ├── hmda/           # Home Mortgage Disclosure Act

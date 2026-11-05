@@ -177,11 +177,11 @@ def run_data_pipeline(
         silver_dir: Silver directory (default: FHFAConfig.FHFA_SILVER_DIR)
 
     Returns:
-        Dictionary with workflow results:
-        - bronze_loaded: Number of file-year combinations loaded to bronze
-        - silver_transformed: Number of file-year combinations transformed to silver
-        - failed_bronze: Number of failures in bronze loading
-        - failed_silver: Number of failures in silver transformation
+        Dictionary with workflow results, in dataset-years:
+        - bronze_loaded: written to bronze
+        - silver_transformed: written to silver
+        - failed_bronze: failed in bronze loading
+        - failed_silver: failed in silver transformation
     """
     raw = raw_dir or FHFAConfig.FHFA_RAW_DIR
     bronze = bronze_dir or FHFAConfig.FHFA_BRONZE_DIR
@@ -198,37 +198,31 @@ def run_data_pipeline(
     if not skip_bronze:
         logger.info("Step 1: Loading data to bronze layer")
         for dataset in datasets:
-            try:
-                save_to_bronze(
-                    dataset=dataset,
-                    years=years,
-                    raw_dir=raw,
-                    output_dir=bronze,
-                    overwrite=overwrite,
-                )
-                results["bronze_loaded"] += len(years)
-                logger.info("Loaded %s to bronze", dataset)
-            except Exception as e:
-                results["failed_bronze"] += len(years)
-                logger.error("Failed to load %s to bronze: %s", dataset, e)
+            counts = save_to_bronze(
+                dataset=dataset,
+                years=years,
+                raw_dir=raw,
+                output_dir=bronze,
+                overwrite=overwrite,
+            )
+            results["bronze_loaded"] += counts["written"]
+            results["failed_bronze"] += counts["failed"]
+            logger.info("Loaded %s to bronze: %s", dataset, counts)
 
     # Step 2: Transform to silver
     if not skip_silver:
         logger.info("Step 2: Transforming data to silver layer")
         for dataset in datasets:
-            try:
-                save_to_silver(
-                    dataset=dataset,
-                    years=years,
-                    bronze_dir=bronze / dataset,
-                    silver_dir=silver / dataset,
-                    overwrite=overwrite,
-                )
-                results["silver_transformed"] += len(years)
-                logger.info("Transformed %s to silver", dataset)
-            except Exception as e:
-                results["failed_silver"] += len(years)
-                logger.error("Failed to transform %s to silver: %s", dataset, e)
+            counts = save_to_silver(
+                dataset=dataset,
+                years=years,
+                bronze_dir=bronze / dataset,
+                silver_dir=silver / dataset,
+                overwrite=overwrite,
+            )
+            results["silver_transformed"] += counts["written"]
+            results["failed_silver"] += counts["failed"]
+            logger.info("Transformed %s to silver: %s", dataset, counts)
 
     return results
 
@@ -259,8 +253,9 @@ def run_hud_era_backfill(
         overwrite: Overwrite existing files at every stage.
 
     Returns:
-        Dictionary with ``downloaded``, ``bronze_written`` and
-        ``silver_transformed`` counts.
+        Dictionary with ``downloaded``, ``bronze_written``, ``failed_bronze``,
+        ``silver_transformed`` and ``failed_silver`` counts (bronze and silver in
+        dataset-years).
     """
     datasets = datasets or list(HUD_ERA_DATASETS)
     years = years or list(range(HUD_ERA_MIN_YEAR, HUD_ERA_MAX_YEAR + 1))
@@ -268,7 +263,9 @@ def run_hud_era_backfill(
     results: dict[str, Any] = {
         "downloaded": 0,
         "bronze_written": 0,
+        "failed_bronze": 0,
         "silver_transformed": 0,
+        "failed_silver": 0,
     }
 
     if not skip_download:
@@ -278,18 +275,16 @@ def run_hud_era_backfill(
 
     if not skip_bronze:
         logger.info("Step 2: Building HUD-era bronze")
-        results["bronze_written"] = build_bronze_mf_hud_era(
-            datasets=datasets, years=years, overwrite=overwrite
-        )
+        bronze_counts = build_bronze_mf_hud_era(datasets=datasets, years=years, overwrite=overwrite)
+        results["bronze_written"] = bronze_counts["written"]
+        results["failed_bronze"] = bronze_counts["failed"]
 
     if not skip_silver:
         logger.info("Step 3: Harmonizing HUD-era silver")
         for dataset in datasets:
-            try:
-                save_to_silver(dataset=dataset, years=years, overwrite=overwrite)
-                results["silver_transformed"] += 1
-            except Exception as e:
-                logger.error("Failed HUD-era silver for %s: %s", dataset, e)
+            counts = save_to_silver(dataset=dataset, years=years, overwrite=overwrite)
+            results["silver_transformed"] += counts["written"]
+            results["failed_silver"] += counts["failed"]
 
     return results
 

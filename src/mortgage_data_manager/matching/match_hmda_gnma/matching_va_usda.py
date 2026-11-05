@@ -53,7 +53,12 @@ from mortgage_data_manager.matching.match_hmda_gnma.rounds import (
 from mortgage_data_manager.matching.names import jaccard, name_tokens
 from mortgage_data_manager.matching.resolve import unique_best
 from mortgage_data_manager.matching.terms import round_to_fhfa_bin
-from mortgage_data_manager.sources.hmda.load import scan_hmda_years
+from mortgage_data_manager.sources.gnma.load import (
+    one_row_per_loan,
+    scan_latest_issuer_names,
+    scan_new_issuance,
+)
+from mortgage_data_manager.sources.hmda.load import scan_hmda_years, scan_originations
 
 logger = get_logger(__name__)
 
@@ -122,13 +127,10 @@ def load_hmda_gov_universe(min_year: int, max_year: int) -> pl.DataFrame:
         HMDA VA/USDA originations with match keys, per year's best release.
     """
     hmda = (
-        scan_hmda_years("post2018", min_year, max_year, root=Config.HMDA_SILVER_DIR)
-        .filter(
-            pl.col("loan_type").is_in([3, 4])
-            & (pl.col("action_taken") == 1)
-            & (pl.col("reverse_mortgage") != 1)
-            & (pl.col("total_units").fill_null(1) <= 4)
+        scan_originations(
+            "post2018", min_year, max_year, loan_types=[3, 4], root=Config.HMDA_SILVER_DIR
         )
+        .filter((pl.col("reverse_mortgage") != 1) & (pl.col("total_units").fill_null(1) <= 4))
         .select(*_HMDA_GOV_COLS, pl.col("activity_year").cast(pl.Int32))
         .collect(engine="streaming")
     )
@@ -161,17 +163,12 @@ def load_gnma_purpose(min_pool_yyyymm: str = "201801") -> pl.DataFrame:
         One row per Disclosure Sequence Number; a DSN whose rows disagree on either
         field is excluded, so it left-joins to null and simply scores no purpose.
     """
-    files = sorted(Config.GNMA_SILVER_DIR.glob("dailyllmni_*_L.parquet"))
-    files = [f for f in files if f.stem.split("_")[1] >= min_pool_yyyymm]
     sel = [pl.col("disclosure_sequence_number").cast(pl.Utf8).alias("gnma_loan_id")]
     sel += [pl.col(src).cast(pl.Utf8).alias(alias) for alias, src in _GNMA_PURPOSE_COLS.items()]
-    purpose = (
-        pl.concat([pl.scan_parquet(f).select(sel) for f in files], how="diagonal_relaxed")
-        # identical copies collapse; a DSN whose rows disagree is excluded
-        .unique()
-        .unique(subset=["gnma_loan_id"], keep="none")
-        .collect(engine="streaming")
-    )
+    # identical copies collapse; a DSN whose rows disagree is excluded
+    purpose = one_row_per_loan(
+        scan_new_issuance(min_month=min_pool_yyyymm).select(sel), "gnma_loan_id"
+    ).collect(engine="streaming")
     logger.info("GNMA purpose table: %s", f"{len(purpose):,}")
     return purpose
 
@@ -294,21 +291,8 @@ def _seed_matches(hmda: pl.DataFrame, g: pl.DataFrame) -> pl.DataFrame:
 
 
 def _load_issuer_names() -> pl.DataFrame:
-    return (
-        pl.scan_parquet(f"{Config.GNMA_ISSRINFO_DIR}/**/*.parquet")
-        .select(
-            pl.col("issuer_id").cast(pl.Utf8).str.strip_chars().alias("issuer_id"),
-            pl.col("issuer_name").str.strip_chars().alias("pool_issuer"),
-            pl.col("record_as_of_date").alias("asof"),
-        )
-        .filter(pl.col("issuer_id").is_not_null() & pl.col("pool_issuer").is_not_null())
-        # the name on the latest record; an issuer with two names on that record gets none
-        .filter(pl.col("asof") == pl.col("asof").max().over("issuer_id"))
-        .select("issuer_id", "pool_issuer")
-        .unique()
-        .unique(subset="issuer_id", keep="none")
-        .collect()
-    )
+    # the name on the latest record; an issuer with two names on that record gets none
+    return scan_latest_issuer_names().rename({"issuer_name": "pool_issuer"}).collect()
 
 
 def _load_panel_names() -> pl.DataFrame:

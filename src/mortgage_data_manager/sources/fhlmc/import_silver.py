@@ -22,6 +22,12 @@ flags; the date columns already arrive as ``pl.Date`` from bronze. Streams via
 ``sink_parquet`` (the ~1.5B-row panel is never fully collected). This is the input
 the combined ``loan_performance`` master reads (parallel to the FNMA SF perf silver).
 
+Freddie rounds ``Current Actual UPB`` to the nearest $1,000 in a loan's first
+months: at ``Loan Age`` 0-6, about 99% of positive balances are exact multiples of
+$1,000, against about 0.05% from age 7 on (measured on the 2010Q1 and 2022Q1
+panels). Silver keeps the published values, so an exact-dollar balance comparison
+against another source fails for young loans; compare those within $1,000.
+
 **CRT** (``import_crt_to_silver``) — the at-issuance CRT reference-pool
 disclosure, one row per (Reference Pool Number, Loan Identifier),
 hive-partitioned by ``issuance_year``. ``FHLMC_CRT_SILVER`` conforms the
@@ -46,6 +52,7 @@ import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import (
+    atomic_output,
     clear_partitions,
     should_process_file,
     write_hive_partitioned,
@@ -342,12 +349,13 @@ def import_origination_to_silver(
                 lf.collect_schema(), FHLMC_ORIGINATION_SILVER.target, name="fhlmc/origination"
             )
             partition_dir.mkdir(parents=True, exist_ok=True)
-            lf.sink_parquet(
-                output_file,
-                compression=FHLMCConfig.PARQUET_COMPRESSION,
-                statistics=FHLMCConfig.PARQUET_STATISTICS,
-                row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
-            )
+            with atomic_output(output_file) as tmp:
+                lf.sink_parquet(
+                    tmp,
+                    compression=FHLMCConfig.PARQUET_COMPRESSION,
+                    statistics=FHLMCConfig.PARQUET_STATISTICS,
+                    row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
+                )
             counts["processed"] += 1
             logger.info("  Saved %s", output_file)
         except Exception as e:
@@ -474,12 +482,13 @@ def import_performance_to_silver(
         enforce_schema(
             lf.collect_schema(), FHLMC_PERFORMANCE_SILVER.target, name="fhlmc/performance"
         )
-        lf.sink_parquet(
-            out_file,
-            compression=FHLMCConfig.PARQUET_COMPRESSION,
-            statistics=FHLMCConfig.PARQUET_STATISTICS,
-            row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
-        )
+        with atomic_output(out_file) as tmp:
+            lf.sink_parquet(
+                tmp,
+                compression=FHLMCConfig.PARQUET_COMPRESSION,
+                statistics=FHLMCConfig.PARQUET_STATISTICS,
+                row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
+            )
         counts["processed"] += 1
 
     counts["total_rows"] = sum(

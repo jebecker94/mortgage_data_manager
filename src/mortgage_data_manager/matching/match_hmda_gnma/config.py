@@ -41,21 +41,8 @@ class HMDAGNMAMatchingConfig(MatchingConfig):
         config("FHA_SF_SILVER_DIR", default=str(FHAConfig.FHA_SILVER_DIR / "single_family"))
     )
 
-    GNMA_SILVER_DIR: Path = Path(
-        config(
-            "GNMA_SILVER_DIR",
-            default=str(
-                MortgageDataConfig.get_subpackage_data_dir("gnma") / "silver" / "dailyllmni" / "L"
-            ),
-        )
-    )
-
-    GNMA_ISSRINFO_DIR: Path = Path(
-        config(
-            "GNMA_ISSRINFO_DIR",
-            default=str(MortgageDataConfig.get_subpackage_data_dir("gnma") / "silver" / "issrinfo"),
-        )
-    )
+    # GNMA loans and issuer names are read through `sources.gnma.load`, which follows
+    # GNMAConfig's silver root across the 2026 feed switch.
 
     HMDA_SILVER_DIR: Path = Path(
         config(

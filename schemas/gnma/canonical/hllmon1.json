@@ -529,13 +529,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 144,
-              "end": 151,
-              "length": 8
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 144,
               "end": 149,
@@ -550,13 +543,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 152,
-              "end": 163,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 150,
               "end": 151,
@@ -575,13 +561,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 164,
-              "end": 166,
-              "length": 3
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 152,
               "end": 163,
@@ -596,13 +575,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 167,
-              "end": 178,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 164,
               "end": 166,
@@ -621,13 +593,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 179,
-              "end": 190,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 167,
               "end": 178,
@@ -646,13 +611,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 191,
-              "end": 198,
-              "length": 8
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 179,
               "end": 190,
@@ -671,13 +629,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 199,
-              "end": 228,
-              "length": 30
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 191,
               "end": 198,
@@ -692,13 +643,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 229,
-              "end": 229,
-              "length": 1
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 199,
               "end": 228,
@@ -713,13 +657,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 230,
-              "end": 230,
-              "length": 1
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 229,
               "end": 229,
@@ -734,13 +671,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 231,
-              "end": 231,
-              "length": 1
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 230,
               "end": 230,
@@ -755,13 +685,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 232,
-              "end": 243,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 231,
               "end": 231,
@@ -780,13 +703,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 244,
-              "end": 255,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 232,
               "end": 243,
@@ -805,13 +721,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 256,
-              "end": 265,
-              "length": 10
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 244,
               "end": 255,
@@ -826,13 +735,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 266,
-              "end": 270,
-              "length": 5
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 256,
               "end": 265,
@@ -851,13 +753,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 271,
-              "end": 282,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 266,
               "end": 270,
@@ -876,13 +771,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 283,
-              "end": 294,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 271,
               "end": 282,
@@ -901,13 +789,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 295,
-              "end": 306,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 283,
               "end": 294,
@@ -926,13 +807,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 307,
-              "end": 309,
-              "length": 3
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 295,
               "end": 306,
@@ -947,13 +821,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 310,
-              "end": 317,
-              "length": 8
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 307,
               "end": 309,
@@ -972,13 +839,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 318,
-              "end": 329,
-              "length": 12
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 310,
               "end": 317,
@@ -997,13 +857,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 330,
-              "end": 332,
-              "length": 3
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 318,
               "end": 329,
@@ -1018,13 +871,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 333,
-              "end": 345,
-              "length": 13
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 330,
               "end": 332,
@@ -1043,13 +889,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 346,
-              "end": 347,
-              "length": 2
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 333,
               "end": 345,
@@ -1064,13 +903,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 348,
-              "end": 349,
-              "length": 2
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 346,
               "end": 347,
@@ -1085,13 +917,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 350,
-              "end": 350,
-              "length": 1
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 348,
               "end": 349,
@@ -1106,13 +931,6 @@
           "layouts": [
             {
               "from": "2013-07",
-              "to": "2013-08",
-              "begin": 351,
-              "end": 356,
-              "length": 6
-            },
-            {
-              "from": "2013-09",
               "to": null,
               "begin": 350,
               "end": 350,
@@ -1125,13 +943,6 @@
           "arrow_type": "string",
           "pdf_text": "Eligible Non-borrowing Spouse",
           "layouts": [
-            {
-              "from": "2013-09",
-              "to": "2015-03",
-              "begin": 351,
-              "end": 356,
-              "length": 6
-            },
             {
               "from": "2015-04",
               "to": null,
@@ -1214,6 +1025,13 @@
           },
           "pdf_text": "As-Of Date (CCYYMM)",
           "layouts": [
+            {
+              "from": "2013-07",
+              "to": "2015-03",
+              "begin": 351,
+              "end": 356,
+              "length": 6
+            },
             {
               "from": "2015-04",
               "to": null,
@@ -1672,5 +1490,8 @@
       ]
     }
   },
-  "corrections": []
+  "corrections": [
+    "L 2013-07..2013-08: every window from hecm_original_funding_date on was shifted one field against 2013-09 (each field carried the next field's width); the lines are 356 characters in all three months and share one layout, so the 2013-09 windows now start 2013-07 (validator-caught, 2026-11-04).",
+    "L 2013-07..2015-03: positions 351-356 hold the reporting period (YYYYMM), not eligible_non_borrowing_spouse, which first appears at 351 (length 1) with the 2015-04 layout; as_of_date gets a 351-356 window for 2013-07..2015-03 and eligible_non_borrowing_spouse loses it (validator-caught, 2026-11-04)."
+  ]
 }

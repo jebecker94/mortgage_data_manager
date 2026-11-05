@@ -42,6 +42,7 @@ from mortgage_data_manager.core.download_ledger import (
     relative_destination,
 )
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.sources.fha.config import FHAConfig
 
 logger = get_logger(__name__)
@@ -305,7 +306,8 @@ def process_zip_file(
                         logger.info(
                             "Processing extracted file: %s -> %s", source_path.name, new_filename
                         )
-                        dest_path.write_bytes(source_path.read_bytes())
+                        with atomic_output(dest_path) as tmp:
+                            tmp.write_bytes(source_path.read_bytes())
                         _record_extracted(dest_path, zip_path, file_type)
                     else:
                         logger.info("Skipping existing file: %s", new_filename)

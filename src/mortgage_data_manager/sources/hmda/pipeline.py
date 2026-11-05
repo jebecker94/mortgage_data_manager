@@ -45,6 +45,7 @@ from .import_bronze import (
     build_bronze_pre2007,
 )
 from .import_silver import (
+    build_silver_lei_names,
     build_silver_period_2007_2017,
     build_silver_post2018,
     build_silver_pre2007,
@@ -187,7 +188,8 @@ def silver_post2018(
         overwrite: Whether to replace existing files.
 
     Returns:
-        Dict mapping dataset name to success status.
+        Dict mapping dataset name to success status. The panel step also refreshes
+        the latest-name-per-LEI table (`build_silver_lei_names`).
     """
     datasets = resolve_datasets(datasets)
 
@@ -207,12 +209,15 @@ def silver_post2018(
         )
         try:
             logger.info("Building silver for %s...", dataset)
-            build_silver_post2018(
+            written = build_silver_post2018(
                 dataset,
                 min_year=min_year,
                 max_year=max_year,
                 overwrite=overwrite,
             )
+            if dataset == "panel":
+                # Derived from the whole panel, so any new panel partition rebuilds it.
+                build_silver_lei_names(overwrite=overwrite or written > 0)
             results[dataset] = True
             logger.info("✅ Silver %s completed", dataset)
         except Exception as e:

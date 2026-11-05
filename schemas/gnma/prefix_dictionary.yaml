@@ -1,3 +1,6 @@
+# The default set is every prefix without `default_download: false`: what download,
+# bronze, silver and pipeline build when no prefixes are named. It is the prefixes some
+# reader uses, plus the issuer files; any other prefix still builds when named.
 # MBS (Single Family) File Type
 nimonSFPS:
   min_date: '202001'
@@ -17,11 +20,19 @@ nimonSFS:
   default_download: false
 dailyllmni:
   min_date: '201309'
-  max_date: null
+  max_date: '202608'
   extension: zip
   date_format: '%Y%m'
   frequency: monthly
   description: MBS SF MONTHLY NEW ISSUES - LOAN LEVEL
+  # Fixed-width v1.8; replaced by dailyllmnipd (pipe-delimited v2.0) from 2026-08.
+dailyllmnipd:
+  min_date: '202608'
+  max_date: null
+  extension: zip
+  date_format: '%Y%m'
+  frequency: monthly
+  description: MBS SF MONTHLY NEW ISSUES - LOAN LEVEL, V2.0 PIPE-DELIMITED
 monthlySFPS:
   min_date: '202001'
   max_date: null
@@ -40,20 +51,21 @@ monthlySFS:
   default_download: false
 llmon1:
   min_date: '201310'
-  max_date: null
+  max_date: '202608'
   extension: zip
   date_format: '%Y%m'
   frequency: monthly
   description: MBS SF PORTFOLIO - LOAN LEVEL, GINNIE I
 llmon2:
   min_date: '201310'
-  max_date: null
+  max_date: '202608'
   extension: zip
   date_format: '%Y%m'
   frequency: monthly
   description: MBS SF PORTFOLIO - LOAN LEVEL, GINNIE II
+  # llmon1/llmon2 (fixed-width v1.8) end at 2026-08; llmon (v2.0) starts with 2026-07.
 llmon:
-  min_date: '202601'
+  min_date: '202607'
   max_date: null
   extension: zip
   date_format: '%Y%m'
@@ -66,6 +78,7 @@ llmonliq:
   date_format: '%Y%m'
   frequency: monthly
   description: MBS SF LOAN LIQUIDATIONS MONTHLY
+  default_download: false
 llmonliqot:
   min_date: '201903'
   max_date: '201903'
@@ -73,6 +86,7 @@ llmonliqot:
   date_format: '%Y%m'
   frequency: monthly
   description: LOAN LIQUIDATION FILE (MBS SINGLE FAMILY), OCTOBER 2009 THROUGH MARCH 2019
+  default_download: false
 liqloanot:
   min_date: '201405'
   max_date: '201405'
@@ -80,6 +94,7 @@ liqloanot:
   date_format: '%Y%m'
   frequency: monthly
   description: MBS LIQUIDATED AND TERMINATED LOANS, OCTOBER 2009 THROUGH SEPTEMBER 2013
+  default_download: false
 nissues:
   min_date: '201202'
   max_date: '202104'
@@ -94,6 +109,7 @@ monthly:
   date_format: '%Y%m'
   frequency: monthly
   description: MBS (PORTFOLIO)
+  default_download: false
 ptermqtr:
   min_date: '201409'
   max_date: '201703'
@@ -101,6 +117,7 @@ ptermqtr:
   date_format: '%Y%m'
   frequency: monthly
   description: MBS POOL TERMINATIONS FILE QUARTERLY
+  default_download: false
 
 # HMBS File Type
 hmonthly:
@@ -110,6 +127,7 @@ hmonthly:
   date_format: '%Y%m'
   frequency: monthly
   description: "HMBS PORTFOLIO \u2013 POOL LEVEL"
+  default_download: false
 hnissues:
   min_date: '201208'
   max_date: null
@@ -117,6 +135,7 @@ hnissues:
   date_format: '%Y%m'
   frequency: monthly
   description: "HMBS MONTHLY NEW ISSUES \u2013 POOL LEVEL"
+  default_download: false
 hmonthlyPS:
   min_date: '202403'
   max_date: null
@@ -124,6 +143,7 @@ hmonthlyPS:
   date_format: '%Y%m'
   frequency: monthly
   description: "HMBS PORTFOLIO \u2013 POOL/SECURITY"
+  default_download: false
 hmonthlyS:
   min_date: '202403'
   max_date: null
@@ -142,6 +162,7 @@ hsavr:
   date_format: '%Y%m'
   frequency: monthly
   description: HMBS POOL LEVEL HECM SAVER DATA
+  default_download: false
 hnissuesPS:
   min_date: '202404'
   max_date: null
@@ -149,6 +170,7 @@ hnissuesPS:
   date_format: '%Y%m'
   frequency: monthly
   description: "HMBS MONTHLY NEW ISSUES \u2013 POOL/SECURITY"
+  default_download: false
 hnissuesS:
   min_date: '202404'
   max_date: null
@@ -156,6 +178,7 @@ hnissuesS:
   date_format: '%Y%m'
   frequency: monthly
   description: "HMBS MONTHLY NEW ISSUES \u2013 POOL SUPPLEMENTAL"
+  default_download: false
 hdailyllmni:
   min_date: '201407'
   max_date: null
@@ -163,6 +186,7 @@ hdailyllmni:
   date_format: '%Y%m'
   frequency: monthly
   description: HMBS MONTHLY NEW ISSUES - LOAN LEVEL
+  default_download: false
 hmonthlyenh:
   min_date: '201407'
   max_date: '202004'
@@ -170,6 +194,7 @@ hmonthlyenh:
   date_format: '%Y%m'
   frequency: monthly
   description: HMBS ENHANCED POOL MONTHLY (July 2014 to April 2020)
+  default_download: false
 hllmon1:
   min_date: '201307'
   max_date: null
@@ -177,6 +202,7 @@ hllmon1:
   date_format: '%Y%m'
   frequency: monthly
   description: HMBS PORTFOLIO - LOAN LEVEL, MONTHLY ADJUSTABLE
+  default_download: false
 hllmon2:
   min_date: '201307'
   max_date: null
@@ -184,6 +210,7 @@ hllmon2:
   date_format: '%Y%m'
   frequency: monthly
   description: HMBS PORTFOLIO - LOAN LEVEL, FIXED AND ANNUAL ADJUSTABLE
+  default_download: false
 
 # Multifamily File Type
 mfpppot:
@@ -193,6 +220,7 @@ mfpppot:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA (MBS), SEPTEMBER 2001 THROUGH SEPTEMBER 2018
+  default_download: false
 mfpldailymni3:
   min_date: '202201'
   max_date: null
@@ -200,6 +228,7 @@ mfpldailymni3:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY POOL AND LOAN NEW ISSUANCE MONTHLY DISCLOSURE
+  default_download: false
 mfpldailymni2:
   min_date: '202108'
   max_date: '202203'
@@ -207,6 +236,7 @@ mfpldailymni2:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY POOL AND LOAN NEW ISSUANCE MONTHLY DISCLOSURE V2.0 (08/01/2021 - 01/01/2022)
+  default_download: false
 mfpldailymni:
   min_date: '201812'
   max_date: '202109'
@@ -214,6 +244,7 @@ mfpldailymni:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY POOL AND LOAN NEW ISSUANCE MONTHLY DISCLOSURE V1.0 (12/01/2018 - 07/01/2021)
+  default_download: false
 mfplmon3:
   min_date: '202201'
   max_date: null
@@ -221,6 +252,7 @@ mfplmon3:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY POOL AND LOAN MONTHLY PORTFOLIO DISCLOSURE
+  default_download: false
 mfplmon2:
   min_date: '202107'
   max_date: '202203'
@@ -228,6 +260,7 @@ mfplmon2:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY POOL AND LOAN MONTHLY PORTFOLIO DISCLOSURE V2.0 (07/01/2021 - 12/01/2021)
+  default_download: false
 mfplmon:
   min_date: '201812'
   max_date: '202109'
@@ -235,6 +268,7 @@ mfplmon:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY POOL AND LOAN MONTHLY PORTFOLIO DISCLOSURE V1.0 (12/01/2018 - 06/01/2021)
+  default_download: false
 mfpppmon:
   min_date: '201810'
   max_date: null
@@ -242,6 +276,7 @@ mfpppmon:
   date_format: '%Y%m'
   frequency: monthly
   description: MULTIFAMILY PREPAYMENT PENALTY DISCLOSURE DATA
+  default_download: false
 
 # Platinum File Type
 platmonPPS:
@@ -258,6 +293,7 @@ platmonPS:
   date_format: '%Y%m'
   frequency: monthly
   description: PLATINUM PORTFOLIO ENHANCED SUPPLEMENTAL
+  default_download: false
 platcoll:
   min_date: '201406'
   max_date: null
@@ -265,6 +301,7 @@ platcoll:
   date_format: '%Y%m'
   frequency: monthly
   description: PLATINUM PORTFOLIO - COLLATERAL
+  default_download: false
 platmon:
   min_date: '201406'
   max_date: '202104'
@@ -272,6 +309,7 @@ platmon:
   date_format: '%Y%m'
   frequency: monthly
   description: PLATINUM PORTFOLIO - ENHANCED
+  default_download: false
 hplatmonPS:
   min_date: '202411'
   max_date: null
@@ -279,6 +317,7 @@ hplatmonPS:
   date_format: '%Y%m'
   frequency: monthly
   description: "HMBS PLATINUM PORTFOLIO \u2013 POOL/SECURITY"
+  default_download: false
 hplatmonS:
   min_date: '202411'
   max_date: null
@@ -286,6 +325,7 @@ hplatmonS:
   date_format: '%Y%m'
   frequency: monthly
   description: "HMBS PLATINUM PORTFOLIO \u2013 POOL SUPPLEMENTAL"
+  default_download: false
 
 # Factor File File Type
 pfot2000s:
@@ -295,6 +335,7 @@ pfot2000s:
   date_format: '%Y%m'
   frequency: monthly
   description: POOL FACTOR HISTORY DISCLOSURE DATA (MBS AND HMBS), JANUARY 2000 THROUGH DECEMBER 2006
+  default_download: false
 pfot1990s:
   min_date: '201812'
   max_date: '201812'
@@ -302,6 +343,7 @@ pfot1990s:
   date_format: '%Y%m'
   frequency: monthly
   description: POOL FACTOR HISTORY DISCLOSURE DATA (MBS AND HMBS), JANUARY 1990 THROUGH DECEMBER 1999
+  default_download: false
 pfot1980s:
   min_date: '201812'
   max_date: '201812'
@@ -309,6 +351,7 @@ pfot1980s:
   date_format: '%Y%m'
   frequency: monthly
   description: POOL FACTOR HISTORY DISCLOSURE DATA (MBS AND HMBS), JANUARY 1982 THROUGH DECEMBER 1989
+  default_download: false
 factorA1:
   min_date: '201208'
   max_date: null
@@ -337,6 +380,7 @@ factorAAdd:
   date_format: '%Y%m'
   frequency: monthly
   description: FACTOR A ADDITIONAL
+  default_download: false
 factorB1:
   min_date: '201208'
   max_date: null
@@ -344,6 +388,7 @@ factorB1:
   date_format: '%Y%m'
   frequency: monthly
   description: FACTOR B G I
+  default_download: false
 factorB2:
   min_date: '201208'
   max_date: null
@@ -351,6 +396,7 @@ factorB2:
   date_format: '%Y%m'
   frequency: monthly
   description: FACTOR B G II
+  default_download: false
 remic1:
   min_date: '201202'
   max_date: null
@@ -358,6 +404,7 @@ remic1:
   date_format: '%Y%m'
   frequency: monthly
   description: REMIC 1 FACTOR
+  default_download: false
 remic2:
   min_date: '201202'
   max_date: null
@@ -365,6 +412,7 @@ remic2:
   date_format: '%Y%m'
   frequency: monthly
   description: REMIC 2 FACTOR
+  default_download: false
 FRR:
   min_date: '201503'
   max_date: null
@@ -372,6 +420,7 @@ FRR:
   date_format: '%Y%m'
   frequency: monthly
   description: FRR HISTORY FILES
+  default_download: false
 SRF:
   min_date: '201503'
   max_date: null
@@ -379,6 +428,7 @@ SRF:
   date_format: '%Y%m'
   frequency: monthly
   description: SRF HISTORY FILES
+  default_download: false
 
 # Other Files File Type
 ptermplatot:
@@ -388,6 +438,7 @@ ptermplatot:
   date_format: '%Y%m'
   frequency: monthly
   description: POOL TERMINATIONS FILE (PLATINUM/HMBS), JANUARY 1994 THROUGH MARCH 2017
+  default_download: false
 ptermot:
   min_date: '201405'
   max_date: '201405'
@@ -395,6 +446,7 @@ ptermot:
   date_format: '%Y%m'
   frequency: monthly
   description: POOL TERMINATIONS FILE (MBS), JULY 1983 THROUGH MAY 2014
+  default_download: false
 issuers:
   min_date: '201208'
   max_date: null
@@ -402,6 +454,7 @@ issuers:
   date_format: '%Y%m'
   frequency: monthly
   description: ACTIVE GINNIE MAE ISSUERS
+  default_download: false
 ptermmon:
   min_date: '201704'
   max_date: null
@@ -416,6 +469,7 @@ liqloanqtr:
   date_format: '%Y%m'
   frequency: quarterly
   description: MBS TERMINATED LOANS QUARTERLY
+  default_download: false
 issrinfo:
   min_date: '201804'
   max_date: null
@@ -437,6 +491,7 @@ plmonforb:
   date_format: '%Y%m'
   frequency: monthly
   description: POOL LEVEL FORBEARANCE SUPPLEMENTAL
+  default_download: false
 llmonforb:
   min_date: '202005'
   max_date: null
@@ -444,6 +499,7 @@ llmonforb:
   date_format: '%Y%m'
   frequency: monthly
   description: LOAN LEVEL FORBEARANCE SUPPLEMENTAL
+  default_download: false
 llpaymhist:
   min_date: '202105'
   max_date: null
@@ -451,6 +507,7 @@ llpaymhist:
   date_format: '%Y%m'
   frequency: monthly
   description: MBS LOAN PAYMENT HISTORY
+  default_download: false
 LoanPerf:
   min_date: '202306'
   max_date: null
@@ -458,6 +515,7 @@ LoanPerf:
   date_format: '%Y%m'
   frequency: quarterly
   description: LOAN PERFORMANCE FILE, QUARTERLY
+  default_download: false
 LoanPerfAnn:
   min_date: '202312'
   max_date: null
@@ -465,6 +523,7 @@ LoanPerfAnn:
   date_format: '%Y%m'
   frequency: yearly
   description: LOAN PERFORMANCE FILE, ANNUAL
+  default_download: false
 CPRmon:
   min_date: '202507'
   max_date: null
@@ -472,6 +531,7 @@ CPRmon:
   date_format: '%Y%m'
   frequency: monthly
   description: MBS CPR MONTHLY DISCLOSURE
+  default_download: false
 REMICSocial:
   min_date: '202501'
   max_date: null
@@ -479,3 +539,4 @@ REMICSocial:
   date_format: '%Y%m'
   frequency: monthly
   description: REMIC SOCIAL DISCLOSURE
+  default_download: false

@@ -13,7 +13,7 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.fhlb.canonical import (
     CanonicalSchema,
     transform_named_canonical,
@@ -48,12 +48,14 @@ def import_ama_bronze(
         overwrite: Whether to overwrite existing files
 
     Returns:
-        Summary with 'loaded' and 'skipped' counts
+        Summary with 'loaded', 'skipped' (no raw file, or output exists) and 'failed'
+        (schema validation or build error) counts.
     """
     schema = CanonicalSchema.load("ama", FHLBConfig.FHLB_SCHEMAS_DIR / "canonical")
 
     loaded = 0
     skipped = 0
+    failed = 0
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for year in years:
@@ -82,7 +84,7 @@ def import_ama_bronze(
         if problems:
             for problem in problems:
                 logger.error("Canonical schema validation failed: %s", problem)
-            skipped += 1
+            failed += 1
             continue
 
         logger.info("Loading FHLB AMA data for %s from %s", year, input_file.name)
@@ -93,16 +95,17 @@ def import_ama_bronze(
                 .with_columns(pl.lit(year, dtype=pl.Int64).alias("data_year"))
                 .collect()
             )
-            df.write_parquet(output_file)
+            with atomic_output(output_file) as tmp:
+                df.write_parquet(tmp)
 
             logger.info("Saved %s records to %s", f"{len(df):,}", output_file.name)
             loaded += 1
 
         except Exception as e:
             logger.error("Failed to process %s: %s", year, e)
-            skipped += 1
+            failed += 1
 
-    return {"loaded": loaded, "skipped": skipped}
+    return {"loaded": loaded, "skipped": skipped, "failed": failed}
 
 
 def _members_year_quarter(filename: str) -> tuple[int, int] | None:
@@ -147,12 +150,14 @@ def import_members_bronze(
         overwrite: Whether to overwrite existing files
 
     Returns:
-        Summary with 'loaded' and 'skipped' counts
+        Summary with 'loaded', 'skipped' (unparseable filename, or output exists) and
+        'failed' (schema validation or build error) counts.
     """
     schema = CanonicalSchema.load("members", FHLBConfig.FHLB_SCHEMAS_DIR / "canonical")
 
     loaded = 0
     skipped = 0
+    failed = 0
     output_dir.mkdir(parents=True, exist_ok=True)
 
     files: list[tuple[int, int, Path]] = []
@@ -168,7 +173,7 @@ def import_members_bronze(
         logger.warning(
             "No FHLB Members files found in %s for years %s-%s", raw_dir, min(years), max(years)
         )
-        return {"loaded": 0, "skipped": skipped}
+        return {"loaded": 0, "skipped": skipped, "failed": 0}
 
     for year, quarter, path in files:
         output_file = output_dir / f"fhlb_members_{year}_q{quarter}.parquet"
@@ -183,7 +188,7 @@ def import_members_bronze(
         if problems:
             for problem in problems:
                 logger.error("Canonical schema validation failed: %s", problem)
-            skipped += 1
+            failed += 1
             continue
 
         logger.info("Loading FHLB members from %s", path.name)
@@ -198,13 +203,14 @@ def import_members_bronze(
                 )
                 .collect()
             )
-            df.write_parquet(output_file)
+            with atomic_output(output_file) as tmp:
+                df.write_parquet(tmp)
 
             logger.info("Saved %s records to %s", f"{len(df):,}", output_file.name)
             loaded += 1
 
         except Exception as e:
             logger.error("Failed to process %s: %s", path.name, e)
-            skipped += 1
+            failed += 1
 
-    return {"loaded": loaded, "skipped": skipped}
+    return {"loaded": loaded, "skipped": skipped, "failed": failed}

@@ -62,9 +62,13 @@ class DownloadError(Exception):
 
 
 class ConversionResult:
-    """Container for conversion operation results."""
+    """Counts and per-file outcomes of a raw-to-bronze conversion run.
 
-    def __init__(self):
+    ``total`` is the number of raw files found; each ends up in exactly one of
+    ``successful``, ``failed`` (with an entry in ``errors``) or ``skipped``.
+    """
+
+    def __init__(self) -> None:
         self.successful = 0
         self.failed = 0
         self.skipped = 0
@@ -75,27 +79,49 @@ class ConversionResult:
 
     @property
     def total_attempted(self) -> int:
+        """Files converted or failed (skipped files were not attempted)."""
         return cast(int, self.successful + self.failed)
 
     def add_success(self, file_path: str):
+        """Record a file converted to bronze.
+
+        Args:
+            file_path: The raw file converted.
+        """
         self.successful += 1
         self.processed_files.append(file_path)
 
     def add_failure(self, file_path: str, error: str):
+        """Record a file that failed to convert, with its error and a timestamp.
+
+        Args:
+            file_path: The raw file that failed.
+            error: What went wrong.
+        """
         self.failed += 1
         self.errors.append(
             {"file": file_path, "error": error, "timestamp": datetime.datetime.now().isoformat()}
         )
 
     def add_skip(self, file_path: str | Path, reason: str = "File already exists"):
+        """Record a file skipped without converting.
+
+        Args:
+            file_path: The raw file skipped.
+            reason: Why it was skipped (not stored; kept for callers' readability).
+        """
         self.skipped += 1
         self.skipped_files.append(str(file_path))
 
 
 class ProcessingResult:
-    """Container for processing operation results."""
+    """Counts and per-file outcomes of a bronze-to-silver run.
 
-    def __init__(self):
+    One outcome is recorded per (bronze file, record type) attempted, so the counts can
+    exceed ``total_files``; ``records_by_type`` sums the rows written per record type.
+    """
+
+    def __init__(self) -> None:
         self.successful = 0
         self.failed = 0
         self.skipped = 0
@@ -109,11 +135,20 @@ class ProcessingResult:
 
     @property
     def total_attempted(self) -> int:
+        """Outcomes written or failed (skipped ones were not attempted)."""
         return cast(int, self.successful + self.failed)
 
     def add_success(
         self, file_path: str | Path, output_path: str | Path, record_count: int, record_type: str
     ):
+        """Record a silver file written and the rows it holds.
+
+        Args:
+            file_path: The bronze file read.
+            output_path: The silver file written.
+            record_count: Rows written.
+            record_type: The record type the rows belong to.
+        """
         self.successful += 1
         self.total_records_processed += record_count
         self.processed_files.append(str(file_path))
@@ -125,12 +160,24 @@ class ProcessingResult:
             self.records_by_type[record_type] = record_count
 
     def add_failure(self, file_path: str, error: str):
+        """Record a bronze file (and record type) that failed, with its error and a timestamp.
+
+        Args:
+            file_path: The bronze file that failed.
+            error: What went wrong, prefixed with the record type where known.
+        """
         self.failed += 1
         self.errors.append(
             {"file": file_path, "error": error, "timestamp": datetime.datetime.now().isoformat()}
         )
 
     def add_skip(self, file_path: str | Path, reason: str = "File already exists"):
+        """Record an outcome skipped without writing.
+
+        Args:
+            file_path: The bronze file skipped.
+            reason: Why it was skipped (not stored; kept for callers' readability).
+        """
         self.skipped += 1
         self.skipped_files.append(str(file_path))
 
@@ -144,8 +191,8 @@ def create_default_configs(
     email_value: str,
     answer_value: str,
     user_agent: str,
-    base_data_folder: str | Path | None = None,
-    base_schema_folder: str | Path | None = None,
+    data_dir: str | Path | None = None,
+    schemas_dir: str | Path | None = None,
 ) -> tuple[DownloadConfig, ProcessorConfig]:
     """Create default configurations for the download + processing pipeline.
 
@@ -153,36 +200,30 @@ def create_default_configs(
         email_value: Email for GNMA authentication
         answer_value: Answer to the profile's secret question
         user_agent: User agent string
-        base_data_folder: Base folder for data files (defaults to GNMAConfig.GNMA_DATA_DIR)
-        base_schema_folder: Base folder for the layout-PDF download (defaults to
+        data_dir: GNMA data root holding ``raw/``, ``bronze/`` and ``silver/`` (defaults
+            to GNMAConfig.GNMA_DATA_DIR)
+        schemas_dir: Root for the layout-PDF download (defaults to
             GNMAConfig.GNMA_SCHEMAS_DIR)
 
     Returns:
         Tuple of (DownloadConfig, ProcessorConfig)
     """
     # Use GNMAConfig defaults if not specified
-    if base_data_folder is None:
-        base_data_folder = GNMAConfig.GNMA_DATA_DIR
-    else:
-        base_data_folder = Path(base_data_folder)
-
-    if base_schema_folder is None:
-        base_schema_folder = GNMAConfig.GNMA_SCHEMAS_DIR
-    else:
-        base_schema_folder = Path(base_schema_folder)
+    data_root = Path(data_dir) if data_dir is not None else GNMAConfig.GNMA_DATA_DIR
+    schemas_root = Path(schemas_dir) if schemas_dir is not None else GNMAConfig.GNMA_SCHEMAS_DIR
 
     download_config = DownloadConfig(
         email_value=email_value,
         answer_value=answer_value,
         user_agent=user_agent,
-        data_download_folder=base_data_folder / "raw",
-        schema_download_folder=base_schema_folder,
+        data_download_folder=data_root / "raw",
+        schema_download_folder=schemas_root,
     )
 
     processor_config = ProcessorConfig(
-        raw_folder=base_data_folder / "raw",
-        bronze_folder=base_data_folder / "bronze",
-        silver_folder=base_data_folder / "silver",
+        raw_folder=data_root / "raw",
+        bronze_folder=data_root / "bronze",
+        silver_folder=data_root / "silver",
     )
 
     return download_config, processor_config
@@ -359,12 +400,12 @@ def load_prefix_dictionary(dictionary_file: str | Path) -> dict:
 
 
 def default_prefixes(prefix_dict: dict) -> list[str]:
-    """Return the prefixes that should be downloaded/processed by default.
+    """Return the default set: the prefixes downloaded and processed when none are named.
 
-    Excludes any entry whose YAML config sets ``default_download: false``.
-    Use this in workflows when the user has not specified an explicit prefix
-    list, so that opt-out prefixes (e.g. pool supplementals fully derivable
-    from loan-level files) are skipped unless explicitly requested.
+    Excludes any entry whose YAML config sets ``default_download: false``. The
+    default set is the prefixes some reader uses (the loan-level portfolio and new
+    issuance, the pool files behind the combined MBS tables, the issuer files); the
+    rest stay buildable when named but are not refreshed by a bare run.
 
     Args:
         prefix_dict: Loaded prefix dictionary (from load_prefix_dictionary).
@@ -404,7 +445,8 @@ COMMON_PREFIXES = [
 ]
 
 
-# Record types
+# Record types of the legacy fixed-width loan-level files; the full set for a prefix is
+# the record_types of its canonical schema.
 VALID_RECORD_TYPES = ["H", "L", "P", "I", "T"]
 
 
@@ -474,19 +516,33 @@ def validate_date_format(date: str) -> None:
         raise typer.Exit(code=1)
 
 
-def validate_record_types(record_types: list[str]) -> None:
-    """Validate record type codes.
+def validate_record_types(record_types: list[str], prefixes: list[str] | None = None) -> None:
+    """Validate record type codes against the prefixes' canonical schemas.
+
+    A code is valid when at least one of ``prefixes`` declares it (``LL`` for ``llmon``,
+    ``PS`` for ``nimonSFPS``, ...). Without prefixes, or when none has a canonical schema,
+    the legacy loan-level set `VALID_RECORD_TYPES` applies.
 
     Args:
         record_types: List of record types to validate.
+        prefixes: Prefixes whose canonical schemas define the valid codes.
 
     Raises:
         typer.Exit: If validation fails.
     """
+    from .canonical import CanonicalSchema
+
+    valid: set[str] = set()
+    for prefix in prefixes or []:
+        if CanonicalSchema.exists(prefix, GNMAConfig.GNMA_CANONICAL_DIR):
+            schema = CanonicalSchema.load(prefix, GNMAConfig.GNMA_CANONICAL_DIR)
+            valid.update(schema.record_type_codes())
+    if not valid:
+        valid = set(VALID_RECORD_TYPES)
     for rt in record_types:
-        if rt not in VALID_RECORD_TYPES:
+        if rt not in valid:
             _validator_console.print(f"[red]✗[/red] Invalid record type: {rt}")
             _validator_console.print(
-                f"[yellow]Valid record types:[/yellow] {', '.join(VALID_RECORD_TYPES)}"
+                f"[yellow]Valid record types:[/yellow] {', '.join(sorted(valid))}"
             )
             raise typer.Exit(code=1)

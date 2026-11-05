@@ -71,7 +71,7 @@ _BASE_ROW = {
     "loan_amount": 200000.0,
     # FHLB side
     "LoanPurposeType": 1,
-    "TotalMonthlyIncomeAmount": 60000.0,
+    "TotalAnnualIncomeAmount": 60000.0,
     "LoanAmortizationMaxTermMonths": 360.0,
     "NoteRatePercent": 4.5,
     "LTVRatioPercent": 80.0,

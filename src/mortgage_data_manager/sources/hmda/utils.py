@@ -13,14 +13,25 @@ from functools import cache
 from pathlib import Path
 
 import polars as pl
+import yaml
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.sources.hmda.config import HMDA_INDEX_COLUMN
+from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.sources.hmda.config import (
+    CO_APPLICANT_PRESENT_CODES,
+    HMDA_INDEX_COLUMN,
+    NO_CO_APPLICANT_CODE,
+    HMDAConfig,
+    HMDAPeriod,
+)
 
 logger = get_logger(__name__)
 
 #: Pinned bronze/silver row counts per (dataset, activity year, file_type).
-EXPECTED_ROW_COUNTS_FILE = Path(__file__).parent / "expected_row_counts.json"
+EXPECTED_ROW_COUNTS_FILE = HMDAConfig.SCHEMAS_DIR / "hmda" / "expected_row_counts.json"
+
+#: purchaser_type code -> label, per era (CFPB code sheet and FIG, verbatim).
+PURCHASER_TYPE_LABELS_FILE = HMDAConfig.SCHEMAS_DIR / "hmda" / "purchaser_type_labels.yaml"
 
 
 @cache
@@ -121,6 +132,91 @@ def hmda_index_file_type(col: str = HMDA_INDEX_COLUMN) -> pl.Expr:
 
 
 # =============================================================================
+# Derived columns (persisted in silver; one definition for every consumer)
+# =============================================================================
+
+
+def respondent_key(col: str = "respondent_id") -> pl.Expr:
+    """Canonical pre-2018 respondent key: ``respondent_id`` without punctuation or leading zeros.
+
+    The 2007-2017 file vintages spell one id two ways: the nationwide files
+    (``file_type=d``) zero-pad numerics and hyphenate tax ids (``0000013303``,
+    ``63-1005978``), the 2017 three-year file (``a``) does neither (``13303``,
+    ``631005978``), and the panel uses the ``d`` spelling throughout. Normalizing
+    collides no two distinct ids within a year, in the loan files or the panel. An
+    id that is all zeros or punctuation has no key and maps to null. The key is unique
+    only within ``agency_code``, so joins take the pair.
+
+    Args:
+        col: Column holding the raw ``respondent_id``.
+
+    Returns:
+        A Utf8 expression, aliased ``respondent_key``.
+    """
+    key = pl.col(col).str.replace_all(r"[^A-Za-z0-9]", "").str.strip_chars_start("0")
+    return pl.when(key != "").then(key).alias("respondent_key")
+
+
+def number_of_borrowers(period: HMDAPeriod) -> pl.Expr:
+    """Borrowers on the record, 1 or 2, read from ``co_applicant_sex``.
+
+    HMDA records at most one co-applicant, so 2 means "a co-applicant is present".
+    ``co_applicant_sex`` 5 (no co-applicant) gives 1; a sex answer (1, 2, 3 and, from
+    2018, 6) gives 2; 4 (not applicable, used when the applicant is not a natural
+    person) and a missing code give null, since they say nothing about a co-applicant.
+
+    Args:
+        period: Silver era, whose code list applies.
+
+    Returns:
+        An Int8 expression, aliased ``number_of_borrowers``.
+    """
+    sex = pl.col("co_applicant_sex")
+    return (
+        pl.when(sex == NO_CO_APPLICANT_CODE)
+        .then(pl.lit(1, dtype=pl.Int8))
+        .when(sex.is_in(CO_APPLICANT_PRESENT_CODES[period]))
+        .then(pl.lit(2, dtype=pl.Int8))
+        .alias("number_of_borrowers")
+    )
+
+
+@cache
+def purchaser_type_labels(period: HMDAPeriod) -> dict[int, str]:
+    """The ``purchaser_type`` code -> label table for one era.
+
+    Args:
+        period: Silver era. ``pre2007`` has no table (its code list changed in 2004).
+
+    Returns:
+        Code -> label, verbatim from the CFPB code sheet (2007-2017) or the FIG (2018+).
+
+    Raises:
+        KeyError: If the era has no table.
+    """
+    with open(PURCHASER_TYPE_LABELS_FILE) as f:
+        tables = yaml.safe_load(f)
+    return {int(code): str(label) for code, label in tables[period].items()}
+
+
+def purchaser_type_label(period: HMDAPeriod) -> pl.Expr:
+    """The ``purchaser_type`` label for one era; null for a code outside the table.
+
+    Args:
+        period: Silver era (``period_2007_2017`` or ``post2018``).
+
+    Returns:
+        A Utf8 expression, aliased ``purchaser_type_label``.
+    """
+    labels = purchaser_type_labels(period)
+    return (
+        pl.col("purchaser_type")
+        .replace_strict(list(labels), list(labels.values()), default=None, return_dtype=pl.String)
+        .alias("purchaser_type_label")
+    )
+
+
+# =============================================================================
 # I/O Utilities
 # =============================================================================
 
@@ -188,12 +284,12 @@ def replace_csv_column_names(
         f.writelines(lines)
 
 
-def unzip_hmda_file(zip_file: Path | str, raw_folder: Path | str, overwrite: bool = False) -> Path:
+def unzip_hmda_file(zip_file: Path | str, output_dir: Path | str, overwrite: bool = False) -> Path:
     """Extract a compressed HMDA archive and return extracted file path.
 
     Args:
         zip_file: Path of the archive; a missing ``.zip`` suffix is added.
-        raw_folder: Directory to extract into.
+        output_dir: Directory to extract into.
         overwrite: Re-extract even when the target file already exists.
 
     Returns:
@@ -203,7 +299,7 @@ def unzip_hmda_file(zip_file: Path | str, raw_folder: Path | str, overwrite: boo
         ValueError: If no comparably-named zip file can be found.
     """
     zip_file = Path(zip_file)
-    raw_folder = Path(raw_folder)
+    output_dir = Path(output_dir)
     if zip_file.suffix.lower() != ".zip":
         zip_file = zip_file.with_suffix(".zip")
         if not zip_file.exists():
@@ -216,14 +312,14 @@ def unzip_hmda_file(zip_file: Path | str, raw_folder: Path | str, overwrite: boo
             x for x in z.namelist() if (x.endswith(".txt") or x.endswith(".csv")) and "/" not in x
         ]
         for file in delimited_files:
-            raw_file_name = raw_folder / file
+            raw_file_name = output_dir / file
             expected_size = z.getinfo(file).file_size
 
             # A leftover file from an interrupted extraction must not be reused —
             # a partial CSV parses cleanly and produces a silently truncated
             # bronze. Panel files are exempt from the size comparison because
             # their header is rewritten in place below.
-            needs_extract = overwrite or not raw_file_name.exists()
+            needs_extract = should_process_file(raw_file_name, overwrite)
             if (
                 not needs_extract
                 and "panel" not in file
@@ -241,7 +337,7 @@ def unzip_hmda_file(zip_file: Path | str, raw_folder: Path | str, overwrite: boo
             if needs_extract:
                 logger.info("Extracting file: %s", file)
                 try:
-                    z.extract(file, path=raw_folder)
+                    z.extract(file, path=output_dir)
                 except Exception as exc:
                     import shutil
 
@@ -258,7 +354,7 @@ def unzip_hmda_file(zip_file: Path | str, raw_folder: Path | str, overwrite: boo
                         exc,
                     )
                     p = subprocess.Popen(
-                        [sevenz, "e", str(zip_file), f"-o{raw_folder}", file, "-y"]
+                        [sevenz, "e", str(zip_file), f"-o{output_dir}", file, "-y"]
                     )
                     p.wait()
 
@@ -295,4 +391,9 @@ __all__ = [
     "append_hmda_index",
     "hmda_index_year",
     "hmda_index_file_type",
+    # Derived silver columns
+    "respondent_key",
+    "number_of_borrowers",
+    "purchaser_type_labels",
+    "purchaser_type_label",
 ]

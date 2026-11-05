@@ -10,10 +10,11 @@ sequential runs in overlapping numeric ranges with zero identity overlap
 (111,491 crosswalk ids inside the 2024Q1 LPPUB id block: 0 matches). The
 extracted table is therefore CRT-internal — linking Fannie CRT loans to the
 SF dataset requires characteristics matching (mirroring ``fhlmc_match``),
-not an id join. (Also note: the SF bronze quarterlies on disk mix LPPUB
-download vintages — legacy 12-digit ids through 2019Q1, new 9-digit ids
-2019Q3+ — so SF-side ids need a uniform bronze rebuild before any
-id-keyed Fannie crosswalk work.)
+not an id join. (Also note: SF-side ids change scheme by acquisition
+quarter — random 12-digit ids through 2019Q2, sequential ids zero-padded to
+12 characters from 2019Q3. That is Fannie's own numbering inside one
+``Performance_All.zip`` release, not a mix of download vintages, so a bronze
+rebuild does not unify it; id-keyed SF work must not assume either form.)
 
 Two sources, tried in order by `run_matching_fnma`:
 

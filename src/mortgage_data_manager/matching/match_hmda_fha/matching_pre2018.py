@@ -73,6 +73,7 @@ import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger, log_execution_time
 from mortgage_data_manager.core.medallion import atomic_output, should_process_file
+from mortgage_data_manager.core.reference import zip_tract
 from mortgage_data_manager.matching.match_hmda_fha.config import HMDAFHAMatchingConfig as Config
 from mortgage_data_manager.matching.match_hmda_fha.lender_bridge import (
     hmda_respondent_key,
@@ -88,7 +89,7 @@ from mortgage_data_manager.matching.match_hmda_fha.rounds import (
     Pre2018Round,
 )
 from mortgage_data_manager.matching.resolve import drop_ambiguous, margin_best
-from mortgage_data_manager.sources.hmda.load import scan_hmda
+from mortgage_data_manager.sources.hmda.load import scan_originations
 
 logger = get_logger(__name__)
 
@@ -251,16 +252,11 @@ def hmda_fha_origination_counts(
     counts: dict[int, int] = {}
     for year in range(min_year, max_year + 1):
         try:
-            lf = scan_hmda("period_2007_2017", year, root=hmda_dir)
+            lf = scan_originations("period_2007_2017", year, year, loan_types=[2], root=hmda_dir)
         except FileNotFoundError as exc:
             logger.warning("Skipping year %s: %s", year, exc)
             continue
-        counts[year] = int(
-            lf.filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
-            .select(pl.len())
-            .collect()
-            .item()
-        )
+        counts[year] = int(lf.select(pl.len()).collect().item())
     return counts
 
 
@@ -356,7 +352,7 @@ def prepare_hmda_pre2018(
     frames: list[pl.LazyFrame] = []
     for year in range(min_year, max_year + 1):
         try:
-            lf = scan_hmda("period_2007_2017", year, root=hmda_dir)
+            lf = scan_originations("period_2007_2017", year, year, loan_types=[2], root=hmda_dir)
         except FileNotFoundError as exc:
             logger.warning("Skipping year %s: %s", year, exc)
             continue
@@ -372,8 +368,7 @@ def prepare_hmda_pre2018(
             )
 
         frames.append(
-            lf.filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
-            .select(_HMDA_READ_COLUMNS)
+            lf.select(_HMDA_READ_COLUMNS)
             .drop_nulls(["census_tract", "loan_amount"])
             .with_columns(
                 pl.lit(year).cast(pl.Int16).alias("activity_year"),
@@ -576,18 +571,8 @@ def tract_zip_residential_ratio(usps_dir: Path = Config.USPS_CROSSWALK_DIR) -> p
     Returns:
         ``census_tract``, ``ZIP``, ``tract_vintage`` and the mean ``res_ratio``.
     """
-    from mortgage_data_manager.sources.usps_crosswalk.load import load_crosswalk_by_vintage
-
-    return pl.concat(
-        [
-            load_crosswalk_by_vintage("TRACT_ZIP", vintage, data_dir=usps_dir)
-            .filter(pl.col("year") <= RESIDENTIAL_RATIO_LAST_YEAR)
-            .group_by(pl.col("tract").alias("census_tract"), pl.col("geoid").alias("ZIP"))
-            .agg(pl.col("res_ratio").mean())
-            .with_columns(pl.lit(vintage, dtype=pl.Int16).alias("tract_vintage"))
-            .collect()
-            for vintage in (2000, 2010)
-        ]
+    return zip_tract.tract_zip_residential_ratio(
+        (2000, 2010), last_year=RESIDENTIAL_RATIO_LAST_YEAR, data_dir=usps_dir
     )
 
 

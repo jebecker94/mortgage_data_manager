@@ -12,7 +12,7 @@ import pandas as pd
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.fhfa.config import (
     CSV_FILE_STEMS,
     DATASET_MAP,
@@ -213,6 +213,60 @@ def _load_csv_year(
     return load_csv_with_dictionary(raw_bytes, year, dataset, dictionary_root=dictionary_root)
 
 
+def _load_fixed_width_year(
+    raw: Path, dataset: str, year: int, *, dictionary_root: Path | None
+) -> pl.DataFrame | None:
+    """Load one fixed-width-era dataset-year (both GSEs), or None if its input is absent.
+
+    A member that fails to parse fails the whole year: writing the other GSE's
+    rows alone would leave a bronze file that looks complete and is skipped forever.
+
+    Returns:
+        The year's rows from every matching member, or None when there is no zip or
+        no matching member.
+    """
+    family, letter, suffix = DATASET_MAP[dataset]
+
+    # Match both the original `{year}_enterprise_pudb.zip` and any later FHFA
+    # reissue such as `{year}_enterprise_pudb_corrected.zip` (published 2026-04 for
+    # 2020). When both exist, prefer the one whose name contains "corrected".
+    zip_pattern = f"{year}_enterprise_pudb*.zip"
+    zip_candidates = [p for p in raw.glob(f"**/{zip_pattern}") if "_archive" not in p.parts]
+    if not zip_candidates:
+        logger.warning("No zip file found for year %d (pattern: %s)", year, zip_pattern)
+        return None
+
+    zip_candidates.sort(key=lambda p: ("corrected" not in p.name.lower(), p.name))
+    zip_file = zip_candidates[0]
+    logger.info("Processing %s", zip_file.name)
+
+    file_pattern = f"*_{family}{year}{letter}_{suffix}.txt"
+    year_dfs = []
+    with zipfile.ZipFile(zip_file, "r") as zf:
+        matching_files = [
+            name for name in zf.namelist() if fnmatch.fnmatch(name.split("/")[-1], file_pattern)
+        ]
+        if not matching_files:
+            logger.warning("  No data files found in zip (pattern: %s)", file_pattern)
+            return None
+
+        logger.info("  Found %d file(s) in zip", len(matching_files))
+        for file_name in matching_files:
+            logger.info("    Loading %s", file_name.split("/")[-1])
+            with zf.open(file_name) as f:
+                content = io.BytesIO(f.read())
+            year_dfs.append(
+                load_fixed_width_with_master_from_buffer(
+                    content, year, dataset, dictionary_root=dictionary_root
+                )
+            )
+
+    # Combine fnma and fhlmc data for this year
+    combined_df = pl.concat(year_dfs, how="diagonal_relaxed")
+    logger.info("  Combined %d file(s) into %d total records", len(year_dfs), len(combined_df))
+    return combined_df
+
+
 def save_to_bronze(
     dataset: str,
     years: list[int],
@@ -221,13 +275,14 @@ def save_to_bronze(
     output_dir: Path | None = None,
     dictionary_root: Path | None = None,
     overwrite: bool = False,
-) -> None:
+) -> dict[str, int]:
     """Batch load FHFA files to bronze layer.
 
     Years before `FIRST_CSV_YEAR` parse the fixed-width text files in
     ``{year}_enterprise_pudb*.zip``; later years read the headed CSV in
     ``{year}_pudb_{stem}.zip``. Both land under the same fixed-width-era column
-    names, so silver is era-agnostic.
+    names, so silver is era-agnostic. A year that fails is logged and counted, and
+    the remaining years still run.
 
     Args:
         dataset: Dataset (e.g., 'sf_c', 'mf_property_b')
@@ -238,101 +293,48 @@ def save_to_bronze(
         overwrite: Whether to overwrite existing bronze files. Default False.
 
     Returns:
-        None
+        Year counts: ``written``, ``skipped`` (bronze already exists), ``missing``
+        (no raw input for the year) and ``failed``.
+
+    Raises:
+        ValueError: If ``dataset`` is unknown.
     """
     raw = raw_dir or FHFAConfig.FHFA_RAW_DIR
     output = output_dir or FHFAConfig.FHFA_BRONZE_DIR
 
-    # Create bronze directory
-    bronze_dir = output / dataset
-    bronze_dir.mkdir(parents=True, exist_ok=True)
-
     if dataset not in DATASET_MAP:
         raise ValueError(f"Unknown dataset: {dataset}. Valid types: {list(DATASET_MAP.keys())}")
 
-    family, letter, suffix = DATASET_MAP[dataset]
+    bronze_dir = output / dataset
+    bronze_dir.mkdir(parents=True, exist_ok=True)
 
+    counts = {"written": 0, "skipped": 0, "missing": 0, "failed": 0}
     for year in years:
         bronze_path = bronze_dir / f"{dataset}_{year}.parquet"
         if not should_process_file(bronze_path, overwrite):
             logger.info("Bronze file already exists for %s year %d: %s", dataset, year, bronze_path)
+            counts["skipped"] += 1
             continue
-
-        if year >= FIRST_CSV_YEAR:
-            csv_df = _load_csv_year(raw, dataset, year, dictionary_root=dictionary_root)
-            if csv_df is not None:
-                csv_df.write_parquet(bronze_path)
-                logger.info("  Saved bronze (%d rows): %s", len(csv_df), bronze_path)
-            continue
-
-        # Find zip file for this year. Match both the original
-        # `{year}_enterprise_pudb.zip` and any later FHFA reissue such as
-        # `{year}_enterprise_pudb_corrected.zip` (published 2026-04 for 2020).
-        # When both exist, prefer the one whose name contains "corrected".
-        zip_pattern = f"{year}_enterprise_pudb*.zip"
-        zip_candidates = [p for p in raw.glob(f"**/{zip_pattern}") if "_archive" not in p.parts]
-
-        if not zip_candidates:
-            logger.warning("No zip file found for year %d (pattern: %s)", year, zip_pattern)
-            continue
-
-        zip_candidates.sort(key=lambda p: ("corrected" not in p.name.lower(), p.name))
-        zip_file = zip_candidates[0]
-        logger.info("Processing %s", zip_file.name)
-
-        # Search for data files inside zip
-        file_pattern = f"*_{family}{year}{letter}_{suffix}.txt"
-        year_dfs = []
 
         try:
-            with zipfile.ZipFile(zip_file, "r") as zf:
-                # Get all txt files matching pattern
-                matching_files = [
-                    name
-                    for name in zf.namelist()
-                    if fnmatch.fnmatch(name.split("/")[-1], file_pattern)
-                ]
-
-                if not matching_files:
-                    logger.warning("  No data files found in zip (pattern: %s)", file_pattern)
-                    continue
-
-                logger.info("  Found %d file(s) in zip", len(matching_files))
-
-                # Load each file from zip
-                for file_name in matching_files:
-                    logger.info("    Loading %s", file_name.split("/")[-1])
-                    try:
-                        # Read file content from zip
-                        with zf.open(file_name) as f:
-                            content = io.BytesIO(f.read())
-
-                        # Load the file
-                        df = load_fixed_width_with_master_from_buffer(
-                            content, year, dataset, dictionary_root=dictionary_root
-                        )
-                        year_dfs.append(df)
-                    except Exception as e:
-                        logger.error("    Failed to load %s: %s", file_name, e)
-
+            if year >= FIRST_CSV_YEAR:
+                df = _load_csv_year(raw, dataset, year, dictionary_root=dictionary_root)
+            else:
+                df = _load_fixed_width_year(raw, dataset, year, dictionary_root=dictionary_root)
+            if df is None:
+                counts["missing"] += 1
+                continue
+            with atomic_output(bronze_path) as tmp:
+                df.write_parquet(tmp)
         except Exception as e:
-            logger.error("  Failed to open zip file: %s", e)
+            logger.error("Failed to build bronze for %s year %d: %s", dataset, year, e)
+            counts["failed"] += 1
             continue
 
-        if not year_dfs:
-            logger.warning("No data loaded for %s year %d", dataset, year)
-            continue
+        logger.info("  Saved bronze (%d rows): %s", len(df), bronze_path)
+        counts["written"] += 1
 
-        # Combine fnma and fhlmc data for this year
-        combined_df = pl.concat(year_dfs, how="diagonal_relaxed")
-        logger.info("  Combined %d file(s) into %d total records", len(year_dfs), len(combined_df))
-
-        # Save to bronze
-        try:
-            combined_df.write_parquet(bronze_path)
-            logger.info("  Saved bronze: %s", bronze_path)
-        except Exception as e:
-            logger.error("  Failed to save bronze for %s year %d: %s", dataset, year, e)
+    return counts
 
 
 # ---------------------------------------------------------------------------
@@ -559,7 +561,7 @@ def build_bronze_mf_hud_era(
     raw_dir: Path | None = None,
     output_dir: Path | None = None,
     overwrite: bool = False,
-) -> int:
+) -> dict[str, int]:
     """Build bronze parquet for the HUD-era (1993-2007) multifamily backfill.
 
     Reads the whitespace-delimited HUD GSE PUDB multifamily files from the
@@ -574,13 +576,14 @@ def build_bronze_mf_hud_era(
         overwrite: Whether to rebuild existing bronze files. Default False.
 
     Returns:
-        Number of bronze files written.
+        Dataset-year counts: ``written``, ``skipped`` (bronze already exists),
+        ``missing`` (no archive member) and ``failed``.
     """
     raw = raw_dir or FHFAConfig.FHFA_RAW_DIR
     output = output_dir or FHFAConfig.FHFA_BRONZE_DIR
     hud_dir = raw / "hud_era"
 
-    written = 0
+    counts = {"written": 0, "skipped": 0, "missing": 0, "failed": 0}
     for dataset in datasets:
         if dataset not in HUD_ERA_DATASETS:
             raise ValueError(f"Unknown HUD-era dataset: {dataset}. Valid: {HUD_ERA_DATASETS}")
@@ -593,11 +596,13 @@ def build_bronze_mf_hud_era(
             bronze_path = bronze_dir / f"{dataset}_{year}.parquet"
             if not should_process_file(bronze_path, overwrite):
                 logger.info("Bronze already exists for %s %d: %s", dataset, year, bronze_path)
+                counts["skipped"] += 1
                 continue
 
             zip_path, member = _find_hud_era_member(hud_dir, dataset, year)
             if zip_path is None or member is None:
                 logger.warning("No HUD-era file found for %s %d in %s", dataset, year, hud_dir)
+                counts["missing"] += 1
                 continue
 
             names = hud_era_layout(dataset, year)
@@ -606,12 +611,14 @@ def build_bronze_mf_hud_era(
                     raw_bytes = zf.read(member)
                 df = _parse_hud_era_delimited(raw_bytes, names)
                 df = df.with_columns(pl.lit(year).cast(pl.Int32).alias("year"))
-                df.write_parquet(bronze_path)
-                written += 1
+                with atomic_output(bronze_path) as tmp:
+                    df.write_parquet(tmp)
+                counts["written"] += 1
                 logger.info(
                     "Saved HUD-era bronze %s %d (%d rows): %s", dataset, year, len(df), bronze_path
                 )
             except Exception as e:
                 logger.error("Failed HUD-era bronze for %s %d: %s", dataset, year, e)
+                counts["failed"] += 1
 
-    return written
+    return counts

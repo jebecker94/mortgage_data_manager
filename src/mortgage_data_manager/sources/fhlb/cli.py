@@ -149,6 +149,22 @@ def download(
     report_download_results([r for rs in results.values() for r in rs])
 
 
+def _report_counts(label: str, verb: str, results: dict[str, dict[str, int]]) -> None:
+    """Print per-dataset counts; exit 1 if any year or quarter failed."""
+    failed = sum(counts["failed"] for counts in results.values())
+    colour = "red" if failed else "green"
+    console.print(
+        f"\n[{colour}]{label} {'finished with failures' if failed else 'complete'}[/{colour}]"
+    )
+    for dataset, counts in results.items():
+        console.print(
+            f"  {dataset}: {verb} {counts['loaded']}, skipped {counts['skipped']}, "
+            f"failed {counts['failed']}"
+        )
+    if failed:
+        raise typer.Exit(code=1)
+
+
 @app.command()
 def bronze(
     datasets: Annotated[
@@ -191,9 +207,7 @@ def bronze(
         logger.exception("Bronze import error")
         raise typer.Exit(code=1)
 
-    console.print("\n[green]Bronze import complete[/green]")
-    for dataset, counts in results.items():
-        console.print(f"  {dataset}: loaded {counts['loaded']}, skipped {counts['skipped']}")
+    _report_counts("Bronze import", "loaded", results)
 
 
 @app.command()
@@ -238,9 +252,7 @@ def silver(
         logger.exception("Silver transformation error")
         raise typer.Exit(code=1)
 
-    console.print("\n[green]Silver transformation complete[/green]")
-    for dataset, counts in results.items():
-        console.print(f"  {dataset}: transformed {counts['loaded']}, skipped {counts['skipped']}")
+    _report_counts("Silver transformation", "transformed", results)
 
 
 @app.command()
@@ -304,13 +316,27 @@ def pipeline(
     table.add_column("Step", style="cyan")
     table.add_column("Processed", style="green")
     table.add_column("Skipped", style="yellow")
+    table.add_column("Failed", style="red")
     if not skip_download:
-        table.add_row("Download", str(results["files_downloaded"]), "-")
+        table.add_row("Download", str(results["files_downloaded"]), "-", "-")
     if not skip_bronze:
-        table.add_row("Bronze", str(results["bronze_loaded"]), str(results["bronze_skipped"]))
+        table.add_row(
+            "Bronze",
+            str(results["bronze_loaded"]),
+            str(results["bronze_skipped"]),
+            str(results["bronze_failed"]),
+        )
     if not skip_silver:
-        table.add_row("Silver", str(results["silver_transformed"]), str(results["silver_skipped"]))
+        table.add_row(
+            "Silver",
+            str(results["silver_transformed"]),
+            str(results["silver_skipped"]),
+            str(results["silver_failed"]),
+        )
     console.print(table)
+    if results["bronze_failed"] or results["silver_failed"]:
+        console.print("\n[red]Pipeline finished with failures (see the log).[/red]")
+        raise typer.Exit(code=1)
     console.print("\n[bold green]Pipeline complete![/bold green]")
 
 

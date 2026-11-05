@@ -27,7 +27,7 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.hud.config import (
     DATASET_MAP,
     IDENTIFIER_COLUMNS,
@@ -177,13 +177,8 @@ def build_bronze(
         )
 
         bronze_path.parent.mkdir(parents=True, exist_ok=True)
-        temp_path = bronze_path.with_suffix(bronze_path.suffix + ".tmp")
-        try:
-            df.write_parquet(temp_path, compression="zstd")
-            temp_path.rename(bronze_path)
-        except BaseException:
-            temp_path.unlink(missing_ok=True)
-            raise
+        with atomic_output(bronze_path) as tmp:
+            df.write_parquet(tmp, compression="zstd")
         logger.info(
             "HUD-MF %s: bronze → %s (%s rows × %s cols)",
             dataset,

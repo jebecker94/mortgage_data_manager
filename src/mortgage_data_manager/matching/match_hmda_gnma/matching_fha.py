@@ -34,11 +34,12 @@ from mortgage_data_manager.core.medallion import atomic_output
 from mortgage_data_manager.matching.match_hmda_gnma.config import HMDAGNMAMatchingConfig as Config
 from mortgage_data_manager.matching.match_hmda_gnma.rounds import ROUNDS_FHA
 from mortgage_data_manager.matching.resolve import unique_best
+from mortgage_data_manager.sources.gnma.load import one_row_per_loan, scan_new_issuance
 from mortgage_data_manager.sources.hmda.load import scan_hmda_for_index
 
 logger = get_logger(__name__)
 
-# Matcher alias -> GNMA dailyllmni canonical column id.
+# Matcher alias -> GNMA new-issuance canonical column id.
 _GNMA_COLS: dict[str, str] = {
     "gnma_loan_id": "disclosure_sequence_number",
     "issuer_id": "issuer_id",
@@ -131,7 +132,7 @@ def load_hmda_fha_universe(min_year: int, max_year: int) -> pl.DataFrame:
 def load_gnma_fha_universe(
     min_pool_yyyymm: str = "201801", agencies: tuple[str, ...] = ("F",)
 ) -> pl.DataFrame:
-    """GNMA loans (by Agency code) from dailyllmni new-issuance files, deduped on DSN.
+    """GNMA loans (by Agency code) from the new-issuance feed, deduped on DSN.
 
     Args:
         min_pool_yyyymm: Earliest pool month to read, as ``YYYYMM``.
@@ -140,8 +141,6 @@ def load_gnma_fha_universe(
     Returns:
         GNMA loans for those agency codes, deduped on DSN.
     """
-    files = sorted(Config.GNMA_SILVER_DIR.glob("dailyllmni_*_L.parquet"))
-    files = [f for f in files if f.stem.split("_")[1] >= min_pool_yyyymm]
     sel: list[pl.Expr] = []
     for alias, src in _GNMA_COLS.items():
         if alias == "gnma_orig_date":
@@ -158,19 +157,13 @@ def load_gnma_fha_universe(
         sel.append(expr.alias(alias))
     # Loan Purpose 1 / 2 only: 3 / 4 are loan modifications and 5 re-performing loans
     # (Ginnie loan-level layout, every version), re-pooled rather than originated.
-    frames = [
-        pl.scan_parquet(f)
+    loans = (
+        scan_new_issuance(min_month=min_pool_yyyymm, loan_purposes=("1", "2"))
+        .filter(pl.col("agency").is_in(list(agencies)))
         .select(sel)
-        .filter(pl.col("agency").is_in(list(agencies)) & pl.col("gnma_purpose").is_in(["1", "2"]))
-        for f in files
-    ]
-    gnma = (
-        pl.concat(frames, how="diagonal_relaxed")
-        # one row per DSN: identical copies collapse, a DSN whose rows disagree is excluded
-        .unique()
-        .unique(subset=["gnma_loan_id"], keep="none")
-        .collect(engine="streaming")
     )
+    # one row per DSN: identical copies collapse, a DSN whose rows disagree is excluded
+    gnma = one_row_per_loan(loans, "gnma_loan_id").collect(engine="streaming")
     logger.info("GNMA FHA universe: %s", f"{len(gnma):,}")
     return gnma
 

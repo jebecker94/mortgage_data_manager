@@ -14,12 +14,21 @@ import polars as pl
 from mortgage_data_manager.core.logging import get_logger, log_execution_time
 from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.core.reference import to_county_vintage
-from mortgage_data_manager.core.types import null_sentinels
+from mortgage_data_manager.core.reference.zip_tract import (
+    build_zip_tract,
+    tract_vintage,
+    zip_tract_file,
+)
 from mortgage_data_manager.matching.match_hmda_fha.config import HMDAFHAMatchingConfig as Config
 from mortgage_data_manager.matching.match_hmda_fha.rounds import ROUNDS_POST2018, Round
 from mortgage_data_manager.matching.names import jaccard, name_tokens
 from mortgage_data_manager.matching.resolve import drop_ambiguous, unique_best
-from mortgage_data_manager.sources.hmda.load import scan_hmda, scan_hmda_for_index, scan_hmda_years
+from mortgage_data_manager.sources.hmda.load import (
+    null_sentinel_codes,
+    scan_hmda_for_index,
+    scan_hmda_years,
+    scan_originations,
+)
 from mortgage_data_manager.sources.usps_crosswalk.config import CensusVintage
 
 logger = get_logger(__name__)
@@ -35,63 +44,21 @@ def build_zip_tract_crosswalk(
     census_vintage: CensusVintage,
     output_path: Path,
 ) -> Path:
-    """Build consolidated ZIP-tract crosswalk from HUD data.
-
-    Uses the HUD subpackage's load_crosswalk_by_vintage to load all quarterly
-    ZIP_TRACT data for a census vintage, then deduplicates to unique pairs.
-
-    HUD publishes each census's tracts over a fixed run of quarters:
-    - 2000 Census tracts: 2010 Q1-2011 Q4
-    - 2010 Census tracts: 2012 Q1-2022 Q4
-    - 2020 Census tracts: 2023 Q1 onward
+    """Build consolidated ZIP-tract crosswalk from HUD data (`core.reference.zip_tract`).
 
     Args:
-        usps_dir: Path to USPS crosswalk bronze directory (passed to load_crosswalk_by_vintage).
+        usps_dir: Path to USPS crosswalk bronze directory.
         census_vintage: Census tract vintage (2000, 2010 or 2020)
         output_path: Path to save consolidated crosswalk
 
     Returns:
         Path to the saved crosswalk file
-
-    Raises:
-        ValueError: If ``census_vintage`` is not 2000, 2010 or 2020.
     """
-    from mortgage_data_manager.sources.usps_crosswalk.load import load_crosswalk_by_vintage
-
-    if census_vintage not in (2000, 2010, 2020):
-        raise ValueError(f"Invalid census_vintage: {census_vintage}. Must be 2000, 2010 or 2020")
-
-    logger.info(
-        "Building %s census crosswalk from USPS crosswalk data in %s",
-        census_vintage,
-        usps_dir,
-    )
-
-    lf = load_crosswalk_by_vintage("ZIP_TRACT", census_vintage, data_dir=usps_dir)
-
-    df = (
-        lf.select(["zip", "geoid"])
-        .collect()
-        .select(
-            [
-                pl.col("zip").alias("ZIP"),
-                pl.col("geoid").alias("TRACT"),
-            ]
-        )
-        .unique()
-    )
-
-    logger.info("Built crosswalk with %s unique ZIP-tract pairs", len(df))
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    df.write_parquet(output_path)
-    logger.info("Saved crosswalk to %s", output_path)
-
-    return output_path
+    return build_zip_tract(census_vintage, output_path, usps_dir)
 
 
 def hmda_tract_vintage(year: int) -> CensusVintage:
-    """The census whose tracts HMDA reports for an activity year.
+    """The census whose tracts HMDA reports for an activity year (`tract_vintage`).
 
     HMDA moved to 2010-census tracts in 2012 and to 2020-census tracts in 2022,
     each a year before HUD's ZIP-tract quarters did.
@@ -102,9 +69,7 @@ def hmda_tract_vintage(year: int) -> CensusVintage:
     Returns:
         2000 through 2011, 2010 for 2012-2021, 2020 from 2022.
     """
-    if year <= 2011:
-        return 2000
-    return 2010 if year <= 2021 else 2020
+    return tract_vintage(year)
 
 
 def get_zip_tract_for_year(
@@ -125,19 +90,11 @@ def get_zip_tract_for_year(
     Returns:
         Path to appropriate crosswalk file
     """
-    if crosswalk_dir is None:
-        crosswalk_dir = Config.HMDA_FHA_ZIP_TRACT_DIR
-    if usps_dir is None:
-        usps_dir = Config.USPS_CROSSWALK_DIR
-
-    census_vintage = hmda_tract_vintage(year)
-    crosswalk_file = crosswalk_dir / f"zip_tract_{census_vintage}_census.parquet"
-
-    if not crosswalk_file.exists():
-        logger.info("Building %s census crosswalk (not found: %s)", census_vintage, crosswalk_file)
-        build_zip_tract_crosswalk(usps_dir, census_vintage, crosswalk_file)
-
-    return crosswalk_file
+    return zip_tract_file(
+        tract_vintage(year),
+        cache_dir=crosswalk_dir or Config.HMDA_FHA_ZIP_TRACT_DIR,
+        data_dir=usps_dir or Config.USPS_CROSSWALK_DIR,
+    )
 
 
 # =============================================================================
@@ -275,17 +232,14 @@ def prepare_hmda(
     df_list: list[pl.LazyFrame] = []
     for year in range(min_year, max_year + 1):
         try:
-            lf = scan_hmda("post2018", year, root=hmda_dir)
+            lf = scan_originations("post2018", year, year, loan_types=[2], root=hmda_dir)
         except FileNotFoundError as e:
             logger.warning("Skipping year %s: %s", year, e)
             continue
         logger.info("Reading HMDA %s", year)
 
         use_cols = [c for c in lf.collect_schema().names() if c in keep_cols]
-        lf = lf.select(use_cols).filter(
-            (pl.col("action_taken") == 1)  # Originated loans
-            & (pl.col("loan_type") == 2)  # FHA loans
-        )
+        lf = lf.select(use_cols)
 
         if "reverse_mortgage" in use_cols:
             lf = lf.filter(pl.col("reverse_mortgage") != 1)
@@ -315,29 +269,16 @@ def prepare_hmda(
     # and refresh county_code from the (now county-coded) tract for CT rows. The
     # ZIP<->tract crosswalk carries both conventions, so the ZIP join is
     # unaffected. Idempotent for pre-2024 / non-CT records.
-    df = to_county_vintage(df.lazy(), tract_col="census_tract").collect()
-    if "county_code" in df.columns:
-        df = df.with_columns(
-            pl.when(
-                pl.col("census_tract").is_not_null()
-                & (pl.col("census_tract").str.slice(0, 2) == "09")
-            )
-            .then(pl.col("census_tract").str.slice(0, 5))
-            .otherwise(pl.col("county_code"))
-            .alias("county_code")
-        )
+    df = to_county_vintage(
+        df.lazy(),
+        tract_col="census_tract",
+        county_col="county_code" if "county_code" in df.columns else None,
+    ).collect()
 
     columns = df.columns
 
     # Replace exemption codes with null
-    exemption_codes = {"interest_rate": -99999, "submission_of_application": 1111}
-    transform_exprs = [
-        null_sentinels(pl.col(c), [code]).alias(c)
-        for c, code in exemption_codes.items()
-        if c in columns
-    ]
-    if transform_exprs:
-        df = df.with_columns(transform_exprs)
+    df = null_sentinel_codes(df, "post2018", ["interest_rate", "submission_of_application"])
 
     # Create ARM indicator (validation reporting only; see _apply_common_filters)
     if "intro_rate_period" in columns and "loan_term" in columns:

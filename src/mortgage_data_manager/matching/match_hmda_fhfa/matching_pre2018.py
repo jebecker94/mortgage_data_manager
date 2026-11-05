@@ -19,13 +19,14 @@ from mortgage_data_manager.core.medallion import atomic_output, should_process_f
 from mortgage_data_manager.core.reference import (
     load_tract_relationship_2000_2010,
     needs_vintage_bridge_2000_2010,
+    tract_geoid,
 )
 from mortgage_data_manager.matching.match_hmda_fhfa.rounds import ROUNDS_PRE2018, Pre2018Round
 from mortgage_data_manager.matching.match_hmda_fhfa.utils import (
     assign_pre2018_hmda_index,
 )
 from mortgage_data_manager.matching.resolve import drop_ambiguous, margin_best
-from mortgage_data_manager.sources.hmda.load import scan_hmda
+from mortgage_data_manager.sources.hmda.load import scan_originations
 
 logger = get_logger(__name__)
 
@@ -177,11 +178,7 @@ RESOLVERS: dict[str, Callable[[pl.LazyFrame], pl.LazyFrame]] = {
 # --------------------------------------------------------------------------- #
 def _census_string_expr() -> pl.Expr:
     """11-digit state + county + tract GEOID from FHFA silver's three components."""
-    return (
-        pl.col("state_code").cast(pl.Utf8).str.zfill(2)
-        + pl.col("county").cast(pl.Utf8).str.zfill(3)
-        + pl.col("census_tract").cast(pl.Utf8).str.zfill(6)
-    ).alias("census_string")
+    return tract_geoid("state_code", "county", "census_tract").alias("census_string")
 
 
 #: The AMFI deflation area: the MSA, or for a non-metro record its state. One national
@@ -398,12 +395,14 @@ class HMDAFHFAPre2018Matcher:
         frames: list[pl.LazyFrame] = []
         for year in range(self.min_year - 1, self.max_year + 1):
             try:
-                lf = scan_hmda("period_2007_2017", year, file_type="d", root=silver_root)
+                lf = scan_originations(
+                    "period_2007_2017", year, year, file_type="d", root=silver_root
+                )
             except FileNotFoundError as exc:
                 if year >= self.min_year:
                     logger.warning("HMDA silver missing for %s: %s", year, exc)
                 continue
-            lf = lf.filter((pl.col("action_taken") == 1) & ~pl.col("purchaser_type").is_in([2, 4]))
+            lf = lf.filter(~pl.col("purchaser_type").is_in([2, 4]))
             # A stable HMDAIndex on every year (persisted for 2017, synthesized from the
             # unique identity tuple for 2007-2016), pinned first so the per-year frames
             # share one column order.

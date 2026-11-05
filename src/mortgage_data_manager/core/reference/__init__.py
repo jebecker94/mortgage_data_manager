@@ -22,6 +22,7 @@ from mortgage_data_manager.core.reference.census_tract import (
     load_tract_relationship_2000_2010,
     needs_vintage_bridge,
     needs_vintage_bridge_2000_2010,
+    tract_geoid,
 )
 from mortgage_data_manager.core.reference.ct_planning_region import (
     load_ct_planreg_relationship,
@@ -45,6 +46,12 @@ from mortgage_data_manager.core.reference.tract_zip3 import (
     load_dominant_tract_zip3,
     load_tract_zip3,
 )
+from mortgage_data_manager.core.reference.zip_tract import (
+    load_zip_tract,
+    tract_vintage,
+    tract_zip_residential_ratio,
+    zip_tract_file,
+)
 
 __all__ = [
     "AVERY_FILES",
@@ -57,6 +64,7 @@ __all__ = [
     "load_tract_relationship_2000_2010",
     "needs_vintage_bridge_2000_2010",
     "VINTAGE_2010_FIRST_YEAR",
+    "tract_geoid",
     "load_ct_planreg_relationship",
     "to_planning_region",
     "to_county_vintage",
@@ -71,4 +79,8 @@ __all__ = [
     "load_dominant_tract_zip3",
     "census_year_to_vintage_expr",
     "TRACT_ZIP3_VINTAGES",
+    "load_zip_tract",
+    "tract_vintage",
+    "tract_zip_residential_ratio",
+    "zip_tract_file",
 ]

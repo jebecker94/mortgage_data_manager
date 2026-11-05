@@ -29,6 +29,7 @@ from typing import Any
 
 from mortgage_data_manager.core.download import DownloadResult, DownloadStatus
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.medallion import atomic_output
 
 from .config import DownloadConfig, ProcessorConfig
 from .download import (
@@ -152,32 +153,31 @@ def run_download(
 
 
 def run_analysis(
-    prefixes: list[str] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
     aggregation_levels: list[str] | None = None,
     config: ProcessorConfig | None = None,
-    output_folder: Path | None = None,
+    output_dir: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Run the analysis pipeline for performance data.
+    """Run the analysis pipeline over the single-family loan-level portfolio.
 
-    Loads performance data and creates time series at various aggregation levels.
-    Optionally saves results to files.
+    Reads the portfolio through `scan_portfolio` (``llmon1``/``llmon2`` before 2026-07,
+    ``llmon`` from it), computes summary statistics and UPB time series at the requested
+    aggregation levels, and optionally writes each series to CSV.
 
     Args:
-        prefixes: List of prefixes to analyze (default: ['llmon1', 'llmon2'])
-        start_date: Start date in YYYYMM format
-        end_date: End date in YYYYMM format
+        start_date: Start reporting month in YYYYMM format
+        end_date: End reporting month in YYYYMM format
         aggregation_levels: List of levels ('total', 'pool', 'issuer', 'loan')
-        config: Processor configuration
-        output_folder: Optional folder to save results
+        config: Processor configuration (its ``silver_folder`` is read)
+        output_dir: Directory to write each series to as CSV; None writes nothing
 
     Returns:
-        Dictionary with analysis results
+        Dictionary with analysis results; ``summary["status"]`` is ``"no_data"`` when no
+        portfolio month falls in the range.
 
     Example:
         >>> results = run_analysis(
-        ...     prefixes=['llmon1', 'llmon2'],
         ...     start_date='202301',
         ...     end_date='202312',
         ...     aggregation_levels=['total', 'pool']
@@ -187,18 +187,14 @@ def run_analysis(
     if config is None:
         config = ProcessorConfig()
 
-    if prefixes is None:
-        prefixes = ["llmon1", "llmon2"]
-
     if aggregation_levels is None:
         aggregation_levels = ["total"]
 
-    logger.info("Starting analysis pipeline for prefixes: %s", ", ".join(prefixes))
+    logger.info("Starting analysis pipeline for the loan-level portfolio")
     if start_date:
         logger.info("Date range: %s to %s", start_date, end_date or "present")
 
     results: dict[str, Any] = {
-        "prefixes": prefixes,
         "start_date": start_date,
         "end_date": end_date,
         "data": None,
@@ -207,52 +203,35 @@ def run_analysis(
         "summary": {},
     }
 
-    # Load performance data
-    logger.info("Loading performance data...")
-    df = load_performance_data(
-        prefixes=prefixes,
-        data_folder=config.silver_folder,
-        start_date=start_date,
-        end_date=end_date,
-        record_type="L",
-        config=config,
-    )
-
-    if df.is_empty():
-        logger.warning("No data loaded - workflow cannot continue")
+    try:
+        lf = load_performance_data(
+            start_date=start_date, end_date=end_date, silver_dir=config.silver_folder
+        )
+    except FileNotFoundError as e:
+        logger.warning("No data loaded - workflow cannot continue: %s", e)
         results["summary"]["status"] = "no_data"
         return results
 
-    results["data"] = df
-    results["summary"]["total_records"] = len(df)
-
-    # Get summary statistics
-    logger.info("Calculating summary statistics...")
-    stats = get_summary_statistics(df)
+    results["data"] = lf
+    stats = get_summary_statistics(lf)
     results["statistics"] = stats
+    results["summary"]["total_records"] = stats.get("total_loans", 0)
 
-    # Create time series at different aggregation levels
     logger.info("Creating time series at %s aggregation level(s)...", len(aggregation_levels))
     for level in aggregation_levels:
-        logger.info("  - Creating %s level time series", level)
-        ts = create_upb_time_series(df, aggregation_level=level)
+        ts = create_upb_time_series(lf, aggregation_level=level)
         results["time_series"][level] = ts
-
-        # Save to file if output folder specified
-        if output_folder and not ts.empty:
-            output_folder = Path(output_folder)
-            output_folder.mkdir(parents=True, exist_ok=True)
-
-            filename = f"upb_timeseries_{level}_{datetime.now():%Y%m%d_%H%M%S}.csv"
-            output_path = output_folder / filename
-            ts.to_csv(output_path, index=False)
+        if output_dir and not ts.empty:
+            out = Path(output_dir)
+            out.mkdir(parents=True, exist_ok=True)
+            output_path = out / f"upb_timeseries_{level}_{datetime.now():%Y%m%d_%H%M%S}.csv"
+            with atomic_output(output_path) as tmp:
+                ts.to_csv(tmp, index=False)
             logger.info("  - Saved to %s", output_path)
 
     results["summary"]["status"] = "completed"
     results["summary"]["aggregation_levels"] = aggregation_levels
-
     logger.info("Analysis pipeline complete")
-
     return results
 
 
@@ -276,7 +255,9 @@ def run_processing(
         config: Processor configuration (None for default)
 
     Returns:
-        Dictionary with processing results and summary
+        Dictionary with processing results and summary. ``summary["status"]`` is
+        ``"completed"`` only when no file failed; a run where some file failed to stage
+        or transform finishes every prefix and reports ``"completed_with_failures"``.
 
     Example:
         >>> config = ProcessorConfig()
@@ -324,8 +305,8 @@ def run_processing(
                 logger.info("  [%s/%s] Staging %s...", i, len(prefixes), prefix)
                 staging_result = import_prefix_bronze(
                     prefix=prefix,
-                    base_folder=config.raw_folder,
-                    output_folder=None,
+                    raw_dir=config.raw_folder,
+                    output_dir=None,
                     config=config,
                     show_progress=False,
                 )
@@ -334,6 +315,7 @@ def run_processing(
                     "failed": staging_result.failed,
                     "skipped": staging_result.skipped,
                     "total": staging_result.total,
+                    "errors": staging_result.errors,
                 }
                 results["staging_summary"]["total_successful"] += staging_result.successful
                 results["staging_summary"]["total_failed"] += staging_result.failed
@@ -357,8 +339,8 @@ def run_processing(
                 logger.info("  [%s/%s] Transforming %s...", i, len(prefixes), prefix)
                 transform_result = import_prefix_silver(
                     prefix=prefix,
-                    raw_folder=config.bronze_folder,  # Read from bronze (staged parquet)
-                    clean_folder=config.silver_folder,  # Write to silver
+                    bronze_dir=config.bronze_folder,
+                    output_dir=config.silver_folder,
                     config=config,
                     record_types=record_types,
                     show_progress=False,
@@ -370,6 +352,7 @@ def run_processing(
                     "skipped": transform_result.skipped,
                     "total_records": transform_result.total_records_processed,
                     "records_by_type": transform_result.records_by_type,
+                    "errors": transform_result.errors,
                 }
                 results["transformation_summary"]["total_files"] += transform_result.total_files
                 results["transformation_summary"]["total_successful"] += transform_result.successful
@@ -388,9 +371,15 @@ def run_processing(
             results["summary"]["status"] = "failed_at_transformation"
             return results
 
-    results["summary"]["status"] = "completed"
+    n_failed = (
+        results["staging_summary"]["total_failed"]
+        + results["transformation_summary"]["total_failed"]
+    )
+    results["summary"]["status"] = "completed" if n_failed == 0 else "completed_with_failures"
     logger.info(
-        "Processing pipeline complete: %s", ", ".join(results["summary"]["steps_completed"])
+        "Processing pipeline complete: %s (%s file failure(s))",
+        ", ".join(results["summary"]["steps_completed"]),
+        n_failed,
     )
 
     return results
@@ -482,6 +471,10 @@ def run_pipeline(
                 config=processor_config,
             )
             results["processing_results"] = processing_results
+            if processing_results["summary"]["status"] != "completed":
+                logger.error("✗ Processing step: %s", processing_results["summary"]["status"])
+                results["summary"]["status"] = "failed_at_processing"
+                return results
             results["summary"]["steps_completed"].append("processing")
             logger.info("✓ Processing step completed")
         except Exception as e:
@@ -494,16 +487,7 @@ def run_pipeline(
         logger.info("\nSTEP 3: ANALYZE PERFORMANCE DATA")
         logger.info("-" * 60)
         try:
-            # Only analyze performance prefixes
-            perf_prefixes = [
-                p for p in (prefixes or []) if p in ["llmon1", "llmon2", "hllmon1", "hllmon2"]
-            ]
-
-            if not perf_prefixes:
-                perf_prefixes = ["llmon1", "llmon2"]
-
             analysis_results = run_analysis(
-                prefixes=perf_prefixes,
                 start_date=start_date,
                 end_date=end_date,
                 aggregation_levels=["total", "pool"],

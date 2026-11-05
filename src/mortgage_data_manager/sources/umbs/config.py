@@ -50,6 +50,13 @@ class CorrectionPair(TypedDict):
 # Original/correction file pairs for the silver layer.
 # Outer key = GSE; inner key = canonical short name used for silver output folder.
 # Update here (not in import_silver.py) when new correction-paired files are added.
+#
+# Start months. RIS and RISS run from the first UMBS month (2019-06). RILLD is newer: the
+# GSEs announced it jointly on 2026-03-17 (Freddie notice; Fannie Disclosure Guide v1.38,
+# May 2026) as a new file, effective 2026-05-18, and the first file is issuance month
+# 2026-03 for both GSEs. No earlier RILLD was ever published, so ILLD silver before
+# 2026-03 holds only original rows (pool-level corrections still arrive through RIS). A
+# correction file is posted only for months that had corrections.
 CORRECTION_PAIRS: dict[str, dict[str, CorrectionPair]] = {
     "FNMA": {
         "ILLD": {
@@ -215,7 +222,13 @@ def _enum(*levels: str) -> pl.Enum:
 #: the concept in the column name. Applied by `_sentinels_for` so new columns added by
 #: a future disclosure-format vintage (e.g. the Dec-2025 ``VS4`` split) are covered without
 #: a second registry to keep in sync.
-_SCORE_TOKENS: Final[tuple[str, ...]] = ("Credit Score", "Classic FICO", "VS4")
+_SCORE_TOKENS: Final[tuple[str, ...]] = (
+    "Credit Score",
+    "Classic FICO",
+    "VS4",
+    "Fannie Score",
+    "Freddie Score",
+)
 _RATIO_TOKENS: Final[tuple[str, ...]] = (
     "Loan-To-Value",
     "Debt-To-Income",
@@ -251,17 +264,33 @@ def _sentinels_for(columns: list[tuple[str, ColumnRole]]) -> dict[str, tuple[int
     return out
 
 
+#: Code columns whose ``9`` means "Not Available" (Disclosure Guide, loan-level sheet).
+#: Silver null-maps it, as it does the score and ratio sentinels. The ``9`` level stays
+#: in each column's enum so files built before and after the mask share one dtype.
+_CODE_NOT_AVAILABLE: Final[tuple[str, ...]] = (
+    "First Time Home Buyer Indicator",
+    "Loan Purpose",
+    "Occupancy Status",
+    "Channel",
+    "Pricing Indicator",
+)
+
+
 def _umbs_spec(columns: list[tuple[str, ColumnRole]]) -> SilverSpec:
     """Build a UMBS SilverSpec, deriving the sentinel map from the column names.
 
     Thin wrapper over `spec_from_columns` that supplies UMBS's
-    concept-in-the-name sentinel derivation (see `_sentinels_for`);
-    everything else is the shared column-role machinery.
+    concept-in-the-name sentinel derivation (see `_sentinels_for`) plus the
+    ``9`` = Not Available code columns (`_CODE_NOT_AVAILABLE`); everything
+    else is the shared column-role machinery.
 
     Returns:
         The assembled spec, with UMBS sentinels derived from the column names.
     """
-    return spec_from_columns(columns, sentinels=_sentinels_for(columns))
+    names = {name for name, _ in columns}
+    sentinels: dict[str, tuple[int | str, ...]] = dict(_sentinels_for(columns))
+    sentinels.update({c: ("9",) for c in _CODE_NOT_AVAILABLE if c in names})
+    return spec_from_columns(columns, sentinels=sentinels)
 
 
 # --- Loan-level (ILLD issuance + MLLD/FU monthly), one shared 117-col schema ---
@@ -389,6 +418,13 @@ _LLD_COLS: list[tuple[str, ColumnRole]] = [
     ("Origination Classic FICO", _I16),
     ("Origination VS4", _I16),
     ("Updated VS4", _I16),
+    # From the 2026-10 ILLD/RILLD (both GSEs; not in MLLD/FU as of 2026-10). Pricing
+    # Indicator is C (Classic FICO) / V (VS4); its 9 is null-mapped like the other codes.
+    ("Pricing Indicator", _enum("C", "V")),
+    ("Fannie Score", _I16),
+    ("Freddie Score", _I16),
+    # Freddie pool class from the Prefix Library (see umbs.prefix_library); null for Fannie.
+    ("acquisition_type", _enum("Cash", "MultiLender", "Guar")),
 ]
 UMBS_LLD_SILVER = _umbs_spec(_LLD_COLS)
 
@@ -503,6 +539,13 @@ _IS_COLS: list[tuple[str, ColumnRole]] = [
     ("Social Criteria Share", _F32),
     ("Mission Index Version", _S),
     ("WA Updated VS4", _I16),
+    # From the 2026-10 IS/RIS (both GSEs; not in MF as of 2026-10).
+    ("WA Fannie Score", _I16),
+    ("WA Freddie Score", _I16),
+    ("WA Classic FICO Used In Pricing", _I16),
+    ("WA VS4 Used In Pricing", _I16),
+    # Freddie pool class from the Prefix Library (see umbs.prefix_library); null for Fannie.
+    ("acquisition_type", _enum("Cash", "MultiLender", "Guar")),
 ]
 UMBS_IS_SILVER = _umbs_spec(_IS_COLS)
 

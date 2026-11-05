@@ -230,7 +230,7 @@ def _fnma_raw(fthb: object, orig_date: object, fpd: object) -> pl.LazyFrame:
             "Number of Units": [1],
             "Number of Borrowers": [2],
             "First Time Home Buyer Indicator": [fthb],
-            "Loan Purpose ": ["P"],
+            "Loan Purpose": ["P"],
             "Occupancy Status": ["P"],
             "Property Type": ["SF"],
             "Origination Date": [orig_date],

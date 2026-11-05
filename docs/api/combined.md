@@ -23,6 +23,11 @@ Ginnie without per-agency branching.
 Rows and columns were measured 2026-11-03 on the current builds; the column counts leave
 out the two partition keys. The GSE loan panels carry every reporting month from 2000
 (FNMA) and 1999 (FHLMC); Ginnie's start in 2013-09 (issuance) and 2013-10 (performance).
+Ginnie's loan rows switch to its pipe-delimited files at the first month each covers:
+`llmon` for performance from 2026-07 (one file for Ginnie I and II, the program read
+from the issue type) and `dailyllmnipd` for issuance from 2026-08. From 2026-07 Ginnie's
+`loan_age` is the published value less one and `remaining_months_to_maturity` the
+published value plus one, the earlier files' convention, so the series has no step there.
 `combined build` runs the masters in registry order, so `loan_outcomes` follows the three
 loan masters it reads, and warns when a master it skips is older than one of its inputs.
 A build writes to a temporary tree and swaps it in only when complete, so an interrupted
@@ -166,7 +171,7 @@ each one.
   in `last_upb_period`, and `loan_age_at_termination` carries the last disclosed age forward
   to the event month. `loan_terminations` fills `loan_age_at_removal`,
   `interest_rate_at_removal` and `delinquency_months_at_removal` the same way from the
-  previous month, so a Ginnie removal in a family's first file (2013-10) has no age.
+  previous month, so a Ginnie removal in the first portfolio month (2013-10) has no age.
 - **Ginnie terminations carry no losses.** Ginnie publishes the removal reason and balance
   but no loss waterfall, so its `loan_terminations` rows leave every proceeds, cost and loss
   column null, and `zero_balance_code` too: `event_raw_code` holds the source code for all

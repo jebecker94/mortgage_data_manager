@@ -10,7 +10,11 @@ partitioning buys nothing here). The silver step:
   alphanumeric Section 202 numbers are already 8 chars and pass through);
 - filters the ``soa_codes`` reference table down to real Section-of-the-Act
   codes, dropping the category-banner and instruction rows interleaved in
-  HUD's lookup sheet.
+  HUD's lookup sheet;
+- parses the date columns HUD stores as Excel text (``_TEXT_DATES``) to ``pl.Date``.
+  Every value in the 2026 snapshots parses. A few are placeholders, kept as
+  published: 28 ``portfolio_property.occupancy_date`` values of 1900-01-02, and 12
+  ``sec8_properties.ownership_effective_date`` values in 1900.
 
 ``overwrite`` is inherently partition-scoped: each table is a single file, so a
 rebuild only replaces that table's parquet — never a directory wipe.
@@ -23,7 +27,7 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.hud.config import (
     DATASET_MAP,
     HUDConfig,
@@ -60,6 +64,41 @@ def _add_normalized_keys(df: pl.DataFrame) -> pl.DataFrame:
             )
             break
     return df.with_columns(exprs) if exprs else df
+
+
+#: Date columns HUD ships as Excel text, with their text format, per table. Calamine
+#: types the tables' real date cells already; these three are text in the workbook.
+#: ``renewal_stage_expiration_date`` is empty in every snapshot so far.
+_TEXT_DATES: dict[str, dict[str, str]] = {
+    "sec8_properties": {"ownership_effective_date": "%m/%d/%Y"},
+    "portfolio_property": {"occupancy_date": "%Y-%m-%d %H:%M:%S"},
+    "contract_renewals": {"renewal_stage_expiration_date": "%m/%d/%Y"},
+}
+
+
+def _parse_text_dates(df: pl.DataFrame, dataset: str) -> pl.DataFrame:
+    """Parse the table's text date columns to ``pl.Date``, logging any value that fails.
+
+    Returns:
+        The frame with its ``_TEXT_DATES`` columns as ``pl.Date``.
+    """
+    for column, fmt in _TEXT_DATES.get(dataset, {}).items():
+        if column not in df.columns:
+            continue
+        text = df.get_column(column).cast(pl.Utf8)
+        parsed = text.str.to_date(fmt, strict=False)
+        failed = text.is_not_null() & parsed.is_null()
+        if failed.any():
+            logger.warning(
+                "HUD-MF %s.%s: %d value(s) not in %s, nulled; examples: %s",
+                dataset,
+                column,
+                int(failed.sum()),
+                fmt,
+                text.filter(failed).unique().head(5).to_list(),
+            )
+        df = df.with_columns(parsed.alias(column))
+    return df
 
 
 def _clean_soa_codes(df: pl.DataFrame) -> pl.DataFrame:
@@ -118,15 +157,11 @@ def build_silver(
         if DATASET_MAP[dataset]["family"] == "reference":
             df = _clean_soa_codes(df)
         df = _add_normalized_keys(df)
+        df = _parse_text_dates(df, dataset)
 
         silver_path.parent.mkdir(parents=True, exist_ok=True)
-        temp_path = silver_path.with_suffix(silver_path.suffix + ".tmp")
-        try:
-            df.write_parquet(temp_path, compression="zstd")
-            temp_path.rename(silver_path)
-        except BaseException:
-            temp_path.unlink(missing_ok=True)
-            raise
+        with atomic_output(silver_path) as tmp:
+            df.write_parquet(tmp, compression="zstd")
         logger.info(
             "HUD-MF %s: silver → %s (%s rows × %s cols)",
             dataset,

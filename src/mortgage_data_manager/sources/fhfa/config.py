@@ -20,6 +20,7 @@ from decouple import config
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.types import (
     ColumnRole,
+    Declared,
     Fips,
     SilverSpec,
     spec_from_columns,
@@ -188,8 +189,9 @@ CSV_FILE_STEMS: dict[str, str] = {
 # Geography (state_code/county/census_tract/msa_code) -> zero-padded Utf8 in the
 # loan-level files (sf_c/mf_c), recovering the leading zeros Int storage drops.
 # In the SUMMARY files (sf_a/sf_b) msa_code is a 0/1 metro flag, NOT a geo code,
-# so it stays Int8 there. Category codes keep their in-band "missing" markers
-# (9/99) live, HMDA-style. ``date_of_mortgage_note`` is a 1/2 category, not a date.
+# so it stays Int8 there. ``date_of_mortgage_note`` is a 1/2 category, not a date.
+# sf_c nulls every code its data dictionaries define as missing (see _SF_C_SENT); the
+# summary files keep their bucketed "9" categories live.
 # --------------------------------------------------------------------------- #
 _I8, _I16, _I32, _I64, _F32, _F64 = (pl.Int8, pl.Int16, pl.Int32, pl.Int64, pl.Float32, pl.Float64)
 # Geographic identifiers carry their zero-pad width inline as ``Fips(width)``:
@@ -267,27 +269,84 @@ _SF_C_COLS: list[tuple[str, ColumnRole]] = [
     ("rural_census_tract", _I8),
     ("loan_term", _I16),
     ("colonias_tract", _I8),
+    # state_code + county + census_tract, built after typing (see import_silver).
+    ("census_tract_geoid", Declared(pl.String)),
 ]
+# sf_c missing-value codes, transcribed from the PUDB Single-Family Census Tract File
+# dictionaries of three eras: 2008-2017 (fixed width; ages in years), 2018-2024 (fixed
+# width; ages bucketed 1-7) and 2025 on (headed CSV, where most continuous fields are blank
+# instead of coded). Every value listed is "missing", "not available", "unknown" or "data
+# not provided" in each era that uses it, and none is a real value in any other era, so one
+# set per column serves all three: ages are 18+ in years before 2018, so 9 cannot be an age;
+# incomes are rounded to $1,000, so 9,999,999 cannot be one. Codes with a meaning stay
+# live: "not applicable", "no co-borrower" (co-borrower ethnicity/sex 5, race 8, age and
+# age-62 8 from 2025, credit-score model 10), "information not provided by the borrower",
+# and credit-score model 9 ("not applicable").
 _SF_C_SENT = {
-    # documented continuous "not available" codes
+    # continuous "not available" codes
     "rate_spread": (99.99,),
     "interest_rate_at_origination": (99,),
     "dti_ratio": (99,),
     "note_amount": (999999999,),
     "property_value": (999999999,),
-    "borrower_annual_income": (999999998, 999999999),
+    "upb_acquisition": (999999999,),
+    # 9,999,999 before 2018 (3,953 rows in 2012); 999,999,999 from 2018
+    "borrower_annual_income": (9999999, 999999998, 999999999),
     "discount_points": (999999,),
     "tract_median_income": (999999,),
     "local_area_median_income": (999999,),
     "area_median_family_income": (999999,),
     "tract_percent_minority": (9999.0,),
     "tract_income_ratio": (9999.0,),
-    # approved undocumented missing markers (clearly "not available")
-    "age_borrower": (999,),
-    "age_co_borrower": (999,),
+    "loan_term": (999,),
+    # 999 before 2018 (ages in years); 9 from 2018 (bucketed). From 2018 to 2024 the
+    # co-borrower's 9 also covers "no co-borrower", as 999 did before 2018. Before 2018
+    # ages 98 and 99 are heaped (4,215 and 6,167 borrowers against 557 at 97) but
+    # undocumented, so they are kept.
+    "age_borrower": (9, 999),
+    "age_co_borrower": (9, 999),
+    "borrower_age_62_plus": (9,),
+    "co_borrower_age_62_plus": (9,),
     "ltv_at_origination": (999,),
-    # KEPT (structural "not applicable", not missing): introductory_rate_period
-    # 999 = no intro period (fixed-rate); msa_code 99999 = non-metro.
+    # geography: 00 / 000 / 000000 / 00000 = missing (blank from 2025)
+    "state_code": (0,),
+    "county": (0,),
+    "census_tract": (0,),
+    "msa_code": (0,),
+    # category "missing" codes. Before 2021 the co-borrower 9s (sex, race, ethnicity)
+    # also stand for "no co-borrower", which got its own code later.
+    "number_of_borrowers": (99,),
+    "first_time_home_buyer": (9,),
+    "borrower_race_1": (9,),
+    "borrower_race_2": (9,),
+    "borrower_race_3": (9,),
+    "borrower_race_4": (9,),
+    "borrower_race_5": (9,),
+    "borrower_ethnicity": (9,),
+    "co_borrower_race_1": (9,),
+    "co_borrower_race_2": (9,),
+    "co_borrower_race_3": (9,),
+    "co_borrower_race_4": (9,),
+    "co_borrower_race_5": (9,),
+    "co_borrower_ethnicity": (9,),
+    "borrower_sex": (9,),
+    "co_borrower_sex": (9,),
+    "occupancy_code": (9,),
+    "loan_purpose": (9,),
+    "hoepa_status": (9,),
+    "property_type": (9,),
+    "lien_status": (9,),
+    "date_of_mortgage_note": (9,),
+    "preapproval": (9,),
+    "aus_name": (9,),
+    "credit_score_model_borrower": (99,),
+    "credit_score_model_co_borrower": (99,),
+    "manufactured_home_land_property_interest": (9,),
+    # KEPT: introductory_rate_period 999 ("not available/not applicable"; in practice no
+    # intro period, i.e. fixed rate) and msa_code 99999 (non-metro). application_channel 9
+    # is "unknown or missing" in the dictionary, but Fannie Mae reports its correspondent
+    # loans as 9 (4.72M Fannie rows 2018-2025, which never use 3; Freddie has 2,168), so
+    # the code is kept as published.
 }
 FHFA_SF_C_SILVER = spec_from_columns(_SF_C_COLS, sentinels=_SF_C_SENT)
 

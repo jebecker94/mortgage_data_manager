@@ -28,8 +28,10 @@ import polars as pl
 import pyarrow.parquet as pq
 import pytest
 
+from mortgage_data_manager.combined._common import _gnma_loan_months
 from mortgage_data_manager.combined.loan_issuance_schema import PRUNED_ALWAYS_NULL_FIELDS
 from mortgage_data_manager.core.config import MortgageDataConfig
+from mortgage_data_manager.sources.gnma.load import scan_new_issuance
 
 _FNMA_SF_DIR = MortgageDataConfig.get_subpackage_data_dir("fnma") / "silver" / "issuances"
 _UMBS_SILVER = MortgageDataConfig.get_subpackage_data_dir("umbs") / "silver"
@@ -163,12 +165,12 @@ def test_illd_pruned_sources_stay_unpopulated():
 @pytest.mark.skipif(not _GNMA_L_DIR.exists(), reason="GNMA dailyllmni silver not mounted")
 def test_gnma_pruned_sources_stay_blank():
     # Blank-padded strings are physically non-null, so footers can't see them — scan the
-    # newest few months for real (cheap: one column each).
-    files = sorted(_GNMA_L_DIR.glob("dailyllmni_*_L.parquet"))[-3:]
-    assert files, f"no dailyllmni L files under {_GNMA_L_DIR}"
+    # newest few new-issuance months for real (cheap: one column each).
+    months = _gnma_loan_months("new_issuance")[-3:]
+    assert months, "no GNMA new-issuance silver months"
     gnma_cols = {a for f in PRUNED_ALWAYS_NULL_FIELDS for a in f["gnma"]}
-    for f in files:
-        lf = pl.scan_parquet(f)
+    for month in months:
+        lf = scan_new_issuance(min_month=month, max_month=month)
         present = [c for c in gnma_cols if c in lf.collect_schema().names()]
         if not present:
             continue
@@ -182,5 +184,5 @@ def test_gnma_pruned_sources_stay_blank():
             n = counts[c][0]
             assert n == 0, (
                 f"pruned GNMA source column {c!r} now has {n:,} non-blank values in "
-                f"{f.name} — un-prune it (restore the assembler expression) and rebuild"
+                f"new issuance {month} — un-prune it (restore the assembler expression) and rebuild"
             )

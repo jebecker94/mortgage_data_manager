@@ -33,6 +33,7 @@ import polars as pl
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.download import DownloadStatus, atomic_download
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.medallion import atomic_output
 
 logger = get_logger(__name__)
 
@@ -70,7 +71,7 @@ def _build_parquet_cache() -> Path:
             )
 
     parquet = _parquet_path()
-    pl.read_csv(
+    crosswalk = pl.read_csv(
         raw,
         schema_overrides={"tract_fips_2020": pl.Utf8, "Tract_fips_2022": pl.Utf8},
     ).select(
@@ -78,7 +79,9 @@ def _build_parquet_cache() -> Path:
         tract_fips_2022="Tract_fips_2022",
         county_fips_2020="county_fips_2020",
         ce_fips_2022="ce_fips_2022",
-    ).write_parquet(parquet)
+    )
+    with atomic_output(parquet) as tmp:
+        crosswalk.write_parquet(tmp)
     logger.info("Cached CT planning-region crosswalk as parquet: %s", parquet)
     return parquet
 
@@ -138,7 +141,11 @@ def to_planning_region(lf: pl.LazyFrame, tract_col: str = "census_tract") -> pl.
     )
 
 
-def to_county_vintage(lf: pl.LazyFrame, tract_col: str = "census_tract") -> pl.LazyFrame:
+def to_county_vintage(
+    lf: pl.LazyFrame,
+    tract_col: str = "census_tract",
+    county_col: str | None = None,
+) -> pl.LazyFrame:
     """Translate CT planning-region tracts back to the 2020 county convention.
 
     The inverse of `to_planning_region`: planning-region CT tracts (09110-09190)
@@ -152,10 +159,14 @@ def to_county_vintage(lf: pl.LazyFrame, tract_col: str = "census_tract") -> pl.L
         lf: LazyFrame containing a census-tract column.
         tract_col: Name of the 11-char tract GEOID column. Defaults to
             "census_tract".
+        county_col: Optional 5-char county FIPS column to refresh: on every CT row
+            with a tract it is reset to the translated tract's first 5 chars, so the
+            county agrees with the tract. ``None`` leaves counties alone.
 
     Returns:
         The LazyFrame with `tract_col` rewritten to county convention for CT
-        planning-region records. Other columns are preserved.
+        planning-region records (and ``county_col`` refreshed for CT rows, when
+        given). Other columns are preserved.
     """
     # Same guard as in to_planning_region: identical rows collapse, and a tract
     # with two different predecessors is left untranslated rather than sent to
@@ -166,8 +177,17 @@ def to_county_vintage(lf: pl.LazyFrame, tract_col: str = "census_tract") -> pl.L
         .unique()
         .unique(subset="tract_fips_2022", keep="none")
     )
-    return (
+    lf = (
         lf.join(xw, left_on=tract_col, right_on="tract_fips_2022", how="left")
         .with_columns(pl.coalesce("tract_fips_2020", tract_col).alias(tract_col))
         .drop("tract_fips_2020")
+    )
+    if county_col is None:
+        return lf
+    tract = pl.col(tract_col)
+    return lf.with_columns(
+        pl.when(tract.is_not_null() & (tract.str.slice(0, 2) == "09"))
+        .then(tract.str.slice(0, 5))
+        .otherwise(pl.col(county_col))
+        .alias(county_col)
     )

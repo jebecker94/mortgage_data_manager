@@ -8,18 +8,18 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from pathlib import Path
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 import polars as pl
 
 from mortgage_data_manager.combined.config import CombinedConfig
-from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.harmonized import credit_score, flag_to_bool
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import (
     atomic_output_dir,
     should_process_file,
 )
+from mortgage_data_manager.sources.gnma.load import loan_months
 
 logger = get_logger(__name__)
 
@@ -352,28 +352,21 @@ def _gnma_program(expr: pl.Expr) -> pl.Expr:
     )
 
 
-def _gnma_silver_dir(family: str, record: str) -> Path:
-    """A GNMA silver record directory (``dailyllmni``/``llmon1``/``llmon2`` x ``L``/``P``)."""
-    return MortgageDataConfig.get_subpackage_data_dir("gnma") / "silver" / family / record
+def _gnma_loan_months(feed: Literal["portfolio", "new_issuance"]) -> list[str]:
+    """The ``YYYYMM`` months `scan_portfolio` / `scan_new_issuance` serve, in order.
 
+    The builders read the loan-level feeds one month at a time, so peak memory stays one
+    month wide. Raises if a month past the feed's cutover exists only in the retired files
+    (see `sources.gnma.load.loan_months`).
 
-def _gnma_pool_header(p_path: Path, *, with_program: bool) -> pl.LazyFrame:
-    """One row per pool from a P-record file: CUSIP, pool type and, optionally, program.
-
-    A pool whose P records disagree gets none of them.
+    Args:
+        feed: ``portfolio`` (``llmon1``/``llmon2``, then ``llmon``) or ``new_issuance``
+            (``dailyllmni``, then ``dailyllmnipd``).
 
     Returns:
-        ``_pool_key`` (the L-record join key), ``cusip``, [``program``,] ``pool_type``.
+        Sorted, distinct months.
     """
-    cols = [
-        pl.col("pool_id").cast(pl.String).str.strip_chars().alias("_pool_key"),
-        pl.col("cusip_number").cast(pl.String).str.strip_chars().alias("cusip"),
-        *([_gnma_program(pl.col("issue_type")).alias("program")] if with_program else []),
-        pl.col("pool_type").cast(pl.String).str.strip_chars().alias("pool_type"),
-    ]
-    return (
-        pl.scan_parquet(str(p_path)).select(cols).unique().unique(subset=["_pool_key"], keep="none")
-    )
+    return loan_months(feed)
 
 
 def _period_index(period: pl.Expr) -> pl.Expr:

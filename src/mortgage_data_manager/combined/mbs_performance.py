@@ -153,11 +153,9 @@ def _assemble_gnma_mbs_performance(scan: pl.LazyFrame, *, month: str, program: s
     is_platinum = (_pick_str(["Issuer Number"], av) == GNMA_PLATINUM_ISSUER_NUMBER).fill_null(
         value=False
     )
-    return scan.filter(
-        (cusip != "")
-        & ~pool_type.is_in([*GNMA_HMBS_POOL_TYPES, *_GNMA_PROJECT_POOL_TYPES])
-        & ~is_platinum
-    ).select(
+    # A blank pool type (null once silver nulls blanks) is not an excluded type.
+    excluded_type = pool_type.is_in([*GNMA_HMBS_POOL_TYPES, *_GNMA_PROJECT_POOL_TYPES])
+    return scan.filter((cusip != "") & ~excluded_type.fill_null(value=False) & ~is_platinum).select(
         _plan_exprs(
             GNMA_MBS_PERFORMANCE_PLAN,
             _mbs_readers(av),
@@ -229,7 +227,8 @@ def _assemble_gnma_platinum_mbs_performance(scan: pl.LazyFrame, *, month: str) -
     av = set(scan.collect_schema().names())
     cusip = _pick_str(["cusip_number"], av)
     pind = _pick_str(["pool_indicator"], av)
-    return scan.filter((cusip != "") & (pind != GNMA_PLATINUM_HMBS_INDICATOR)).select(
+    # ne_missing: a blank indicator (null once silver nulls blanks) is not HMBS.
+    return scan.filter((cusip != "") & pind.ne_missing(GNMA_PLATINUM_HMBS_INDICATOR)).select(
         _plan_exprs(
             GNMA_PLATINUM_MBS_PERFORMANCE_PLAN,
             _mbs_readers(av),

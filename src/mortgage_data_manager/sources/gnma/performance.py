@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
 """Loading and analysis helpers for GNMA loan-level performance data.
 
-Functions for loading and analyzing GNMA loan-level performance data.
-
-This module provides:
-    - Data loading from the silver layer (processed parquet files)
-    - Summary statistics calculation
-    - Time series aggregation at various levels (total, pool, issuer, loan)
+Reads the single-family portfolio through `scan_portfolio`, so a series runs across the
+2026 switch from ``llmon1``/``llmon2`` to ``llmon`` without a seam in the file layout.
+Loan age and remaining term are as published; see `mortgage_data_manager.sources.gnma.load`.
 
 Public API:
-    - load_performance_data: Load performance data from multiple prefixes
-    - find_data_files: Find available data files for a prefix
-    - load_file: Load a single parquet file
-    - get_summary_statistics: Calculate summary statistics for performance data
-    - create_upb_time_series: Create time series of unpaid principal balances
-    - aggregate_by_pool: Aggregate UPB by pool and date
-    - aggregate_by_issuer: Aggregate UPB by issuer and date
-    - aggregate_total: Aggregate total UPB by date
+    - load_performance_data: Lazy loan x month portfolio rows for a month range
+    - get_summary_statistics: Loan, UPB, pool and issuer counts
+    - create_upb_time_series: UPB by month at total, pool, issuer or loan level
+    - aggregate_by_pool: Aggregate UPB by pool and month
+    - aggregate_by_issuer: Aggregate UPB by issuer and month
+    - aggregate_total: Aggregate total UPB by month
 
 """
 
@@ -30,386 +25,200 @@ import polars as pl
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.scalars import scalar_float
 
-from .config import ProcessorConfig
+from .load import scan_portfolio
 
 logger = get_logger(__name__)
 
 __all__ = [
-    # Loader functions
     "load_performance_data",
-    "find_data_files",
-    "load_file",
     "get_summary_statistics",
-    # Aggregation functions
     "create_upb_time_series",
     "aggregate_by_pool",
     "aggregate_by_issuer",
     "aggregate_total",
 ]
 
-
-# =============================================================================
-# Data Loading Functions
-# =============================================================================
+#: Columns the summaries and series read.
+UPB_COLUMN = "unpaid_principal_balance"
+DATE_COLUMN = "as_of_date"
 
 
 def load_performance_data(
-    prefixes: list[str] | None = None,
-    data_folder: str | Path | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
-    record_type: str = "L",
-    config: ProcessorConfig | None = None,
-) -> pl.DataFrame:
-    """Load performance data from specified prefixes.
+    silver_dir: str | Path | None = None,
+) -> pl.LazyFrame:
+    """Scan the loan-level portfolio for a range of reporting months.
 
     Args:
-        prefixes: List of prefixes to load (default: ['llmon1', 'llmon2'])
-        data_folder: Path to data folder
-        start_date: Optional start date in YYYYMM format
-        end_date: Optional end date in YYYYMM format
-        record_type: Record type to load (default: 'L')
-        config: Optional configuration
+        start_date: First reporting month, ``YYYYMM``; None for the earliest.
+        end_date: Last reporting month, ``YYYYMM``; None for the latest.
+        silver_dir: GNMA silver root; defaults to ``GNMAConfig.GNMA_SILVER_DIR``.
 
     Returns:
-        Combined Polars DataFrame with performance data
+        Loan x month rows (see `scan_portfolio`), lazy.
+
+    Raises:
+        FileNotFoundError: If no portfolio file falls in the range.
     """
-    if prefixes is None:
-        prefixes = ["llmon1", "llmon2"]
-
-    # Determine data folder (default to silver layer)
-    if data_folder is None:
-        if config is None:
-            config = ProcessorConfig()
-        data_folder = config.silver_folder
-
-    data_folder = Path(data_folder)
-    all_data = []
-
-    for prefix in prefixes:
-        logger.info("Loading data for prefix: %s", prefix)
-
-        # Find all files for this prefix
-        files = find_data_files(prefix, data_folder, start_date, end_date)
-
-        if not files:
-            logger.warning("No files found for prefix %s", prefix)
-            continue
-
-        # Load each file and filter to specified record type
-        for file_path in files:
-            df = load_file(file_path)
-
-            if df.is_empty():
-                continue
-
-            # Filter to specified record type if column exists
-            if "Record_Type" in df.columns:
-                df = df.filter(pl.col("Record_Type") == record_type)
-
-            # Add prefix column for tracking
-            df = df.with_columns(pl.lit(prefix).alias("data_source"))
-
-            all_data.append(df)
-
-    if not all_data:
-        logger.warning("No data loaded from any prefix")
-        return pl.DataFrame()
-
-    # Combine all data
-    combined_df = pl.concat(all_data, how="diagonal_relaxed")
-    logger.info("Loaded total of %s records", len(combined_df))
-
-    return combined_df
+    return scan_portfolio(min_month=start_date, max_month=end_date, silver_dir=silver_dir)
 
 
-def find_data_files(
-    prefix: str,
-    data_folder: str | Path,
-    start_date: str | None = None,
-    end_date: str | None = None,
-) -> list[Path]:
-    """Find all data files for a prefix within the date range.
-
-    Args:
-        prefix: File prefix (e.g., 'llmon1', 'llmon2')
-        data_folder: Path to data folder
-        start_date: Optional start date in YYYYMM format
-        end_date: Optional end date in YYYYMM format
-
-    Returns:
-        List of Path objects for matching files
-    """
-    data_folder = Path(data_folder)
-    prefix_folder = data_folder / prefix
-    files: list[Path] = []
-
-    if not prefix_folder.exists():
-        logger.warning("Prefix folder does not exist: %s", prefix_folder)
-        return files
-
-    # Look for parquet files (processed data)
-    parquet_files = list(prefix_folder.glob("*.parquet"))
-
-    # Filter by date if specified
-    if start_date or end_date:
-        filtered_files = []
-        for f in parquet_files:
-            # Extract date from filename (format like llmon1_YYYYMM_L.parquet)
-            try:
-                parts = f.stem.split("_")
-                if len(parts) >= 2:
-                    file_date = parts[1]
-                    if start_date and file_date < start_date:
-                        continue
-                    if end_date and file_date > end_date:
-                        continue
-                    filtered_files.append(f)
-            except (IndexError, ValueError):
-                logger.warning("Could not parse date from filename: %s", f)
-                continue
-        files = filtered_files
-    else:
-        files = parquet_files
-
-    logger.info("Found %s files for prefix %s", len(files), prefix)
-    return sorted(files)
+def _lazy(df: pl.DataFrame | pl.LazyFrame) -> pl.LazyFrame:
+    """The input as a LazyFrame."""
+    return df.lazy() if isinstance(df, pl.DataFrame) else df
 
 
-def load_file(file_path: Path) -> pl.DataFrame:
-    """Load a single data file.
-
-    Args:
-        file_path: Path to the parquet file
-
-    Returns:
-        Polars DataFrame with the data
-    """
-    try:
-        df = pl.read_parquet(file_path)
-        logger.debug("Loaded %s records from %s", len(df), file_path)
-        return df
-    except Exception as e:
-        logger.error("Error loading file %s: %s", file_path, e)
-        return pl.DataFrame()
-
-
-def get_summary_statistics(df: pl.DataFrame, upb_column: str | None = None) -> dict:
+def get_summary_statistics(
+    df: pl.DataFrame | pl.LazyFrame, upb_column: str = UPB_COLUMN
+) -> dict[str, float | int]:
     """Get summary statistics for performance data.
 
     Args:
-        df: Performance data DataFrame
-        upb_column: Optional name of UPB column
+        df: Loan-level rows (eager or lazy)
+        upb_column: UPB column to summarize
 
     Returns:
-        Dictionary with summary statistics
+        Row count, UPB total/mean/median/min/max, and pool and issuer counts when those
+        columns are present; empty when there are no rows.
     """
-    if df.is_empty():
-        logger.warning("Empty DataFrame provided for statistics")
+    lf = _lazy(df)
+    names = lf.collect_schema().names()
+    upb = pl.col(upb_column)
+    aggs = [
+        pl.len().alias("total_loans"),
+        upb.sum().alias("total_upb"),
+        upb.mean().alias("mean_upb"),
+        upb.median().alias("median_upb"),
+        upb.min().alias("min_upb"),
+        upb.max().alias("max_upb"),
+    ]
+    if "pool_id" in names:
+        aggs.append(pl.col("pool_id").n_unique().alias("unique_pools"))
+    if "issuer_id" in names:
+        aggs.append(pl.col("issuer_id").n_unique().alias("unique_issuers"))
+    row = lf.select(aggs).collect(engine="streaming").row(0, named=True)
+    if row["total_loans"] == 0:
+        logger.warning("No rows provided for statistics")
         return {}
-
-    # Find UPB column if not specified
-    if upb_column is None:
-        upb_columns = [
-            col for col in df.columns if "Unpaid Principal Balance" in col or col == "UPB"
-        ]
-        if not upb_columns:
-            logger.error("Could not find UPB column for statistics")
-            return {}
-        upb_column = upb_columns[0]
-
-    stats = {
-        "total_loans": len(df),
-        "total_upb": scalar_float(df[upb_column].sum()),
-        "mean_upb": scalar_float(df[upb_column].mean()),
-        "median_upb": scalar_float(df[upb_column].median()),
-        "min_upb": scalar_float(df[upb_column].min()),
-        "max_upb": scalar_float(df[upb_column].max()),
+    counts = ("total_loans", "unique_pools", "unique_issuers")
+    return {
+        k: int(v) if k in counts else (scalar_float(v) if v is not None else float("nan"))
+        for k, v in row.items()
     }
-
-    # Add pool and issuer counts if available
-    if "Pool ID" in df.columns or "Pool_ID" in df.columns:
-        pool_col = "Pool ID" if "Pool ID" in df.columns else "Pool_ID"
-        stats["unique_pools"] = df[pool_col].n_unique()
-
-    if "Issuer ID" in df.columns or "Issuer_ID" in df.columns:
-        issuer_col = "Issuer ID" if "Issuer ID" in df.columns else "Issuer_ID"
-        stats["unique_issuers"] = df[issuer_col].n_unique()
-
-    return stats
-
-
-# =============================================================================
-# Aggregation Functions
-# =============================================================================
 
 
 def create_upb_time_series(
-    df: pl.DataFrame,
+    df: pl.DataFrame | pl.LazyFrame,
     aggregation_level: str = "total",
-    upb_column: str | None = None,
-    date_column: str | None = None,
+    upb_column: str = UPB_COLUMN,
+    date_column: str = DATE_COLUMN,
 ) -> pd.DataFrame:
     """Create a time series of unpaid principal balances (UPB).
 
     Args:
-        df: Performance data DataFrame
+        df: Loan-level rows (eager or lazy)
         aggregation_level: Level of aggregation:
             - 'total': Total UPB across all loans
             - 'pool': UPB by pool
             - 'issuer': UPB by issuer
             - 'loan': Individual loan-level UPB
-        upb_column: Optional name of UPB column
-        date_column: Optional name of date column
+        upb_column: UPB column to aggregate
+        date_column: Reporting-month column
 
     Returns:
-        Pandas DataFrame with time series of UPB
+        Pandas DataFrame with the series
+
+    Raises:
+        ValueError: If ``aggregation_level`` is not one of the four levels.
     """
-    if df.is_empty():
-        logger.warning("Empty DataFrame provided for time series creation")
-        return pd.DataFrame()
-
-    # Identify UPB column if not specified
-    if upb_column is None:
-        upb_columns = [
-            col for col in df.columns if "Unpaid Principal Balance" in col or col == "UPB"
-        ]
-        if not upb_columns:
-            logger.error("Could not find UPB column in data")
-            logger.info("Available columns: %s", df.columns)
-            return pd.DataFrame()
-        upb_column = upb_columns[0]
-
-    # Identify date column if not specified
-    if date_column is None:
-        date_columns = [col for col in df.columns if "As of Date" in col or "As-Of Date" in col]
-        if not date_columns:
-            logger.error("Could not find date column in data")
-            logger.info("Available columns: %s", df.columns)
-            return pd.DataFrame()
-        date_column = date_columns[0]
-
+    lf = _lazy(df)
     logger.info("Creating UPB time series at %s level", aggregation_level)
-    logger.info("Using UPB column: %s", upb_column)
-    logger.info("Using date column: %s", date_column)
-
-    # Convert date column to proper format if needed
-    if df[date_column].dtype == pl.Int64 or df[date_column].dtype == pl.Int32:
-        # Convert YYYYMM integer to date
-        df = df.with_columns(
-            pl.col(date_column).cast(pl.Utf8).str.to_date("%Y%m").alias("as_of_date")
-        )
-    else:
-        df = df.with_columns(pl.col(date_column).alias("as_of_date"))
-
-    # Perform aggregation based on level
     if aggregation_level == "total":
-        time_series = aggregate_total(df, upb_column, "as_of_date")
-
+        series = aggregate_total(lf, upb_column, date_column)
     elif aggregation_level == "pool":
-        # Find pool column
-        pool_col = "Pool ID" if "Pool ID" in df.columns else "Pool_ID"
-        if pool_col not in df.columns:
-            logger.error("Pool column not found in data")
-            return pd.DataFrame()
-        time_series = aggregate_by_pool(df, upb_column, "as_of_date", pool_col)
-
+        series = aggregate_by_pool(lf, upb_column, date_column)
     elif aggregation_level == "issuer":
-        # Find issuer column
-        issuer_col = "Issuer ID" if "Issuer ID" in df.columns else "Issuer_ID"
-        if issuer_col not in df.columns:
-            logger.error("Issuer column not found in data")
-            return pd.DataFrame()
-        time_series = aggregate_by_issuer(df, upb_column, "as_of_date", issuer_col)
-
+        series = aggregate_by_issuer(lf, upb_column, date_column)
     elif aggregation_level == "loan":
-        # Individual loan-level UPB
-        seq_col = (
-            "Disclosure Sequence Number"
-            if "Disclosure Sequence Number" in df.columns
-            else "Disclosure_Sequence_Number"
+        series = lf.select(date_column, "pool_id", "disclosure_sequence_number", upb_column).sort(
+            date_column, "pool_id", "disclosure_sequence_number"
         )
-        if seq_col not in df.columns:
-            logger.error("Sequence number column not found in data")
-            return pd.DataFrame()
-        select_cols = ["as_of_date", seq_col, upb_column]
-        time_series = df.select(select_cols).sort("as_of_date")
-
     else:
-        logger.error("Invalid aggregation level: %s", aggregation_level)
-        return pd.DataFrame()
-
-    # Convert to pandas for easier time series manipulation
-    result = time_series.to_pandas()
-
+        raise ValueError(f"Invalid aggregation level: {aggregation_level!r}")
+    result = series.collect(engine="streaming").to_pandas()
     logger.info("Created time series with %s records", len(result))
-
     return result
 
 
 def aggregate_by_pool(
-    df: pl.DataFrame,
-    upb_column: str,
-    date_column: str,
-    pool_column: str = "Pool_ID",
-) -> pl.DataFrame:
-    """Aggregate UPB by pool and date.
+    df: pl.DataFrame | pl.LazyFrame,
+    upb_column: str = UPB_COLUMN,
+    date_column: str = DATE_COLUMN,
+    pool_column: str = "pool_id",
+) -> pl.LazyFrame:
+    """Aggregate UPB by pool and month.
 
     Args:
-        df: Performance data DataFrame
+        df: Loan-level rows (eager or lazy)
         upb_column: Name of UPB column
         date_column: Name of date column
         pool_column: Name of pool ID column
 
     Returns:
-        Aggregated DataFrame
+        UPB per (month, pool), lazy
     """
     return (
-        df.group_by([date_column, pool_column])
+        _lazy(df)
+        .group_by(date_column, pool_column)
         .agg(pl.col(upb_column).sum().alias("pool_upb"))
-        .sort([date_column, pool_column])
+        .sort(date_column, pool_column)
     )
 
 
 def aggregate_by_issuer(
-    df: pl.DataFrame,
-    upb_column: str,
-    date_column: str,
-    issuer_column: str = "Issuer_ID",
-) -> pl.DataFrame:
-    """Aggregate UPB by issuer and date.
+    df: pl.DataFrame | pl.LazyFrame,
+    upb_column: str = UPB_COLUMN,
+    date_column: str = DATE_COLUMN,
+    issuer_column: str = "issuer_id",
+) -> pl.LazyFrame:
+    """Aggregate UPB by issuer and month.
 
     Args:
-        df: Performance data DataFrame
+        df: Loan-level rows (eager or lazy)
         upb_column: Name of UPB column
         date_column: Name of date column
         issuer_column: Name of issuer ID column
 
     Returns:
-        Aggregated DataFrame
+        UPB per (month, issuer), lazy
     """
     return (
-        df.group_by([date_column, issuer_column])
+        _lazy(df)
+        .group_by(date_column, issuer_column)
         .agg(pl.col(upb_column).sum().alias("issuer_upb"))
-        .sort([date_column, issuer_column])
+        .sort(date_column, issuer_column)
     )
 
 
 def aggregate_total(
-    df: pl.DataFrame,
-    upb_column: str,
-    date_column: str,
-) -> pl.DataFrame:
-    """Aggregate total UPB by date.
+    df: pl.DataFrame | pl.LazyFrame,
+    upb_column: str = UPB_COLUMN,
+    date_column: str = DATE_COLUMN,
+) -> pl.LazyFrame:
+    """Aggregate total UPB by month.
 
     Args:
-        df: Performance data DataFrame
+        df: Loan-level rows (eager or lazy)
         upb_column: Name of UPB column
         date_column: Name of date column
 
     Returns:
-        Aggregated DataFrame
+        Total UPB per month, lazy
     """
     return (
-        df.group_by(date_column).agg(pl.col(upb_column).sum().alias("total_upb")).sort(date_column)
+        _lazy(df)
+        .group_by(date_column)
+        .agg(pl.col(upb_column).sum().alias("total_upb"))
+        .sort(date_column)
     )

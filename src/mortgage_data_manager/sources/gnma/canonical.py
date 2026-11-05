@@ -26,6 +26,7 @@ logger = get_logger(__name__)
 
 __all__ = [
     "CanonicalSchema",
+    "record_types_in_file",
     "transform_fixed_width_canonical",
     "transform_delimited_canonical",
     "validate_structural",
@@ -111,6 +112,15 @@ class CanonicalSchema:
 
     @classmethod
     def load(cls, prefix: str, canonical_dir: str | Path) -> CanonicalSchema:
+        """Load ``{canonical_dir}/{prefix}.json``.
+
+        Args:
+            prefix: GNMA file prefix naming the schema file.
+            canonical_dir: Directory holding the canonical JSON files.
+
+        Returns:
+            The loaded schema.
+        """
         path = Path(canonical_dir) / f"{prefix}.json"
         data = json.loads(path.read_text())
         return cls(
@@ -124,9 +134,19 @@ class CanonicalSchema:
 
     @classmethod
     def exists(cls, prefix: str, canonical_dir: str | Path) -> bool:
+        """Whether ``prefix`` has a canonical schema file.
+
+        Args:
+            prefix: GNMA file prefix naming the schema file.
+            canonical_dir: Directory holding the canonical JSON files.
+
+        Returns:
+            True when ``{canonical_dir}/{prefix}.json`` exists.
+        """
         return (Path(canonical_dir) / f"{prefix}.json").exists()
 
     def record_type_codes(self) -> list[str]:
+        """The declared record-type codes, in schema order."""
         return list(self.record_types.keys())
 
     def rt_present(self, record_type: str, as_of: str) -> bool:
@@ -181,6 +201,32 @@ class CanonicalSchema:
 # =============================================================================
 
 
+def _fixed_point_expr(token: pl.Expr, scale: int) -> pl.Expr:
+    """Implied-decimal integer token -> the exact nearest Float64.
+
+    Dividing a float by the scale is not exact in polars (``5999 / 1000`` gives
+    ``5.9990000000000006``), so a power-of-ten scale writes the decimal string and
+    parses it instead, matching what a feed with explicit decimals yields. A token
+    that is not an integer keeps the plain divide.
+
+    Returns:
+        The decoded value; null where the token does not parse.
+    """
+    digits = len(str(scale)) - 1
+    divided = token.cast(pl.Float64, strict=False) / scale
+    if scale != 10**digits:
+        return divided
+    value = token.cast(pl.Int64, strict=False)
+    magnitude = value.abs()
+    exact = pl.concat_str(
+        pl.when(value < 0).then(pl.lit("-")).otherwise(pl.lit("")),
+        (magnitude // scale).cast(pl.String),
+        pl.lit("."),
+        (magnitude % scale).cast(pl.String).str.zfill(digits),
+    ).cast(pl.Float64, strict=False)
+    return pl.coalesce(exact, divided)
+
+
 def _decode_expr(token: pl.Expr, field: dict) -> pl.Expr:
     """Turn a stripped raw-token string expr into the field's ``arrow_type``.
 
@@ -201,7 +247,8 @@ def _decode_expr(token: pl.Expr, field: dict) -> pl.Expr:
         token = pl.when(token.is_in(null_values)).then(None).otherwise(token)
 
     if arrow_type == "string":
-        return token
+        # A blank field is missing, not an empty value.
+        return pl.when(token == "").then(None).otherwise(token)
     if arrow_type in ("int32", "int64"):
         return token.cast(_ARROW_TO_POLARS[arrow_type], strict=False)
     if arrow_type == "float64":
@@ -210,8 +257,7 @@ def _decode_expr(token: pl.Expr, field: dict) -> pl.Expr:
                 10 ** decode["implied_decimals"] if decode.get("implied_decimals") else None
             )
             if scale:
-                scaled: pl.Expr = token.cast(pl.Float64, strict=False) / scale
-                return scaled
+                return _fixed_point_expr(token, int(scale))
         return token.cast(pl.Float64, strict=False)
     if arrow_type == "date32":
         fmt = _DATE_PATTERNS[decode.get("pattern", "CCYYMMDD")]
@@ -232,6 +278,59 @@ def _decode_expr(token: pl.Expr, field: dict) -> pl.Expr:
 def _slice_token(begin: int, length: int, text_column: str) -> pl.Expr:
     """1-indexed fixed-width slice -> stripped string expr."""
     return pl.col(text_column).str.slice(begin - 1, length).str.strip_chars()
+
+
+def _discriminator(
+    schema: CanonicalSchema, active: list[tuple[dict, dict]], text_column: str
+) -> pl.Expr | None:
+    """The stripped record-type token of each row, or None when the RT has no such field."""
+    disc = next((lo for f, lo in active if f["id"] == "record_type"), None)
+    if disc is None:
+        return None
+    if schema.layout_kind == "fixed_width":
+        return _slice_token(disc["begin"], disc["length"], text_column)
+    first = pl.col(text_column).str.split(schema.delimiter or "|").list.get(0, null_on_oob=True)
+    return first.str.strip_chars()
+
+
+def record_types_in_file(
+    bronze_file: str | Path,
+    schema: CanonicalSchema,
+    record_types: list[str],
+    as_of: str,
+    text_column: str = "text_content",
+) -> set[str]:
+    """Which of ``record_types`` have at least one row in a bronze file, in one scan.
+
+    A layout can declare record types a file never carries (a pool-statistics file
+    holds only its PS records, though the layout it shares with the supplemental
+    file lists all of them), so this is what decides whether a silver file is written.
+
+    Args:
+        bronze_file: Path of the bronze parquet holding the raw text column.
+        schema: The loaded canonical schema.
+        record_types: Record-type codes to look for, each present for ``as_of``.
+        as_of: Period token identifying the vintage.
+        text_column: Column holding the raw record text.
+
+    Returns:
+        The subset of ``record_types`` with rows in the file.
+
+    Raises:
+        ValueError: If a record type has no active fields for that period.
+    """
+    checks = []
+    for rt in record_types:
+        active = schema.active_fields(rt, as_of)
+        if not active:
+            raise ValueError(f"No active fields for {schema.prefix} {rt} @ {as_of}")
+        token = _discriminator(schema, active, text_column)
+        # A record type without a discriminator is the whole file.
+        checks.append((pl.len() > 0 if token is None else (token == rt).any()).alias(rt))
+    if not checks:
+        return set()
+    row = pl.scan_parquet(bronze_file).select(checks).collect().row(0, named=True)
+    return {rt for rt, found in row.items() if found}
 
 
 # =============================================================================
@@ -266,10 +365,10 @@ def transform_fixed_width_canonical(
         raise ValueError(f"No active fields for {schema.prefix} {record_type} @ {as_of}")
 
     # Discriminator: the record_type field's window filters to this RT's rows.
-    disc = next((lo for f, lo in active if f["id"] == "record_type"), None)
+    disc = _discriminator(schema, active, text_column)
     lf = pl.scan_parquet(bronze_file)
     if disc is not None:
-        lf = lf.filter(_slice_token(disc["begin"], disc["length"], text_column) == record_type)
+        lf = lf.filter(disc == record_type)
 
     exprs = [
         _decode_expr(_slice_token(lo["begin"], lo["length"], text_column), f).alias(f["id"])
@@ -308,10 +407,9 @@ def transform_delimited_canonical(
 
     lf = pl.scan_parquet(bronze_file)
     # Discriminator is ordinal 1 (the record_type field).
-    disc = next((lo for f, lo in active if f["id"] == "record_type"), None)
+    disc = _discriminator(schema, active, text_column)
     if disc is not None:
-        first = pl.col(text_column).str.split(delimiter).list.get(0, null_on_oob=True)
-        lf = lf.filter(first.str.strip_chars() == record_type)
+        lf = lf.filter(disc == record_type)
 
     parts = pl.col(text_column).str.split(delimiter)
     exprs = []

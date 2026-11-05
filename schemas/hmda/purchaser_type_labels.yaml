@@ -1,0 +1,38 @@
+# HMDA purchaser_type code -> label, per silver era. Read by
+# sources.hmda.utils.purchaser_type_labels; silver persists the label as
+# purchaser_type_label. A code missing here gets a null label.
+#
+# period_2007_2017: CFPB "HMDA Loan/Application Register Code Sheet" for the 2007-2017
+#   public LAR (files.consumerfinance.gov/hmda-historic-data-dictionaries/lar_record_codes.pdf),
+#   "Type of Purchaser", verbatim.
+# post2018: CFPB Filing Instructions Guide (2018+), LAR field "Type of Purchaser", verbatim.
+#   Code 7 splits into 71 and 72 from 2018.
+#
+# pre2007 is not covered: Regulation C redefined the list at the 2004 reporting change
+# (in silver, code 7 grows from 61k loans in 2003 to 1.28M in 2004), so one table for the
+# era would mislabel part of it, and no pre-2004 code sheet has been transcribed.
+
+period_2007_2017:
+  0: Loan was not originated or was not sold in calendar year covered by register
+  1: Fannie Mae (FNMA)
+  2: Ginnie Mae (GNMA)
+  3: Freddie Mac (FHLMC)
+  4: Farmer Mac (FAMC)
+  5: Private securitization
+  6: Commercial bank, savings bank or savings association
+  7: Life insurance company, credit union, mortgage bank, or finance company
+  8: Affiliate institution
+  9: Other type of purchaser
+
+post2018:
+  0: Not applicable
+  1: Fannie Mae
+  2: Ginnie Mae
+  3: Freddie Mac
+  4: Farmer Mac
+  5: Private securitizer
+  6: Commercial bank, savings bank, or savings association
+  71: Credit union, mortgage company, or finance company
+  72: Life insurance company
+  8: Affiliate institution
+  9: Other type of purchaser

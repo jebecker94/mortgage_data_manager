@@ -44,7 +44,7 @@ from mortgage_data_manager.matching.validation_common import (
     rate_by_sides,
     save_and_close,
 )
-from mortgage_data_manager.sources.hmda.load import scan_hmda_years
+from mortgage_data_manager.sources.hmda.load import scan_hmda_years, scan_originations
 
 VALIDATION_OUTPUT_DIR = MortgageDataConfig.PROJECT_DIR / "docs" / "matching" / "figures"
 
@@ -139,9 +139,7 @@ def load_hmda_originations(hmda_dir: Path | None = None) -> pl.LazyFrame:
     Returns:
         The originations, lazily.
     """
-    return scan_hmda_years("post2018", root=hmda_dir or Config.HMDA_SILVER_DIR_POST2018).filter(
-        pl.col("action_taken") == 1
-    )
+    return scan_originations("post2018", root=hmda_dir or Config.HMDA_SILVER_DIR_POST2018)
 
 
 def load_hmda_purchases(hmda_dir: Path | None = None) -> pl.LazyFrame:

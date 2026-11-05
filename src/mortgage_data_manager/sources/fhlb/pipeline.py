@@ -66,6 +66,8 @@ def run_pipeline(
         - silver_transformed: Number of years transformed to silver
         - bronze_skipped: Number of years skipped in bronze
         - silver_skipped: Number of years skipped in silver
+        - bronze_failed: Number of years that failed in bronze
+        - silver_failed: Number of years that failed in silver
     """
     # Set defaults
     if years is None:
@@ -81,8 +83,10 @@ def run_pipeline(
         "files_downloaded": 0,
         "bronze_loaded": 0,
         "bronze_skipped": 0,
+        "bronze_failed": 0,
         "silver_transformed": 0,
         "silver_skipped": 0,
+        "silver_failed": 0,
     }
 
     # Step 1: Download
@@ -98,28 +102,24 @@ def run_pipeline(
     # Step 2: Load to bronze
     if not skip_bronze:
         logger.info("Step 2: Loading AMA data to bronze layer")
-        try:
-            bronze_results = import_ama_bronze(
-                years=years, raw_dir=raw, output_dir=bronze, overwrite=overwrite
-            )
-            results["bronze_loaded"] = bronze_results["loaded"]
-            results["bronze_skipped"] = bronze_results["skipped"]
-            logger.info("Loaded %s year(s) to bronze", bronze_results["loaded"])
-        except Exception as e:
-            logger.error("Bronze loading failed: %s", e)
+        bronze_results = import_ama_bronze(
+            years=years, raw_dir=raw, output_dir=bronze, overwrite=overwrite
+        )
+        results["bronze_loaded"] = bronze_results["loaded"]
+        results["bronze_skipped"] = bronze_results["skipped"]
+        results["bronze_failed"] = bronze_results["failed"]
+        logger.info("Loaded %s year(s) to bronze", bronze_results["loaded"])
 
     # Step 3: Transform to silver
     if not skip_silver:
         logger.info("Step 3: Transforming AMA data to silver layer")
-        try:
-            silver_results = import_ama_silver(
-                years=years, bronze_dir=bronze, output_dir=silver, overwrite=overwrite
-            )
-            results["silver_transformed"] = silver_results["loaded"]
-            results["silver_skipped"] = silver_results["skipped"]
-            logger.info("Transformed %s year(s) to silver", silver_results["loaded"])
-        except Exception as e:
-            logger.error("Silver transformation failed: %s", e)
+        silver_results = import_ama_silver(
+            years=years, bronze_dir=bronze, output_dir=silver, overwrite=overwrite
+        )
+        results["silver_transformed"] = silver_results["loaded"]
+        results["silver_skipped"] = silver_results["skipped"]
+        results["silver_failed"] = silver_results["failed"]
+        logger.info("Transformed %s year(s) to silver", silver_results["loaded"])
 
     return results
 
@@ -197,7 +197,7 @@ def run_bronze(
         overwrite: Rebuild bronze parquet that already exists.
 
     Returns:
-        Per-dataset counts (``loaded``/``skipped``), keyed by dataset name.
+        Per-dataset counts (``loaded``/``skipped``/``failed``), keyed by dataset name.
 
     Raises:
         ValueError: If a dataset is unknown.
@@ -236,7 +236,7 @@ def run_silver(
         overwrite: Rebuild silver parquet that already exists.
 
     Returns:
-        Per-dataset counts (``loaded``/``skipped``), keyed by dataset name.
+        Per-dataset counts (``loaded``/``skipped``/``failed``), keyed by dataset name.
 
     Raises:
         ValueError: If a dataset is unknown.

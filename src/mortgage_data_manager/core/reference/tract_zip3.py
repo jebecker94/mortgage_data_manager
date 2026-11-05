@@ -25,6 +25,7 @@ import polars as pl
 
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 
 logger = get_logger(__name__)
 
@@ -77,6 +78,36 @@ def _parquet_path() -> Path:
     return MortgageDataConfig.REFERENCE_DIR / "tract_zip3" / "tract_zip3.parquet"
 
 
+def _top_candidates(shares: pl.DataFrame) -> pl.DataFrame:
+    """Each tract's top ZIP3, plus the runner-up when it clears `SECOND_ZIP3_MIN_SHARE`.
+
+    Ranks by share alone, so tied shares are never ordered by ZIP3: a tie for first
+    between two ZIP3s keeps both (`load_dominant_tract_zip3` then has no dominant one),
+    a tie for first among three or more keeps none, and a runner-up tied with another
+    ZIP3 is dropped.
+
+    Returns:
+        At most two rows per tract.
+    """
+    rank = pl.col("share").rank("min", descending=True).over("census_tract")
+    at_rank = pl.len().over("census_tract", "_rank")
+    n_top = (pl.col("_rank") == 1).sum().over("census_tract")
+    return (
+        shares.with_columns(_rank=rank)
+        .with_columns(_at_rank=at_rank, _n_top=n_top)
+        .filter(
+            ((pl.col("_rank") == 1) & (pl.col("_n_top") <= 2))
+            | (
+                (pl.col("_rank") == 2)
+                & (pl.col("_n_top") == 1)
+                & (pl.col("_at_rank") == 1)
+                & (pl.col("share") >= SECOND_ZIP3_MIN_SHARE)
+            )
+        )
+        .drop("_rank", "_at_rank", "_n_top")
+    )
+
+
 def _build_parquet_cache() -> Path:
     outs = []
     for year, quarter in TRACT_ZIP3_VINTAGES.items():
@@ -101,14 +132,7 @@ def _build_parquet_cache() -> Path:
             # addresses, so no loans should geocode there — drop.
             .filter(pl.col("share").is_not_nan() & pl.col("share").is_not_null())
         )
-        # deterministic ranking: share desc, zip3 asc breaks exact-share ties
-        ranked = shares.sort(
-            ["census_tract", "share", "zip3"], descending=[False, True, False]
-        ).with_columns(pl.int_range(pl.len()).over("census_tract").alias("_rk"))
-        kept = ranked.filter(
-            (pl.col("_rk") == 0)
-            | ((pl.col("_rk") == 1) & (pl.col("share") >= SECOND_ZIP3_MIN_SHARE))
-        ).drop("_rk", "w")
+        kept = _top_candidates(shares).drop("w")
         outs.append(kept.with_columns(pl.lit(year, dtype=pl.Int32).alias("vintage")))
         logger.info(
             "tract_zip3 vintage %dQ%d: %s tracts cached",
@@ -118,9 +142,11 @@ def _build_parquet_cache() -> Path:
         )
     parquet = _parquet_path()
     parquet.parent.mkdir(parents=True, exist_ok=True)
-    pl.concat(outs, how="diagonal_relaxed").select(
+    mapping = pl.concat(outs, how="diagonal_relaxed").select(
         "census_tract", "vintage", "zip3", "share"
-    ).write_parquet(parquet)
+    )
+    with atomic_output(parquet) as tmp:
+        mapping.write_parquet(tmp)
     logger.info("Cached tract->zip3 mapping: %s", parquet)
     return parquet
 
@@ -139,7 +165,7 @@ def load_tract_zip3(overwrite: bool = False) -> pl.LazyFrame:
     Builds and caches on first use.
     """
     parquet = _parquet_path()
-    if overwrite or not parquet.exists():
+    if should_process_file(parquet, overwrite):
         _build_parquet_cache()
     return pl.scan_parquet(parquet)
 

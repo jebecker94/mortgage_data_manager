@@ -2,6 +2,23 @@
 
 This module handles transforming bronze layer data to silver layer:
 - AMA (Acquired Member Assets) loan-level data with data quality transformations
+
+Units and codes in AMA silver that the column names do not say:
+
+- ``TotalAnnualIncomeAmount`` (bronze ``TotalMonthlyIncomeAmount``, the source's 2019+
+  name) holds **annual** income in whole dollars in every year. FHFA publishes annual
+  income through 2018 ("Total Borrower(s) Annual Income") and monthly qualifying income
+  from 2019 ("Total Monthly Income Amount"); silver multiplies 2019+ by 12. Checked on the data: in 2009-2018 the value divided by
+  ``HUDMedianIncomeAmount`` reproduces the published ``IncRat`` within 1% on at least
+  99.3% of rows each year, and the 2019 bronze median is $8,333 a month.
+- ``Borrower1CreditScoreValue`` / ``Borrower2CreditScoreValue`` are bands, not scores:
+  1 = below 620, 2 = 620-659, 3 = 660-699, 4 = 700-759, 5 = 760 or more, 9 = missing or
+  not applicable (for borrower 2 also no co-borrower). Code 9 is kept as published.
+- ``Bank`` is filled from ``FHLBankID`` where it is null: the 2010-2014 files carry the
+  bank name only in ``FHLBankID``, under the same names as ``Bank``. The 2009 file has
+  neither, so 2009 ``Bank`` stays null.
+- ``FHFBID`` (the member's Finance Board id) is published only in the 2009-2014 files;
+  from 2015 the source has no such column, so it is null.
 """
 
 from __future__ import annotations
@@ -10,7 +27,7 @@ import datetime
 from pathlib import Path
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 
 logger = get_logger(__name__)
 
@@ -22,13 +39,14 @@ def import_ama_silver(
 
     Applies standardized data cleaning and normalization:
     - Normalizes percentage values across schema versions
-    - Fixes income amount units (monthly vs yearly)
+    - Converts 2019+ monthly income to annual, as published before 2019
     - Standardizes indicator variable encoding (1/2 -> 0/1)
     - Cleans census tract identifiers
     - Converts property type codes
     - Caps extreme debt-to-income ratios
     - Replaces sentinel missing value codes with nulls
     - Parses date fields
+    - Fills ``Bank`` from ``FHLBankID`` where null (2010-2014)
     - Removes redundant columns
 
     Args:
@@ -38,12 +56,14 @@ def import_ama_silver(
         overwrite: Whether to overwrite existing files
 
     Returns:
-        Summary with 'loaded' and 'skipped' counts
+        Summary with 'loaded', 'skipped' (no bronze file, or output exists) and
+        'failed' counts.
     """
     import polars as pl
 
     loaded = 0
     skipped = 0
+    failed = 0
 
     # Ensure output directory exists
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -85,14 +105,15 @@ def import_ama_silver(
                         .alias(col)
                     )
 
-            # 2. Fix income amounts (pre-2019 monthly, 2019+ yearly/12)
+            # 2. Income to annual dollars: published annual through 2018, monthly from
+            #    2019, under the 2019+ source name; renamed for its unit (module docstring).
             if "TotalMonthlyIncomeAmount" in df.columns:
                 df = df.with_columns(
                     pl.when(pl.col("Year") >= 2019)
                     .then(pl.col("TotalMonthlyIncomeAmount") * 12)
                     .otherwise(pl.col("TotalMonthlyIncomeAmount"))
                     .alias("TotalMonthlyIncomeAmount")
-                )
+                ).rename({"TotalMonthlyIncomeAmount": "TotalAnnualIncomeAmount"})
 
             # 3. Fix indicator variables (pre-2019 used 1/2, post-2019 uses 0/1)
             if "BorrowerFirstTimeHomebuyer" in df.columns:
@@ -228,18 +249,22 @@ def import_ama_silver(
                             .alias("PrepaymentPenaltyExpirationDate")
                         )
 
-            # 9. Drop redundant Year column (same as LoanAcquisitionDate)
+            # 9. The 2010-2014 files name the bank only in FHLBankID (same names as Bank).
+            if "Bank" in df.columns and "FHLBankID" in df.columns:
+                df = df.with_columns(pl.coalesce("Bank", "FHLBankID").alias("Bank"))
+
+            # 10. Drop redundant Year column (same as LoanAcquisitionDate)
             if "Year" in df.columns:
                 df = df.drop("Year")
 
-            # Write to parquet
-            df.write_parquet(output_file)
+            with atomic_output(output_file) as tmp:
+                df.write_parquet(tmp)
 
             logger.info("Saved %s records to %s", f"{len(df):,}", output_file.name)
             loaded += 1
 
         except Exception as e:
             logger.error("Failed to process %s: %s", year, e)
-            skipped += 1
+            failed += 1
 
-    return {"loaded": loaded, "skipped": skipped}
+    return {"loaded": loaded, "skipped": skipped, "failed": failed}

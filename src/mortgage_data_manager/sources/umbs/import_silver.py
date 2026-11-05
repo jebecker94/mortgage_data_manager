@@ -28,7 +28,7 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.core.types import SilverSpec, apply_silver_types, enforce_schema
 from mortgage_data_manager.sources.umbs.config import (
     CORRECTION_PAIRS,
@@ -36,11 +36,24 @@ from mortgage_data_manager.sources.umbs.config import (
     CorrectionPair,
     UMBSConfig,
 )
+from mortgage_data_manager.sources.umbs.prefix_library import acquisition_type_expr
 
 logger = get_logger(__name__)
 
 _MONTH_RE = re.compile(r"_(\d{6})\.parquet$")
 _SOURCE_COL = "_record_source"
+
+#: Freddie silver kinds that get the pool-level ``acquisition_type`` (Prefix Library).
+_ACQUISITION_TYPE_KINDS: frozenset[tuple[str, str]] = frozenset(
+    {("FHLMC", "ILLD"), ("FHLMC", "IS"), ("FHLMC", "FU")}
+)
+
+
+def _with_acquisition_type(lf: pl.LazyFrame, gse: str, kind: str) -> pl.LazyFrame:
+    """Add Freddie's pool class for the kinds in `_ACQUISITION_TYPE_KINDS` (else no-op)."""
+    if (gse, kind) not in _ACQUISITION_TYPE_KINDS:
+        return lf
+    return lf.with_columns(acquisition_type_expr())
 
 
 def _apply_spec(lf: pl.LazyFrame, spec: SilverSpec | None, name: str) -> pl.LazyFrame:
@@ -76,6 +89,9 @@ def _merge_month(
     output_path: Path,
     silver_spec: SilverSpec | None = None,
     name: str = "umbs",
+    *,
+    gse: str = "",
+    kind: str = "",
 ) -> tuple[int, int, int]:
     """Merge one month's original + correction pair into a unified parquet.
 
@@ -86,6 +102,8 @@ def _merge_month(
         output_path: Silver output path.
         silver_spec: The kind's close-to-final dtype spec (applied + enforced).
         name: Dataset label for schema-enforcement log messages.
+        gse: GSE of the pair (selects the derived columns).
+        kind: Canonical kind of the pair (selects the derived columns).
 
     Returns:
         (rows_from_original, rows_from_correction, total_rows)
@@ -94,7 +112,9 @@ def _merge_month(
 
     if correction_path is None:
         unified = orig.with_columns(pl.lit("original").alias(_SOURCE_COL))
-        _apply_spec(unified, silver_spec, name).sink_parquet(output_path, compression="zstd")
+        unified = _with_acquisition_type(unified, gse, kind)
+        with atomic_output(output_path) as tmp:
+            _apply_spec(unified, silver_spec, name).sink_parquet(tmp, compression="zstd")
         total = pl.scan_parquet(output_path).select(pl.len()).collect().item()
         return total, 0, total
 
@@ -107,7 +127,9 @@ def _merge_month(
     from_corr = corr.with_columns(pl.lit("correction").alias(_SOURCE_COL))
 
     unified = pl.concat([from_orig, from_corr], how="diagonal_relaxed")
-    _apply_spec(unified, silver_spec, name).sink_parquet(output_path, compression="zstd")
+    unified = _with_acquisition_type(unified, gse, kind)
+    with atomic_output(output_path) as tmp:
+        _apply_spec(unified, silver_spec, name).sink_parquet(tmp, compression="zstd")
 
     # Recover the original/correction split from the written file — a lazy
     # scan over one column, so it stays cheap even as months grow.
@@ -125,10 +147,16 @@ def _process_pair(
     silver_dir: Path,
     overwrite: bool,
 ) -> dict[str, int]:
-    """Process all monthly files for one (GSE, kind) pair."""
+    """Process all monthly files for one (GSE, kind) pair.
+
+    Returns:
+        Counts: ``months``, ``wrote``, ``skipped_existing``, ``missing_pair`` and
+        ``failed`` (months whose merge raised; logged, and nothing published for them).
+    """
+    empty = {"months": 0, "skipped_existing": 0, "missing_pair": 0, "wrote": 0, "failed": 0}
     if "BLOCKED" in spec["description"]:
         logger.info("  %s/%s: SKIPPED (%s)", gse, kind, spec["description"])
-        return {"months": 0, "skipped_existing": 0, "missing_pair": 0, "wrote": 0}
+        return empty
 
     orig_dir = bronze_dir / gse / spec["original"]
     corr_dir = bronze_dir / gse / spec["correction"]
@@ -137,12 +165,13 @@ def _process_pair(
 
     if not orig_dir.exists():
         logger.warning("  %s/%s: missing bronze original at %s", gse, kind, orig_dir)
-        return {"months": 0, "skipped_existing": 0, "missing_pair": 0, "wrote": 0}
+        return empty
 
     months_processed = 0
     skipped_existing = 0
     missing_pair = 0
     wrote = 0
+    failed = 0
     total_o = total_c = 0
 
     for orig_path in sorted(orig_dir.glob(f"{spec['original']}_*.parquet")):
@@ -172,21 +201,25 @@ def _process_pair(
                 out_path,
                 UMBS_SILVER_SPECS.get(kind),
                 f"umbs/{gse}/{kind}",
+                gse=gse,
+                kind=kind,
             )
             total_o += n_o
             total_c += n_c
             wrote += 1
-        except Exception as exc:
-            logger.error("  %s/%s/%s: failed — %s", gse, kind, month, exc)
+        except Exception:
+            failed += 1
+            logger.exception("  %s/%s/%s: failed", gse, kind, month)
 
     logger.info(
-        "  %s/%s: months=%s wrote=%s "
+        "  %s/%s: months=%s wrote=%s failed=%s "
         "skipped_existing=%s no_correction_for_month=%s "
         "rows_from_original=%s rows_from_correction=%s",
         gse,
         kind,
         months_processed,
         wrote,
+        failed,
         skipped_existing,
         missing_pair,
         f"{total_o:,}",
@@ -197,6 +230,7 @@ def _process_pair(
         "skipped_existing": skipped_existing,
         "missing_pair": missing_pair,
         "wrote": wrote,
+        "failed": failed,
     }
 
 
@@ -252,17 +286,22 @@ def _perf_month_from_path(name: str, style: str) -> str | None:
 def _process_perf_kind(
     spec: dict[str, str], bronze_dir: Path, silver_dir: Path, overwrite: bool
 ) -> dict[str, int]:
-    """Pass one monthly (no-correction) perf feed through to silver with date parsing."""
+    """Pass one monthly (no-correction) perf feed through to silver with date parsing.
+
+    Returns:
+        Counts: ``months``, ``wrote``, ``skipped_existing`` and ``failed`` (months whose
+        write raised; logged, and nothing published for them).
+    """
     gse, kind = spec["gse"], spec["kind"]
     src_dir = bronze_dir / gse / spec["bronze_folder"]
     out_dir = silver_dir / gse / kind
     out_dir.mkdir(parents=True, exist_ok=True)
     if not src_dir.exists():
         logger.warning("  %s/%s: missing bronze at %s", gse, kind, src_dir)
-        return {"months": 0, "skipped_existing": 0, "wrote": 0}
+        return {"months": 0, "skipped_existing": 0, "wrote": 0, "failed": 0}
 
     silver_spec = UMBS_SILVER_SPECS.get(kind)
-    months = skipped = wrote = 0
+    months = skipped = wrote = failed = 0
     for src in sorted(src_dir.glob(spec["glob"])):
         month = _perf_month_from_path(src.name, spec["style"])
         if month is None:
@@ -273,15 +312,27 @@ def _process_perf_kind(
         if not should_process_file(out_path, overwrite):
             skipped += 1
             continue
-        lf = pl.scan_parquet(src).with_columns(pl.lit("original").alias(_SOURCE_COL))
-        _apply_spec(lf, silver_spec, f"umbs/{gse}/{kind}").sink_parquet(
-            out_path, compression="zstd"
-        )
-        wrote += 1
+        try:
+            lf = pl.scan_parquet(src).with_columns(pl.lit("original").alias(_SOURCE_COL))
+            lf = _with_acquisition_type(lf, gse, kind)
+            with atomic_output(out_path) as tmp:
+                _apply_spec(lf, silver_spec, f"umbs/{gse}/{kind}").sink_parquet(
+                    tmp, compression="zstd"
+                )
+            wrote += 1
+        except Exception:
+            failed += 1
+            logger.exception("  %s/%s/%s: failed", gse, kind, month)
     logger.info(
-        "  %s/%s: months=%s wrote=%s skipped_existing=%s", gse, kind, months, wrote, skipped
+        "  %s/%s: months=%s wrote=%s failed=%s skipped_existing=%s",
+        gse,
+        kind,
+        months,
+        wrote,
+        failed,
+        skipped,
     )
-    return {"months": months, "skipped_existing": skipped, "wrote": wrote}
+    return {"months": months, "skipped_existing": skipped, "wrote": wrote, "failed": failed}
 
 
 def run_silver_import(
@@ -302,7 +353,9 @@ def run_silver_import(
         kinds: Optional list of canonical kind names (e.g. ['ILLD', 'IS']).
 
     Returns:
-        Per-pair counts keyed by 'GSE/kind'.
+        Per-pair counts keyed by 'GSE/kind'. Every entry carries ``wrote``,
+        ``skipped_existing`` and ``failed``; correction pairs also carry
+        ``missing_pair``.
     """
     if not bronze_dir.exists():
         raise FileNotFoundError(f"Bronze directory does not exist: {bronze_dir}")

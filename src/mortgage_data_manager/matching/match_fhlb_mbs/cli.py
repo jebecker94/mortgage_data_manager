@@ -126,7 +126,7 @@ def info():
 
     table.add_row("", "")
     table.add_row("[bold]GNMA Paths[/bold]", "")
-    table.add_row("  Silver dailyllmni/L", str(Config.get_gnma_silver_dir()))
+    table.add_row("  Silver root (dailyllmni / dailyllmnipd)", str(Config.get_gnma_silver_dir()))
 
     table.add_row("", "")
     table.add_row("[bold]FHLB Paths[/bold]", "")
@@ -163,7 +163,10 @@ def info():
         else:
             console.print(f"  [red]✗[/red] {label}: not found")
 
-    check_parquet_files(Config.get_gnma_silver_dir(), "GNMA Silver L")
+    check_parquet_files(Config.get_gnma_silver_dir() / "dailyllmni" / "L", "GNMA dailyllmni L")
+    check_parquet_files(
+        Config.get_gnma_silver_dir() / "dailyllmnipd" / "LL", "GNMA dailyllmnipd LL"
+    )
     check_parquet_files(Config.get_fhlb_ama_silver_dir(), "FHLB AMA Silver")
 
     # Check output files

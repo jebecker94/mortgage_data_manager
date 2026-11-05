@@ -19,9 +19,9 @@ from mortgage_data_manager.combined._common import (
     _build_dataset,
     _coalesce_present,
     _g_raw,
+    _gnma_loan_months,
     _gnma_loan_readers,
-    _gnma_pool_header,
-    _gnma_silver_dir,
+    _gnma_program,
     _gse_crosswalk,
     _opt_str,
     _plan_exprs,
@@ -48,6 +48,7 @@ from mortgage_data_manager.core.harmonized import (
     gnma_loan_purpose,
 )
 from mortgage_data_manager.core.logging import get_logger
+from mortgage_data_manager.sources.gnma.load import scan_new_issuance
 
 logger = get_logger(__name__)
 
@@ -875,14 +876,14 @@ def _build_gse_loan_issuance(
     return total
 
 
-# ===================== GNMA loan_issuance (single dailyllmni spine) =========
-# GNMA is NOT a two-spine fusion: dailyllmni carries one loan-level row per new
-# issuance (the loan as it appeared at pool issuance), so there is no SF/UMBS
-# crosswalk join. Each monthly L file IS one issuance month; pool-level CUSIP /
-# program / pool_type are attached from the same file's P record (L->P on Pool ID,
-# validated 100%). GNMA silver is canonical and already decoded, so nothing is
-# rescaled. Choices: Ginnie I and II both flow through dailyllmni, split by the
-# P-record Issue Type into ``program``; purpose comes from the (Loan Purpose,
+# ===================== GNMA loan_issuance (single new-issuance spine) ========
+# GNMA is NOT a two-spine fusion: the new-issuance feed carries one loan-level row per
+# new issuance (the loan as it appeared at pool issuance), so there is no SF/UMBS
+# crosswalk join. Read through `sources.gnma.load.scan_new_issuance` (dailyllmni before
+# 2026-08, dailyllmnipd from it), one issuance month at a time; pool-level CUSIP / Issue
+# Type / pool_type come with each loan row. GNMA silver is canonical and already
+# decoded, so nothing is rescaled. Choices: Ginnie I and II both flow through the same
+# feed, split by Issue Type into ``program``; purpose comes from the (Loan Purpose,
 # Refinance Type) pair (`gnma_loan_purpose`); government MIP stays separate from the GSE
 # private ``mi_percent``; TPO 3 maps to retail; a loan is an ARM iff its index is
 # non-blank or its margin is positive; LTV/CLTV/DTI of 0 or blank are null.
@@ -921,12 +922,12 @@ def _gnma_gov_insurer(expr: pl.Expr | None) -> pl.Expr:
 
 
 def _gnma_arm_index(expr: pl.Expr | None) -> pl.Expr:
-    """Normalize GNMA ``Index Type`` to the controlled ARM-index vocab."""
+    """Normalize GNMA ``Index Type`` to the controlled ARM-index vocab; blank or null -> null."""
     if expr is None:
         return pl.lit(None, dtype=pl.String)
     e = expr.str.to_uppercase()
     return (
-        pl.when(e.str.len_chars() == 0)
+        pl.when(e.is_null() | (e.str.len_chars() == 0))
         .then(None)
         .when(e.str.contains("CMT"))
         .then(pl.lit("CMT"))
@@ -963,19 +964,17 @@ def _gnma_issuance_readers(schema: pl.Schema) -> Readers:
 
 
 def _assemble_gnma_loan_issuance(month: str) -> pl.LazyFrame:
-    """Assemble one GNMA issuance month from its dailyllmni L (+ P) silver files.
+    """Assemble one GNMA issuance month from the new-issuance feed.
 
     Args:
-        month: The issuance month ``YYYYMM`` (the L file's date; all rows in a
-            dailyllmni month file are new issuances of that month).
+        month: The issuance month ``YYYYMM`` (every row of a month's file is a new
+            issuance of that month).
 
     Returns:
         A LazyFrame of unified loan-issuance rows for ``month`` (pre-reindex).
     """
-    lf = pl.scan_parquet(str(_gnma_silver_dir("dailyllmni", "L") / f"dailyllmni_{month}_L.parquet"))
+    lf = scan_new_issuance(min_month=month, max_month=month)
     schema = lf.collect_schema()
-    if _g_raw("pool_id", schema) is None or _g_raw("disclosure_sequence_number", schema) is None:
-        raise ValueError(f"GNMA {month}: missing Pool ID / Disclosure Sequence Number")
 
     def g(name: str) -> pl.Expr | None:
         return _g_raw(name, schema)
@@ -998,30 +997,18 @@ def _assemble_gnma_loan_issuance(month: str) -> pl.LazyFrame:
         .then(pl.lit("ARM"))
         .otherwise(pl.lit("FRM")),
     }
-    out = lf.select(_plan_exprs(GNMA_LOAN_ISSUANCE_PLAN, read, derived))
-
-    # --- attach pool-level CUSIP / program / pool_type via L->P on Pool ID ---
-    p_path = _gnma_silver_dir("dailyllmni", "P") / f"dailyllmni_{month}_P.parquet"
-    if p_path.exists():
-        header = _gnma_pool_header(p_path, with_program=True).rename({"_pool_key": "pool_id"})
-        out = out.join(header, on="pool_id", how="left")
-    else:
-        logger.warning("GNMA %s: no P record file; cusip/program/pool_type null.", month)
-        out = out.with_columns(
-            pl.lit(None, dtype=pl.String).alias("cusip"),
-            pl.lit(None, dtype=pl.String).alias("program"),
-            pl.lit(None, dtype=pl.String).alias("pool_type"),
-        )
+    out = lf.select(
+        *_plan_exprs(GNMA_LOAN_ISSUANCE_PLAN, read, derived),
+        read["raw"](("cusip_number",)).alias("cusip"),
+        _gnma_program(pl.col("issue_type")).alias("program"),
+        read["raw"](("pool_type",)).alias("pool_type"),
+    )
     return _scrub_issuance_sentinels(out)
 
 
 def _gnma_canon_schema() -> pl.Schema:
     """Resolve GNMA's output schema (schema-only; the column set is constant)."""
-    months = sorted(
-        p.stem.split("_")[1]
-        for p in _gnma_silver_dir("dailyllmni", "L").glob("dailyllmni_*_L.parquet")
-    )
-    return _assemble_gnma_loan_issuance(months[-1]).collect_schema()
+    return _assemble_gnma_loan_issuance(_gnma_loan_months("new_issuance")[-1]).collect_schema()
 
 
 def _build_gnma_loan_issuance(out_dir: Path, canon: pl.Schema) -> int:
@@ -1034,11 +1021,10 @@ def _build_gnma_loan_issuance(out_dir: Path, canon: pl.Schema) -> int:
     Returns:
         Rows written for GNMA.
     """
-    l_files = sorted(_gnma_silver_dir("dailyllmni", "L").glob("dailyllmni_*_L.parquet"))
-    logger.info("  GNMA: %d dailyllmni L month files", len(l_files))
+    months = _gnma_loan_months("new_issuance")
+    logger.info("  GNMA: %d new-issuance months", len(months))
     total = 0
-    for f in l_files:
-        month = f.stem.split("_")[1]
+    for month in months:
         chunk = _assemble_gnma_loan_issuance(month).collect(engine="streaming")
         n = _write_partitioned(chunk, canon, out_dir, "issuance_year", "GNMA", f"gnma_{month}")
         total += n
@@ -1054,14 +1040,14 @@ def build_loan_issuance(*, overwrite: bool = False) -> pl.LazyFrame:
     spine (enrichment, ∪ the first monthly snapshot) — bridged by the strictly-1:1
     ``crosswalk/mbs_umbs/mbs_umbs_crosswalk_{gse}.parquet`` (field plans in the schema
     module). GNMA is a SINGLE
-    ``dailyllmni`` spine (no crosswalk; one row per new issuance), harmonized to
-    the same unified columns with pool-level CUSIP/program/pool_type attached via
-    an L->P join. Output is hive-partitioned by ``agency`` and ``issuance_year``
+    new-issuance spine (no crosswalk; one row per new issuance; ``dailyllmni`` before
+    2026-08, ``dailyllmnipd`` from it), harmonized to the same unified columns with
+    pool-level CUSIP/program/pool_type. Output is hive-partitioned by ``agency`` and ``issuance_year``
     under ``data/combined/loan_issuance``.
 
     Processing is CHUNKED by source file: each GSE chunk narrows the crosswalk and
     the UMBS side to the same loans before joining (a single-shot join OOMs on a
-    small machine); GNMA is chunked by monthly L file. All three agencies are
+    small machine); GNMA is chunked by issuance month. All three agencies are
     reindexed to one canonical schema so the dataset scans uniformly.
 
     Args:

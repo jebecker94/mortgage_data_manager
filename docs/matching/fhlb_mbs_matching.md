@@ -7,8 +7,8 @@ an FHLB acquired and that a GNMA issuer pooled. GNMA is the only MBS side; see
 
 ## Data sources
 
-- GNMA `dailyllmni` loan-level disclosure (silver) for government-insured loans, for a
-  single GNMA issuer per run. The default, issuer 3937, is the Federal Home Loan Bank of
+- GNMA new-issuance loan-level disclosure (silver `dailyllmni`, and `dailyllmnipd` from
+  2026-08) for government-insured loans, for a single GNMA issuer per run. The default, issuer 3937, is the Federal Home Loan Bank of
   Chicago in GNMA's issuer file: it pools government loans that FHLBs acquire through MPF.
 - FHLB AMA acquisition data, filtered by `MortgageType` to FHA, VA and RD. Records from the
   Cincinnati and Indianapolis Banks, which acquire through MPP rather than MPF, are

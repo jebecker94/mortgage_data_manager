@@ -15,7 +15,7 @@ from pathlib import Path
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.fhlmc.config import FHLMCConfig
 
 logger = get_logger(__name__)
@@ -375,12 +375,13 @@ def _import_txt_file(
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
     logger.info("      Saving to %s", output_file)
-    lf.sink_parquet(
-        output_file,
-        compression=FHLMCConfig.PARQUET_COMPRESSION,
-        statistics=FHLMCConfig.PARQUET_STATISTICS,
-        row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
-    )
+    with atomic_output(output_file) as tmp:
+        lf.sink_parquet(
+            tmp,
+            compression=FHLMCConfig.PARQUET_COMPRESSION,
+            statistics=FHLMCConfig.PARQUET_STATISTICS,
+            row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
+        )
 
     logger.info("      ✓ Saved %s", output_file.name)
 
@@ -586,12 +587,13 @@ def _import_crt_txt_file(
             lf = apply_type_conversions(lf, schema)
         # 'pay_hist' / 'temp_buydown' are staged as-is, native headers kept.
 
-    lf.sink_parquet(
-        output_file,
-        compression=FHLMCConfig.PARQUET_COMPRESSION,
-        statistics=FHLMCConfig.PARQUET_STATISTICS,
-        row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
-    )
+    with atomic_output(output_file) as tmp:
+        lf.sink_parquet(
+            tmp,
+            compression=FHLMCConfig.PARQUET_COMPRESSION,
+            statistics=FHLMCConfig.PARQUET_STATISTICS,
+            row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
+        )
     logger.info("      ✓ Saved %s", output_file.name)
 
 
@@ -679,10 +681,11 @@ def _import_rpl_csv(csv_path: Path, schema: dict | None) -> None:
     output_file = generate_output_path(csv_path, FHLMCConfig.FHLMC_BRONZE_REPERFORMING)
 
     logger.info("      Saving to %s", output_file)
-    lf.sink_parquet(
-        output_file,
-        compression=FHLMCConfig.PARQUET_COMPRESSION,
-        statistics=FHLMCConfig.PARQUET_STATISTICS,
-    )
+    with atomic_output(output_file) as tmp:
+        lf.sink_parquet(
+            tmp,
+            compression=FHLMCConfig.PARQUET_COMPRESSION,
+            statistics=FHLMCConfig.PARQUET_STATISTICS,
+        )
 
     logger.info("      ✓ Saved %s", output_file.name)

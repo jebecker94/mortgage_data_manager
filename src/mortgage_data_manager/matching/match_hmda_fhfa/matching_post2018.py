@@ -24,8 +24,8 @@ from mortgage_data_manager.core.reference import (
     load_tract_relationship,
     needs_vintage_bridge,
     to_planning_region,
+    tract_geoid,
 )
-from mortgage_data_manager.core.types import null_sentinels
 from mortgage_data_manager.matching.match_hmda_fhfa.config import HMDAFHFAMatchingConfig
 from mortgage_data_manager.matching.match_hmda_fhfa.rounds import (
     ROUNDS_POST2018,
@@ -35,7 +35,11 @@ from mortgage_data_manager.matching.match_hmda_fhfa.rounds import (
 from mortgage_data_manager.matching.resolve import drop_ambiguous
 from mortgage_data_manager.matching.terms import freddie_term_diff_expr
 from mortgage_data_manager.sources.fhfa.config import FHFAConfig
-from mortgage_data_manager.sources.hmda.load import best_file_type, scan_hmda
+from mortgage_data_manager.sources.hmda.load import (
+    best_file_type,
+    null_sentinel_codes,
+    scan_originations,
+)
 
 logger = get_logger(__name__)
 
@@ -68,8 +72,8 @@ _PAIR_COLS = [
 ]  # fmt: skip
 _CROSSWALK_COLS = [c for c in _PAIR_COLS if c not in ("rate_diff", "term_diff")]
 
-#: HMDA columns whose missing-value codes are nulled before matching: -99999 (numeric
-#: fields) and 8888 / 9999 (demographic codes).
+#: HMDA columns whose missing-value codes are nulled before matching, by the shared
+#: `null_sentinel_codes`: -99999 (numeric fields) and the age codes 8888 / 9999.
 _HMDA_NUMERIC_NA = [
     "loan_term", "interest_rate", "intro_rate_period", "debt_to_income_ratio",
     "combined_loan_to_value_ratio", "discount_points", "income", "property_value",
@@ -120,11 +124,7 @@ def load_fhfa_year(year: int) -> pl.LazyFrame:
     lf = pl.scan_parquet(fhfa_file).with_columns(
         [
             # Create census tract string (state 2 + county 3 + tract 6 = 11 chars)
-            (
-                pl.col("state_code").cast(pl.Int64).cast(pl.Utf8).str.zfill(2)
-                + pl.col("county").cast(pl.Int64).cast(pl.Utf8).str.zfill(3)
-                + pl.col("census_tract").cast(pl.Int64).cast(pl.Utf8).str.zfill(6)
-            ).alias("census_string"),
+            tract_geoid("state_code", "county", "census_tract").alias("census_string"),
             # Bucket interest rate to 0.125 increments
             ((pl.col("interest_rate_at_origination") * 8).round() * 125)
             .cast(pl.Int32)
@@ -159,22 +159,13 @@ def load_hmda_year(year: int, pool: Sequence[Pool]) -> tuple[pl.LazyFrame, str |
         LazyFrame and the release (file_type) it was read from.
     """
     best_type = best_file_type("post2018", year)
-    lf = scan_hmda("post2018", year, file_type=best_type)
-    lf = lf.filter(pl.col("action_taken") == 1)  # Originated loans only
+    lf = scan_originations("post2018", year, year, file_type=best_type)
 
     # Filter out 5+ unit properties (FHFA only covers 1-4 unit)
     lf = lf.filter(pl.col("total_units") <= 4)
 
     # HMDA missing-value codes -> null
-    names = lf.collect_schema().names()
-    lf = lf.with_columns(
-        [null_sentinels(pl.col(c), [-99999]).alias(c) for c in _HMDA_NUMERIC_NA if c in names]
-        + [
-            null_sentinels(pl.col(c), [8888, 9999]).alias(c)
-            for c in _HMDA_CATEGORICAL_NA
-            if c in names
-        ]
-    )
+    lf = null_sentinel_codes(lf, "post2018", [*_HMDA_NUMERIC_NA, *_HMDA_CATEGORICAL_NA])
 
     if pool:
         combined = _POOL_FILTERS[pool[0]]

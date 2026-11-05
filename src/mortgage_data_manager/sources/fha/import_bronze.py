@@ -163,23 +163,25 @@ class _SnapshotConversionTask:
     snapshot_type: SnapshotType
 
 
-def _run_parallel_conversions(tasks: list[_SnapshotConversionTask]) -> None:
-    """Execute snapshot conversion tasks, leveraging multiprocessing when useful."""
+def _run_parallel_conversions(tasks: list[_SnapshotConversionTask]) -> list[bool]:
+    """Execute snapshot conversion tasks, leveraging multiprocessing when useful.
+
+    Returns:
+        One success flag per task, in task order.
+    """
     if not tasks:
-        return
+        return []
 
     # ``spawn`` works across platforms and avoids issues when the project is embedded in
     # other applications. Fallback to a sequential loop if only one task needs work.
     process_count = min(len(tasks), max(1, cpu_count() or 1))
 
     if process_count <= 1:
-        for task in tasks:
-            _convert_snapshot(task)
-        return
+        return [_convert_snapshot(task) for task in tasks]
 
     ctx = get_context("spawn")
     with ctx.Pool(processes=process_count) as pool:
-        pool.map(_convert_snapshot, tasks)
+        return pool.map(_convert_snapshot, tasks)
 
 
 def clean_sf_sheets(df: pl.DataFrame) -> pl.DataFrame:
@@ -303,13 +305,23 @@ _SF_SHEET_TOKENS: tuple[str, ...] = ("Data", "Purchase", "Refinance")
 
 
 def _read_sf_frames(reader: fastexcel.ExcelReader) -> list[pl.DataFrame]:
-    """Load and clean every single-family sheet carrying loan-level records."""
+    """Load and clean every single-family sheet carrying loan-level records.
+
+    A sheet that fails to load fails the whole snapshot: bronze built from the
+    remaining sheets would be short by that sheet's loans and look complete.
+
+    Returns:
+        One cleaned frame per loan-level sheet.
+
+    Raises:
+        ValueError: If any loan-level sheet fails to load or clean.
+    """
     frames: list[pl.DataFrame] = []
     for sheet in [x for x in reader.sheet_names if any(t in x for t in _SF_SHEET_TOKENS)]:
         try:
             frames.append(clean_sf_sheets(reader.load_sheet(sheet).to_polars()))
         except Exception as exc:
-            logger.warning("Error reading sheet %s: %s", sheet, exc)
+            raise ValueError(f"error reading sheet {sheet!r}: {exc}") from exc
     return frames
 
 
@@ -515,8 +527,13 @@ def _verify_written_rows(output_file: Path, expected: int) -> None:
     raise ValueError(msg)
 
 
-def _convert_snapshot(task: _SnapshotConversionTask) -> None:
-    """Worker function for converting one monthly snapshot workbook to parquet."""
+def _convert_snapshot(task: _SnapshotConversionTask) -> bool:
+    """Worker function for converting one monthly snapshot workbook to parquet.
+
+    Returns:
+        True if the snapshot was written; False if it could not be read or held no
+        loan-level sheet (the failure is logged).
+    """
     logger.info("Reading and Converting File: %s", task.input_file)
     spec = _BRONZE_SPECS[task.snapshot_type]
 
@@ -526,8 +543,8 @@ def _convert_snapshot(task: _SnapshotConversionTask) -> None:
         frames = spec.read_frames(fastexcel.read_excel(task.input_file))
 
         if not frames:
-            logger.warning("No relevant sheets found in %s", task.input_file)
-            return
+            logger.error("No relevant sheets found in %s", task.input_file)
+            return False
 
         df = pl.concat(frames, how=spec.concat_how)
 
@@ -553,37 +570,44 @@ def _convert_snapshot(task: _SnapshotConversionTask) -> None:
         # overwrite=True that is the previous good vintage, and discarding it
         # would turn a bad read into data loss.
         logger.error("Error converting file %s: %s", task.input_file, exc)
-        return
+        return False
 
     # Deliberately outside the handler above: a file that does not hold the rows
     # it was just given is a corrupt artifact, not a snapshot to skip and carry
     # on from, so it aborts the run rather than being logged and forgotten.
     _verify_written_rows(task.output_file, df.height)
+    return True
 
 
 def _convert_snapshots(
     snapshot_type: SnapshotType,
-    data_folder: Path,
-    save_folder: Path,
+    raw_dir: Path,
+    output_dir: Path,
     overwrite: bool = False,
-) -> None:
-    """Convert every raw monthly snapshot of one dataset to bronze parquet."""
+) -> dict[str, int]:
+    """Convert every raw monthly snapshot of one dataset to bronze parquet.
+
+    Returns:
+        Snapshot counts: ``converted``, ``skipped`` (bronze exists) and ``failed``.
+    """
     spec = _BRONZE_SPECS[snapshot_type]
-    save_folder.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     tasks: list[_SnapshotConversionTask] = []
+    skipped = 0
 
     # Read data file-by-file
     for year in range(2010, 2099):
         for mon in range(1, 13):
-            files = sorted(data_folder.glob(f"{spec.file_stem}_{year}{mon:02d}01*.xls*"))
+            files = sorted(raw_dir.glob(f"{spec.file_stem}_{year}{mon:02d}01*.xls*"))
             if not files:
                 continue
 
-            output_file = save_folder / f"{spec.file_stem}_{year}{mon:02d}01.parquet"
+            output_file = output_dir / f"{spec.file_stem}_{year}{mon:02d}01.parquet"
 
             if not should_process_file(output_file, overwrite=overwrite):
                 logger.info("File %s already exists!", output_file)
+                skipped += 1
                 continue
 
             tasks.append(
@@ -597,36 +621,42 @@ def _convert_snapshots(
             )
 
     logger.info("Found %d files to process", len(tasks))
-    _run_parallel_conversions(tasks)
+    results = _run_parallel_conversions(tasks)
+    failed = [task.input_file.name for task, ok in zip(tasks, results) if not ok]
+    if failed:
+        logger.error("%d of %d snapshot(s) failed: %s", len(failed), len(tasks), failed)
+    return {"converted": len(tasks) - len(failed), "skipped": skipped, "failed": len(failed)}
 
 
-def convert_fha_sf_snapshots(data_folder: Path, save_folder: Path, overwrite: bool = False) -> None:
+def convert_fha_sf_snapshots(
+    raw_dir: Path, output_dir: Path, overwrite: bool = False
+) -> dict[str, int]:
     """Convert raw single-family snapshots to cleaned parquet files using Polars.
 
     Args:
-        data_folder: Directory containing the raw Excel monthly SF snapshots.
-        save_folder: Directory where cleaned parquet snapshots are saved.
+        raw_dir: Directory containing the raw Excel monthly SF snapshots.
+        output_dir: Directory where cleaned parquet snapshots are saved.
         overwrite: Whether to overwrite output files if a version already exists.
             The default is False.
 
     Returns:
-        None.
+        Snapshot counts: ``converted``, ``skipped`` (bronze exists) and ``failed``.
     """
-    _convert_snapshots("single_family", data_folder, save_folder, overwrite=overwrite)
+    return _convert_snapshots("single_family", raw_dir, output_dir, overwrite=overwrite)
 
 
 def convert_fha_hecm_snapshots(
-    data_folder: Path, save_folder: Path, overwrite: bool = False
-) -> None:
+    raw_dir: Path, output_dir: Path, overwrite: bool = False
+) -> dict[str, int]:
     """Convert raw HECM snapshots to cleaned parquet files using Polars.
 
     Args:
-        data_folder: Directory containing the raw Excel monthly HECM snapshots.
-        save_folder: Directory where cleaned parquet HECM snapshots are saved.
+        raw_dir: Directory containing the raw Excel monthly HECM snapshots.
+        output_dir: Directory where cleaned parquet HECM snapshots are saved.
         overwrite: Whether to overwrite output files if a version already exists.
             The default is False.
 
     Returns:
-        None.
+        Snapshot counts: ``converted``, ``skipped`` (bronze exists) and ``failed``.
     """
-    _convert_snapshots("hecm", data_folder, save_folder, overwrite=overwrite)
+    return _convert_snapshots("hecm", raw_dir, output_dir, overwrite=overwrite)

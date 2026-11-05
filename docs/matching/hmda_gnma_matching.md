@@ -19,8 +19,8 @@ three agencies. Both populations are matched directly, HMDA loan to GNMA loan:
   with at most four units.
 - FHA single-family endorsements: exact Mortgage Amount, Interest Rate, endorsement year and
   month.
-- GNMA `dailyllmni/L` new-issuance files from pool month 2018-01 on, Loan Purpose 1 or 2
-  only, one row per Disclosure Sequence Number (identical copies collapse; a number whose
+- GNMA new-issuance files from pool month 2018-01 on (`dailyllmni` through 2026-07,
+  `dailyllmnipd` from 2026-08), Loan Purpose 1 or 2 only, one row per Disclosure Sequence Number (identical copies collapse; a number whose
   rows disagree is excluded): Agency F for FHA, V and R for VA and USDA.
 - For the VA/USDA identity score: issuer names from GNMA `issrinfo` and institution names
   from the HMDA panel.

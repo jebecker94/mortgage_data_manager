@@ -7438,11 +7438,7 @@
         },
         {
           "id": "number_of_pre_modified_first_payment_date_loans",
-          "arrow_type": "date32",
-          "decode": {
-            "kind": "date",
-            "pattern": "CCYYMM"
-          },
+          "arrow_type": "int64",
           "pdf_text": "Number of Pre-Modified First Payment Date Loans",
           "layouts": [
             {
@@ -12168,5 +12164,7 @@
       ]
     }
   },
-  "corrections": []
+  "corrections": [
+    "P.number_of_pre_modified_first_payment_date_loans date32 (CCYYMM) -> int64: it is a loan count; the date type was inferred from the field name (validator-caught, 2026-11-04)."
+  ]
 }

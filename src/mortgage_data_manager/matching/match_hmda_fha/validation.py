@@ -55,7 +55,7 @@ from mortgage_data_manager.matching.validation_common import (
     save_and_close,
     set_rate_ylim,
 )
-from mortgage_data_manager.sources.hmda.load import scan_hmda
+from mortgage_data_manager.sources.hmda.load import scan_originations
 
 VALIDATION_OUTPUT_DIR = MortgageDataConfig.PROJECT_DIR / "docs" / "matching" / "figures"
 
@@ -1554,8 +1554,7 @@ def pre2018_selection_bias(
     rows = []
     for year in years:
         loans = (
-            scan_hmda("period_2007_2017", year, root=hmda_dir)
-            .filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
+            scan_originations("period_2007_2017", year, year, loan_types=[2], root=hmda_dir)
             .select(
                 "HMDAIndex",
                 "applicant_race_1",
@@ -1653,8 +1652,7 @@ def pre2018_frozen_agreement(
             )
         else:
             keys = (
-                scan_hmda("period_2007_2017", year, root=hmda_dir)
-                .filter((pl.col("action_taken") == 1) & (pl.col("loan_type") == 2))
+                scan_originations("period_2007_2017", year, year, loan_types=[2], root=hmda_dir)
                 .select("HMDAIndex", "respondent_id", "agency_code", "sequence_number")
                 .collect()
                 .with_columns(pl.col("agency_code").cast(pl.Int64))

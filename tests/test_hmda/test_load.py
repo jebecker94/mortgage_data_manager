@@ -129,3 +129,35 @@ def test_index_prefix_parsers() -> None:
 def test_preference_is_keyed_by_era() -> None:
     assert FILE_TYPE_PREFERENCE["post2018"] == ("a", "b", "c", "e")
     assert FILE_TYPE_PREFERENCE["period_2007_2017"] == ("a", "d")
+
+
+def test_null_sentinel_codes_nulls_only_documented_absent_values() -> None:
+    from mortgage_data_manager.sources.hmda.load import null_sentinel_codes
+
+    lf = pl.LazyFrame(
+        {
+            "interest_rate": [-99999.0, 3.5],
+            "aus_1": pl.Series([1111, 1], dtype=pl.Int16),
+            "applicant_age": pl.Series([8888, 9999], dtype=pl.Int16),
+            "co_applicant_age": pl.Series([9999, 8888], dtype=pl.Int16),
+            "total_loan_costs": [9999.0, 1111.0],  # dollar amounts, not codes
+            "purchaser_type": pl.Series([0, 1], dtype=pl.Int8),
+        }
+    )
+    out = null_sentinel_codes(lf, "post2018").collect()
+    assert out["interest_rate"].to_list() == [None, 3.5]
+    assert out["aus_1"].to_list() == [None, 1]
+    assert out["applicant_age"].to_list() == [None, None]  # 9999 misfiled from co-applicant
+    assert out["co_applicant_age"].to_list() == [None, None]
+    assert out["total_loan_costs"].to_list() == [9999.0, 1111.0]
+    assert out["purchaser_type"].to_list() == [0, 1]
+    assert out.schema == lf.collect_schema()
+
+    only = null_sentinel_codes(lf, "post2018", columns=["aus_1", "not_a_column"]).collect()
+    assert only["interest_rate"].to_list() == [-99999.0, 3.5]
+
+    pre = pl.LazyFrame({"income": [9_999_000, 55_000]})
+    assert null_sentinel_codes(pre, "period_2007_2017").collect()["income"].to_list() == [
+        None,
+        55_000,
+    ]

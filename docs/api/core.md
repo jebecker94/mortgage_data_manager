@@ -2,7 +2,7 @@
 
 `core` is the kernel every subpackage shares: configuration, the medallion-layer
 helpers, downloads and the raw download ledger, logging, type and date helpers,
-reference tables used by more than one source, and geocoding.
+and reference tables used by more than one source.
 
 ## Configuration
 
@@ -48,6 +48,8 @@ reference tables used by more than one source, and geocoding.
 
 ::: mortgage_data_manager.core.reference.tract_zip3
 
+::: mortgage_data_manager.core.reference.zip_tract
+
 ::: mortgage_data_manager.core.reference.census_tract
 
 ::: mortgage_data_manager.core.reference.ct_planning_region
@@ -57,14 +59,6 @@ reference tables used by more than one source, and geocoding.
 ::: mortgage_data_manager.core.reference.gnma_pool_types
 
 ::: mortgage_data_manager.core.reference.avery
-
-## Geocoding
-
-::: mortgage_data_manager.core.geocoding.api
-
-::: mortgage_data_manager.core.geocoding.providers
-
-::: mortgage_data_manager.core.geocoding.cache
 
 ## Example
 

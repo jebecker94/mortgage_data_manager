@@ -549,7 +549,7 @@ FNMA_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
     },
     {
         "name": "loan_purpose",
-        "sf": ["Loan Purpose "],
+        "sf": ["Loan Purpose"],
         "il": ["Loan Purpose"],
         "disposition": "shared_harmon",
     },
@@ -1152,11 +1152,13 @@ FHLMC_LOAN_ISSUANCE_PLAN: Final[list[FieldSpec]] = [
 ]
 
 
-#: GNMA rows: one ``dailyllmni`` L file per issuance month, a single source, so the plan
-#: is a `LegField` table (see `mortgage_data_manager.combined._common`) rather than a
-#: two-spine one. Sources are canonical silver columns; readers are ``_gnma_loan_readers``
-#: plus the issuance decodes in `mortgage_data_manager.combined.loan_issuance`. Pool-level
-#: ``cusip`` / ``program`` / ``pool_type`` are joined afterward from the P record.
+#: GNMA rows: one new-issuance file per month (``dailyllmni`` before 2026-08,
+#: ``dailyllmnipd`` from it, read through `sources.gnma.load.scan_new_issuance`), a single
+#: source, so the plan is a `LegField` table (see `mortgage_data_manager.combined._common`)
+#: rather than a two-spine one. Sources are canonical silver columns; readers are
+#: ``_gnma_loan_readers`` plus the issuance decodes in
+#: `mortgage_data_manager.combined.loan_issuance`. The loader carries the pool-level
+#: ``cusip`` / ``issue_type`` / ``pool_type`` on every loan row.
 GNMA_LOAN_ISSUANCE_PLAN: Final[list[LegField]] = [
     # loan_key = Disclosure Sequence Number alone: verified globally unique (across
     # Ginnie I/II, no cross-pool/cross-program collisions), stable month-to-month, and
@@ -1165,6 +1167,7 @@ GNMA_LOAN_ISSUANCE_PLAN: Final[list[LegField]] = [
     LegField("loan_key", "raw", ("disclosure_sequence_number",)),
     LegField("loan_key_kind", "const", value="gnma_seq"),
     LegField("agency", "const", value="GNMA"),
+    # Kept for dailyllmnipd rows too: a persisted value, and the feed is the same file.
     LegField("source_dataset", "const", value="gnma_dailyllmni"),
     LegField("issuance_month", "derived"),
     LegField("issuance_year", "derived"),
@@ -1213,7 +1216,7 @@ class PrunedField(TypedDict):
     name: str  # unified column formerly emitted by the combined builder
     fnma_sf: list[str]  # FNMA SF issuance-silver source columns (verified all-null)
     il: list[str]  # UMBS ILLD/snapshot source columns (verified all-null)
-    gnma: list[str]  # GNMA dailyllmni L source columns (verified all-blank)
+    gnma: list[str]  # GNMA new-issuance source columns (verified all-blank)
 
 
 #: Output columns PRUNED from the combined ``loan_issuance`` on 2026-07-09 because every

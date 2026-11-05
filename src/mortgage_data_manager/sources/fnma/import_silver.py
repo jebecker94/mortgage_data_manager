@@ -20,6 +20,14 @@ decomposition for the HARP refinance population (plus its pre-HARP loan bridge)
 from ``bronze/harp/``; the multifamily analog (`build_silver_multifamily`)
 builds acquisitions/performance/terminations plus the annual current-DSCR
 supplement from the latest ``bronze/multifamily/`` release.
+
+``Loan Identifier`` changes scheme at the 2019Q2/2019Q3 acquisition boundary.
+Through 2019Q2 it is a random 12-digit number (``100000913397``…``999997761057``);
+from 2019Q3 it is a sequential number zero-padded to 12 characters
+(``000097473062``, rising quarter by quarter). Both come from one
+``Performance_All.zip`` release, so this is Fannie's own numbering, not a mix of
+download vintages, and re-importing bronze does not change it. Code that keys on
+the id should not assume either form.
 """
 
 from __future__ import annotations
@@ -30,7 +38,7 @@ import polars as pl
 
 from mortgage_data_manager.core.config import MortgageDataConfig
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.core.types import apply_silver_types, enforce_schema
 
 from .config import (
@@ -87,13 +95,6 @@ def process_file(
     lf_issuances = apply_silver_types(lf_issuances, FNMA_SF_SILVER)
     enforce_schema(lf_issuances.collect_schema(), FNMA_SF_SILVER.target, name="fnma/issuances")
 
-    # Collect and save issuances
-    df_issuances = lf_issuances.collect()
-    issuance_count = len(df_issuances)
-    output_issuances = issuances_dir / parquet_path.name
-    df_issuances.write_parquet(output_issuances, compression="snappy")
-    logger.info("  Saved %s issuances to %s", f"{issuance_count:,}", output_issuances.name)
-
     # Create terminations: every observation carrying a zero-balance (termination)
     # event. Shares the issuances/performance schema, so the same spec applies —
     # this also parses the 16 MMYYYY date columns the prior process left as raw
@@ -109,10 +110,20 @@ def process_file(
 
     df_terminations = lf_terminations.collect()
     output_terminations = terminations_dir / parquet_path.name
-    df_terminations.write_parquet(output_terminations, compression="snappy")
+    with atomic_output(output_terminations) as tmp:
+        df_terminations.write_parquet(tmp, compression="snappy")
     logger.info(
         "  Saved %s terminations to %s", f"{len(df_terminations):,}", output_terminations.name
     )
+
+    # Issuances last: `build_silver`'s skip guard keys on this file, so it is
+    # published only once terminations are complete — a run killed in between
+    # rebuilds the quarter instead of skipping it with terminations missing.
+    df_issuances = lf_issuances.collect()
+    output_issuances = issuances_dir / parquet_path.name
+    with atomic_output(output_issuances) as tmp:
+        df_issuances.write_parquet(tmp, compression="snappy")
+    logger.info("  Saved %s issuances to %s", f"{len(df_issuances):,}", output_issuances.name)
 
     logger.info("  %s done", parquet_path.name)
 
@@ -224,7 +235,8 @@ def build_silver_performance(overwrite: bool = False) -> dict[str, int]:
         lf = apply_silver_types(pl.scan_parquet(f), FNMA_SF_SILVER)
         enforce_schema(lf.collect_schema(), FNMA_SF_SILVER.target, name="fnma/performance")
         out_path = perf_dir / f.name
-        lf.sink_parquet(out_path, compression="zstd")
+        with atomic_output(out_path) as tmp:
+            lf.sink_parquet(tmp, compression="zstd")
         logger.info("  wrote %s", out_path.name)
 
     total_rows = sum(
@@ -286,7 +298,8 @@ def build_silver_harp(overwrite: bool = False) -> dict[str, int]:
 
         perf_out = silver_harp / "performance.parquet"
         if should_process_file(perf_out, overwrite):
-            lf.sink_parquet(perf_out, compression="zstd")
+            with atomic_output(perf_out) as tmp:
+                lf.sink_parquet(tmp, compression="zstd")
             counts["performance_rows"] = pl.scan_parquet(perf_out).select(pl.len()).collect().item()
             counts["processed"] += 1
             logger.info("  wrote performance.parquet (%s rows)", f"{counts['performance_rows']:,}")
@@ -311,7 +324,8 @@ def build_silver_harp(overwrite: bool = False) -> dict[str, int]:
                 .sort("Loan Identifier")
                 .collect()
             )
-            df_iss.write_parquet(iss_out, compression="snappy")
+            with atomic_output(iss_out) as tmp:
+                df_iss.write_parquet(tmp, compression="snappy")
             counts["issuances_rows"] = len(df_iss)
             counts["processed"] += 1
             logger.info("  wrote issuances.parquet (%s rows)", f"{counts['issuances_rows']:,}")
@@ -327,7 +341,8 @@ def build_silver_harp(overwrite: bool = False) -> dict[str, int]:
                 .sort("Loan Identifier", "Monthly Reporting Period")
                 .collect()
             )
-            df_term.write_parquet(term_out, compression="snappy")
+            with atomic_output(term_out) as tmp:
+                df_term.write_parquet(tmp, compression="snappy")
             counts["terminations_rows"] = len(df_term)
             counts["processed"] += 1
             logger.info(
@@ -344,7 +359,8 @@ def build_silver_harp(overwrite: bool = False) -> dict[str, int]:
                 lf_map.collect_schema(), FNMA_HARP_MAPPING_SILVER.target, name="fnma/harp_mapping"
             )
             df_map = lf_map.sort("Loan Identifier").collect()
-            df_map.write_parquet(mapping_out, compression="snappy")
+            with atomic_output(mapping_out) as tmp:
+                df_map.write_parquet(tmp, compression="snappy")
             counts["mapping_rows"] = len(df_map)
             counts["processed"] += 1
             logger.info("  wrote loan_mapping.parquet (%s rows)", f"{counts['mapping_rows']:,}")
@@ -416,7 +432,8 @@ def build_silver_multifamily(overwrite: bool = False) -> dict[str, int]:
 
         perf_out = silver_mf / "performance.parquet"
         if should_process_file(perf_out, overwrite):
-            lf.sink_parquet(perf_out, compression="zstd")
+            with atomic_output(perf_out) as tmp:
+                lf.sink_parquet(tmp, compression="zstd")
             counts["performance_rows"] = pl.scan_parquet(perf_out).select(pl.len()).collect().item()
             counts["processed"] += 1
             logger.info("  wrote performance.parquet (%s rows)", f"{counts['performance_rows']:,}")
@@ -437,7 +454,8 @@ def build_silver_multifamily(overwrite: bool = False) -> dict[str, int]:
                 .sort("Loan Number")
                 .collect()
             )
-            df_acq.write_parquet(acq_out, compression="snappy")
+            with atomic_output(acq_out) as tmp:
+                df_acq.write_parquet(tmp, compression="snappy")
             counts["acquisitions_rows"] = len(df_acq)
             counts["processed"] += 1
             logger.info(
@@ -453,7 +471,8 @@ def build_silver_multifamily(overwrite: bool = False) -> dict[str, int]:
                 .sort("Loan Number", "Reporting Period Date")
                 .collect()
             )
-            df_term.write_parquet(term_out, compression="snappy")
+            with atomic_output(term_out) as tmp:
+                df_term.write_parquet(tmp, compression="snappy")
             counts["terminations_rows"] = len(df_term)
             counts["processed"] += 1
             logger.info(
@@ -470,7 +489,8 @@ def build_silver_multifamily(overwrite: bool = False) -> dict[str, int]:
                 lf_dscr.collect_schema(), FNMA_MF_DSCR_SILVER.target, name="fnma/multifamily_dscr"
             )
             df_dscr = lf_dscr.sort("Loan Number", "Year").collect()
-            df_dscr.write_parquet(dscr_out, compression="snappy")
+            with atomic_output(dscr_out) as tmp:
+                df_dscr.write_parquet(tmp, compression="snappy")
             counts["dscr_rows"] = len(df_dscr)
             counts["processed"] += 1
             logger.info("  wrote current_dscr.parquet (%s rows)", f"{counts['dscr_rows']:,}")

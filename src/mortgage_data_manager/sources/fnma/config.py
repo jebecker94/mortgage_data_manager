@@ -201,7 +201,8 @@ def resolve_datasets(
 # the full issuances domain). The issuances / performance / terminations datasets all
 # share this ~117-col FNMA SF Loan-Performance schema; the EXCL non-standard variant is
 # unified by apply_silver_types' conform-to-target. Column names preserve upstream
-# trailing/double spaces (combined/ consumers depend on the exact names).
+# trailing/double spaces (combined/ consumers depend on the exact names), except
+# ``Loan Purpose``, whose trailing space the spec strips (``renames``).
 # ----------------------------------------------------------------------------- #
 # Stable GSE code sets only (closed vocabularies). Growing/contaminated sets —
 # seller/servicer names, delinquency status, zero-balance code, the '7'-family —
@@ -263,7 +264,7 @@ _SF_COLS: list[tuple[str, ColumnRole]] = [
     ("Borrower Credit Score at Origination", pl.Int16),
     ("Co-Borrower Credit Score at Origination", pl.Int16),
     ("First Time Home Buyer Indicator", BOOL),
-    ("Loan Purpose ", _FNMA_LOAN_PURPOSE),
+    ("Loan Purpose", _FNMA_LOAN_PURPOSE),
     ("Property Type", _FNMA_PROPERTY_TYPE),
     ("Number of Units", pl.Int8),
     ("Occupancy Status", _FNMA_OCCUPANCY_STATUS),
@@ -359,7 +360,9 @@ _SF_COLS: list[tuple[str, ColumnRole]] = [
     ("Negative Amortization Indicator", BOOL),
 ]
 
-FNMA_SF_SILVER = spec_from_columns(_SF_COLS)
+#: The layout names the column ``"Loan Purpose "`` (trailing space), so bronze carries
+#: that name; silver publishes it trimmed. The other padded names are left as published.
+FNMA_SF_SILVER = spec_from_columns(_SF_COLS, renames={"Loan Purpose ": "Loan Purpose"})
 
 #: The HARP original-loan bridge (``Loan_Mapping.txt``). The HARP refinance panel
 #: itself shares ``_SF_COLS`` — Fannie publishes it in the same 113-field Primary

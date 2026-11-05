@@ -42,6 +42,7 @@ import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import atomic_output
+from mortgage_data_manager.core.reference.census_tract import tract_geoid
 from mortgage_data_manager.core.reference.tract_zip3 import (
     census_year_to_vintage_expr,
     load_dominant_tract_zip3,
@@ -743,9 +744,7 @@ def prepare_fhfa(lf: pl.LazyFrame, spec: GseSpec) -> pl.LazyFrame:
     zip_lookup = (
         lf.select(
             pl.col("record_number").cast(pl.Int64).alias(FHFA_ID),
-            (pl.col("state_code") + pl.col("county") + pl.col("census_tract")).alias(
-                "census_tract"
-            ),
+            tract_geoid("state_code", "county", "census_tract").alias("census_tract"),
             census_year_to_vintage_expr("Census Year"),
         )
         .join(load_dominant_tract_zip3(), on=["census_tract", "vintage"], how="left")

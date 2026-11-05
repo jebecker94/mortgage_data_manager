@@ -9,6 +9,22 @@ side) and write to the era-split silver layer:
     - build_silver_period_2007_2017: standardized period (2007-2017).
     - build_silver_post2018: modern format (2018+).
 
+Loans silver is one parquet per ``activity_year=YYYY/file_type=X`` release partition.
+A build skips the partitions already on disk; ``overwrite`` rebuilds a year in a
+sibling temp tree and swaps it in only when every partition is written and its row
+count verified, so a failed rebuild leaves the previous year intact.
+
+Silver also derives, once for every consumer: ``number_of_borrowers`` and
+``purchaser_type_label`` on the 2007-2017 and post-2018 loans, ``respondent_key`` on
+the 2007-2017 loans and panel, and the latest panel name per LEI
+(`build_silver_lei_names`). Pre-2018 ``income`` 9999 (thousands) is the ceiling of
+its 4-character field, not an amount, and becomes null.
+
+The 2017 nationwide file (``file_type=d``) publishes ``edit_status``,
+``sequence_number`` and ``application_date_indicator`` empty on every row (the CFPB's
+own CSV), and the 2017 three-year file (``a``) has no such columns, so all three are
+null for 2017. ``HMDAIndex`` is the per-record identifier there.
+
 Example:
     >>> from mortgage_data_manager.sources.hmda.import_silver import build_silver_post2018
     >>> build_silver_post2018("loans", min_year=2020, max_year=2024)
@@ -25,12 +41,13 @@ import polars as pl
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import (
     atomic_output,
-    clear_partitions,
+    atomic_output_dir,
     should_process_file,
 )
 from mortgage_data_manager.core.types import (
     apply_silver_types,
     enforce_schema,
+    null_sentinels,
     strip_column_names,
 )
 from mortgage_data_manager.sources.hmda.config import (
@@ -43,18 +60,25 @@ from mortgage_data_manager.sources.hmda.config import (
     POST2018_EXEMPT_COLUMNS,
     POST2018_FLOAT_COLUMNS,
     POST2018_INTEGER_COLUMNS,
+    PRE2018_INCOME_CEILING_000S,
     RENAME_DICTIONARY,
     TRANSMITTAL_SERIES_2007_2017_RENAMES,
     HMDAConfig,
 )
-from mortgage_data_manager.sources.hmda.utils import append_hmda_index, check_expected_row_count
+from mortgage_data_manager.sources.hmda.utils import (
+    append_hmda_index,
+    check_expected_row_count,
+    number_of_borrowers,
+    purchaser_type_label,
+    respondent_key,
+)
 
 #: A standalone 4-digit year token in a bronze filename (not part of a longer run
 #: of digits), e.g. ``hmda_2007_panel`` or ``2019_public_lar_one_year``.
 _YEAR_TOKEN = re.compile(r"(?<!\d)((?:19|20)\d{2})(?!\d)")
 
 
-def _bronze_files_for_year(bronze_folder: Path, year: int) -> list[Path]:
+def _bronze_files_for_year(bronze_dir: Path, year: int) -> list[Path]:
     """Return the bronze parquet files belonging to one activity year.
 
     Bronze is a flat directory per dataset — every era's files sit side by side,
@@ -69,7 +93,7 @@ def _bronze_files_for_year(bronze_folder: Path, year: int) -> list[Path]:
         The bronze parquet files for that activity year, sorted.
     """
     return sorted(
-        f for f in bronze_folder.glob("*.parquet") if str(year) in _YEAR_TOKEN.findall(f.stem)
+        f for f in bronze_dir.glob("*.parquet") if str(year) in _YEAR_TOKEN.findall(f.stem)
     )
 
 
@@ -244,48 +268,99 @@ def _harmonize_schema_pre2007(lf: pl.LazyFrame) -> pl.LazyFrame:
             pl.col("loan_amount").cast(pl.Int64, strict=False).mul(1000).alias("loan_amount")
         )
 
-    # Convert income: string -> int -> multiply by 1000
+    # Convert income: string -> int -> multiply by 1000. 9999 is the 4-character field's
+    # ceiling, not an amount, so it becomes null rather than 9,999,000 dollars.
     if "income" in lf_columns and "income" in PRE2007_INTEGER_COLUMNS:
         lf = lf.with_columns(
-            pl.col("income").cast(pl.Int64, strict=False).mul(1000).alias("income")
+            null_sentinels(
+                pl.col("income").cast(pl.Int64, strict=False), [PRE2018_INCOME_CEILING_000S]
+            )
+            .mul(1000)
+            .alias("income")
         )
 
     return lf
 
 
-def _sink_single_file_partitions(
-    lf: pl.LazyFrame, silver_folder: Path, dataset: str | None = None
+#: The one file each release partition holds.
+_PARTITION_FILE = "00000000.parquet"
+
+
+def _write_partition(
+    lf: pl.LazyFrame, out_file: Path, dataset: str, year: int, file_type: str
 ) -> None:
-    """Sink exactly one parquet file per (activity_year, file_type) partition.
+    """Publish one release partition as a single parquet, verified before it is visible.
 
-    The chunked ``pl.PartitionBy`` sink splits large partitions into several
-    numbered files, which a reader that opens only the first file truncates
-    silently. Each partition is therefore written as one
-    deterministically named file, in bronze (raw CFPB) row order; any stale
-    extra chunk files from earlier multi-file writes are removed first.
-
-    When ``dataset`` is given, each written partition's row count is verified
-    against the pinned manifest (see ``check_expected_row_count``).
+    The chunked ``pl.PartitionBy`` sink splits large partitions into several numbered
+    files, which a reader that opens only the first truncates silently, so each
+    partition is one deterministically named file in bronze (raw CFPB) row order. It
+    is sunk to a temp sibling and its row count checked against the pinned manifest
+    there: a short write raises before it replaces anything, so neither the previous
+    file nor a skip guard ever sees a truncated one. Stale chunk files from earlier
+    multi-file writes are removed only once the new file is in place.
     """
-    keys = (
-        lf.select("activity_year", "file_type")
-        .unique()
-        .sort("activity_year", "file_type")
-        .collect()
-    )
-    for year_value, file_type_value in keys.iter_rows():
-        part_dir = silver_folder / f"activity_year={year_value}" / f"file_type={file_type_value}"
-        part_dir.mkdir(parents=True, exist_ok=True)
-        for stale in part_dir.glob("*.parquet"):
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    with atomic_output(out_file) as tmp:
+        lf.sink_parquet(tmp)
+        n_rows = pl.scan_parquet(tmp).select(pl.len()).collect().item()
+        check_expected_row_count(dataset, year, file_type, n_rows, out_file)
+    for stale in out_file.parent.glob("*.parquet"):
+        if stale != out_file:
             stale.unlink()
-        out_file = part_dir / "00000000.parquet"
-        with atomic_output(out_file) as tmp:
-            lf.filter(
-                (pl.col("activity_year") == year_value) & (pl.col("file_type") == file_type_value)
-            ).sink_parquet(tmp)
-        if dataset is not None:
-            n_rows = pl.scan_parquet(out_file).select(pl.len()).collect().item()
-            check_expected_row_count(dataset, year_value, str(file_type_value), n_rows, out_file)
+
+
+def _sink_release_partitions(
+    lf: pl.LazyFrame, year_dir: Path, year: int, dataset: str, overwrite: bool
+) -> int:
+    """Write each release in ``lf`` to ``year_dir/file_type=X/``; skip those on disk.
+
+    Returns:
+        The number of release partitions written.
+
+    Raises:
+        ValueError: If ``lf`` holds rows of another (or no) activity year, or rows
+            without a ``file_type``: they have no partition here.
+    """
+    keys = lf.select("activity_year", "file_type").unique().collect()
+    stray = keys.filter(pl.col("activity_year").ne_missing(year) | pl.col("file_type").is_null())
+    if not stray.is_empty():
+        raise ValueError(
+            f"hmda/{dataset} {year}: bronze rows outside activity_year={year} or without a "
+            f"file_type: {stray.rows()}"
+        )
+    written = 0
+    for file_type in sorted(keys["file_type"].to_list()):
+        out_file = year_dir / f"file_type={file_type}" / _PARTITION_FILE
+        if not should_process_file(out_file, overwrite):
+            logger.debug("Skipping existing silver partition: %s", out_file.parent)
+            continue
+        part = lf.filter(pl.col("file_type") == file_type)
+        _write_partition(part, out_file, dataset, year, str(file_type))
+        written += 1
+    return written
+
+
+def _write_year(
+    frames: list[pl.LazyFrame], output_dir: Path, year: int, dataset: str, overwrite: bool
+) -> int:
+    """Write one activity year's release partitions under ``output_dir/activity_year=YYYY``.
+
+    Without ``overwrite``, a release partition already on disk is skipped and a missing
+    one is written in place. With ``overwrite``, the year is rebuilt in a sibling temp
+    tree and swapped in only once every partition is written and verified: the old
+    year stays readable until then, and a failure leaves it untouched. The swap
+    replaces exactly this year's subtree (partition-scoped), so a release whose bronze
+    file is gone drops out with it.
+
+    Returns:
+        The number of release partitions written.
+    """
+    year_dir = output_dir / f"activity_year={year}"
+    if not overwrite:
+        return sum(_sink_release_partitions(lf, year_dir, year, dataset, False) for lf in frames)
+    with atomic_output_dir(year_dir) as tmp:
+        written = sum(_sink_release_partitions(lf, tmp, year, dataset, True) for lf in frames)
+    return written
 
 
 def build_silver_pre2007(
@@ -293,7 +368,8 @@ def build_silver_pre2007(
     min_year: int = 1990,
     max_year: int = 2006,
     overwrite: bool = False,
-) -> None:
+    output_dir: Path | None = None,
+) -> int:
     """Create silver layer parquet files for pre-2007 data.
 
     Reads bronze parquet files, applies schema harmonization (type conversions),
@@ -313,19 +389,24 @@ def build_silver_pre2007(
         min_year: First year to process (default: 1990)
         max_year: Last year to process (default: 2006)
         overwrite: Whether to replace existing silver files (default: False)
-    """
-    bronze_folder = HMDAConfig.get_dataset_dir("bronze", dataset)
-    silver_folder = HMDAConfig.get_dataset_dir("silver", dataset, "pre2007")
-    silver_folder.resolve().mkdir(parents=True, exist_ok=True)
+        output_dir: Era directory to write into; defaults to the configured silver layout.
 
+    Returns:
+        The number of silver files written.
+    """
+    bronze_dir = HMDAConfig.get_dataset_dir("bronze", dataset)
+    silver_dir = output_dir or HMDAConfig.get_dataset_dir("silver", dataset, "pre2007")
+    silver_dir.resolve().mkdir(parents=True, exist_ok=True)
+
+    written = 0
     for year in range(min_year, max_year + 1):
-        bronze_file = bronze_folder / f"{dataset}_{year}.parquet"
+        bronze_file = bronze_dir / f"{dataset}_{year}.parquet"
         if not bronze_file.exists():
             logger.debug("Bronze file not found for year %s: %s", year, bronze_file)
             continue
 
         # Output filename (year-based partitioning)
-        save_file = silver_folder / f"activity_year={year}" / f"{dataset}_{year}.parquet"
+        save_file = silver_dir / f"activity_year={year}" / f"{dataset}_{year}.parquet"
 
         if not should_process_file(save_file, overwrite):
             logger.debug("Skipping existing silver file: %s", save_file)
@@ -370,7 +451,9 @@ def build_silver_pre2007(
         # Write to parquet
         with atomic_output(save_file) as tmp:
             lf.sink_parquet(tmp)
+        written += 1
         logger.info("Saved silver file: %s", save_file)
+    return written
 
 
 def _destring_and_cast_hmda_cols_2007_2017(lf: pl.LazyFrame) -> pl.LazyFrame:
@@ -382,6 +465,7 @@ def _destring_and_cast_hmda_cols_2007_2017(lf: pl.LazyFrame) -> pl.LazyFrame:
     Special handling for loan_amount and income:
     - Stored in thousands in raw data (e.g., "150" = $150,000)
     - Multiplied by 1000 to get actual dollar amounts
+    - income 9999 is the 4-character field's ceiling, not an amount: null
 
     Args:
         lf: HMDA data with potentially mixed string/numeric columns
@@ -413,9 +497,14 @@ def _destring_and_cast_hmda_cols_2007_2017(lf: pl.LazyFrame) -> pl.LazyFrame:
     if "loan_amount" in lf.collect_schema().names():
         lf = lf.with_columns(pl.col("loan_amount").mul(1000).alias("loan_amount"))
 
-    # Special handling: income stored in thousands, multiply by 1000
+    # Special handling: income stored in thousands, multiply by 1000; the field's
+    # 4-character ceiling 9999 is not an amount and becomes null.
     if "income" in lf.collect_schema().names():
-        lf = lf.with_columns(pl.col("income").mul(1000).alias("income"))
+        lf = lf.with_columns(
+            null_sentinels(pl.col("income"), [PRE2018_INCOME_CEILING_000S])
+            .mul(1000)
+            .alias("income")
+        )
 
     return lf
 
@@ -525,7 +614,8 @@ def _build_silver_institution_2007_2017(
     min_year: int,
     max_year: int,
     overwrite: bool,
-) -> None:
+    output_dir: Path | None,
+) -> int:
     """Silver for the 2007-2017 panel / transmittal series.
 
     These are institution-level rosters, not loan records, so they skip the
@@ -536,17 +626,22 @@ def _build_silver_institution_2007_2017(
 
     Both datasets change layout mid-era; the per-dataset rename map covers both
     header spellings and conform-to-target fills the absent columns with typed
-    nulls, so every year lands on one schema.
+    nulls, so every year lands on one schema. The panel also carries
+    ``respondent_key``, the normalized id the loans silver carries.
+
+    Returns:
+        The number of silver files written.
     """
     renames = (
         PANEL_2007_2017_RENAMES if dataset == "panel" else TRANSMITTAL_SERIES_2007_2017_RENAMES
     )
-    bronze_folder = HMDAConfig.get_dataset_dir("bronze", dataset)
-    silver_folder = HMDAConfig.get_dataset_dir("silver", dataset, "period_2007_2017")
-    silver_folder.resolve().mkdir(parents=True, exist_ok=True)
+    bronze_dir = HMDAConfig.get_dataset_dir("bronze", dataset)
+    silver_dir = output_dir or HMDAConfig.get_dataset_dir("silver", dataset, "period_2007_2017")
+    silver_dir.resolve().mkdir(parents=True, exist_ok=True)
 
+    written = 0
     for year in range(min_year, max_year + 1):
-        bronze_files = _bronze_files_for_year(bronze_folder, year)
+        bronze_files = _bronze_files_for_year(bronze_dir, year)
         if not bronze_files:
             logger.debug("No bronze found for %s %s", dataset, year)
             continue
@@ -558,7 +653,7 @@ def _build_silver_institution_2007_2017(
                 [f.name for f in bronze_files],
             )
 
-        save_file = silver_folder / f"activity_year={year}" / f"{dataset}_{year}.parquet"
+        save_file = silver_dir / f"activity_year={year}" / f"{dataset}_{year}.parquet"
         if not should_process_file(save_file, overwrite):
             logger.debug("Skipping existing silver file: %s", save_file)
             continue
@@ -582,13 +677,17 @@ def _build_silver_institution_2007_2017(
 
         if "activity_year" not in lf.collect_schema().names():
             lf = lf.with_columns(pl.lit(year).alias("activity_year"))
+        if dataset == "panel":
+            lf = lf.with_columns(respondent_key())
 
         lf = _apply_hmda_spec(lf, dataset, "period_2007_2017")
 
         save_file.parent.resolve().mkdir(parents=True, exist_ok=True)
         with atomic_output(save_file) as tmp:
             lf.sink_parquet(tmp)
+        written += 1
         logger.info("Saved silver file: %s", save_file)
+    return written
 
 
 def build_silver_period_2007_2017(
@@ -596,12 +695,14 @@ def build_silver_period_2007_2017(
     min_year: int = 2007,
     max_year: int = 2017,
     overwrite: bool = False,
-) -> None:
+    output_dir: Path | None = None,
+) -> int:
     """Create hive-partitioned silver layer for 2007–2017 data.
 
     Loans are processed one bronze file at a time with the LAR standardization
     (renames, destring, geographic codes) and written to
-    data/silver/loans/period_2007_2017/activity_year=YYYY/file_type=X/.
+    data/silver/loans/period_2007_2017/activity_year=YYYY/file_type=X/, one file per
+    release partition (see `_write_year` for the skip and overwrite rules).
 
     Panel and transmittal series are institution rosters and take a separate
     path — see `_build_silver_institution_2007_2017`.
@@ -610,21 +711,26 @@ def build_silver_period_2007_2017(
         dataset: Dataset to process.
         min_year: First year to process.
         max_year: Last year to process.
-        overwrite: Whether to replace existing silver files.
+        overwrite: Rebuild the requested years, replacing each one atomically.
+        output_dir: Era directory to write into; defaults to the configured silver layout.
+
+    Returns:
+        The number of silver partitions (loans) or files (panel, transmittal series)
+        written.
     """
     if dataset != "loans":
-        _build_silver_institution_2007_2017(dataset, min_year, max_year, overwrite)
-        return
+        return _build_silver_institution_2007_2017(
+            dataset, min_year, max_year, overwrite, output_dir
+        )
 
-    bronze_folder = HMDAConfig.get_dataset_dir("bronze", dataset)
-    silver_folder = HMDAConfig.get_dataset_dir("silver", dataset, "period_2007_2017")
-    silver_folder.resolve().mkdir(parents=True, exist_ok=True)
+    bronze_dir = HMDAConfig.get_dataset_dir("bronze", dataset)
+    silver_dir = output_dir or HMDAConfig.get_dataset_dir("silver", dataset, "period_2007_2017")
+    silver_dir.resolve().mkdir(parents=True, exist_ok=True)
 
+    written = 0
     for year in range(min_year, max_year + 1):
-        if overwrite:
-            clear_partitions(silver_folder, [f"activity_year={year}"])
-
-        for file in _bronze_files_for_year(bronze_folder, year):
+        frames: list[pl.LazyFrame] = []
+        for file in _bronze_files_for_year(bronze_dir, year):
             lf = pl.scan_parquet(file, low_memory=True)
 
             # Apply column renames (only renames columns that exist)
@@ -662,15 +768,24 @@ def build_silver_period_2007_2017(
             lf = lf.with_row_index(HMDA_INDEX_COLUMN)
             lf = append_hmda_index(lf, year, file_type_code)
 
-            # Validate and write using hive partitioning
             if lf.limit(1).collect().height == 0:
                 logger.warning("Skipping empty file: %s", file)
                 continue
 
-            # Close-to-final dtypes + schema enforcement.
-            lf = _apply_hmda_spec(lf, dataset, "period_2007_2017")
+            lf = lf.with_columns(
+                respondent_key(),
+                number_of_borrowers("period_2007_2017"),
+                purchaser_type_label("period_2007_2017"),
+            )
 
-            _sink_single_file_partitions(lf, silver_folder, dataset)
+            # Close-to-final dtypes + schema enforcement.
+            frames.append(_apply_hmda_spec(lf, dataset, "period_2007_2017"))
+
+        if not frames:
+            logger.debug("No bronze found for %s %s", dataset, year)
+            continue
+        written += _write_year(frames, silver_dir, year, dataset, overwrite)
+    return written
 
 
 def _harmonize_schema(lf: pl.LazyFrame) -> pl.LazyFrame:
@@ -803,28 +918,33 @@ def build_silver_post2018(
     min_year: int = 2018,
     max_year: int = 2025,
     overwrite: bool = False,
-) -> None:
+    output_dir: Path | None = None,
+) -> int:
     """Create hive-partitioned silver layer for post-2018 data.
 
     Processes bronze parquet files one-at-a-time, applies standard cleaning
     transforms with schema-guided typing, and writes to
-    data/silver/<dataset>/post2018/activity_year=YYYY/file_type=X/.
+    data/silver/<dataset>/post2018/activity_year=YYYY/file_type=X/, one file per
+    release partition (see `_write_year` for the skip and overwrite rules).
 
     Args:
         dataset: Dataset family to build.
         min_year: First activity year to build, inclusive.
         max_year: Last activity year to build, inclusive.
-        overwrite: Rebuild only the partition subtrees being written.
+        overwrite: Rebuild the requested years, replacing each one atomically.
+        output_dir: Era directory to write into; defaults to the configured silver layout.
+
+    Returns:
+        The number of silver partitions written.
     """
-    bronze_folder = HMDAConfig.get_dataset_dir("bronze", dataset)
-    silver_folder = HMDAConfig.get_dataset_dir("silver", dataset, "post2018")
-    silver_folder.resolve().mkdir(parents=True, exist_ok=True)
+    bronze_dir = HMDAConfig.get_dataset_dir("bronze", dataset)
+    silver_dir = output_dir or HMDAConfig.get_dataset_dir("silver", dataset, "post2018")
+    silver_dir.resolve().mkdir(parents=True, exist_ok=True)
 
+    written = 0
     for year in range(min_year, max_year + 1):
-        if overwrite:
-            clear_partitions(silver_folder, [f"activity_year={year}"])
-
-        for file in _bronze_files_for_year(bronze_folder, year):
+        frames: list[pl.LazyFrame] = []
+        for file in _bronze_files_for_year(bronze_dir, year):
             lf = pl.scan_parquet(file, low_memory=True)
 
             # Apply column renames (only renames columns that exist)
@@ -838,9 +958,60 @@ def build_silver_post2018(
 
             # Apply schema harmonization (type conversions) to all datasets
             lf = _harmonize_schema(lf)
+            if dataset == "loans":
+                lf = lf.with_columns(
+                    number_of_borrowers("post2018"), purchaser_type_label("post2018")
+                )
 
             # Close-to-final dtypes + schema enforcement.
-            lf = _apply_hmda_spec(lf, dataset, "post2018")
+            frames.append(_apply_hmda_spec(lf, dataset, "post2018"))
 
-            # Write using hive partitioning
-            _sink_single_file_partitions(lf, silver_folder, dataset)
+        if not frames:
+            logger.debug("No bronze found for %s %s", dataset, year)
+            continue
+        written += _write_year(frames, silver_dir, year, dataset, overwrite)
+    return written
+
+
+def build_silver_lei_names(
+    overwrite: bool = False,
+    destination: Path | None = None,
+    panel_dir: Path | None = None,
+) -> int:
+    """Build the latest panel ``respondent_name`` per LEI from the post-2018 panel silver.
+
+    Each LEI takes the name it filed under in the latest activity year it appears in,
+    each year read from its most mature panel release (as `scan_hmda_years` picks it).
+    An LEI with two different names in that year has no latest name and is left out:
+    there is no ground for picking one. Names are kept as filed (no normalization).
+
+    Args:
+        overwrite: Rebuild even when the table exists. Rebuild after any panel change.
+        destination: File to write; defaults to ``HMDAConfig.HMDA_LEI_NAME_FILE``.
+        panel_dir: Post-2018 panel era directory to read; defaults to the configured
+            silver layout.
+
+    Returns:
+        The number of LEIs written (0 when skipped).
+    """
+    from mortgage_data_manager.sources.hmda.load import scan_hmda_years
+
+    destination = destination or HMDAConfig.HMDA_LEI_NAME_FILE
+    if not should_process_file(destination, overwrite):
+        logger.debug("Skipping existing LEI name table: %s", destination)
+        return 0
+    names = (
+        scan_hmda_years("post2018", dataset="panel", root=panel_dir)
+        .select("lei", "respondent_name", "activity_year")
+        .filter(pl.col("lei").is_not_null() & (pl.col("lei") != ""))
+        .filter(pl.col("activity_year") == pl.col("activity_year").max().over("lei"))
+        .unique()
+        .filter(pl.len().over("lei") == 1)
+        .sort("lei")
+        .collect()
+    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with atomic_output(destination) as tmp:
+        names.write_parquet(tmp)
+    logger.info("Saved %s LEI names: %s", f"{names.height:,}", destination)
+    return names.height

@@ -19,6 +19,7 @@ Modules:
     - canonical: Canonical JSON schemas (arrow_type + decode) + bronze validator
     - import_bronze: Data staging (raw → bronze)
     - import_silver: Data transformation (bronze → silver) via the canonical schema
+    - load: Lazy loan-level loaders across the 2026 switch to the pipe-delimited feeds
     - performance: Performance data loading and analysis from silver layer
     - config: GNMAConfig class and configuration dataclasses
     - utils: Shared utilities, result classes, and exceptions
@@ -49,6 +50,7 @@ from .download import (
 
 # Import bronze layer functions (raw → bronze)
 from .import_bronze import (
+    BronzeImportError,
     import_prefix_bronze,
     import_txt_to_parquet,
     import_zip_to_parquet,
@@ -59,6 +61,15 @@ from .import_silver import (
     import_file_silver_canonical,
     import_prefix_silver,
     import_prefix_silver_canonical,
+)
+from .load import (
+    LOAN_KEY,
+    NEW_ISSUANCE_CUTOVER,
+    PORTFOLIO_CUTOVER,
+    one_row_per_loan,
+    scan_latest_issuer_names,
+    scan_new_issuance,
+    scan_portfolio,
 )
 from .performance import create_upb_time_series, get_summary_statistics, load_performance_data
 from .pipeline import (
@@ -99,6 +110,14 @@ __all__ = [
     "download_all_schemas",
     "find_data_links",
     "find_schema_links",
+    # Loan-level loaders (both feeds)
+    "scan_new_issuance",
+    "scan_portfolio",
+    "one_row_per_loan",
+    "scan_latest_issuer_names",
+    "LOAN_KEY",
+    "NEW_ISSUANCE_CUTOVER",
+    "PORTFOLIO_CUTOVER",
     # Performance functions
     "load_performance_data",
     "create_upb_time_series",
@@ -112,6 +131,7 @@ __all__ = [
     "load_prefix_dictionary",
     "create_default_configs",
     # Bronze layer functions (raw → bronze)
+    "BronzeImportError",
     "import_zip_to_parquet",
     "import_txt_to_parquet",
     "import_prefix_bronze",

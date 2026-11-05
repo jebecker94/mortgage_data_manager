@@ -6,13 +6,16 @@ Surfaces download, bronze, silver, and pipeline subcommand groups.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime
+from pathlib import Path
 from typing import Annotated, Any
 
 import typer
 
 from mortgage_data_manager import __version__
 from mortgage_data_manager.core.cli.download_options import (
+    OutputDirOption,
     OverwriteOption,
     QuietOption,
     VerboseOption,
@@ -48,6 +51,8 @@ from mortgage_data_manager.sources.gnma.pipeline import (
 )
 from mortgage_data_manager.sources.gnma.utils import (
     create_configs_from_env,
+    default_prefixes,
+    load_prefix_dictionary,
     validate_date_format,
     validate_prefixes,
     validate_record_types,
@@ -107,10 +112,11 @@ def main(
     [yellow]Common Prefixes:[/yellow]
 
       [cyan]monthly[/cyan]    - Monthly disclosure data
-      [cyan]llmon1[/cyan]     - Loan-level performance data (MBS programs)
-      [cyan]llmon2[/cyan]     - Loan-level performance data (HMBS programs)
-      [cyan]hllmon1[/cyan]    - Historical loan-level data (MBS)
-      [cyan]hllmon2[/cyan]    - Historical loan-level data (HMBS)
+      [cyan]llmon[/cyan]      - MBS loan-level portfolio, Ginnie I + II (from 2026-07)
+      [cyan]llmon1[/cyan]     - MBS loan-level portfolio, Ginnie I (through 2026-08)
+      [cyan]llmon2[/cyan]     - MBS loan-level portfolio, Ginnie II (through 2026-08)
+      [cyan]dailyllmnipd[/cyan] - MBS loan-level new issuance (from 2026-08)
+      [cyan]hllmon1[/cyan]    - HMBS loan-level portfolio (and [cyan]hllmon2[/cyan])
 
     Use [bold]gnma COMMAND --help[/bold] for more information on a command.
     """
@@ -144,7 +150,7 @@ def _run_processing(
     console.print("[cyan]Starting processing workflow...[/cyan]\n")
 
     results = core_processing_workflow(
-        prefixes=prefixes,
+        prefixes=prefixes or None,
         include_staging=include_staging,
         include_transformation=include_transformation,
         record_types=record_types,
@@ -166,6 +172,27 @@ def _run_processing(
     return results
 
 
+def _exit_on_failure(results: dict[str, Any], failed: int, found: int, noun: str) -> None:
+    """Exit 1 when any file failed or no input was found; list the failures first."""
+    if failed:
+        for step in ("staging_results", "transformation_results"):
+            for prefix, counts in results.get(step, {}).items():
+                for err in counts.get("errors", []):
+                    print_error(f"{prefix}: {err['file']}: {err['error']}")
+        print_error(f"{failed} {noun}(s) failed")
+        raise typer.Exit(code=1)
+    if found == 0:
+        print_error(f"No {noun}s found for the requested prefixes")
+        raise typer.Exit(code=1)
+
+
+def _prefix_label(prefixes: list[str] | None) -> str:
+    """The prefixes to print, or the default set's size when none were named."""
+    if prefixes:
+        return ", ".join(prefixes)
+    return f"default set ({len(default_prefixes(load_prefix_dictionary(GNMAConfig.GNMA_PREFIX_DICTIONARY)))})"
+
+
 # ============================================================================
 # Download
 # ============================================================================
@@ -174,7 +201,7 @@ def _run_processing(
 @app.command()
 def download(
     prefixes: Annotated[
-        list[str] | None, typer.Argument(help="Prefixes to download (leave empty for all)")
+        list[str] | None, typer.Argument(help="Prefixes to download (default: the default set)")
     ] = None,
     datasets: Annotated[
         list[str] | None,
@@ -205,6 +232,7 @@ def download(
         bool,
         typer.Option("--include-daily", help="Bulk only: include daily snapshot files"),
     ] = False,
+    output_dir: OutputDirOption = None,
     overwrite: OverwriteOption = False,
     verbose: VerboseOption = False,
     quiet: QuietOption = False,
@@ -242,7 +270,8 @@ def download(
       # Fetch this month's files early from the bulk page
       $ mortgage-data gnma download -t bulk
 
-    [yellow]Common prefixes:[/yellow] monthly, llmon1, llmon2, hllmon1, hllmon2
+    [yellow]Default set:[/yellow] with no prefixes named, the prefixes some reader uses
+    (see [cyan]gnma info[/cyan]); any other prefix builds when named.
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
@@ -260,9 +289,7 @@ def download(
 
     if prefixes:
         validate_prefixes(prefixes)
-        console.print(f"[cyan]Prefixes:[/cyan] {', '.join(prefixes)}")
-    else:
-        console.print("[cyan]Prefixes:[/cyan] all")
+    console.print(f"[cyan]Prefixes:[/cyan] {_prefix_label(prefixes)}")
     console.print(f"[cyan]Datasets:[/cyan] {', '.join(selected)}")
     if "schemas" in selected:
         console.print(f"[cyan]Schema source:[/cyan] {source}")
@@ -274,6 +301,10 @@ def download(
 
     download_config, _ = create_configs_from_env()
     console.print("[green]Credentials loaded from environment[/green]\n")
+    if output_dir:
+        # Data files go under {output_dir}/{prefix}/; schema PDFs keep their own root.
+        download_config = replace(download_config, data_download_folder=Path(output_dir))
+        console.print(f"[cyan]Output directory:[/cyan] {output_dir}")
 
     all_results: list[DownloadResult] = []
 
@@ -282,7 +313,7 @@ def download(
         parsed_start = datetime.strptime(min_date, "%Y%m") if min_date else None
         parsed_end = datetime.strptime(max_date, "%Y%m") if max_date else None
         results = core_download_workflow(
-            prefixes=prefixes,
+            prefixes=prefixes or None,
             download_data="data" in selected,
             download_schemas="schemas" in selected,
             schema_source=source,
@@ -319,7 +350,9 @@ def download(
 
 @app.command()
 def pipeline(
-    prefixes: Annotated[list[str], typer.Argument(help="Prefixes to process")],
+    prefixes: Annotated[
+        list[str] | None, typer.Argument(help="Prefixes to process (default: the default set)")
+    ] = None,
     start_date: Annotated[
         str | None, typer.Option("--start-date", "-s", help="Start date for analysis (YYYYMM)")
     ] = None,
@@ -362,20 +395,21 @@ def pipeline(
       # Process only (data already downloaded)
       $ mortgage-data gnma pipeline monthly --skip-download --skip-analysis
 
-    [yellow]Common prefixes:[/yellow] monthly, llmon1, llmon2, hllmon1, hllmon2
+    [yellow]Default set:[/yellow] with no prefixes named, the prefixes some reader uses
+    (see [cyan]gnma info[/cyan]); any other prefix builds when named.
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
 
     print_section_header("GNMA Pipeline")
 
-    validate_prefixes(prefixes, allow_all=False)
+    validate_prefixes(prefixes or [])
     if start_date:
         validate_date_format(start_date)
     if end_date:
         validate_date_format(end_date)
 
-    console.print(f"[cyan]Prefixes:[/cyan] {', '.join(prefixes)}")
+    console.print(f"[cyan]Prefixes:[/cyan] {_prefix_label(prefixes)}")
     console.print(f"[cyan]Download:[/cyan] {not skip_download}")
     console.print(f"[cyan]Process:[/cyan] {not skip_processing}")
     console.print(f"[cyan]Analyze:[/cyan] {not skip_analysis}")
@@ -388,7 +422,7 @@ def pipeline(
     console.print("[bold cyan]Starting complete workflow...[/bold cyan]\n")
     download_config, _ = create_configs_from_env()
     results = core_complete_workflow(
-        prefixes=prefixes,
+        prefixes=prefixes or None,
         download_data=not skip_download,
         process_data=not skip_processing,
         analyze_data=not skip_analysis,
@@ -443,7 +477,10 @@ def pipeline(
 
 @app.command("bronze")
 def bronze(
-    prefixes: Annotated[list[str], typer.Argument(help="Prefixes to stage to bronze")],
+    prefixes: Annotated[
+        list[str] | None,
+        typer.Argument(help="Prefixes to stage to bronze (default: the default set)"),
+    ] = None,
     verbose: VerboseOption = False,
     quiet: QuietOption = False,
 ) -> None:
@@ -455,40 +492,47 @@ def bronze(
 
     [yellow]Examples:[/yellow]
 
+      # Bronze for the default set
+      $ mortgage-data gnma bronze
+
       # Bronze for monthly prefix
       $ mortgage-data gnma bronze monthly
 
       # Bronze for multiple prefixes
       $ mortgage-data gnma bronze llmon1 llmon2
 
-    [yellow]Common prefixes:[/yellow] monthly, llmon1, llmon2, hllmon1, hllmon2
+    [yellow]Default set:[/yellow] with no prefixes named, the prefixes some reader uses
+    (see [cyan]gnma info[/cyan]); any other prefix builds when named.
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
 
     print_section_header("Stage GNMA Data to Bronze Parquet")
 
-    validate_prefixes(prefixes, allow_all=False)
-    console.print(f"[cyan]Prefixes:[/cyan] {', '.join(prefixes)}\n")
+    validate_prefixes(prefixes or [])
+    console.print(f"[cyan]Prefixes:[/cyan] {_prefix_label(prefixes)}\n")
 
     config = ProcessorConfig()
     results = _run_processing(
-        prefixes=prefixes,
+        prefixes=prefixes or None,
         include_staging=True,
         include_transformation=False,
         config=config,
     )
 
     summary = results.get("staging_summary", {})
+    failed = summary.get("total_failed", 0)
+    found = summary.get("total_successful", 0) + summary.get("total_skipped", 0) + failed
     print_summary(
-        "Bronze Complete",
+        "Bronze Complete" if failed == 0 else "Bronze Failed",
         {
             "Successful": summary.get("total_successful", 0),
-            "Failed": summary.get("total_failed", 0),
+            "Failed": failed,
             "Skipped": summary.get("total_skipped", 0),
         },
-        style="green",
+        style="green" if failed == 0 else "red",
     )
+    _exit_on_failure(results, failed, found, "raw file")
 
 
 # ============================================================================
@@ -498,10 +542,18 @@ def bronze(
 
 @app.command("silver")
 def silver(
-    prefixes: Annotated[list[str], typer.Argument(help="Prefixes to transform to silver")],
+    prefixes: Annotated[
+        list[str] | None,
+        typer.Argument(help="Prefixes to transform to silver (default: the default set)"),
+    ] = None,
     record_types: Annotated[
         list[str] | None,
-        typer.Option("--record-types", "-r", help="Record types to process (H, L, P, I, T)"),
+        typer.Option(
+            "--record-types",
+            "-r",
+            help="Record types to build, as declared in the prefix's canonical schema "
+            "(e.g. H L P T for llmon1, HH LL TT for llmon)",
+        ),
     ] = None,
     overwrite: OverwriteOption = False,
     verbose: VerboseOption = False,
@@ -516,7 +568,12 @@ def silver(
     rebuild is scoped to the [cyan]{prefix}/{record_type}[/cyan] files it writes —
     no other silver output is touched.
 
+    A record type with no rows in a month's file gets no silver file.
+
     [yellow]Examples:[/yellow]
+
+      # Silver for the default set
+      $ mortgage-data gnma silver
 
       # Silver for monthly prefix (all record types)
       $ mortgage-data gnma silver monthly
@@ -530,22 +587,27 @@ def silver(
       # Silver for multiple prefixes
       $ mortgage-data gnma silver llmon1 llmon2
 
-    [yellow]Valid record types:[/yellow] H (Header), L (Loan), P (Pool), I (Issuer), T (Trailer)
+    Valid record types are the ones the prefix's canonical schema declares: H/L/P/T/Z
+    for the fixed-width loan-level files, HH/LL/TT for [cyan]llmon[/cyan] and
+    [cyan]dailyllmnipd[/cyan].
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
 
     print_section_header("Transform GNMA Bronze to Silver")
 
-    validate_prefixes(prefixes, allow_all=False)
+    validate_prefixes(prefixes or [])
     if record_types:
-        validate_record_types(record_types)
+        if not prefixes:
+            print_error("--record-types needs the prefixes it applies to")
+            raise typer.Exit(code=1)
+        validate_record_types(record_types, prefixes)
         console.print(f"[cyan]Record types:[/cyan] {', '.join(record_types)}")
-    console.print(f"[cyan]Prefixes:[/cyan] {', '.join(prefixes)}\n")
+    console.print(f"[cyan]Prefixes:[/cyan] {_prefix_label(prefixes)}\n")
 
     config = ProcessorConfig(overwrite=overwrite)
     results = _run_processing(
-        prefixes=prefixes,
+        prefixes=prefixes or None,
         include_staging=False,
         include_transformation=True,
         record_types=record_types,
@@ -553,16 +615,18 @@ def silver(
     )
 
     summary = results.get("transformation_summary", {})
+    failed = summary.get("total_failed", 0)
     print_summary(
-        "Silver Complete",
+        "Silver Complete" if failed == 0 else "Silver Failed",
         {
             "Total Files": summary.get("total_files", 0),
             "Successful": summary.get("total_successful", 0),
-            "Failed": summary.get("total_failed", 0),
+            "Failed": failed,
             "Total Records": f"{summary.get('total_records', 0):,}",
         },
-        style="green",
+        style="green" if failed == 0 else "red",
     )
+    _exit_on_failure(results, failed, summary.get("total_files", 0), "bronze file")
 
 
 # ============================================================================
@@ -589,6 +653,10 @@ def info() -> None:
             "Silver Directory": GNMAConfig.GNMA_SILVER_DIR,
             "Schemas Directory": GNMAConfig.GNMA_SCHEMAS_DIR,
         },
+    )
+    default_set = default_prefixes(load_prefix_dictionary(GNMAConfig.GNMA_PREFIX_DICTIONARY))
+    console.print(
+        f"\n[bold cyan]Default set ({len(default_set)}):[/bold cyan] {', '.join(default_set)}"
     )
 
     # Show available commands

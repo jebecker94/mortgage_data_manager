@@ -20,7 +20,7 @@ from typing import Literal, cast
 import polars as pl
 
 from mortgage_data_manager.core.logging import get_logger
-from mortgage_data_manager.core.medallion import should_process_file
+from mortgage_data_manager.core.medallion import atomic_output, should_process_file
 from mortgage_data_manager.sources.fhfa.config import (
     LAST_FIXED_WIDTH_YEAR,
     FHFAConfig,
@@ -375,7 +375,8 @@ def extract_dictionary_tables_for_year(
         )
 
         if "csv" in formats:
-            combined.write_csv(str(out_csv))
+            with atomic_output(out_csv) as tmp:
+                combined.write_csv(tmp)
 
 
 # ============================================================================
@@ -456,14 +457,15 @@ def extract_enterprise_pudb_pdfs(
                     out_dir = fhfa_dict_root / year_str
                     out_path = out_dir / base_name
 
-                    if out_path.exists() and not _options.overwrite_raw_dicts:
+                    if not should_process_file(out_path, _options.overwrite_raw_dicts):
                         logger.debug("Skipping existing file: %s", out_path)
                         continue
 
                     # Extract PDF to dictionary directory
                     out_dir.mkdir(parents=True, exist_ok=True)
-                    with zf.open(member) as src, open(out_path, "wb") as dst:
-                        shutil.copyfileobj(src, dst)
+                    with atomic_output(out_path) as tmp, zf.open(member) as src:
+                        with open(tmp, "wb") as dst:
+                            shutil.copyfileobj(src, dst)
 
                     extracted_files.append(out_path)
                     logger.info("Extracted %s", out_path)
@@ -830,7 +832,8 @@ def convert_excel_dictionary(
                 ]
             )
 
-            df.write_csv(csv_path)
+            with atomic_output(csv_path) as tmp:
+                df.write_csv(tmp)
             logger.info("Saved: %s", csv_path)
 
         results[sheet_name] = csv_path
@@ -1069,7 +1072,8 @@ def build_master_dictionary_for_type(
         logger.warning("Missing dictionaries for years: %s", missing_years)
 
     # Save to disk
-    master.write_csv(output_path)
+    with atomic_output(output_path) as tmp:
+        master.write_csv(tmp)
     logger.info("Saved master dictionary (CSV): %s", output_path)
 
     return master

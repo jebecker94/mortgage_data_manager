@@ -32,7 +32,6 @@ $ mortgage-data [OPTIONS] COMMAND [ARGS]...
 * `hud`: HUD multifamily housing data operations
 * `combined`: Combined cross-source master datasets
 * `fhlb`: FHLB data operations
-* `geocode`: Inspect/manage the global geocoder cache
 * `raw`: Raw download ledger: register, audit,...
 
 ## `mortgage-data version`
@@ -332,7 +331,7 @@ $ mortgage-data fha silver [OPTIONS] {dataset}:<single-family|hecm|both>
 **Options**:
 
 * `--min-year <int>`: Minimum year to process  [default: 2010]
-* `--max-year <int>`: Maximum year to process  [default: 2025]
+* `--max-year <int>`: Maximum year to process  [default: 2026]
 * `--overwrite`: Overwrite existing files instead of skipping them.
 * `--help`: Show this message and exit.
 
@@ -366,7 +365,7 @@ $ mortgage-data fha pipeline [OPTIONS] {dataset}:<single-family|hecm|both>
 * `--overwrite`: Overwrite existing files instead of skipping them.
 * `--pause SECONDS`: Seconds to pause between downloads. Default: the source&#x27;s configured value.
 * `--min-year <int>`: Minimum year to process  [default: 2010]
-* `--max-year <int>`: Maximum year to process  [default: 2025]
+* `--max-year <int>`: Maximum year to process  [default: 2026]
 * `--help`: Show this message and exit.
 
 ### `mortgage-data fha info`
@@ -538,7 +537,8 @@ disk are skipped; pass `--overwrite` to re-download.
   # Fetch this month&#x27;s files early from the bulk page
   $ mortgage-data gnma download -t bulk
 
-**Common prefixes:** monthly, llmon1, llmon2, hllmon1, hllmon2
+**Default set:** with no prefixes named, the prefixes some reader uses
+(see `gnma info`); any other prefix builds when named.
 
 **Usage**:
 
@@ -548,7 +548,7 @@ $ mortgage-data gnma download [OPTIONS] [prefixes]...
 
 **Arguments**:
 
-* `prefixes...`: Prefixes to download (leave empty for all)
+* `prefixes...`: Prefixes to download (default: the default set)
 
 **Options**:
 
@@ -557,6 +557,7 @@ $ mortgage-data gnma download [OPTIONS] [prefixes]...
 * `--min-date <str>`: Start date in YYYYMM format (e.g. 202501)
 * `--max-date <str>`: End date in YYYYMM format (e.g. 202612)
 * `--include-daily`: Bulk only: include daily snapshot files
+* `-o, --output-dir PATH`: Output directory for downloaded files. Defaults to subpackage raw directory.
 * `--overwrite`: Overwrite existing files instead of skipping them.
 * `-v, --verbose`: Enable verbose (DEBUG level) logging output.
 * `-q, --quiet`: Suppress progress bars and reduce output.
@@ -588,17 +589,18 @@ pass `--skip-analysis`.
   # Process only (data already downloaded)
   $ mortgage-data gnma pipeline monthly --skip-download --skip-analysis
 
-**Common prefixes:** monthly, llmon1, llmon2, hllmon1, hllmon2
+**Default set:** with no prefixes named, the prefixes some reader uses
+(see `gnma info`); any other prefix builds when named.
 
 **Usage**:
 
 ```console
-$ mortgage-data gnma pipeline [OPTIONS] {prefixes}...
+$ mortgage-data gnma pipeline [OPTIONS] [prefixes]...
 ```
 
 **Arguments**:
 
-* `prefixes...`: Prefixes to process  [required]
+* `prefixes...`: Prefixes to process (default: the default set)
 
 **Options**:
 
@@ -621,23 +623,27 @@ transformation.
 
 **Examples:**
 
+  # Bronze for the default set
+  $ mortgage-data gnma bronze
+
   # Bronze for monthly prefix
   $ mortgage-data gnma bronze monthly
 
   # Bronze for multiple prefixes
   $ mortgage-data gnma bronze llmon1 llmon2
 
-**Common prefixes:** monthly, llmon1, llmon2, hllmon1, hllmon2
+**Default set:** with no prefixes named, the prefixes some reader uses
+(see `gnma info`); any other prefix builds when named.
 
 **Usage**:
 
 ```console
-$ mortgage-data gnma bronze [OPTIONS] {prefixes}...
+$ mortgage-data gnma bronze [OPTIONS] [prefixes]...
 ```
 
 **Arguments**:
 
-* `prefixes...`: Prefixes to stage to bronze  [required]
+* `prefixes...`: Prefixes to stage to bronze (default: the default set)
 
 **Options**:
 
@@ -656,7 +662,12 @@ Existing silver files are skipped; `--overwrite` rebuilds them. The
 rebuild is scoped to the `{prefix}/{record_type}` files it writes —
 no other silver output is touched.
 
+A record type with no rows in a month&#x27;s file gets no silver file.
+
 **Examples:**
+
+  # Silver for the default set
+  $ mortgage-data gnma silver
 
   # Silver for monthly prefix (all record types)
   $ mortgage-data gnma silver monthly
@@ -670,21 +681,23 @@ no other silver output is touched.
   # Silver for multiple prefixes
   $ mortgage-data gnma silver llmon1 llmon2
 
-**Valid record types:** H (Header), L (Loan), P (Pool), I (Issuer), T (Trailer)
+Valid record types are the ones the prefix&#x27;s canonical schema declares: H/L/P/T/Z
+for the fixed-width loan-level files, HH/LL/TT for `llmon` and
+`dailyllmnipd`.
 
 **Usage**:
 
 ```console
-$ mortgage-data gnma silver [OPTIONS] {prefixes}...
+$ mortgage-data gnma silver [OPTIONS] [prefixes]...
 ```
 
 **Arguments**:
 
-* `prefixes...`: Prefixes to transform to silver  [required]
+* `prefixes...`: Prefixes to transform to silver (default: the default set)
 
 **Options**:
 
-* `-r, --record-types <str>`: Record types to process (H, L, P, I, T)
+* `-r, --record-types <str>`: Record types to build, as declared in the prefix&#x27;s canonical schema (e.g. H L P T for llmon1, HH LL TT for llmon)
 * `--overwrite`: Overwrite existing files instead of skipping them.
 * `-v, --verbose`: Enable verbose (DEBUG level) logging output.
 * `-q, --quiet`: Suppress progress bars and reduce output.
@@ -1601,7 +1614,7 @@ $ mortgage-data umbs [OPTIONS] COMMAND [ARGS]...
 * `bronze`: Import raw zip files to bronze parquet.
 * `silver`: Build the silver layer for UMBS data.
 * `pipeline`: Run bronze + silver for UMBS data in one...
-* `info`: Display UMBS configuration information.
+* `info`: Display UMBS configuration information and...
 * `download`: Instructions for downloading UMBS (Uniform...
 
 ### `mortgage-data umbs bronze`
@@ -1683,9 +1696,11 @@ $ mortgage-data umbs pipeline [OPTIONS]
 
 ### `mortgage-data umbs info`
 
-Display UMBS configuration information.
+Display UMBS configuration information and raw coverage.
 
-Shows the current configuration paths and settings for UMBS data.
+Shows the configuration paths, then one row per raw feed A reads: files on disk,
+first and last month, months missing since the feed&#x27;s first published month,
+and months holding more than one file (an original plus a republication).
 
 Examples:
   mortgage-data umbs info
@@ -1707,25 +1722,12 @@ Instructions for downloading UMBS (Uniform Mortgage-Backed Securities) data.
 
 Manual Download Required
 
-UMBS data is available through both Fannie Mae and Freddie Mac platforms.
-Registration is required on one or both platforms.
+Both GSEs publish the disclosure files behind a registered login or on SFTP.
+Prints the feeds A reads (prefix, raw folder, file name, first month), the
+look-alike files to avoid, and the rule to keep mid-month republications.
 
-**Access Options:**
-
-Option 1: Fannie Mae Capital Markets
-   https://capitalmarkets.fanniemae.com/mortgage-backed-securities/single-family-mbs
-
-Option 2: Freddie Mac Capital Markets
-   https://capitalmarkets.freddiemac.com/mbs/products/umbs
-
-**After Download:**
-
-Run the import command to process files:
-  $ mortgage-data umbs bronze
-
-**Documentation:**
-
-See docs/manual_downloads.md for detailed instructions.
+Examples:
+  mortgage-data umbs download
 
 **Usage**:
 
@@ -3461,74 +3463,6 @@ $ mortgage-data fhlb info [OPTIONS]
 
 **Options**:
 
-* `--help`: Show this message and exit.
-
-## `mortgage-data geocode`
-
-Inspect/manage the global geocoder cache
-
-**Usage**:
-
-```console
-$ mortgage-data geocode [OPTIONS] COMMAND [ARGS]...
-```
-
-**Options**:
-
-* `--help`: Show this message and exit.
-
-**Commands**:
-
-* `cache`: Cache operations
-
-### `mortgage-data geocode cache`
-
-Cache operations
-
-**Usage**:
-
-```console
-$ mortgage-data geocode cache [OPTIONS] COMMAND [ARGS]...
-```
-
-**Options**:
-
-* `--help`: Show this message and exit.
-
-**Commands**:
-
-* `stats`: Show row counts and provider/match-reason...
-* `purge`: Purge cache rows matching the given filters.
-
-#### `mortgage-data geocode cache stats`
-
-Show row counts and provider/match-reason breakdowns for the cache.
-
-**Usage**:
-
-```console
-$ mortgage-data geocode cache stats [OPTIONS]
-```
-
-**Options**:
-
-* `--help`: Show this message and exit.
-
-#### `mortgage-data geocode cache purge`
-
-Purge cache rows matching the given filters.
-
-**Usage**:
-
-```console
-$ mortgage-data geocode cache purge [OPTIONS]
-```
-
-**Options**:
-
-* `--provider <str>`: Provider(s) to purge
-* `--older-than <str>`: ISO date — purge rows cached before this date
-* `--match-reason <str>`: Purge rows with the given match_reason(s) — e.g., no_match, http_429
 * `--help`: Show this message and exit.
 
 ## `mortgage-data raw`

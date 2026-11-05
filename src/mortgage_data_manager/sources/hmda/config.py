@@ -36,6 +36,9 @@ class HMDAConfig(MortgageDataConfig):
     HMDA_RAW_DIR: Path = Path(config("HMDA_RAW_DIR", default=str(HMDA_DATA_DIR / "raw")))
     HMDA_BRONZE_DIR: Path = Path(config("HMDA_BRONZE_DIR", default=str(HMDA_DATA_DIR / "bronze")))
     HMDA_SILVER_DIR: Path = Path(config("HMDA_SILVER_DIR", default=str(HMDA_DATA_DIR / "silver")))
+    #: Latest panel name per LEI, derived from the post-2018 panel silver. A sibling of
+    #: the dataset folders, so no era scan of ``panel/`` ever picks it up.
+    HMDA_LEI_NAME_FILE: Path = HMDA_SILVER_DIR / "lender_names" / "lei_latest_name.parquet"
 
     @classmethod
     def ensure_directories(cls) -> None:
@@ -363,6 +366,72 @@ POST2018_EXEMPT_COLUMNS: list[str] = [
     "lender_credits",
 ]
 
+#: Post-2018 coded fields whose partial-exemption answer is the code 1111 (FIG Table 2).
+POST2018_EXEMPT_CODED_COLUMNS: list[str] = [
+    "reverse_mortgage",
+    "open_end_line_of_credit",
+    "business_or_commercial_purpose",
+    "negative_amortization",
+    "interest_only_payment",
+    "balloon_payment",
+    "other_nonamortizing_features",
+    "manufactured_home_secured_property_type",
+    "manufactured_home_land_property_interest",
+    "applicant_credit_score_type",
+    "co_applicant_credit_score_type",
+    "submission_of_application",
+    "initially_payable_to_institution",
+    "aus_1",
+    "denial_reason_1",
+]
+
+#: Silver code -> null, per era: the codes that stand for an absent value, as silver
+#: stores them. Applied by `sources.hmda.load.null_sentinel_codes`; silver keeps them
+#: live so a consumer can still tell "exempt" from "not reported".
+#:
+#: - post-2018 numeric fields: ``Exempt`` (silver writes -99999), plus the
+#:   conforming-loan-limit ``U``/``NA`` that silver also writes as -99999.
+#: - post-2018 coded fields: 1111 = Exempt.
+#: - age: 8888 = not applicable (the applicant is not a natural person), 9999 = no
+#:   co-applicant (documented for the co-applicant only; 2018-2021 filers also put it in
+#:   ``applicant_age``, 42-916 rows per release, where it is not an age either). Neither
+#:   is an age bin.
+#: - pre-2018 income: Applicant Income (000s) is a 4-character field (CFPB LAR record
+#:   format), so 9999 is its ceiling ("$9,999,000 or more", and a filer placeholder),
+#:   not an amount. Silver nulls it from this build on; the entry keeps the accessor
+#:   correct on silver built before that (where it reads 9,999,000 dollars).
+#:
+#: Category codes that are real answers stay live: purchaser_type 0, co_applicant_sex 5
+#: (no co-applicant), hoepa_status 3, denial_reason_1 10, aus_1 6 and the like. So do
+#: fee amounts that happen to read 1111/8888/9999 dollars.
+SENTINEL_CODES: Final[dict[HMDAPeriod, dict[str, tuple[int, ...]]]] = {
+    "post2018": {
+        **{
+            c: (-99999,)
+            for c in (*POST2018_EXEMPT_COLUMNS, "debt_to_income_ratio", "conforming_loan_limit")
+        },
+        **dict.fromkeys(POST2018_EXEMPT_CODED_COLUMNS, (1111,)),
+        "applicant_age": (8888, 9999),
+        "co_applicant_age": (8888, 9999),
+    },
+    "period_2007_2017": {"income": (9_999_000,)},
+    "pre2007": {"income": (9_999_000,)},
+}
+
+#: Pre-2018 Applicant Income (000s) ceiling: the largest value its 4-character field holds.
+PRE2018_INCOME_CEILING_000S: Final = 9999
+
+#: ``co_applicant_sex`` codes that report a co-applicant, per era (CFPB code sheet 2007-2017;
+#: FIG 2018+, where 6 = selected both). 5 = no co-applicant; 4 (not applicable) says nothing.
+CO_APPLICANT_PRESENT_CODES: Final[dict[HMDAPeriod, tuple[int, ...]]] = {
+    "pre2007": (1, 2, 3),
+    "period_2007_2017": (1, 2, 3),
+    "post2018": (1, 2, 3, 6),
+}
+
+#: ``co_applicant_sex`` code for "no co-applicant", in every era.
+NO_CO_APPLICANT_CODE: Final = 5
+
 
 # ============================================================================
 # Pre-2007 Data Constants
@@ -616,6 +685,10 @@ _HMDA_LOANS_PERIOD_2007_2017_COLS: list[tuple[str, ColumnRole]] = [
     ("application_date_indicator", _I8),
     ("file_type", _S),
     ("HMDAIndex", _S),
+    # Derived in silver (see import_silver): one definition for every consumer.
+    ("respondent_key", _S),
+    ("number_of_borrowers", _I8),
+    ("purchaser_type_label", _S),
 ]
 
 _HMDA_LOANS_POST2018_COLS: list[tuple[str, ColumnRole]] = [
@@ -718,6 +791,9 @@ _HMDA_LOANS_POST2018_COLS: list[tuple[str, ColumnRole]] = [
     ("applicant_credit_scoring_model", _S),
     ("co_applicant_credit_scoring_model", _S),
     ("other_non_amortizing_features", _S),
+    # Derived in silver (see import_silver).
+    ("number_of_borrowers", _I8),
+    ("purchaser_type_label", _S),
 ]
 
 _HMDA_PANEL_PRE2007_COLS: list[tuple[str, ColumnRole]] = [
@@ -901,6 +977,8 @@ _HMDA_PANEL_PERIOD_2007_2017_COLS: list[tuple[str, ColumnRole]] = [
     ("respondent_rssd", _S),
     ("parent_rssd", _S),
     ("respondent_fips", _S),
+    # Derived in silver (see import_silver): the join key the loans silver also carries.
+    ("respondent_key", _S),
 ]
 
 #: Union of the 2007-2016 (22-col) and 2017 (15-col) transmittal-series layouts.

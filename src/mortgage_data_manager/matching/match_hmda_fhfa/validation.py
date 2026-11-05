@@ -53,7 +53,7 @@ from mortgage_data_manager.matching.validation_common import (
     save_and_close,
 )
 from mortgage_data_manager.sources.fhfa.config import FHFAConfig
-from mortgage_data_manager.sources.hmda.load import scan_hmda, scan_hmda_for_index
+from mortgage_data_manager.sources.hmda.load import scan_hmda_for_index, scan_originations
 
 #: Both eras write here; the era lives in the filename, not the directory.
 VALIDATION_OUTPUT_DIR = MortgageDataConfig.PROJECT_DIR / "docs" / "matching" / "figures"
@@ -822,13 +822,11 @@ def load_hmda_silver_pre2018(years: list[int] | None = None) -> pl.LazyFrame:
     frames = []
     for y in years:
         try:
-            lf = scan_hmda("period_2007_2017", y, file_type="d")
+            lf = scan_originations("period_2007_2017", y, y, file_type="d")
         except FileNotFoundError:
             continue
         avail = lf.collect_schema().names()
-        lf = lf.filter(
-            (pl.col("action_taken") == 1) & ~pl.col("purchaser_type").is_in([2, 4])
-        ).with_columns(
+        lf = lf.filter(~pl.col("purchaser_type").is_in([2, 4])).with_columns(
             pl.when(pl.col("co_applicant_race_1") == 8)
             .then(1)
             .otherwise(2)

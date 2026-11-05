@@ -20,6 +20,10 @@
 
 ::: mortgage_data_manager.sources.umbs.import_silver
 
+## Freddie pool acquisition type
+
+::: mortgage_data_manager.sources.umbs.prefix_library
+
 ## Pipeline
 
 ::: mortgage_data_manager.sources.umbs.pipeline
@@ -35,9 +39,13 @@ counts = run_pipeline(overwrite=False)
 mortgage-data umbs pipeline
 ```
 
-Raw files are downloaded by hand from Fannie Mae's and Freddie Mac's disclosure portals
-(`mortgage-data umbs download` prints the steps). Bronze is scoped by GSE and raw folder
-(`--gse`, `--folder`), silver by GSE and kind (`--gse`, `--kind`).
+Raw files are downloaded by hand from Fannie Mae's and Freddie Mac's disclosure portals.
+`mortgage-data umbs download` lists the feeds A reads, their raw folders, file names and
+first months, and the look-alike files to avoid. `mortgage-data umbs info` adds a coverage
+table per feed: first and last month on disk, missing months, and months holding more
+than one file (an original beside a `_REV`, `_2` or second `fd` republication, which must
+be kept). Bronze is scoped by GSE and raw folder (`--gse`, `--folder`), silver by GSE and
+kind (`--gse`, `--kind`).
 
 ## Data Structure
 ### Directory Layout
@@ -102,13 +110,35 @@ schema; bronze falls back to polars dtype inference for them and logs a warning.
 ### Silver
 Silver is built for the loan- and security-level kinds, one file per (GSE, kind, month),
 with the kind's `SilverSpec` dtypes applied (dates parsed, closed code sets as enums,
-credit-score and LTV/DTI sentinels null-mapped):
+credit-score and LTV/DTI sentinels null-mapped, and code `9` = Not Available null-mapped
+in First Time Home Buyer Indicator, Loan Purpose, Occupancy Status, Channel and Pricing
+Indicator). A month whose build fails is counted as `failed`, nothing is published under
+its name, and `umbs silver` exits 1.
 
 - `ILLD` and `IS` (both GSEs) merge each original with its reissue file; see
   [Reissue (R-) files](#reissue-files) below.
 - `MLLD` (FNMA) and `FU` (FHLMC), the monthly loan-level performance feeds, and FNMA `MF`
   and `GN_MEGA` have no reissue twin and pass straight through, with `_record_source`
   set to `'original'`.
+
+From the 2026-10 files, ILLD/RILLD add `Pricing Indicator` (C = Classic FICO, V = VS4),
+`Fannie Score` and `Freddie Score`, and IS/RIS add `WA Fannie Score`, `WA Freddie Score`,
+`WA Classic FICO Used In Pricing` and `WA VS4 Used In Pricing`, for both GSEs. Earlier
+months carry them as nulls. MLLD, FU, MF and FD do not carry them (as of 2026-10).
+
+**`acquisition_type` (Freddie ILLD, IS and FU).** The pool's class in Freddie's Prefix
+Library: `Cash`, `MultiLender` or `Guar` (single-seller swap), looked up from the pool
+prefix and number in `schemas/umbs/fhlmc_prefix_library_ranges.csv`. It is null for
+Fannie (no published equivalent) and for pools no range covers (Supers, exchanged mirror
+pools, prefixes other than CL/CT/CI/CN). On the Freddie IS files from 2019-06, all 170,288
+CL pools in the Q, R and T series fall in exactly one range. The column names the pool's
+class, not the loan's channel, and the two agree only for 30- and 15-year pools through
+April 2025:
+
+- 20- and 10-year MultiLender pools have always held Freddie cash-window loans as well as
+  swapped loans.
+- From May 2025, 30- and 15-year MultiLender UMBS (`RQ`, `RR`) take in the generic cash
+  pool that was previously paired with them inside a MultiLender Super, so they mix both.
 
 ## Reissue (R-) files and the silver layer {#reissue-files}
 GSE disclosure folders come in matched original/reissue pairs:
@@ -122,6 +152,10 @@ GSE disclosure folders come in matched original/reissue pairs:
 The `R-` file is a **same-month republication of every pool/security in which any field was corrected**, not a delta. It republishes *all* loans in a touched pool — the `Loan/Security Correction Indicator` column is `Y` only for the loans whose fields actually changed, and `N` for the unchanged-but-republished siblings. Empirically (verified across 70+ months of `FNM_RIS` and `FRE_RIS` and all available `RILLD` months) **every R-file row matches a same-month original** — no cross-month corrections.
 
 **Silver consolidates the pair into one dataset per kind.** For each month, the silver importer (`umbs.import_silver`) takes the original for any key not present in that month's R-file and the R-file's row otherwise, then adds a `_record_source` column (`'original'` or `'correction'`). The pairings live in `CORRECTION_PAIRS` in `umbs/config.py` — register new corrected files there, not in the importer.
+
+RIS and RISS run from 2019-06. RILLD is a newer file: the GSEs announced it in March 2026,
+and the first file is issuance month 2026-03 for both, so ILLD silver before 2026-03 holds
+original rows only. A reissue file is posted only for months that had corrections.
 
 **ISS/RISS have no silver yet.** The stratified issuance files are headerless
 multi-record-type files, which bronze splits by record type. The silver merge reads one

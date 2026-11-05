@@ -15,6 +15,8 @@ from typing import Literal
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.sources.fha.config import (
     DATASET_MAP,
+    DEFAULT_MAX_YEAR,
+    DEFAULT_MIN_YEAR,
     VALID_DATASETS,
     FHAConfig,
     resolve_datasets,
@@ -28,12 +30,9 @@ from mortgage_data_manager.sources.fha.import_silver import build_silver_snapsho
 
 logger = get_logger(__name__)
 
-DEFAULT_MIN_YEAR = 2010
-DEFAULT_MAX_YEAR = 2025
-
 DatasetType = Literal["single-family", "hecm", "both"]
 
-_CONVERTERS: dict[str, Callable[..., None]] = {
+_CONVERTERS: dict[str, Callable[..., dict[str, int]]] = {
     "single-family": convert_fha_sf_snapshots,
     "hecm": convert_fha_hecm_snapshots,
 }
@@ -98,12 +97,16 @@ def run_bronze(
         bronze_root: Override the bronze layer root.
 
     Returns:
-        Counts: ``processed``, ``successful``, ``failed`` datasets.
+        Counts: ``processed``, ``successful``, ``failed`` datasets. A dataset fails
+        if any of its snapshots failed; the others are still converted.
     """
 
     def step(dataset: str) -> None:
         raw_dir, bronze_dir, _ = _layer_dirs(dataset, raw_root=raw_root, bronze_root=bronze_root)
-        _CONVERTERS[dataset](raw_dir, bronze_dir, overwrite=overwrite)
+        counts = _CONVERTERS[dataset](raw_dir, bronze_dir, overwrite=overwrite)
+        logger.info("FHA bronze %s: %s", dataset, counts)
+        if counts["failed"]:
+            raise RuntimeError(f"{counts['failed']} {dataset} snapshot(s) failed to convert")
 
     return _run_across(datasets, "bronze", step)
 
