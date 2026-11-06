@@ -25,7 +25,6 @@ flowchart LR
     FHFA["FHFA PUDB<br/>(tract file)"]
     GSE["GSE SF<br/>loan-level"]
     UMBS["UMBS<br/>disclosure"]
-    CRT["CRT reference<br/>pools"]
     FHA["FHA<br/>endorsements"]
     GNMA["GNMA<br/>loan-level"]
     FHLB["FHLB AMA"]
@@ -35,7 +34,6 @@ flowchart LR
     FHFA ---|"95–96% FHFA-side"| GSE
     FHFA ---|"ARMs only"| UMBS
     GSE ---|"99.6–99.8% of matchable"| UMBS
-    GSE ---|"99.2% of CRT loans (FHLMC)"| CRT
     HMDA ---|"91% / 89%"| FHA
     HMDA ---|"FHA 79% · VA 57% · USDA 69%"| GNMA
     HMDA ---|"hmda_gse, chain + direct: 96% of reported GSE sales"| GSE
@@ -54,9 +52,8 @@ flowchart LR
 - **Government.** HMDA FHA loans reach GNMA by a direct match, each carrying its FHA
   record (through `hmda_fha`): the exact amount and endorsement month HMDA rounds away.
   VA and USDA have no administrative bridge and match on HMDA's fields alone.
-- **Side edges.** FHLB AMA is the only loan-level view of the FHLBank portfolio channel;
-  CRT reference pools attach market-priced credit risk. HMDA purchase records trace loan
-  sales between HMDA filers.
+- **Side edges.** FHLB AMA is the only loan-level view of the FHLBank portfolio channel.
+  HMDA purchase records trace loan sales between HMDA filers.
 
 [`master`](master_crosswalk.md) assembles every post-2018 HMDA edge into one row per HMDA
 loan.
@@ -93,8 +90,6 @@ originations HMDA reports as sold to Fannie Mae or Freddie Mac (`purchaser_type`
 | [fhfa_mbs](fhfa_mbs_matching.md#fhfaumbs-arm-crosswalk), ARM | FHFA ARM records ↔ UMBS ARM disclosures | 2018–2025 | 147,157 | with the SF crosswalks, 96.7% (Fannie) and 89.0% (Freddie) of FHFA ARM records |
 | [mbs_umbs](mbs_umbs_matching.md), FNMA | GSE loan-level ↔ UMBS | pools from June 2019 | 26.21M | 99.79% of loans with first payment June 2019 on |
 | [mbs_umbs](mbs_umbs_matching.md), FHLMC | GSE loan-level ↔ UMBS | pools from June 2019 | 23.79M | 99.58% of fixed-rate loans with first payment June 2019 on; 99.16% of UMBS loans |
-| [crt_mbs](crt_mbs_matching.md), FHLMC | STACR/ACIS reference pools ↔ loan-level | deals 2013–2026 | 14.90M | 99.17% of CRT loans pinned 1:1 |
-| [crt_mbs](crt_mbs_matching.md), FNMA | CAS/CIRT deal membership | extracted 2026-10 | 14.64M loan-deal pairs | none: extraction only, not yet linked to loan-level; 291,545 pairs (2.0%) carry no deal name because their rows name two deals |
 | [fhlb_mbs](fhlb_mbs_matching.md) | FHLB AMA ↔ GNMA loan-level, one issuer | 2009–2025 | 15,777 | 97.3% of the issuer's GNMA loans; 46.9% of FHLB AMA government loans (both 2018–2025) |
 
 ### Assembled
@@ -117,7 +112,7 @@ originations HMDA reports as sold to Fannie Mae or Freddie Mac (`purchaser_type`
   denominators because they also reach those acquisitions.
 - **Cardinality.** Crosswalks key on `HMDAIndex` where there is an HMDA side and on each
   source's native id otherwise. All are 1:1 except post-2018 `hmda_sellers_purchasers` (one
-  row per resale hop) and `crt_mbs` (deal × loan grain).
+  row per resale hop).
 - **A null link in the master can mean withheld.** Where two methods contradict each other
   the master stores neither link and records why in `conflict_flags` (151,912 loans).
 - **Crosswalks can fall behind their inputs.** Matcher outputs sit outside the medallion
@@ -127,6 +122,6 @@ originations HMDA reports as sold to Fannie Mae or Freddie Mac (`purchaser_type`
 
 ## Commands
 
-Every matcher has `mortgage-data match {workflow} info` and `run`; all but `crt_mbs` have
-`validate`, and `crt_mbs` and `mbs_umbs` have `check`. The master has `build`, `qc` and
+Every matcher has `mortgage-data match {workflow} info`, `run` and `validate`, and
+`mbs_umbs` has `check`. The master has `build`, `qc` and
 `info`. Command names use hyphens (`match hmda-gse run`).

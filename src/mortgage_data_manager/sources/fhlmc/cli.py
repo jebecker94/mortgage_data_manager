@@ -27,7 +27,6 @@ from mortgage_data_manager.core.cli.validation import (
 )
 from mortgage_data_manager.core.logging import configure_logging
 from mortgage_data_manager.sources.fhlmc.config import (
-    CRT_DATASETS,
     MAX_YEAR,
     MIN_YEAR,
     VALID_DATASETS,
@@ -35,7 +34,6 @@ from mortgage_data_manager.sources.fhlmc.config import (
 )
 from mortgage_data_manager.sources.fhlmc.pipeline import (
     run_bronze,
-    run_crt,
     run_pipeline,
     run_silver,
 )
@@ -222,12 +220,12 @@ def list_schemas(
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
 
-    from mortgage_data_manager.sources.fhlmc.schemas import crt_schemas, load_all_schemas
+    from mortgage_data_manager.sources.fhlmc.schemas import load_all_schemas
 
     print_section_header("Available FHLMC Schemas")
 
     try:
-        schemas = load_all_schemas(FHLMCConfig.FHLMC_SCHEMA_FILE) | crt_schemas()
+        schemas = load_all_schemas(FHLMCConfig.FHLMC_SCHEMA_FILE)
     except Exception as e:
         console.print(f"[red]Error loading schemas:[/red] {e}")
         raise typer.Exit(code=1)
@@ -247,10 +245,7 @@ def list_schemas(
 def show_schema(
     dataset: Annotated[
         str,
-        typer.Argument(
-            help="Dataset to show (origination, performance, reperforming, "
-            "crt_lld, crt_agg_zipcode, crt_pre_harp)"
-        ),
+        typer.Argument(help="Dataset to show (origination, performance, reperforming)"),
     ],
     columns: Annotated[int, typer.Option("--columns", "-n", help="Number of columns to show")] = 10,
     verbose: VerboseOption = False,
@@ -265,20 +260,18 @@ def show_schema(
 
       $ mortgage-data fhlmc schemas show origination
       $ mortgage-data fhlmc schemas show performance -n 20
-      $ mortgage-data fhlmc schemas show crt_lld -n 93
 
-    [yellow]Valid datasets:[/yellow] origination, performance, reperforming,
-    crt_lld, crt_agg_zipcode, crt_pre_harp
+    [yellow]Valid datasets:[/yellow] origination, performance, reperforming
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
 
-    from mortgage_data_manager.sources.fhlmc.schemas import crt_schemas, load_all_schemas
+    from mortgage_data_manager.sources.fhlmc.schemas import load_all_schemas
 
     print_section_header(f"Schema: {dataset}")
 
     try:
-        schemas = load_all_schemas(FHLMCConfig.FHLMC_SCHEMA_FILE) | crt_schemas()
+        schemas = load_all_schemas(FHLMCConfig.FHLMC_SCHEMA_FILE)
     except Exception as e:
         console.print(f"[red]Error loading schemas:[/red] {e}")
         raise typer.Exit(code=1)
@@ -337,12 +330,12 @@ def show_date_columns(
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
 
-    from mortgage_data_manager.sources.fhlmc.schemas import crt_schemas, load_all_schemas
+    from mortgage_data_manager.sources.fhlmc.schemas import load_all_schemas
 
     print_section_header(f"Date Columns: {dataset}")
 
     try:
-        schemas = load_all_schemas(FHLMCConfig.FHLMC_SCHEMA_FILE) | crt_schemas()
+        schemas = load_all_schemas(FHLMCConfig.FHLMC_SCHEMA_FILE)
     except Exception as e:
         console.print(f"[red]Error loading schemas:[/red] {e}")
         raise typer.Exit(code=1)
@@ -384,49 +377,31 @@ def bronze(
         typer.Option(
             "--datasets",
             "-t",
-            help=(
-                f"Datasets to load: {', '.join(VALID_DATASETS)}, crt "
-                "(repeatable; default the non-CRT datasets)"
-            ),
+            help=f"Datasets to load: {', '.join(VALID_DATASETS)} (repeatable; default all)",
         ),
     ] = None,
     min_year: Annotated[int, typer.Option("--min-year", help="First vintage year")] = MIN_YEAR,
     max_year: Annotated[int, typer.Option("--max-year", help="Last vintage year")] = MAX_YEAR,
-    crt_parts: Annotated[
-        list[str] | None,
-        typer.Option(
-            "--crt-parts",
-            help=f"CRT disclosure parts when -t crt: {', '.join(CRT_DATASETS)} (default all)",
-        ),
-    ] = None,
     overwrite: OverwriteOption = False,
     verbose: VerboseOption = False,
     quiet: QuietOption = False,
 ) -> None:
     """Load raw FHLMC zips to bronze parquet.
 
-    Datasets (default [cyan]origination[/cyan], [cyan]performance[/cyan],
-    [cyan]reperforming[/cyan]):
-      - the three standard SF Loan-Level Dataset families, filtered by vintage
-        year via [cyan]--min-year[/cyan]/[cyan]--max-year[/cyan]
-      - [cyan]crt[/cyan]: the Reference Pool (CRT) disclosure bundle. Its own
-        parts axis is [cyan]--crt-parts[/cyan]; the year filter does not apply.
+    Datasets (default all): [cyan]origination[/cyan], [cyan]performance[/cyan] and
+    [cyan]reperforming[/cyan], filtered by vintage year via
+    [cyan]--min-year[/cyan]/[cyan]--max-year[/cyan].
 
     [yellow]Examples:[/yellow]
 
       $ mortgage-data fhlmc bronze
       $ mortgage-data fhlmc bronze -t origination --min-year 2020 --max-year 2024
-      $ mortgage-data fhlmc bronze -t crt --crt-parts lld --overwrite
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
 
     selected = datasets or list(VALID_DATASETS)
-    standard = [d for d in selected if d != "crt"]
-    if standard:
-        validate_datasets(standard, VALID_DATASETS)
-    if crt_parts:
-        validate_datasets(crt_parts, CRT_DATASETS, "CRT datasets")
+    validate_datasets(selected, VALID_DATASETS)
 
     if min_year > max_year:
         print_error(f"--min-year ({min_year}) must be <= --max-year ({max_year})")
@@ -437,17 +412,10 @@ def bronze(
     print_section_header("FHLMC Bronze Import")
     console.print(f"[cyan]Datasets:[/cyan] {', '.join(selected)}")
 
-    loaded = failed = 0
-    if standard:
-        console.print(f"[cyan]Years:[/cyan] {min_year}-{max_year}\n")
-        results = run_bronze(datasets=standard, years=year_list, overwrite=overwrite)
-        loaded += results.get("loaded", 0)
-        failed += results.get("failed", 0)
-    if "crt" in selected:
-        from mortgage_data_manager.sources.fhlmc.import_bronze import import_crt_data
-
-        crt_counts = import_crt_data(overwrite=overwrite, datasets=crt_parts or CRT_DATASETS)
-        loaded += sum(crt_counts.values()) if isinstance(crt_counts, dict) else 0
+    console.print(f"[cyan]Years:[/cyan] {min_year}-{max_year}\n")
+    results = run_bronze(datasets=selected, years=year_list, overwrite=overwrite)
+    loaded = results.get("loaded", 0)
+    failed = results.get("failed", 0)
 
     print_summary(
         "Bronze Import Complete",
@@ -470,7 +438,7 @@ def silver(
         typer.Option(
             "--datasets",
             "-t",
-            help="Datasets to build: origination, performance, crt (repeatable; default all)",
+            help="Datasets to build: origination, performance (repeatable; default both)",
         ),
     ] = None,
     min_year: Annotated[
@@ -485,11 +453,10 @@ def silver(
 ) -> None:
     """Build the FHLMC silver layer from bronze parquet.
 
-    Datasets (default all):
+    Datasets (default both):
       - [cyan]origination[/cyan]: one row per Loan Sequence Number, hive-partitioned
         by vintage_year. Accepts [cyan]--min-year[/cyan]/[cyan]--max-year[/cyan].
       - [cyan]performance[/cyan]: the loan x month panel, one parquet per quarter
-      - [cyan]crt[/cyan]: the at-issuance CRT reference-pool disclosure
 
     [cyan]reperforming[/cyan] has no silver builder and is ignored if passed.
 
@@ -497,7 +464,6 @@ def silver(
 
       $ mortgage-data fhlmc silver
       $ mortgage-data fhlmc silver -t origination --min-year 2020
-      $ mortgage-data fhlmc silver -t crt --overwrite
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
@@ -541,15 +507,11 @@ def pipeline(
         typer.Option(
             "--datasets",
             "-t",
-            help=f"Datasets to process: {', '.join(VALID_DATASETS)}, crt (default non-CRT)",
+            help=f"Datasets to process: {', '.join(VALID_DATASETS)} (default all)",
         ),
     ] = None,
     min_year: Annotated[int, typer.Option("--min-year", help="First vintage year")] = MIN_YEAR,
     max_year: Annotated[int, typer.Option("--max-year", help="Last vintage year")] = MAX_YEAR,
-    crt_parts: Annotated[
-        list[str] | None,
-        typer.Option("--crt-parts", help=f"CRT parts when -t crt: {', '.join(CRT_DATASETS)}"),
-    ] = None,
     skip_bronze: Annotated[
         bool, typer.Option("--skip-bronze", help="Skip bronze (use existing bronze parquet)")
     ] = False,
@@ -565,7 +527,6 @@ def pipeline(
       $ mortgage-data fhlmc pipeline
       $ mortgage-data fhlmc pipeline --min-year 2019 --max-year 2025
       $ mortgage-data fhlmc pipeline --skip-silver        # bronze only
-      $ mortgage-data fhlmc pipeline -t crt               # the CRT bundle
     """
     log_level = "DEBUG" if verbose else ("WARNING" if quiet else "INFO")
     configure_logging(level=log_level)
@@ -573,11 +534,7 @@ def pipeline(
     print_section_header("Complete FHLMC Pipeline")
 
     selected = datasets or list(VALID_DATASETS)
-    standard = [d for d in selected if d != "crt"]
-    if standard:
-        validate_datasets(standard, VALID_DATASETS)
-    if crt_parts:
-        validate_datasets(crt_parts, CRT_DATASETS, "CRT datasets")
+    validate_datasets(selected, VALID_DATASETS)
     if min_year > max_year:
         print_error(f"--min-year ({min_year}) must be <= --max-year ({max_year})")
         raise typer.Exit(code=1)
@@ -588,18 +545,8 @@ def pipeline(
     console.print(f"[cyan]Years:[/cyan] {min_year}-{max_year}")
     console.print(f"[cyan]Overwrite:[/cyan] {overwrite}\n")
 
-    if "crt" in selected:
-        results = run_crt(overwrite=overwrite, datasets=crt_parts)
-        print_summary(
-            "CRT Pipeline Complete",
-            {"Bronze": results.get("bronze", {}), "Silver": results.get("silver", {})},
-            style="green",
-        )
-        if not standard:
-            return
-
     results = run_pipeline(
-        datasets=standard,
+        datasets=selected,
         years=year_list,
         overwrite=overwrite,
         skip_bronze=skip_bronze,

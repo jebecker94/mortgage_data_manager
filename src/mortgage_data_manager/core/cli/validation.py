@@ -67,7 +67,7 @@ def validate_datasets(
     Args:
         datasets: Dataset identifiers given on the command line.
         valid: The source's registry (``VALID_DATASETS``), listed in the error.
-        label: Plural noun for the message (e.g. ``"CRT datasets"``).
+        label: Plural noun for the message (e.g. ``"FHLMC datasets"``).
 
     Raises:
         typer.Exit: If any identifier is not in ``valid``.

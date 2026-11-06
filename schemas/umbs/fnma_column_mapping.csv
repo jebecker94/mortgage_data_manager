@@ -2,7 +2,7 @@ mbs_column,umbs_column,standardized_name,match_type
 Loan Identifier,Loan Identifier,Loan Sequence Number,exact
 Channel,Channel,Channel,exact
 First Payment Date,First Payment Date,First Payment Date,exact
-Loan Purpose ,Loan Purpose,Loan Purpose,exact
+Loan Purpose,Loan Purpose,Loan Purpose,exact
 Property State,Property State,Property State,exact
 Original Interest Rate,Original Interest Rate,Original Interest Rate,exact
 Number of Borrowers,Number of Borrowers,Number of Borrowers,exact

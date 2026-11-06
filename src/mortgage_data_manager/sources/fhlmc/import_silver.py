@@ -28,11 +28,6 @@ $1,000, against about 0.05% from age 7 on (measured on the 2010Q1 and 2022Q1
 panels). Silver keeps the published values, so an exact-dollar balance comparison
 against another source fails for young loans; compare those within $1,000.
 
-**CRT** (``import_crt_to_silver``) — the at-issuance CRT reference-pool
-disclosure, one row per (Reference Pool Number, Loan Identifier),
-hive-partitioned by ``issuance_year``. ``FHLMC_CRT_SILVER`` conforms the
-88/89/90-field layout eras to the full 93-column target.
-
 Bronze column names (with spaces) are preserved so existing matching code
 that reads bronze can be repointed at silver without renaming. Since Freddie's
 Release 47 relayout (July 2026) that means the *pre-R47* names: bronze stores
@@ -53,13 +48,10 @@ import polars as pl
 from mortgage_data_manager.core.logging import get_logger
 from mortgage_data_manager.core.medallion import (
     atomic_output,
-    clear_partitions,
     should_process_file,
-    write_hive_partitioned,
 )
 from mortgage_data_manager.core.types import apply_silver_types, enforce_schema
 from mortgage_data_manager.sources.fhlmc.config import (
-    FHLMC_CRT_SILVER,
     FHLMC_ORIGINATION_SILVER,
     FHLMC_PERFORMANCE_SILVER,
     FHLMCConfig,
@@ -362,81 +354,6 @@ def import_origination_to_silver(
             logger.exception("Failed to process %s: %s", year, e)
             counts["failed"] += 1
 
-    return counts
-
-
-def import_crt_to_silver(
-    bronze_dir: Path | None = None,
-    silver_dir: Path | None = None,
-    overwrite: bool = False,
-) -> dict[str, int]:
-    """Build the CRT at-issuance reference-pool silver from bronze lld files.
-
-    Concatenates every per-deal ``bronze/crt/lld/*.parquet`` (diagonally — the
-    88/89/90-field layout eras differ only by trailing columns), derives the
-    ``issuance_year`` partition column from ``Period``, and applies
-    ``FHLMC_CRT_SILVER`` (sentinel null-mapping, Y/N booleans, ZIP3 zero-pad,
-    int right-sizing, conform to the full 93-column target — absent trailing
-    columns become typed nulls). One row per (Reference Pool Number, Loan
-    Identifier), written hive-partitioned as
-    ``silver/crt/issuance_year=YYYY/``.
-
-    The whole dataset is rebuilt in one pass (161 deals, ~30M rows), so
-    ``overwrite`` is all-or-nothing: existing ``issuance_year=`` partition
-    subtrees are removed and rewritten (never the silver root itself).
-
-    Args:
-        bronze_dir: Bronze CRT lld directory. Defaults to
-            ``FHLMCConfig.FHLMC_BRONZE_CRT / 'lld'``.
-        silver_dir: Silver CRT directory (parent of the ``issuance_year=YYYY``
-            partitions). Defaults to ``FHLMCConfig.FHLMC_SILVER_DIR / 'crt'``.
-        overwrite: If True, rebuild existing partitions; else (default) skip
-            the build when any partition already exists.
-
-    Returns:
-        Dict with counts: ``processed`` (deal files read), ``skipped``,
-        ``total_rows``.
-    """
-    bronze_dir = bronze_dir or (FHLMCConfig.FHLMC_BRONZE_CRT / "lld")
-    silver_dir = silver_dir or (FHLMCConfig.FHLMC_SILVER_DIR / "crt")
-
-    counts = {"processed": 0, "skipped": 0, "total_rows": 0}
-
-    bronze_files = sorted(bronze_dir.glob("*.parquet"))
-    if not bronze_files:
-        logger.warning("No bronze CRT lld files found in %s", bronze_dir)
-        return counts
-
-    existing = sorted(silver_dir.glob("issuance_year=*"))
-    if existing and not overwrite:
-        logger.info("Skipping CRT silver (%s partitions exist; use overwrite)", len(existing))
-        counts["skipped"] = len(bronze_files)
-        return counts
-    clear_partitions(silver_dir, existing)
-
-    logger.info("Building CRT silver from %s deal files -> %s", len(bronze_files), silver_dir)
-    lf = pl.concat([pl.scan_parquet(f) for f in bronze_files], how="diagonal_relaxed")
-    lf = lf.with_columns(pl.col("Period").dt.year().cast(pl.Int32).alias("issuance_year"))
-    lf = apply_silver_types(lf, FHLMC_CRT_SILVER)
-    enforce_schema(lf.collect_schema(), FHLMC_CRT_SILVER.target, name="fhlmc/crt")
-
-    write_hive_partitioned(
-        lf,
-        silver_dir,
-        partition_cols=["issuance_year"],
-        compression=FHLMCConfig.PARQUET_COMPRESSION,
-        include_key=True,
-        statistics=FHLMCConfig.PARQUET_STATISTICS,
-        row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
-    )
-
-    counts["processed"] = len(bronze_files)
-    counts["total_rows"] = (
-        pl.scan_parquet(silver_dir / "**" / "*.parquet").select(pl.len()).collect().item()
-    )
-    logger.info(
-        "CRT silver: %s rows from %s deals", f"{counts['total_rows']:,}", counts["processed"]
-    )
     return counts
 
 

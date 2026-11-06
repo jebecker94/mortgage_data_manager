@@ -109,11 +109,12 @@ def ensure_directories(*dirs: Path) -> None:
 # Historical Data Import (Origination + Performance)
 # ---------------------------------------------------------------------------
 
-# Raw bundles that must never be walked by the generic historical importer: each
-# has its own importer and schema, and their members are ``.txt`` files that the
-# walk would otherwise misparse as origination records. A year filter is no
-# defence here — CRT members like ``13DN01_20130701_lld.txt`` carry a 4-digit
-# year, so a wide-year run would import ~250 of them into bronze/origination.
+# Raw bundles that must never be walked by the generic historical importer: the RPL
+# bundle has its own importer and schema, and the CRT reference-pool bundle is not
+# ingested by this package. Their members are ``.txt`` files that the walk would
+# otherwise misparse as origination records. A year filter is no defence here — CRT
+# members like ``13DN01_20130701_lld.txt`` carry a 4-digit year, so a wide-year run
+# would import ~250 of them into bronze/origination.
 _DEDICATED_IMPORTER_ZIPS: tuple[str, ...] = ("rpl_historical_data.zip",)
 _DEDICATED_IMPORTER_PREFIXES: tuple[str, ...] = ("fre-crt-",)
 
@@ -197,8 +198,8 @@ def import_all_historical_data(
 ) -> None:
     """Recursively import every pipe-delimited .txt file found in raw zip archives.
 
-    Walks each ``*.zip`` in ``raw_dir`` (excluding the RPL and CRT bundles, which
-    have their own importers + schemas) and descends into any nested zips,
+    Walks each ``*.zip`` in ``raw_dir`` (excluding the RPL and CRT bundles; see
+    ``_DEDICATED_IMPORTER_ZIPS``) and descends into any nested zips,
     regardless of layering. At the leaves, every ``.txt`` is imported — dataset,
     layout era and bronze filename are resolved by `_classify_leaf`, so the
     R47 ``orig_``/``perf_`` standard dataset and the pre-R47 non-standard
@@ -412,189 +413,6 @@ def _rename_columns(lf: pl.LazyFrame, schema: dict) -> pl.LazyFrame:
     # Create column mapping (column_1 -> actual_name)
     rename_dict = {f"column_{i + 1}": name for i, name in enumerate(column_names)}
     return lf.rename(rename_dict)
-
-
-# ---------------------------------------------------------------------------
-# CRT (Reference Pool) Disclosure Import
-# ---------------------------------------------------------------------------
-
-# Member-suffix -> (CRT part, bronze subdirectory name). Order matters: the
-# ``_lld_eu`` suffix must be tested before ``_lld``.
-_CRT_SUFFIX_PARTS: list[tuple[str, str]] = [
-    ("_lld_eu.txt", "lld_eu"),
-    ("_lld.txt", "lld"),
-    ("_agg_zipcode.txt", "agg_zipcode"),
-    ("_life_to_date_pay_hist.txt", "pay_hist"),
-    ("_temp_buydown.txt", "temp_buydown"),
-    ("_pre_harp_data.txt", "pre_harp"),
-]
-
-
-def import_crt_data(
-    raw_dir: Path | None = None,
-    overwrite: bool = False,
-    datasets: Iterable[str] | None = None,
-) -> dict[str, int]:
-    """Import Freddie Mac CRT Reference Pool disclosure data to bronze.
-
-    Walks the newest ``fre-crt-*.zip`` Clarity bundle in ``raw_dir`` (the
-    all-deals at-issuance download) and writes one parquet per member under
-    ``bronze/crt/{part}/``. Parts (see ``FHLMCConfig.CRT_DATASETS``):
-
-    - ``lld``: the Loan Level Reference Pool Disclosure File, columns named by
-      position from the authored ``CRT_LLD_LAYOUT`` (the field count grew from
-      88 to 93 across eras; each file carries a prefix of the layout).
-    - ``agg_zipcode``: the Aggregated Postal Code supplement (3 columns).
-    - ``pay_hist`` / ``temp_buydown``: headered two-column supplements, staged
-      with their native headers (``NBR_MRTG``/``PYMT_HIST``,
-      ``LOAN_IDENTIFIER``/``TEMPBUYDWNDSCLR``).
-    - ``pre_harp``: HRP original-loan supplement; record-type ``20`` rows carry
-      lld field positions 2-30 (the file is the old multi-record RPDSCL form).
-
-    Two member kinds are recognized but not imported (logged, counted as
-    ``unsupported``): ``*_lld_eu.txt`` (ESMA EU Securitisation Regulation
-    template — a different 107-field layout) and the seasoned SC/SPI deals'
-    ``*_lld.txt`` in the multi-record SSDSCL form (layout lives in the separate
-    STACR SPI file-layout doc).
-
-    Args:
-        raw_dir: Directory holding the ``fre-crt-*.zip``. Defaults to
-            ``FHLMCConfig.FHLMC_RAW_DIR``.
-        overwrite: If False (default), skip members whose bronze parquet
-            already exists.
-        datasets: If provided, only import these CRT parts.
-
-    Returns:
-        Dict with counts: ``processed``, ``skipped``, ``unsupported``,
-        ``failed``.
-    """
-    from mortgage_data_manager.sources.fhlmc.schemas import crt_schemas
-
-    raw_dir = raw_dir or FHLMCConfig.FHLMC_RAW_DIR
-    dataset_filter = {str(d) for d in datasets} if datasets is not None else None
-    counts = {"processed": 0, "skipped": 0, "unsupported": 0, "failed": 0}
-
-    zips = sorted(raw_dir.glob("fre-crt-*.zip"))
-    if not zips:
-        logger.warning("No fre-crt-*.zip found in %s", raw_dir)
-        return counts
-    zip_path = zips[-1]
-    logger.info("Processing %s", zip_path.name)
-
-    schemas = crt_schemas()
-
-    with zipfile.ZipFile(zip_path, "r") as zf:
-        for entry in zf.namelist():
-            name = Path(entry).name
-            part = next((p for sfx, p in _CRT_SUFFIX_PARTS if name.endswith(sfx)), None)
-            if part is None:
-                logger.debug("  Skipping unrecognized entry: %s", entry)
-                continue
-            if part == "lld_eu":
-                logger.debug("  Skipping %s (ESMA EU template; not imported)", name)
-                counts["unsupported"] += 1
-                continue
-            if dataset_filter is not None and part not in dataset_filter:
-                continue
-            if part == "lld":
-                with zf.open(entry) as fh:
-                    is_ssdscl = fh.read(3) == b"00|"
-                if is_ssdscl:
-                    logger.info("  Skipping %s (seasoned SSDSCL multi-record form)", name)
-                    counts["unsupported"] += 1
-                    continue
-
-            output_dir = FHLMCConfig.FHLMC_BRONZE_CRT / part
-            output_file = output_dir / f"{Path(name).stem}.parquet"
-            if not should_process_file(output_file, overwrite=overwrite):
-                logger.info("  Skipping %s (bronze exists)", name)
-                counts["skipped"] += 1
-                continue
-
-            logger.info("  Processing %s as crt/%s", name, part)
-            try:
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    temp_path = Path(temp_dir)
-                    zf.extract(entry, temp_path)
-                    output_dir.mkdir(parents=True, exist_ok=True)
-                    _import_crt_txt_file(temp_path / entry, part, schemas, output_file)
-                counts["processed"] += 1
-            except Exception as e:
-                logger.exception("  Failed to import %s: %s", name, e)
-                counts["failed"] += 1
-
-    logger.info(
-        "CRT bronze: processed=%s skipped=%s unsupported=%s failed=%s",
-        counts["processed"],
-        counts["skipped"],
-        counts["unsupported"],
-        counts["failed"],
-    )
-    return counts
-
-
-def _import_crt_txt_file(
-    txt_path: Path, part: str, schemas: dict[str, dict], output_file: Path
-) -> None:
-    """Import one CRT disclosure member to its bronze parquet.
-
-    Args:
-        txt_path: Extracted text file.
-        part: CRT part key ('lld', 'agg_zipcode', 'pay_hist', 'temp_buydown',
-            'pre_harp').
-        schemas: ``crt_schemas()`` result.
-        output_file: Bronze parquet destination.
-    """
-    if part == "pre_harp":
-        # Old multi-record RPDSCL form. Row 1 is the '00' header record with
-        # only 4 fields, so scan_csv would infer 4 columns and truncate every
-        # record-'20' loan row; pass an explicit fixed-width schema instead
-        # (record type + lld positions 2-30 + a trailing padding column) so
-        # short rows null-pad and long rows truncate. Values are fixed-width
-        # space-padded, so strip before typing.
-        schema = schemas["crt_pre_harp"]
-        n_raw = len(schema["column_names"]) + 2
-        lf = pl.scan_csv(
-            txt_path,
-            separator="|",
-            has_header=False,
-            quote_char=None,
-            schema={f"column_{i}": pl.Utf8 for i in range(1, n_raw + 1)},
-            truncate_ragged_lines=True,
-        )
-        lf = lf.filter(pl.col("column_1") == "20")
-        lf = lf.rename({f"column_{i + 2}": name for i, name in enumerate(schema["column_names"])})
-        lf = lf.select(schema["column_names"])
-        lf = lf.with_columns(pl.all().str.strip_chars().replace("", None))
-        lf = apply_type_conversions(lf, schema)
-    else:
-        headered = part in ("pay_hist", "temp_buydown")
-        lf = pl.scan_csv(
-            txt_path,
-            separator="|",
-            has_header=headered,
-            quote_char=None,
-            infer_schema_length=0,
-            truncate_ragged_lines=True,
-        )
-        if part in ("lld", "agg_zipcode"):
-            schema = schemas[f"crt_{part}"]
-            lf = _rename_columns(lf, schema)
-            # Drop any trailing padding column beyond the layout (agg files
-            # end with a pipe + spaces), then type per the authored layout.
-            names = [c for c in lf.collect_schema().names() if c in schema["column_names"]]
-            lf = lf.select(names)
-            lf = apply_type_conversions(lf, schema)
-        # 'pay_hist' / 'temp_buydown' are staged as-is, native headers kept.
-
-    with atomic_output(output_file) as tmp:
-        lf.sink_parquet(
-            tmp,
-            compression=FHLMCConfig.PARQUET_COMPRESSION,
-            statistics=FHLMCConfig.PARQUET_STATISTICS,
-            row_group_size=FHLMCConfig.PARQUET_ROW_GROUP_SIZE,
-        )
-    logger.info("      ✓ Saved %s", output_file.name)
 
 
 # ---------------------------------------------------------------------------

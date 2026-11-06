@@ -15,7 +15,6 @@ from mortgage_data_manager import __version__
 from mortgage_data_manager.core.cli.formatting import console
 from mortgage_data_manager.core.cli.validation import version_callback_factory
 from mortgage_data_manager.matching.master.cli import app as master_app
-from mortgage_data_manager.matching.match_crt_mbs.cli import app as crt_mbs_app
 from mortgage_data_manager.matching.match_fhfa_mbs.cli import app as fhfa_mbs_app
 from mortgage_data_manager.matching.match_fhlb_mbs.cli import app as fhlb_mbs_app
 from mortgage_data_manager.matching.match_hmda_fha.cli import app as hmda_fha_app
@@ -71,7 +70,6 @@ app.add_typer(hmda_gse_app, name="hmda-gse")
 app.add_typer(hmda_gnma_app, name="hmda-gnma")
 app.add_typer(hmda_sellers_purchasers_app, name="hmda-sellers-purchasers")
 app.add_typer(mbs_umbs_app, name="mbs-umbs")
-app.add_typer(crt_mbs_app, name="crt-mbs")
 app.add_typer(fhlb_mbs_app, name="fhlb-mbs")
 app.add_typer(fhfa_mbs_app, name="fhfa-mbs")
 # Assembler, not a pairwise matcher: consumes every crosswalk above.
@@ -89,7 +87,6 @@ WORKFLOWS: tuple[tuple[str, str, str], ...] = (
     ("hmda-sellers-purchasers", "match_hmda_sellers_purchasers", "HMDA originations ↔ purchases"),
     ("fhfa-mbs", "match_fhfa_mbs", "FHFA acquisitions ↔ GSE single-family loan level"),
     ("fhlb-mbs", "match_fhlb_mbs", "FHLB acquired member assets ↔ GNMA loan level"),
-    ("crt-mbs", "match_crt_mbs", "GSE CRT reference pools ↔ single-family loan level"),
     ("mbs-umbs", "match_mbs_umbs", "GSE single-family loan level ↔ UMBS disclosures"),
 )
 

@@ -4,7 +4,7 @@ Loan-level links between U.S. public mortgage datasets that share no common iden
 
 This is a personal research setup, published as is. The main contribution is the matching
 workflows: proof-of-concept methods for linking the same mortgage across HMDA, FHA, FHFA,
-the GSE and Ginnie Mae loan-level disclosures, UMBS, FHLB and credit-risk-transfer data.
+the GSE and Ginnie Mae loan-level disclosures, UMBS and FHLB data.
 The download and cleaning code is what feeds them.
 
 ## Matching reports
@@ -23,7 +23,6 @@ method, results and validation on held-out fields.
 | hmda_fhlb | HMDA ↔ FHLB Acquired Member Assets | 2009–2025 | 57–60% of AMA loans | [method & validation](matching/hmda_fhlb_matching.md) |
 | fhfa_mbs | FHFA ↔ GSE loan-level | 2018–2025 | 95–96% of FHFA loans | [method & validation](matching/fhfa_mbs_matching.md) |
 | mbs_umbs | GSE loan-level ↔ UMBS disclosures | 2019–2025 | 99.6–99.8% of matchable loans | [method & validation](matching/mbs_umbs_matching.md) |
-| crt_mbs | Freddie Mac CRT reference pools ↔ loan-level | 2013–2026 | 99.2% of CRT loans | [method & validation](matching/crt_mbs_matching.md) |
 | fhlb_mbs | FHLB AMA ↔ Ginnie Mae loan-level | 2009–2025 | 97% of the issuer's Ginnie Mae loans | [method & validation](matching/fhlb_mbs_matching.md) |
 | master | every post-2018 edge, one row per HMDA loan | 2018–2025 | 46.4M loans | [method & validation](matching/master_crosswalk.md) |
 

@@ -194,7 +194,7 @@ class UMBSConfig(MortgageDataConfig):
 # State are USPS 2-char strings).
 #
 # Sentinel masking (2026-07-26): the score (9999/7777) and ratio (999) sentinels are now
-# null-mapped, aligning this spec with the FHLMC SF origination/CRT specs that already mask
+# null-mapped, aligning this spec with the FHLMC SF origination spec, which already masks
 # the identical values. This REVERSES the earlier precision-first stance ("sentinels stay
 # LIVE — the matchers detect them"). The reversal is safe only because the mbs_umbs
 # tolerance filters became null-tolerant first (``utils.apply_null_tolerance``): a polars

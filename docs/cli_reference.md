@@ -1373,18 +1373,14 @@ $ mortgage-data fhlmc download [OPTIONS]
 
 Load raw FHLMC zips to bronze parquet.
 
-Datasets (default `origination`, `performance`,
-`reperforming`):
-  - the three standard SF Loan-Level Dataset families, filtered by vintage
-    year via `--min-year`/`--max-year`
-  - `crt`: the Reference Pool (CRT) disclosure bundle. Its own
-    parts axis is `--crt-parts`; the year filter does not apply.
+Datasets (default all): `origination`, `performance` and
+`reperforming`, filtered by vintage year via
+`--min-year`/`--max-year`.
 
 **Examples:**
 
   $ mortgage-data fhlmc bronze
   $ mortgage-data fhlmc bronze -t origination --min-year 2020 --max-year 2024
-  $ mortgage-data fhlmc bronze -t crt --crt-parts lld --overwrite
 
 **Usage**:
 
@@ -1394,10 +1390,9 @@ $ mortgage-data fhlmc bronze [OPTIONS]
 
 **Options**:
 
-* `-t, --datasets <str>`: Datasets to load: origination, performance, reperforming, crt (repeatable; default the non-CRT datasets)
+* `-t, --datasets <str>`: Datasets to load: origination, performance, reperforming (repeatable; default all)
 * `--min-year <int>`: First vintage year  [default: 1999]
 * `--max-year <int>`: Last vintage year  [default: 2026]
-* `--crt-parts <str>`: CRT disclosure parts when -t crt: lld, agg_zipcode, pay_hist, temp_buydown, pre_harp (default all)
 * `--overwrite`: Overwrite existing files instead of skipping them.
 * `-v, --verbose`: Enable verbose (DEBUG level) logging output.
 * `-q, --quiet`: Suppress progress bars and reduce output.
@@ -1407,11 +1402,10 @@ $ mortgage-data fhlmc bronze [OPTIONS]
 
 Build the FHLMC silver layer from bronze parquet.
 
-Datasets (default all):
+Datasets (default both):
   - `origination`: one row per Loan Sequence Number, hive-partitioned
     by vintage_year. Accepts `--min-year`/`--max-year`.
   - `performance`: the loan x month panel, one parquet per quarter
-  - `crt`: the at-issuance CRT reference-pool disclosure
 
 `reperforming` has no silver builder and is ignored if passed.
 
@@ -1419,7 +1413,6 @@ Datasets (default all):
 
   $ mortgage-data fhlmc silver
   $ mortgage-data fhlmc silver -t origination --min-year 2020
-  $ mortgage-data fhlmc silver -t crt --overwrite
 
 **Usage**:
 
@@ -1429,7 +1422,7 @@ $ mortgage-data fhlmc silver [OPTIONS]
 
 **Options**:
 
-* `-t, --datasets <str>`: Datasets to build: origination, performance, crt (repeatable; default all)
+* `-t, --datasets <str>`: Datasets to build: origination, performance (repeatable; default both)
 * `--min-year <int>`: First origination vintage (origination only)
 * `--max-year <int>`: Last origination vintage (origination only)
 * `--overwrite`: Overwrite existing files instead of skipping them.
@@ -1446,7 +1439,6 @@ Run the complete FHLMC pipeline (bronze -&gt; silver).
   $ mortgage-data fhlmc pipeline
   $ mortgage-data fhlmc pipeline --min-year 2019 --max-year 2025
   $ mortgage-data fhlmc pipeline --skip-silver        # bronze only
-  $ mortgage-data fhlmc pipeline -t crt               # the CRT bundle
 
 **Usage**:
 
@@ -1456,10 +1448,9 @@ $ mortgage-data fhlmc pipeline [OPTIONS]
 
 **Options**:
 
-* `-t, --datasets <str>`: Datasets to process: origination, performance, reperforming, crt (default non-CRT)
+* `-t, --datasets <str>`: Datasets to process: origination, performance, reperforming (default all)
 * `--min-year <int>`: First vintage year  [default: 1999]
 * `--max-year <int>`: Last vintage year  [default: 2026]
-* `--crt-parts <str>`: CRT parts when -t crt: lld, agg_zipcode, pay_hist, temp_buydown, pre_harp
 * `--skip-bronze`: Skip bronze (use existing bronze parquet)
 * `--skip-silver`: Skip silver
 * `--overwrite`: Overwrite existing files instead of skipping them.
@@ -1544,10 +1535,8 @@ for the specified dataset.
 
   $ mortgage-data fhlmc schemas show origination
   $ mortgage-data fhlmc schemas show performance -n 20
-  $ mortgage-data fhlmc schemas show crt_lld -n 93
 
-**Valid datasets:** origination, performance, reperforming,
-crt_lld, crt_agg_zipcode, crt_pre_harp
+**Valid datasets:** origination, performance, reperforming
 
 **Usage**:
 
@@ -1557,7 +1546,7 @@ $ mortgage-data fhlmc schemas show [OPTIONS] {dataset}
 
 **Arguments**:
 
-* `dataset`: Dataset to show (origination, performance, reperforming, crt_lld, crt_agg_zipcode, crt_pre_harp)  [required]
+* `dataset`: Dataset to show (origination, performance, reperforming)  [required]
 
 **Options**:
 
@@ -1764,7 +1753,6 @@ $ mortgage-data match [OPTIONS] COMMAND [ARGS]...
 * `hmda-gnma`: HMDA-GNMA matching workflow (HMDA FHA and...
 * `hmda-sellers-purchasers`: HMDA Sellers/Purchasers matching workflow...
 * `mbs-umbs`: MBS-UMBS matching workflow commands (MBS ↔...
-* `crt-mbs`: CRT-MBS matching workflow commands (CRT...
 * `fhlb-mbs`: FHLB-MBS matching workflow commands (FHLB...
 * `fhfa-mbs`: FHFA-MBS matching workflow commands (FHFA...
 * `master`: Master crosswalk: the HMDA spine assembled...
@@ -2563,97 +2551,6 @@ $ mortgage-data match mbs-umbs validate [OPTIONS]
 
 * `-s, --show-plots`: Show the figure interactively
 * `--save / --no-save`: Save the figure to docs/matching/figures/  [default: save]
-* `--help`: Show this message and exit.
-
-### `mortgage-data match crt-mbs`
-
-CRT-MBS matching workflow commands (CRT reference pools ↔ SF loan-level)
-
-**Usage**:
-
-```console
-$ mortgage-data match crt-mbs [OPTIONS] COMMAND [ARGS]...
-```
-
-**Options**:
-
-* `--help`: Show this message and exit.
-
-**Commands**:
-
-* `info`: Show the CRT-MBS paths and the FHLMC...
-* `run`: Link GSE CRT reference-pool loans to the...
-* `check`: Report crosswalk health (pin rates,...
-
-#### `mortgage-data match crt-mbs info`
-
-Show the CRT-MBS paths and the FHLMC matching rounds.
-
-Examples:
-  mortgage-data match crt-mbs info
-
-**Usage**:
-
-```console
-$ mortgage-data match crt-mbs info [OPTIONS]
-```
-
-**Options**:
-
-* `--help`: Show this message and exit.
-
-#### `mortgage-data match crt-mbs run`
-
-Link GSE CRT reference-pool loans to the SF loan-level datasets.
-
-FHLMC: per deal, the rounds in rounds.py (exact joins, 1:1 both directions) against the SF
-origination silver, then UPB-at-issuance confirmation against the performance panel
-(cent-exact within ±1 month of the deal Period). Output:
-`crosswalk/crt_mbs/crt_mbs_crosswalk_fhlmc.parquet` plus a per-deal summary.
-
-FNMA: extracts CAS/CIRT deal membership, streaming the `CAS_*.zip` /
-`CIRT_*.zip` historical downloads in fnma raw when present (one ~350 GB
-decompressing pass, ~30 min), else scanning the SF performance bronze. The extracted
-ids are the CRT-specific `CRT Loan Identifier` and do NOT join to the LPPUB
-Loan Identifier. Output: `crosswalk/crt_mbs/crt_mbs_crosswalk_fnma.parquet`.
-
-Examples:
-  mortgage-data match crt-mbs run --agency fhlmc
-  mortgage-data match crt-mbs run --agency fhlmc -d 19DNA1 -d 24DNA3 --no-confirm
-  mortgage-data match crt-mbs run --agency fnma
-
-**Usage**:
-
-```console
-$ mortgage-data match crt-mbs run [OPTIONS]
-```
-
-**Options**:
-
-* `-a, --agency <str>`: GSE to link: fhlmc, fnma, or all  [default: all]
-* `-d, --deals <str>`: FHLMC only: match just these Reference Pool Numbers (default: every deal in silver/crt)
-* `--confirm / --no-confirm`: FHLMC only: confirm pins against the SF performance panel (UPB at issuance, ±1 month)  [default: confirm]
-* `-v, --verbose`: Show detailed progress
-* `--help`: Show this message and exit.
-
-#### `mortgage-data match crt-mbs check`
-
-Report crosswalk health (pin rates, confirmation rates) from disk.
-
-Reads the written crosswalks and prints summary statistics — a cheap
-regression guard after re-runs.
-
-Examples:
-  mortgage-data match crt-mbs check
-
-**Usage**:
-
-```console
-$ mortgage-data match crt-mbs check [OPTIONS]
-```
-
-**Options**:
-
 * `--help`: Show this message and exit.
 
 ### `mortgage-data match fhlb-mbs`

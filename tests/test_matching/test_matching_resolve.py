@@ -41,7 +41,7 @@ def _ref_drop_ambiguous(df: pl.DataFrame) -> pl.DataFrame:
 
 
 def _ref_pin_tier_semi(cand: pl.DataFrame) -> pl.DataFrame:
-    """``_pin_tier`` (match_crt_mbs/matching_fhlmc.py) -- the group_by/semi-join spelling."""
+    """The old pin-tier rule, in the group_by/semi-join spelling."""
     ok_h = cand.group_by("h").agg(pl.len().alias("n")).filter(pl.col("n") == 1)
     ok_g = cand.group_by("g").agg(pl.len().alias("n")).filter(pl.col("n") == 1)
     return cand.join(ok_h.select("h"), on="h", how="semi").join(
@@ -125,7 +125,7 @@ def test_drop_ambiguous_matches_reference(seed: int, n: int, keys: int, scores: 
 def test_drop_ambiguous_matches_semi_join_spelling(
     seed: int, n: int, keys: int, scores: int
 ) -> None:
-    """The group_by/semi-join form (crt_mbs) is the same rule as the count-over form."""
+    """The group_by/semi-join form is the same rule as the count-over form."""
     pairs = _random_pairs(seed, n, keys, scores)
     assert _sorted(drop_ambiguous(pairs, "h", "g")).equals(_sorted(_ref_pin_tier_semi(pairs)))
 

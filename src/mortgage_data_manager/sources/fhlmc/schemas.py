@@ -34,9 +34,9 @@ logger = get_logger(__name__)
 # Two attributes MOVED out of origination into the monthly file (Servicer Name,
 # Mortgage Insurance Cancellation Indicator), two are NEW (origination
 # VantageScore 4.0, performance Bankruptcy Cramdown Costs), and ~10 were
-# renamed. The renames adopt the same vocabulary the CRT reference-pool layout
-# already uses here (``Classic FICO``, ``Loan Identifier``, ``Special
-# Eligibility Program``, ...), so bronze now agrees with ``CRT_LLD_LAYOUT``.
+# renamed. The renames adopt the vocabulary of Freddie's CRT reference-pool
+# layout (``Classic FICO``, ``Loan Identifier``, ``Special Eligibility
+# Program``, ...).
 #
 # Bronze stores the R47 names verbatim (bronze stays faithful to source); the
 # silver builders rename to the established names so existing consumers keep
@@ -48,7 +48,7 @@ logger = get_logger(__name__)
 
 #: R47 origination name -> pre-R47 name. Names not listed are unchanged.
 #: ``VantageScore® 4.0`` is new (no pre-R47 counterpart) but is de-symbolled to
-#: match the ``VantageScore 4.0`` spelling ``CRT_LLD_LAYOUT`` already uses.
+#: match the ``VantageScore 4.0`` spelling of Freddie's CRT reference-pool layout.
 R47_ORIGINATION_RENAMES: dict[str, str] = {
     "Classic FICO®": "Credit Score",
     "First Time Homebuyer Indicator": "First Time Homebuyer Flag",
@@ -353,165 +353,6 @@ def parse_type_string(type_str: str) -> type[pl.DataType] | pl.DataType:
 
     # Default to string
     return pl.Utf8
-
-
-# ---------------------------------------------------------------------------
-# CRT (Reference Pool) disclosure schemas — authored in code from the official
-# "Reference Pool Disclosure File Layouts" doc (v4.2, effective July 2026), published
-# on Freddie Mac's CRT Disclosure Guides page
-# (https://capitalmarkets.freddiemac.com/crt/resources/disclosure-guides/disclosure-guides-overview).
-# Unlike the SF LLD schemas above
-# (read from the layout CSVs), the CRT layout is authored here from a PDF.
-# ---------------------------------------------------------------------------
-
-# The at-issuance/monthly Loan Level file layout: (attribute name, dtype) in
-# field-position order. Files carry a *prefix* of this list — the layout grew
-# over time (88 fields through 2021-11, 89 from 2021-12 [+Distressed Principal
-# Balance Flag], 90 from 2024-09 [+Temporary Subsidy Buydown Plan Type], 93
-# from 2026-07 [+VantageScore 4.0, Actual Loss, Cumulative Modification
-# Costs]) — so bronze names columns by position with the first N entries.
-# Date-typed fields are all CCYYMM. Two v4.2 renames to be aware of when
-# reading older layout docs: "Classic FICO" was "Credit Score" until Apr-2026,
-# and "Special Eligibility Program" was "Program Indicator" until Mar-2024.
-# "Filler (Field 61)" carried Forecast Standard Deviation before Oct-2019.
-CRT_LLD_LAYOUT: list[tuple[str, type[pl.DataType]]] = [
-    ("Period", pl.Date),
-    ("Reference Pool Number", pl.Utf8),
-    ("Loan Identifier", pl.Utf8),
-    ("Amortization Type", pl.Utf8),
-    ("Seller Name", pl.Utf8),
-    ("Property State", pl.Utf8),
-    ("Postal Code (3-Digit)", pl.Int64),
-    ("Metropolitan Statistical Area (MSA) or Metropolitan Division", pl.Int64),
-    ("First Payment Date", pl.Date),
-    ("Maturity Date", pl.Date),
-    ("Original Loan Term", pl.Int64),
-    ("Original Interest Rate", pl.Float64),
-    ("Original UPB", pl.Float64),
-    ("UPB at Issuance", pl.Float64),
-    ("Loan Purpose", pl.Utf8),
-    ("Channel", pl.Utf8),
-    ("Property Type", pl.Utf8),
-    ("Number of Units", pl.Int64),
-    ("Occupancy Status", pl.Utf8),
-    ("Number of Borrowers", pl.Int64),
-    ("First Time Homebuyer Indicator", pl.Utf8),
-    ("Prepayment Penalty Indicator", pl.Utf8),
-    ("Classic FICO", pl.Int64),
-    ("Original Loan-To-Value (LTV)", pl.Int64),
-    ("Original Combined Loan-To-Value (CLTV)", pl.Int64),
-    ("Original Debt-To-Income (DTI)", pl.Int64),
-    ("Mortgage Insurance Percent (MI%)", pl.Int64),
-    ("Updated Credit Score at Issuance", pl.Int64),
-    ("Special Eligibility Program", pl.Utf8),
-    ("Mortgage Insurance Type", pl.Int64),
-    ("Filler (Field 31)", pl.Utf8),
-    ("Disaster Grace Period", pl.Int64),
-    ("Servicer Name", pl.Utf8),
-    ("Loan Age", pl.Int64),
-    ("Remaining Months to Legal Maturity", pl.Int64),
-    ("Adjusted Remaining Months to Maturity (RMM)", pl.Int64),
-    ("Current Loan Delinquency Status", pl.Utf8),
-    ("Payment History", pl.Utf8),
-    ("Current Interest Rate", pl.Float64),
-    ("Current Actual UPB", pl.Float64),
-    ("Current Interest Bearing UPB", pl.Float64),
-    ("UPB at Time of Removal from the Reference Pool", pl.Float64),
-    ("Zero Balance Code", pl.Int64),
-    ("Zero Balance Effective Date", pl.Date),
-    ("Underwriting Defect and Major Servicing Defect Settlement Date", pl.Date),
-    ("Modification Flag", pl.Utf8),
-    ("Delinquency Due to Disaster", pl.Utf8),
-    ("Due Date of Last Paid Installment (DDLPI)", pl.Date),
-    ("Bankruptcy Flag", pl.Utf8),
-    ("Date Referred to Foreclosure", pl.Date),
-    ("Net Sales Proceeds", pl.Float64),
-    ("MI Credit", pl.Float64),
-    ("Taxes and Insurance", pl.Float64),
-    ("Legal Costs", pl.Float64),
-    ("Maintenance and Preservation Costs", pl.Float64),
-    ("Bankruptcy Cramdown Costs", pl.Float64),
-    ("Miscellaneous Expenses", pl.Float64),
-    ("Miscellaneous Credits", pl.Float64),
-    ("Mortgage Insurance Cancellation Indicator", pl.Utf8),
-    ("Estimated Loan-To-Value (ELTV) - Monthly", pl.Int64),
-    ("Filler (Field 61)", pl.Utf8),
-    ("Updated Credit Score #1 - Quarterly", pl.Int64),
-    ("Updated Credit Score #2 - Quarterly", pl.Int64),
-    ("Number of Modifications", pl.Int64),
-    ("Modification Program", pl.Utf8),
-    ("Modification Type", pl.Utf8),
-    ("Modification First Payment Date", pl.Date),
-    ("Modification Debt-To-Income (DTI)", pl.Int64),
-    ("Total Capitalized Amount", pl.Float64),
-    ("Interest Rate Step Indicator", pl.Utf8),
-    ("First Step Rate Adjustment Date", pl.Date),
-    ("First Step Rate", pl.Float64),
-    ("Second Step Rate Adjustment Date", pl.Date),
-    ("Second Step Rate", pl.Float64),
-    ("Third Step Rate Adjustment Date", pl.Date),
-    ("Third Step Rate", pl.Float64),
-    ("Fourth Step Rate Adjustment Date", pl.Date),
-    ("Fourth Step Rate", pl.Float64),
-    ("Fifth Step Rate Adjustment Date", pl.Date),
-    ("Fifth Step Rate", pl.Float64),
-    ("Delinquent Accrued Interest", pl.Float64),
-    ("Current Period Modification Costs", pl.Float64),
-    ("Updated Credit Score #3 - Quarterly", pl.Int64),
-    ("Property Valuation Method", pl.Int64),
-    ("Group Number", pl.Int64),
-    ("Enhanced Relief Refi Indicator", pl.Int64),
-    ("Borrower Assistance Plan", pl.Utf8),
-    ("Payment Deferral Flag", pl.Utf8),
-    ("Distressed Principal Balance Flag", pl.Utf8),
-    ("Temporary Subsidy Buydown Plan Type", pl.Int64),
-    ("VantageScore 4.0", pl.Int64),
-    ("Actual Loss", pl.Float64),
-    ("Cumulative Modification Costs", pl.Float64),
-]
-
-# Aggregated Postal Code Disclosure File (at issuance only, Apr-2015+ pools).
-CRT_AGG_ZIPCODE_LAYOUT: list[tuple[str, type[pl.DataType]]] = [
-    ("Reference Pool Number", pl.Utf8),
-    ("Postal Code Designation", pl.Utf8),
-    ("Aggregate UPB at Issuance", pl.Float64),
-]
-
-
-def _layout_to_schema(layout: list[tuple[str, type[pl.DataType]]]) -> dict:
-    """Convert a (name, dtype) layout list to the module's schema-dict shape."""
-    schema: dict = {"column_names": [], "column_types": {}, "date_columns": [], "date_formats": {}}
-    for name, dtype in layout:
-        schema["column_names"].append(name)
-        schema["column_types"][name] = pl.Utf8 if dtype is pl.Date else dtype
-        if dtype is pl.Date:
-            schema["date_columns"].append(name)
-            schema["date_formats"][name] = "%Y%m"
-    return schema
-
-
-def crt_schemas() -> dict[str, dict]:
-    """Return the CRT disclosure schemas, keyed like the layout-CSV ones.
-
-    Keys: ``crt_lld`` (the at-issuance Loan Level Reference Pool file),
-    ``crt_agg_zipcode`` (the aggregated postal-code supplement), and
-    ``crt_pre_harp`` (the HRP original-loan supplement). The layout doc says
-    pre-HARP files carry lld positions 2-30, but the record-'20' loan rows
-    empirically start at position 3 (Loan Identifier) — the Reference Pool
-    Number sits in the '10' deal record instead. The headered two-column
-    supplements (``life_to_date_pay_hist``, ``temp_buydown``) carry their own
-    headers and need no schema.
-
-    Returns:
-        The CRT schemas, keyed by disclosure name.
-    """
-    lld = _layout_to_schema(CRT_LLD_LAYOUT)
-    pre_harp = _layout_to_schema(CRT_LLD_LAYOUT[2:30])
-    return {
-        "crt_lld": lld,
-        "crt_agg_zipcode": _layout_to_schema(CRT_AGG_ZIPCODE_LAYOUT),
-        "crt_pre_harp": pre_harp,
-    }
 
 
 def extract_date_format(type_str: str, length: int | None = None) -> str | None:

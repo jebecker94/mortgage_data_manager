@@ -12,7 +12,7 @@ crosswalks to `crosswalk/{workflow}/{workflow}_crosswalk[_{qualifier}].parquet`.
 put HMDA first and the MBS/UMBS side last. A workflow has `config.py`, `rounds.py`, its
 matching modules (`matching.py`, or `matching_{era}.py` / `matching_{target}.py` where
 eras or targets need different code), and `validation.py` where it validates. Its CLI has
-`info`, `run` and `validate` (`crt-mbs` has `check` in place of `validate`). The entry
+`info`, `run` and `validate`. The entry
 point is `run_matching`, suffixed by era or target where a workflow has several.
 
 `rounds.py` holds a workflow's rounds as a tuple of round objects, run in order, each on
@@ -30,7 +30,6 @@ the rounds.
 | `match_hmda_sellers_purchasers` | `match hmda-sellers-purchasers` | HMDA originations ↔ HMDA purchase records |
 | `match_fhfa_mbs` | `match fhfa-mbs` | FHFA PUDB ↔ GSE loan level |
 | `match_fhlb_mbs` | `match fhlb-mbs` | FHLB AMA ↔ GNMA loan level |
-| `match_crt_mbs` | `match crt-mbs` | CRT reference pools ↔ GSE SF loan level |
 | `match_mbs_umbs` | `match mbs-umbs` | GSE SF loan level ↔ UMBS ILLD |
 | `master` | `match master` | Joins every edge above onto one HMDA spine (`build`, `qc`, `info`) |
 

@@ -12,10 +12,7 @@ Freddie Mac publishes the Single-Family Loan-Level Dataset documentation on its
 [Single-Family Loan-Level Dataset page](https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset):
 the General User Guide (one for the July 2026 layout and one for the earlier layout), the
 file layouts, the release notes, the Disclosure Changes Summary for the July 2026 relayout,
-the RPL loan-ID match FAQ and the dataset licensing agreement. The CRT reference-pool file
-layouts and the history of CRT disclosure changes are on Freddie Mac's
-[CRT Disclosure Guides page](https://capitalmarkets.freddiemac.com/crt/resources/disclosure-guides/disclosure-guides-overview).
-The data itself is downloaded from
+the RPL loan-ID match FAQ and the dataset licensing agreement. The data itself is downloaded from
 [Clarity Data Intelligence](https://capitalmarkets.freddiemac.com/clarity).
 
 ## Configuration
@@ -51,12 +48,9 @@ counts = run_pipeline(datasets=["origination"], years=list(range(2019, 2026)))
 
 ```bash
 mortgage-data fhlmc pipeline --min-year 2019 --max-year 2025
-mortgage-data fhlmc pipeline -t crt
 ```
 
-Datasets: `origination`, `performance` and `reperforming` (the defaults), plus `crt`, whose
-parts (`lld`, `agg_zipcode`, `pay_hist`, `temp_buydown`, `pre_harp`) are selected with
-`--crt-parts`.
+Datasets: `origination`, `performance` and `reperforming`.
 
 ## Data Structure
 ### Raw files
@@ -68,7 +62,6 @@ descending into nested zips:
 | `full_set_standard_historical_data.zip` (or per-year `historical_data_YYYY.zip`) | Standard dataset, 1999Q1-2026Q1: `historical_data_YYYY.zip` → `historical_data_YYYYQn.zip` → `orig_YYYYQn.txt` + `perf_YYYYQn.txt` |
 | `non_std_historical_data.zip` | Non-standard dataset (ARMs, high-LTV and other loans outside the standard set), 1999-2021Q2: `historical_data_excl_YYYYQn.txt` + `historical_data_excl_time_YYYYQn.txt` |
 | `rpl_historical_data.zip` | Reperforming-loan ID match: nested zip(s) holding `SFLLD_RPL_ID_Match*.csv` and `rpl_loan_id_match_faq.pdf` |
-| `fre-crt-*.zip` | CRT reference-pool disclosure bundle (the newest one is imported) |
 
 ```
 {FHLMC_RAW_DIR}/
@@ -82,14 +75,10 @@ descending into nested zips:
 │       └── historical_data_excl_YYYYQn.zip
 │           ├── historical_data_excl_YYYYQn.txt
 │           └── historical_data_excl_time_YYYYQn.txt
-├── rpl_historical_data.zip
-│   └── rpl_historical_data.zip
-│       ├── SFLLD_RPL_ID_Match.csv     (2 columns, comma-delimited, header)
-│       └── rpl_loan_id_match_faq.pdf
-└── fre-crt-YYYY-MM-YYYY-MM.zip
-    ├── {deal}_{YYYYMMDD}_lld.txt
-    ├── {deal}_{YYYYMMDD}_agg_zipcode.txt
-    └── ...
+└── rpl_historical_data.zip
+    └── rpl_historical_data.zip
+        ├── SFLLD_RPL_ID_Match.csv     (2 columns, comma-delimited, header)
+        └── rpl_loan_id_match_faq.pdf
 ```
 
 **Two layout eras.** Freddie reissued the whole standard dataset at Release 47 (July 2026)
@@ -113,12 +102,10 @@ security's loan identifier).
 ├── bronze/
 │   ├── origination/     historical_data_YYYYQn.parquet, historical_data_excl_YYYYQn.parquet
 │   ├── performance/     historical_data_time_YYYYQn.parquet, historical_data_excl_time_YYYYQn.parquet
-│   ├── reperforming/    SFLLD_RPL_ID_Match.parquet, SFLLD_RPL_ID_Match_excl.parquet
-│   └── crt/{part}/      one parquet per disclosure-file member
+│   └── reperforming/    SFLLD_RPL_ID_Match.parquet, SFLLD_RPL_ID_Match_excl.parquet
 └── silver/
     ├── origination/     vintage_year=YYYY/data.parquet
-    ├── performance/     historical_data_time_YYYYQn.parquet
-    └── crt/             issuance_year=YYYY/
+    └── performance/     historical_data_time_YYYYQn.parquet
 ```
 
 Bronze file names keep the pre-Release-47 convention for both eras; the era is carried by the
@@ -129,13 +116,11 @@ established names.
 ### Medallion Architecture
 
 1. **Raw**: ZIP archives downloaded by hand from Clarity
-2. **Bronze**: one parquet per quarterly text file (or CRT member), typed from the layout
-   workbooks
-3. **Silver**: three datasets. Origination is one row per `Loan Sequence Number`,
+2. **Bronze**: one parquet per quarterly text file, typed from the layout workbooks
+3. **Silver**: two datasets. Origination is one row per `Loan Sequence Number`,
    hive-partitioned by `vintage_year`, combining the standard and non-standard releases (a
    loan in both keeps one row; a field the two copies fill differently is nulled). Performance
-   is the monthly panel, one parquet per standard-dataset origination quarter. CRT is one row
-   per (Reference Pool Number, Loan Identifier), hive-partitioned by `issuance_year`. Each
+   is the monthly panel, one parquet per standard-dataset origination quarter. Each
    null-maps the user-guide sentinels (Credit Score 9999, CLTV/DTI/LTV 999) and applies its
    `SilverSpec` dtypes. `reperforming` has no silver builder.
 

@@ -69,7 +69,6 @@ class FHLMCConfig(MortgageDataConfig):
     FHLMC_BRONZE_ORIGINATION: Path = FHLMC_BRONZE_DIR / "origination"
     FHLMC_BRONZE_PERFORMANCE: Path = FHLMC_BRONZE_DIR / "performance"
     FHLMC_BRONZE_REPERFORMING: Path = FHLMC_BRONZE_DIR / "reperforming"
-    FHLMC_BRONZE_CRT: Path = FHLMC_BRONZE_DIR / "crt"
 
     # Schema file locations. The pre-R47 layout still describes the non-standard
     # (``historical_data_excl_*``) bundle, which Freddie did not reissue; the R47
@@ -79,10 +78,6 @@ class FHLMCConfig(MortgageDataConfig):
 
     # FHLMC datasets (3 types: simpler than FHFA's 7)
     VALID_DATASETS: list[str] = ["origination", "performance", "reperforming"]
-
-    # CRT (Reference Pool) disclosure parts — the sub-datasets inside Freddie's
-    # ``fre-crt-*.zip`` Clarity download, each landing under bronze/crt/{part}/.
-    CRT_DATASETS: list[str] = ["lld", "agg_zipcode", "pay_hist", "temp_buydown", "pre_harp"]
 
     # Year ranges for FHLMC historical data
     MIN_YEAR: int = 1999
@@ -147,12 +142,10 @@ class FHLMCConfig(MortgageDataConfig):
         cls.FHLMC_BRONZE_ORIGINATION.mkdir(parents=True, exist_ok=True)
         cls.FHLMC_BRONZE_PERFORMANCE.mkdir(parents=True, exist_ok=True)
         cls.FHLMC_BRONZE_REPERFORMING.mkdir(parents=True, exist_ok=True)
-        cls.FHLMC_BRONZE_CRT.mkdir(parents=True, exist_ok=True)
 
 
 # Re-exports for ergonomic imports
 VALID_DATASETS = FHLMCConfig.VALID_DATASETS
-CRT_DATASETS = FHLMCConfig.CRT_DATASETS
 MIN_YEAR = FHLMCConfig.MIN_YEAR
 MAX_YEAR = FHLMCConfig.MAX_YEAR
 
@@ -256,130 +249,6 @@ FHLMC_ORIGINATION_SILVER = spec_from_columns(
     _ORIGINATION_COLS,
     sentinels=_FHLMC_ORIG_SENTINELS,
 )
-
-#: One row per (Reference Pool Number, Loan Identifier) — the at-issuance CRT
-#: reference-pool disclosure, hive-partitioned by ``issuance_year`` (from the
-#: Period column). Bronze already types dates (CCYYMM) and numerics per the
-#: authored ``CRT_LLD_LAYOUT``; this spec null-maps the standard Freddie
-#: sentinels, right-sizes ints, zero-pads the plain 3-digit Postal Code, and
-#: conforms every vintage (88/89/90-field eras) to the full 93-column target
-#: (absent trailing columns become typed nulls). Coded alpha columns stay
-#: String — CRT code spaces differ from the SF LLD (e.g. Occupancy 'O' = owner
-#: vs SF 'P' = primary) and are not yet audited, so no Enums in v1.
-_CRT_SENTINELS = {
-    "Classic FICO": (9999,),
-    "Updated Credit Score at Issuance": (9999,),
-    "Updated Credit Score #1 - Quarterly": (9999,),
-    "Updated Credit Score #2 - Quarterly": (9999,),
-    "Updated Credit Score #3 - Quarterly": (9999,),
-    "Original Loan-To-Value (LTV)": (999,),
-    "Original Combined Loan-To-Value (CLTV)": (999,),
-    "Original Debt-To-Income (DTI)": (999,),
-    "Mortgage Insurance Percent (MI%)": (999,),
-    "Estimated Loan-To-Value (ELTV) - Monthly": (999,),
-    "Modification Debt-To-Income (DTI)": (999,),
-    "Number of Units": (99,),
-    "Number of Borrowers": (99,),
-}
-
-_CRT_COLS: list[tuple[str, ColumnRole]] = [
-    ("Period", Declared(pl.Date)),
-    ("Reference Pool Number", TEXT),
-    ("Loan Identifier", TEXT),
-    ("Amortization Type", Declared(pl.String)),
-    ("Seller Name", Declared(pl.String)),
-    ("Property State", Declared(pl.String)),
-    ("Postal Code (3-Digit)", ZIP3),
-    ("Metropolitan Statistical Area (MSA) or Metropolitan Division", TEXT),
-    ("First Payment Date", Declared(pl.Date)),
-    ("Maturity Date", Declared(pl.Date)),
-    ("Original Loan Term", pl.Int16),
-    ("Original Interest Rate", pl.Float32),
-    ("Original UPB", Declared(pl.Float64)),
-    ("UPB at Issuance", Declared(pl.Float64)),
-    ("Loan Purpose", Declared(pl.String)),
-    ("Channel", Declared(pl.String)),
-    ("Property Type", Declared(pl.String)),
-    ("Number of Units", pl.Int8),
-    ("Occupancy Status", Declared(pl.String)),
-    ("Number of Borrowers", pl.Int8),
-    ("First Time Homebuyer Indicator", BOOL),
-    ("Prepayment Penalty Indicator", BOOL),
-    ("Classic FICO", pl.Int16),
-    ("Original Loan-To-Value (LTV)", pl.Int16),
-    ("Original Combined Loan-To-Value (CLTV)", pl.Int16),
-    ("Original Debt-To-Income (DTI)", pl.Int16),
-    ("Mortgage Insurance Percent (MI%)", pl.Int8),
-    ("Updated Credit Score at Issuance", pl.Int16),
-    ("Special Eligibility Program", Declared(pl.String)),
-    ("Mortgage Insurance Type", pl.Int8),
-    ("Filler (Field 31)", Declared(pl.String)),
-    ("Disaster Grace Period", pl.Int8),
-    ("Servicer Name", Declared(pl.String)),
-    ("Loan Age", pl.Int16),
-    ("Remaining Months to Legal Maturity", pl.Int16),
-    ("Adjusted Remaining Months to Maturity (RMM)", pl.Int16),
-    ("Current Loan Delinquency Status", Declared(pl.String)),
-    ("Payment History", Declared(pl.String)),
-    ("Current Interest Rate", pl.Float32),
-    ("Current Actual UPB", Declared(pl.Float64)),
-    ("Current Interest Bearing UPB", Declared(pl.Float64)),
-    ("UPB at Time of Removal from the Reference Pool", Declared(pl.Float64)),
-    ("Zero Balance Code", pl.Int8),
-    ("Zero Balance Effective Date", Declared(pl.Date)),
-    ("Underwriting Defect and Major Servicing Defect Settlement Date", Declared(pl.Date)),
-    ("Modification Flag", Declared(pl.String)),
-    ("Delinquency Due to Disaster", Declared(pl.String)),
-    ("Due Date of Last Paid Installment (DDLPI)", Declared(pl.Date)),
-    ("Bankruptcy Flag", Declared(pl.String)),
-    ("Date Referred to Foreclosure", Declared(pl.Date)),
-    ("Net Sales Proceeds", Declared(pl.Float64)),
-    ("MI Credit", Declared(pl.Float64)),
-    ("Taxes and Insurance", Declared(pl.Float64)),
-    ("Legal Costs", Declared(pl.Float64)),
-    ("Maintenance and Preservation Costs", Declared(pl.Float64)),
-    ("Bankruptcy Cramdown Costs", Declared(pl.Float64)),
-    ("Miscellaneous Expenses", Declared(pl.Float64)),
-    ("Miscellaneous Credits", Declared(pl.Float64)),
-    ("Mortgage Insurance Cancellation Indicator", Declared(pl.String)),
-    ("Estimated Loan-To-Value (ELTV) - Monthly", pl.Int16),
-    ("Filler (Field 61)", Declared(pl.String)),
-    ("Updated Credit Score #1 - Quarterly", pl.Int16),
-    ("Updated Credit Score #2 - Quarterly", pl.Int16),
-    ("Number of Modifications", pl.Int8),
-    ("Modification Program", Declared(pl.String)),
-    ("Modification Type", Declared(pl.String)),
-    ("Modification First Payment Date", Declared(pl.Date)),
-    ("Modification Debt-To-Income (DTI)", pl.Int16),
-    ("Total Capitalized Amount", Declared(pl.Float64)),
-    ("Interest Rate Step Indicator", Declared(pl.String)),
-    ("First Step Rate Adjustment Date", Declared(pl.Date)),
-    ("First Step Rate", pl.Float32),
-    ("Second Step Rate Adjustment Date", Declared(pl.Date)),
-    ("Second Step Rate", pl.Float32),
-    ("Third Step Rate Adjustment Date", Declared(pl.Date)),
-    ("Third Step Rate", pl.Float32),
-    ("Fourth Step Rate Adjustment Date", Declared(pl.Date)),
-    ("Fourth Step Rate", pl.Float32),
-    ("Fifth Step Rate Adjustment Date", Declared(pl.Date)),
-    ("Fifth Step Rate", pl.Float32),
-    ("Delinquent Accrued Interest", Declared(pl.Float64)),
-    ("Current Period Modification Costs", Declared(pl.Float64)),
-    ("Updated Credit Score #3 - Quarterly", pl.Int16),
-    ("Property Valuation Method", pl.Int8),
-    ("Group Number", Declared(pl.Int64)),
-    ("Enhanced Relief Refi Indicator", pl.Int8),
-    ("Borrower Assistance Plan", Declared(pl.String)),
-    ("Payment Deferral Flag", Declared(pl.String)),
-    ("Distressed Principal Balance Flag", Declared(pl.String)),
-    ("Temporary Subsidy Buydown Plan Type", pl.Int8),
-    ("VantageScore 4.0", pl.Int16),
-    ("Actual Loss", Declared(pl.Float64)),
-    ("Cumulative Modification Costs", Declared(pl.Float64)),
-    ("issuance_year", Declared(pl.Int32)),
-]
-
-FHLMC_CRT_SILVER = spec_from_columns(_CRT_COLS, sentinels=_CRT_SENTINELS)
 
 #: The loan x month performance panel, one parquet per origination quarter. All
 #: four date columns (Monthly Reporting Period, Defect Settlement Date, Zero

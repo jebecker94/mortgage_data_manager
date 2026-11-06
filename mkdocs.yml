@@ -71,7 +71,6 @@ nav:
       - hmda_gnma: matching/hmda_gnma_matching.md
       - hmda_gse: matching/hmda_gse_matching.md
       - hmda_sellers_purchasers: matching/hmda_sellers_purchasers_matching.md
-      - crt_mbs: matching/crt_mbs_matching.md
       - fhfa_mbs: matching/fhfa_mbs_matching.md
       - fhlb_mbs: matching/fhlb_mbs_matching.md
       - mbs_umbs: matching/mbs_umbs_matching.md

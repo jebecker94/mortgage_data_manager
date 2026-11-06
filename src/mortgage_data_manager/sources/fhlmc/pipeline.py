@@ -117,37 +117,6 @@ def run_bronze(
     return {"loaded": loaded, "failed": failed, "datasets_processed": datasets_processed}
 
 
-def run_crt(
-    overwrite: bool = False,
-    datasets: list[str] | None = None,
-) -> dict[str, Any]:
-    """Run the CRT disclosure pipeline: bronze (all parts) then silver (lld).
-
-    Args:
-        overwrite: Whether to overwrite existing bronze/silver outputs.
-        datasets: CRT parts for the bronze stage (default: all). The silver
-            stage runs only when 'lld' is included.
-
-    Returns:
-        Dictionary with 'bronze' and 'silver' count dicts.
-    """
-    from mortgage_data_manager.sources.fhlmc.config import FHLMCConfig
-    from mortgage_data_manager.sources.fhlmc.import_bronze import import_crt_data
-    from mortgage_data_manager.sources.fhlmc.import_silver import import_crt_to_silver
-
-    selected = datasets or FHLMCConfig.CRT_DATASETS
-
-    logger.info("Phase 1: CRT bronze")
-    bronze_counts = import_crt_data(overwrite=overwrite, datasets=selected)
-
-    silver_counts: dict[str, int] = {}
-    if "lld" in selected:
-        logger.info("Phase 2: CRT silver")
-        silver_counts = import_crt_to_silver(overwrite=overwrite)
-
-    return {"bronze": bronze_counts, "silver": silver_counts}
-
-
 def run_silver(
     datasets: list[str] | None = None,
     *,
@@ -157,8 +126,8 @@ def run_silver(
     """Silver step: bronze parquet → cleaned, hive-partitioned silver.
 
     Args:
-        datasets: Subset of ``origination``/``performance``/``crt``. ``None``
-            = all three. ``reperforming`` has no silver builder and is ignored.
+        datasets: Subset of ``origination``/``performance``. ``None``
+            = both. ``reperforming`` has no silver builder and is ignored.
         years: Origination vintages to build. ``None`` = every vintage found.
             Only the origination builder takes a year filter.
         overwrite: Rebuild silver outputs that already exist.
@@ -170,12 +139,11 @@ def run_silver(
         ValueError: If a dataset has no silver builder.
     """
     from mortgage_data_manager.sources.fhlmc.import_silver import (
-        import_crt_to_silver,
         import_origination_to_silver,
         import_performance_to_silver,
     )
 
-    valid = ["origination", "performance", "crt"]
+    valid = ["origination", "performance"]
     selected = [d for d in (datasets or valid) if d != "reperforming"]
     unknown = [d for d in selected if d not in valid]
     if unknown:
@@ -186,10 +154,8 @@ def run_silver(
         logger.info("FHLMC silver: %s", dataset)
         if dataset == "origination":
             results[dataset] = import_origination_to_silver(years=years, overwrite=overwrite)
-        elif dataset == "performance":
-            results[dataset] = import_performance_to_silver(overwrite=overwrite)
         else:
-            results[dataset] = import_crt_to_silver(overwrite=overwrite)
+            results[dataset] = import_performance_to_silver(overwrite=overwrite)
     return results
 
 

@@ -5,7 +5,7 @@ Loan-level links between U.S. public mortgage datasets that share no common iden
 This is my personal research setup, published as is. The main contribution is the
 **matching workflows**: proof-of-concept methods, each with a validation report, for linking
 the same mortgage across HMDA, FHA, FHFA, the GSE and Ginnie Mae loan-level disclosures,
-UMBS, FHLB and credit-risk-transfer data. The download and cleaning code is what feeds
+UMBS and FHLB data. The download and cleaning code is what feeds
 them. It is written for my machine and my research needs, and it is not a maintained
 general-purpose data library.
 
@@ -31,7 +31,6 @@ the denominator behind every rate.
 | hmda_fhlb | HMDA ↔ FHLB Acquired Member Assets | 2009–2025 | 57–60% of AMA loans | [method & validation](docs/matching/hmda_fhlb_matching.md) |
 | fhfa_mbs | FHFA ↔ GSE loan-level | 2018–2025 | 95–96% of FHFA loans | [method & validation](docs/matching/fhfa_mbs_matching.md) |
 | mbs_umbs | GSE loan-level ↔ UMBS disclosures | 2019–2025 | 99.6–99.8% of matchable loans | [method & validation](docs/matching/mbs_umbs_matching.md) |
-| crt_mbs | Freddie Mac CRT reference pools ↔ loan-level | 2013–2026 | 99.2% of CRT loans | [method & validation](docs/matching/crt_mbs_matching.md) |
 | fhlb_mbs | FHLB AMA ↔ Ginnie Mae loan-level | 2009–2025 | 97% of the issuer's Ginnie Mae loans | [method & validation](docs/matching/fhlb_mbs_matching.md) |
 | master | every post-2018 edge, one row per HMDA loan | 2018–2025 | 46.4M loans | [method & validation](docs/matching/master_crosswalk.md) |
 
@@ -74,6 +73,7 @@ cover them.
 - **New York Fed market data** (Markets API): agency MBS purchase and sale operations, and weekly SOMA holdings of agency MBS and CMBS by CUSIP.
 - **SEC Form N-MFP** (SEC structured data sets): money market fund repo positions with their collateral, including agency MBS.
 - **SEC Form N-PORT** (SEC structured data sets): fund holdings by CUSIP, with an asset category for mortgage-backed securities and an issuer category that separates agency from private-label.
+- **GSE credit-risk-transfer disclosures** (Freddie Mac Clarity; Fannie Mae Data Dynamics): the loan-level reference pools behind Freddie Mac's STACR and ACIS and Fannie Mae's CAS and CIRT deals.
 
 **Housing stock and property risk**
 - **HUD multifamily data** (HUD multifamily data page): FHA-insured multifamily mortgages and Section 8 assisted-housing contracts.
