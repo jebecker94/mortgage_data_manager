@@ -5,8 +5,8 @@ Install the package, build a first dataset, and read it.
 ## Installation
 
 The base install has the shared utilities and the CLI. Each source's dependencies are an
-extra: `hmda`, `fha`, `mbs` (GNMA, FHFA, FNMA, FHLMC and UMBS), `fhlb`, `matching` and
-`hud`. `all` installs every one, `dev` adds the toolchain and `docs` the
+extra: `hmda`, `fha`, `mbs` (GNMA, FHFA, FNMA, FHLMC and UMBS), `fhlb` and `matching`.
+`all` installs every one, `dev` adds the toolchain and `docs` the
 documentation build.
 
 ```bash

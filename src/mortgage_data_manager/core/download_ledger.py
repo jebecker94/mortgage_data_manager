@@ -20,7 +20,7 @@ absolute path — so ledgers are portable across machines and volumes.
 
 Example:
     >>> from mortgage_data_manager.core.download_ledger import latest, changes
-    >>> latest("hud").select("destination", "last_modified", "sha256")
+    >>> latest("fha").select("destination", "last_modified", "sha256")
     >>> changes("gnma")  # destinations whose bytes differed between two acquisitions
 """
 

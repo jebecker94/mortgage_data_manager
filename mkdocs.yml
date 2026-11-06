@@ -1,5 +1,5 @@
 site_name: mortgage-data-manager
-site_description: Public mortgage market data pipelines (HMDA, FHA, FHFA, FHLB, GNMA, GSE/UMBS, HUD)
+site_description: Public mortgage market data pipelines (HMDA, FHA, FHFA, FHLB, GNMA, GSE/UMBS)
 repo_url: https://github.com/jebecker94/mortgage_data_manager
 docs_dir: docs
 
@@ -90,7 +90,6 @@ nav:
       - fhlmc: api/fhlmc.md
       - fnma: api/fnma.md
       - gnma: api/gnma.md
-      - hud: api/hud.md
       - umbs: api/umbs.md
       - usps_crosswalk: api/usps_crosswalk.md
       - combined: api/combined.md

@@ -21,7 +21,6 @@ src/mortgage_data_manager/
 │   ├── fhlmc/          # Freddie Mac loan-level data
 │   ├── umbs/           # UMBS disclosures
 │   ├── usps_crosswalk/ # USPS ZIP crosswalks (published by HUD)
-│   ├── hud/            # HUD multifamily programs
 │   └── fhlb/           # FHLB Acquired Member Assets
 ├── matching/           # Record linkage: one `match_{workflow}/` per pair of sources,
 │                       #   plus `master/`, which joins them onto one HMDA spine

@@ -61,7 +61,7 @@ Two downloads need credentials, and each fails with a message naming the missing
 Each subpackage has its own directory under `{MORTGAGE_DATA_DIR}`, set by a
 `{SOURCE}_DATA_DIR` key: `HMDA_DATA_DIR`, `FHA_DATA_DIR`, `GNMA_DATA_DIR`,
 `FHFA_DATA_DIR`, `FNMA_DATA_DIR`, `FHLMC_DATA_DIR`, `UMBS_DATA_DIR`, `FHLB_DATA_DIR`,
-`HUD_DATA_DIR`, `USPS_CROSSWALK_DATA_DIR` and `COMBINED_DATA_DIR`.
+`USPS_CROSSWALK_DATA_DIR` and `COMBINED_DATA_DIR`.
 There is no shared `MBS_DATA_DIR`; each agency is separate.
 
 Each layer can also be moved on its own with `{SOURCE}_RAW_DIR`, `{SOURCE}_BRONZE_DIR`

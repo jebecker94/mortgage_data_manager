@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mortgage-data-manager"
-version = "0.5.0"
+version = "0.6.0"
 description = "Loan-level matching across U.S. public mortgage datasets (HMDA, FHA, FHFA, GSE, Ginnie Mae, UMBS, FHLB), with the pipelines that feed it"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -51,9 +51,6 @@ matching = [
     "matplotlib>=3.10.0",
 ]
 usps_crosswalk = []
-hud = [
-    "fastexcel>=0.0.1",
-]
 fhlb = [
     "openpyxl>=3.1.0",
     "xlrd>=2.0.1",
@@ -61,7 +58,7 @@ fhlb = [
 
 # Convenience groups
 all = [
-    "mortgage-data-manager[hmda,fha,mbs,matching,usps_crosswalk,hud,fhlb]"
+    "mortgage-data-manager[hmda,fha,mbs,matching,usps_crosswalk,fhlb]"
 ]
 docs = [
     "mkdocs>=1.6.0",

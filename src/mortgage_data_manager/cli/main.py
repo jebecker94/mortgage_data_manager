@@ -74,7 +74,6 @@ def info():
                 ("fnma", "Fannie Mae loan performance data"),
                 ("fhlmc", "Freddie Mac loan-level data"),
                 ("umbs", "Fannie Mae / Freddie Mac UMBS disclosures"),
-                ("hud", "HUD multifamily housing (FHA-insured + Section 8)"),
                 ("usps-crosswalk", "HUD USPS ZIP crosswalks"),
             ],
         ),
@@ -144,11 +143,6 @@ def _register_subcommands() -> None:
     app.add_typer(
         usps_crosswalk_app, name="usps-crosswalk", help="USPS ZIP crosswalk data operations"
     )
-
-    # Register HUD multifamily housing data
-    from mortgage_data_manager.sources.hud.cli import app as hud_app
-
-    app.add_typer(hud_app, name="hud", help="HUD multifamily housing data operations")
 
     # Register combined cross-source master datasets
     from mortgage_data_manager.combined.cli import app as combined_app

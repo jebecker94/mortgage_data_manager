@@ -29,7 +29,6 @@ $ mortgage-data [OPTIONS] COMMAND [ARGS]...
 * `umbs`: UMBS data operations
 * `match`: Matching workflows for linking records
 * `usps-crosswalk`: USPS ZIP crosswalk data operations
-* `hud`: HUD multifamily housing data operations
 * `combined`: Combined cross-source master datasets
 * `fhlb`: FHLB data operations
 * `raw`: Raw download ledger: register, audit,...
@@ -3117,122 +3116,6 @@ $ mortgage-data usps-crosswalk info [OPTIONS]
 
 **Options**:
 
-* `--help`: Show this message and exit.
-
-## `mortgage-data hud`
-
-HUD multifamily housing data operations
-
-**Usage**:
-
-```console
-$ mortgage-data hud [OPTIONS] COMMAND [ARGS]...
-```
-
-**Options**:
-
-* `-V, --version`: Show version and exit
-* `--help`: Show this message and exit.
-
-**Commands**:
-
-* `info`: Show HUD-MF paths, the logical-table...
-* `download`: Download HUD multifamily workbooks + Data...
-* `bronze`: Convert raw workbooks → typed bronze...
-* `silver`: Build cleaned, key-normalized silver...
-* `pipeline`: End-to-end: download → bronze → silver.
-
-### `mortgage-data hud info`
-
-Show HUD-MF paths, the logical-table registry, and which sources are missing.
-
-**Usage**:
-
-```console
-$ mortgage-data hud info [OPTIONS]
-```
-
-**Options**:
-
-* `--help`: Show this message and exit.
-
-### `mortgage-data hud download`
-
-Download HUD multifamily workbooks + Data Element Dictionaries.
-
-**Usage**:
-
-```console
-$ mortgage-data hud download [OPTIONS]
-```
-
-**Options**:
-
-* `-t, --datasets <str>`: Tables to process (repeatable). Default: all (11 tables).
-* `--overwrite`: Overwrite existing files instead of skipping them.
-* `--skip-dictionaries`: Skip the Data Element Dictionary PDFs.
-* `--pause SECONDS`: Seconds to pause between downloads. Default: the source&#x27;s configured value.
-* `--timeout SECONDS`: Request timeout in seconds. Default: the source&#x27;s configured value.
-* `-v, --verbose`: Enable verbose (DEBUG level) logging output.
-* `-q, --quiet`: Suppress progress bars and reduce output.
-* `--help`: Show this message and exit.
-
-### `mortgage-data hud bronze`
-
-Convert raw workbooks → typed bronze parquet (one per table).
-
-**Usage**:
-
-```console
-$ mortgage-data hud bronze [OPTIONS]
-```
-
-**Options**:
-
-* `-t, --datasets <str>`: Tables to process (repeatable). Default: all (11 tables).
-* `--overwrite`: Overwrite existing files instead of skipping them.
-* `-v, --verbose`: Enable verbose (DEBUG level) logging output.
-* `-q, --quiet`: Suppress progress bars and reduce output.
-* `--help`: Show this message and exit.
-
-### `mortgage-data hud silver`
-
-Build cleaned, key-normalized silver parquet from bronze.
-
-**Usage**:
-
-```console
-$ mortgage-data hud silver [OPTIONS]
-```
-
-**Options**:
-
-* `-t, --datasets <str>`: Tables to process (repeatable). Default: all (11 tables).
-* `--overwrite`: Overwrite existing files instead of skipping them.
-* `-v, --verbose`: Enable verbose (DEBUG level) logging output.
-* `-q, --quiet`: Suppress progress bars and reduce output.
-* `--help`: Show this message and exit.
-
-### `mortgage-data hud pipeline`
-
-End-to-end: download → bronze → silver.
-
-**Usage**:
-
-```console
-$ mortgage-data hud pipeline [OPTIONS]
-```
-
-**Options**:
-
-* `-t, --datasets <str>`: Tables to process (repeatable). Default: all (11 tables).
-* `--overwrite`: Overwrite existing files instead of skipping them.
-* `--skip-download`: Skip download step (use existing raw files).
-* `--skip-dictionaries`: Skip the Data Element Dictionary PDFs.
-* `--pause SECONDS`: Seconds to pause between downloads. Default: the source&#x27;s configured value.
-* `--timeout SECONDS`: Request timeout in seconds. Default: the source&#x27;s configured value.
-* `-v, --verbose`: Enable verbose (DEBUG level) logging output.
-* `-q, --quiet`: Suppress progress bars and reduce output.
 * `--help`: Show this message and exit.
 
 ## `mortgage-data combined`

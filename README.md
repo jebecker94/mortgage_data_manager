@@ -57,6 +57,31 @@ without notice, and building everything takes over 1 TB of disk.
 More: [CLI reference](docs/cli_reference.md) · [Architecture](docs/architecture.md) ·
 [API reference](docs/api/core.md)
 
+## Related public data
+
+Other public sources that overlap with mortgage and housing data. This package does not
+cover them.
+
+**Lenders and holders of mortgages and MBS**
+- **Bank call reports** (FFIEC Central Data Repository): bank holdings of 1–4 family residential loans and MBS, and mortgage servicing assets.
+- **FR Y-9C** (FFIEC National Information Center): the same items at the bank holding company level.
+- **FDIC BankFind**: bank rosters, merger histories and branch deposits (Summary of Deposits), for identifying HMDA lenders and their markets.
+- **NCUA 5300 call reports** (NCUA quarterly data): credit union real estate loans, including loans granted year to date and first mortgages sold.
+- **Farm Credit call reports** (FCA): Farm Credit System rural residence real estate loans, and holdings of agency and non-agency RMBS and CMBS.
+- **CRA flat files** (FFIEC): community development lending, and a lender roster that shares pre-2018 HMDA's respondent identifiers.
+
+**MBS markets**
+- **New York Fed market data** (Markets API): agency MBS purchase and sale operations, and weekly SOMA holdings of agency MBS and CMBS by CUSIP.
+- **SEC Form N-MFP** (SEC structured data sets): money market fund repo positions with their collateral, including agency MBS.
+- **SEC Form N-PORT** (SEC structured data sets): fund holdings by CUSIP, with an asset category for mortgage-backed securities and an issuer category that separates agency from private-label.
+
+**Housing stock and property risk**
+- **HUD multifamily data** (HUD multifamily data page): FHA-insured multifamily mortgages and Section 8 assisted-housing contracts.
+- **Building Permits Survey** (Census Bureau): monthly new housing units authorized by permit, by place and metro area.
+- **National Structure Inventory** (USACE): building-level inventory with residential occupancy types, building characteristics and replacement values.
+- **NFIP policies and claims** (OpenFEMA): flood insurance on insured properties by census tract; federally backed mortgages in Special Flood Hazard Areas must carry it.
+- **SBA disaster loans** (SBA open data portal): disaster home loans to homeowners and renters for repairing or replacing damaged homes and personal property.
+
 ## Development
 
 Developed with [Claude Code](https://claude.ai/code), Anthropic's coding agent, under my

@@ -79,11 +79,6 @@ def _raw_dir_registry() -> dict[str, Callable[[], Path]]:
 
         return HMDAConfig.HMDA_RAW_DIR
 
-    def hud() -> Path:
-        from mortgage_data_manager.sources.hud.config import HUDConfig
-
-        return HUDConfig.HUD_RAW_DIR
-
     def umbs() -> Path:
         from mortgage_data_manager.sources.umbs.config import UMBSConfig
 
@@ -102,7 +97,6 @@ def _raw_dir_registry() -> dict[str, Callable[[], Path]]:
         "fnma": fnma,
         "gnma": gnma,
         "hmda": hmda,
-        "hud": hud,
         "umbs": umbs,
         "usps_crosswalk": usps_crosswalk,
     }

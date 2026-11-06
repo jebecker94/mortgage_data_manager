@@ -1519,7 +1519,7 @@ wheels = [
 
 [[package]]
 name = "mortgage-data-manager"
-version = "0.5.0"
+version = "0.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -1571,9 +1571,6 @@ fhlb = [
     { name = "openpyxl" },
     { name = "xlrd" },
 ]
-hud = [
-    { name = "fastexcel" },
-]
 matching = [
     { name = "addfips" },
     { name = "fastexcel" },
@@ -1597,7 +1594,6 @@ requires-dist = [
     { name = "addfips", marker = "extra == 'matching'", specifier = ">=0.4.0" },
     { name = "beautifulsoup4", specifier = ">=4.12.0" },
     { name = "fastexcel", marker = "extra == 'fha'", specifier = ">=0.0.1" },
-    { name = "fastexcel", marker = "extra == 'hud'", specifier = ">=0.0.1" },
     { name = "fastexcel", marker = "extra == 'matching'", specifier = ">=0.0.1" },
     { name = "fastexcel", marker = "extra == 'mbs'", specifier = ">=0.0.1" },
     { name = "ipython", marker = "extra == 'dev'", specifier = ">=8.0.0" },
@@ -1607,7 +1603,7 @@ requires-dist = [
     { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.0" },
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.5.0" },
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.26.0" },
-    { name = "mortgage-data-manager", extras = ["hmda", "fha", "mbs", "matching", "usps-crosswalk", "hud", "fhlb"], marker = "extra == 'all'" },
+    { name = "mortgage-data-manager", extras = ["hmda", "fha", "mbs", "matching", "usps-crosswalk", "fhlb"], marker = "extra == 'all'" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "numpy", marker = "extra == 'matching'", specifier = ">=1.26.0" },
     { name = "openpyxl", marker = "extra == 'fhlb'", specifier = ">=3.1.0" },
@@ -1633,7 +1629,7 @@ requires-dist = [
     { name = "types-requests", marker = "extra == 'dev'" },
     { name = "xlrd", marker = "extra == 'fhlb'", specifier = ">=2.0.1" },
 ]
-provides-extras = ["hmda", "fha", "mbs", "matching", "usps-crosswalk", "hud", "fhlb", "all", "docs", "dev"]
+provides-extras = ["hmda", "fha", "mbs", "matching", "usps-crosswalk", "fhlb", "all", "docs", "dev"]
 
 [[package]]
 name = "mypy"
